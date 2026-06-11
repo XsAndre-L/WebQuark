@@ -31,6 +31,20 @@ export const config: Config = {
       directivesProxyFile: 'packages/angular/src/stencil-generated/components.ts',
       directivesArrayFile: 'packages/angular/src/stencil-generated/index.ts',
       outputType: 'standalone',
+      valueAccessorConfigs: [
+        {
+          elementSelectors: ['q-input', 'q-textarea'],
+          event: 'qChange',
+          targetAttr: 'value',
+          type: 'text',
+        },
+        {
+          elementSelectors: ['q-dropdown'],
+          event: 'qChange',
+          targetAttr: 'value',
+          type: 'select',
+        },
+      ],
     }),
   ],
 };

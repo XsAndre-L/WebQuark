@@ -1,0 +1,145 @@
+:host {
+  display: block;
+  box-sizing: border-box;
+}
+
+/* Base Wrapper stretches over full viewport when open */
+.sidepanel-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 2000;
+  
+  display: flex;
+  pointer-events: none; /* Allows click-throughs when closed */
+  overflow: hidden;
+  box-sizing: border-box;
+  visibility: hidden; /* Prevent keyboard leaks / hides when closed */
+}
+
+.sidepanel-wrapper.is-visible {
+  visibility: visible;
+}
+
+.sidepanel-wrapper.is-open {
+  pointer-events: auto; /* Restricts click-throughs when active */
+}
+
+/* Semi-transparent Backdrop Dim Overlay */
+.sidepanel-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* static fallback background */
+  background: var(--q-bg-overlay, rgba(0, 0, 0, 0.5)); /* Safe OSR solid transparency fallback */
+  opacity: 0;
+  transition: opacity var(--q-panel-transition-duration, var(--q-transition-normal, 250ms ease)) cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+}
+
+.sidepanel-wrapper.is-open .sidepanel-backdrop {
+  opacity: 1;
+}
+
+/* Sliding Drawer Panel Base styling */
+.sidepanel-drawer {
+  position: absolute;
+  background: #1f2937; /* static fallback background */
+  background: var(--q-panel-bg, var(--q-bg-surface-1, #1f2937));
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12); /* static fallback */
+  box-shadow: var(--q-panel-shadow, var(--q-shadow-high, 0 16px 32px rgba(0,0,0,0.12)));
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  outline: none;
+  
+  /* Unreal OSR-Safe 2D slide-out animations */
+  transition: transform var(--q-panel-transition-duration, var(--q-transition-normal, 250ms ease)) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Slide Edges Positioning & Translations */
+/* Left Edge */
+.side-left .sidepanel-drawer {
+  top: 0;
+  left: 0;
+  width: var(--q-panel-width, 320px);
+  height: 100vh;
+  border-right: 1px solid #374151; /* static fallback */
+  border-right: var(--q-panel-border, var(--q-border, 1px solid var(--q-border-color, #374151)));
+  transform: translateX(-100%);
+}
+.side-left.is-open .sidepanel-drawer {
+  transform: translateX(0);
+}
+
+/* Right Edge */
+.side-right .sidepanel-drawer {
+  top: 0;
+  right: 0;
+  width: var(--q-panel-width, 320px);
+  height: 100vh;
+  border-left: 1px solid #374151; /* static fallback */
+  border-left: var(--q-panel-border, var(--q-border, 1px solid var(--q-border-color, #374151)));
+  transform: translateX(100%);
+}
+.side-right.is-open .sidepanel-drawer {
+  transform: translateX(0);
+}
+
+/* Top Edge */
+.side-top .sidepanel-drawer {
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: var(--q-panel-width, 320px);
+  border-bottom: 1px solid #374151; /* static fallback */
+  border-bottom: var(--q-panel-border, var(--q-border, 1px solid var(--q-border-color, #374151)));
+  transform: translateY(-100%);
+}
+.side-top.is-open .sidepanel-drawer {
+  transform: translateY(0);
+}
+
+/* Bottom Edge */
+.side-bottom .sidepanel-drawer {
+  bottom: 0;
+  left: 0;
+  width: 100vw;
+  height: var(--q-panel-width, 320px);
+  border-top: 1px solid #374151; /* static fallback */
+  border-top: var(--q-panel-border, var(--q-border, 1px solid var(--q-border-color, #374151)));
+  transform: translateY(100%);
+}
+.side-bottom.is-open .sidepanel-drawer {
+  transform: translateY(0);
+}
+
+/* Header Typography */
+.drawer-header {
+  padding: var(--q-padding-lg, 24px);
+  border-bottom: 1px solid #374151; /* static fallback */
+  border-bottom: var(--q-panel-border, var(--q-border, 1px solid var(--q-border-color, #374151)));
+  font-family: var(--q-font-family, inherit);
+  font-size: var(--q-font-size-lg, 1.125rem);
+  font-weight: var(--q-font-weight-bold, 700);
+  line-height: 1.4;
+  color: #f9fafb; /* static fallback */
+  color: var(--q-fg-base, #f9fafb);
+}
+
+/* Body Content container */
+.drawer-body {
+  flex: 1;
+  padding: var(--q-padding-lg, 24px);
+  overflow-y: auto;
+  font-family: var(--q-font-family, inherit);
+  font-size: var(--q-font-size-base, 1rem);
+  font-weight: var(--q-font-weight-normal, 400);
+  line-height: 1.5;
+  color: #f9fafb; /* static fallback */
+  color: var(--q-fg-base, #f9fafb);
+}

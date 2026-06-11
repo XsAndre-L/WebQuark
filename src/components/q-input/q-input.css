@@ -1,0 +1,136 @@
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Header Label Typography */
+.input-label {
+  font-family: var(--q-font-family, inherit);
+  font-size: var(--q-font-size-sm, 0.875rem);
+  font-weight: var(--q-font-weight-bold, 700);
+  color: var(--q-color-secondary, #9ca3af);
+  margin-bottom: 6px;
+  
+  transition: color var(--q-transition-fast, 150ms ease);
+}
+
+/* Input Control Flex Box */
+.input-control {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  background: var(--q-input-bg, var(--q-bg-surface-2, #374151));
+  /* Standard static border limits size shifts on focus overlays */
+  border: var(--q-input-border, var(--q-border, 1px solid var(--q-border-color, #4b5563)));
+  border-radius: var(--q-input-radius, var(--q-radius-md, 8px));
+  box-sizing: border-box;
+  
+  transition: border-color var(--q-transition-fast, 150ms ease), 
+              box-shadow var(--q-transition-fast, 150ms ease);
+}
+
+/* Native Input Box */
+.input-box {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: var(--q-input-padding, 10px 14px);
+  
+  font-family: var(--q-font-family, inherit);
+  font-size: var(--q-font-size-base, 1rem);
+  font-weight: var(--q-font-weight-normal, 400);
+  color: var(--q-fg-base, #f9fafb);
+  
+  outline: none;
+  box-sizing: border-box;
+}
+
+/* Slot & Button Positioning inside the Flex Control */
+.prefix-container,
+.suffix-container {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  color: var(--q-color-secondary, #9ca3af);
+}
+
+.prefix-container {
+  padding-right: 0;
+}
+
+.suffix-container {
+  padding-left: 0;
+}
+
+/* Focused State triggers color update, keeping width constant */
+.input-control:focus-within {
+  border-color: var(--q-color-primary, #60a5fa);
+  box-shadow: 0 0 0 1px var(--q-color-primary, #60a5fa);
+}
+
+.input-wrapper:focus-within .input-label {
+  color: var(--q-color-primary, #60a5fa);
+}
+
+/* Validation Error State Specificity Overrides */
+.has-error .input-control {
+  border-color: var(--q-color-danger, #ef4444) !important;
+  box-shadow: none;
+}
+
+.has-error.input-wrapper:focus-within .input-label,
+.has-error .input-label {
+  color: var(--q-color-danger, #ef4444) !important;
+}
+
+.error-msg {
+  font-family: var(--q-font-family, inherit);
+  font-size: var(--q-font-size-sm, 0.875rem);
+  font-weight: var(--q-font-weight-normal, 400);
+  color: var(--q-color-danger, #ef4444);
+  margin-top: 6px;
+}
+
+/* Clear Button Sizing */
+.clear-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--q-color-secondary, #9ca3af);
+  border-radius: 50%;
+  outline: none;
+  transition: background var(--q-transition-fast, 150ms ease), color var(--q-transition-fast, 150ms ease);
+}
+
+.clear-btn:hover {
+  background: rgba(249, 250, 251, 0.08); /* Static background color fallback before color-mix */
+  background: var(--q-btn-hover-overlay, color-mix(in srgb, var(--q-fg-base, #f9fafb) 8%, transparent));
+  color: var(--q-fg-base, #f9fafb);
+}
+
+.clear-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Disabled State Visual Styling */
+.is-disabled {
+  opacity: 0.6;
+}
+.is-disabled .input-control {
+  cursor: not-allowed;
+  pointer-events: none;
+}

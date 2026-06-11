@@ -1,0 +1,132 @@
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.dropdown-wrapper {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Header Label Typography */
+.dropdown-label {
+  font-family: var(--q-font-family, inherit);
+  font-size: var(--q-font-size-sm, 0.875rem);
+  font-weight: var(--q-font-weight-bold, 700);
+  color: var(--q-color-secondary, #9ca3af);
+  margin-bottom: 6px;
+}
+
+/* Clickable Trigger Box */
+.dropdown-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: var(--q-dropdown-bg, var(--q-bg-surface-2, #374151));
+  border: var(--q-dropdown-border, var(--q-border, 1px solid var(--q-border-color, #4b5563)));
+  border-radius: var(--q-dropdown-radius, var(--q-radius-md, 8px));
+  padding: var(--q-dropdown-padding, var(--q-field-padding, 10px 14px));
+  box-sizing: border-box;
+  outline: none;
+  cursor: pointer;
+  
+  color: var(--q-fg-base, #f9fafb);
+  font-family: var(--q-font-family, inherit);
+  font-size: var(--q-font-size-base, 1rem);
+  font-weight: var(--q-font-weight-normal, 400);
+  
+  transition: border-color var(--q-transition-fast, 150ms ease), 
+              box-shadow var(--q-transition-fast, 150ms ease);
+}
+
+.dropdown-trigger:focus-visible {
+  border-color: var(--q-color-primary, #60a5fa);
+  box-shadow: 0 0 0 1px var(--q-color-primary, #60a5fa);
+}
+
+.trigger-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.trigger-text.is-placeholder {
+  color: var(--q-color-secondary, #9ca3af);
+  opacity: 0.8;
+}
+
+/* Chevron Icon */
+.chevron-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--q-color-secondary, #9ca3af);
+  transition: transform var(--q-transition-fast, 150ms ease);
+}
+
+.is-open .chevron-icon {
+  transform: rotate(180deg);
+}
+
+/* Options Dropdown Menu (Overlay List) */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  margin: 4px 0 0 0;
+  padding: 4px 0;
+  list-style: none;
+  z-index: 1000;
+  
+  background: var(--q-dropdown-menu-bg, var(--q-bg-surface-3, #4b5563));
+  border: var(--q-dropdown-border, var(--q-border, 1px solid var(--q-border-color, #4b5563)));
+  border-radius: var(--q-dropdown-radius, var(--q-radius-md, 8px));
+  box-shadow: var(--q-shadow-medium, 0 8px 16px rgba(0,0,0,0.3));
+  box-sizing: border-box;
+}
+
+/* Options Items */
+.menu-item {
+  padding: 10px 14px;
+  cursor: pointer;
+  box-sizing: border-box;
+  
+  font-family: var(--q-font-family, inherit);
+  font-size: var(--q-font-size-base, 1rem);
+  font-weight: var(--q-font-weight-normal, 400);
+  color: var(--q-fg-base, #f9fafb);
+  
+  transition: background var(--q-transition-fast, 150ms ease), 
+              color var(--q-transition-fast, 150ms ease);
+}
+
+/* Hover & Selected states mapping */
+.menu-item:hover,
+.menu-item.is-focused,
+.menu-item:focus {
+  background: var(--q-color-primary, #60a5fa);
+  color: var(--q-bg-base, #111827); /* Contrast text color */
+  outline: none;
+}
+
+.menu-item.is-selected {
+  background: rgba(96, 165, 250, 0.15); /* Static fallback background */
+  background: color-mix(in srgb, var(--q-color-primary, #60a5fa) 15%, transparent);
+  font-weight: var(--q-font-weight-bold, 700);
+  border-left: 3px solid var(--q-color-primary, #60a5fa);
+  padding-left: 11px; /* Align matching offset padding */
+}
+
+/* Disabled State Visuals */
+.is-disabled {
+  opacity: 0.6;
+}
+.is-disabled .dropdown-trigger {
+  cursor: not-allowed;
+  pointer-events: none;
+}
