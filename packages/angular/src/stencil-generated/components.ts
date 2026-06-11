@@ -1,0 +1,32 @@
+/* tslint:disable */
+/* auto-generated angular directive proxies */
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, NgZone } from '@angular/core';
+
+import { ProxyCmp } from './angular-component-lib/utils';
+
+import type { Components } from '@webquark/core/components';
+
+import { defineCustomElement as defineWqButton } from '@webquark/core/components/wq-button.js';
+@ProxyCmp({
+  defineCustomElementFn: defineWqButton,
+  inputs: ['label']
+})
+@Component({
+  selector: 'wq-button',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['label'],
+})
+export class WqButton {
+  protected el: HTMLWqButtonElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface WqButton extends Components.WqButton {}
+
+
