@@ -5,48 +5,819 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { Option } from "./components/q-dropdown/q-dropdown";
+export { Option } from "./components/q-dropdown/q-dropdown";
 export namespace Components {
-    interface WqButton {
+    interface QButton {
         /**
-          * The button text label
-          * @default 'Click me'
+          * @default false
          */
-        "label": string;
+        "disabled": boolean;
+        "download"?: string;
+        /**
+          * @default false
+         */
+        "expand": boolean;
+        "href"?: string;
+        /**
+          * @default false
+         */
+        "loading": boolean;
+        /**
+          * @default 'md'
+         */
+        "size": 'sm' | 'md' | 'lg';
+        "target"?: string;
+        /**
+          * @default 'button'
+         */
+        "type": 'button' | 'submit' | 'reset';
+        /**
+          * @default 'primary'
+         */
+        "variant": 'primary' | 'secondary' | 'success' | 'danger' | 'ghost' | 'text';
+    }
+    interface QCard {
+        /**
+          * @default 'medium'
+         */
+        "elevation": 'low' | 'medium' | 'high' | 1 | 2 | 3;
+        /**
+          * @default false
+         */
+        "glass": boolean;
+        /**
+          * @default false
+         */
+        "interactive": boolean;
+        /**
+          * @default false
+         */
+        "lift": boolean;
+    }
+    interface QCarousel {
+        /**
+          * @default "auto"
+         */
+        "itemWidth": string;
+        /**
+          * @default false
+         */
+        "showArrows": boolean;
+        /**
+          * @default false
+         */
+        "showIndicators": boolean;
+        "slideTo": (index: number) => Promise<void>;
+        /**
+          * @default 'start'
+         */
+        "snapAlignment": 'start' | 'center' | 'end' | 'none';
+        "updateLimits": () => Promise<void>;
+    }
+    interface QCircularProgress {
+        /**
+          * @default false
+         */
+        "indeterminate": boolean;
+        "label"?: string;
+        /**
+          * @default 0
+         */
+        "value": number;
+    }
+    interface QDropdown {
+        /**
+          * @default false
+         */
+        "disabled": boolean;
+        "label"?: string;
+        /**
+          * @default []
+         */
+        "options": Option[] | string;
+        /**
+          * @default "Select an option..."
+         */
+        "placeholder": string;
+        /**
+          * @default ""
+         */
+        "value": string;
+    }
+    interface QInput {
+        "clearValue": () => Promise<void>;
+        /**
+          * @default false
+         */
+        "clearable": boolean;
+        /**
+          * @default false
+         */
+        "disabled": boolean;
+        "error"?: string;
+        "errorMessage"?: string;
+        "focusElement": () => Promise<void>;
+        "label"?: string;
+        /**
+          * @default ""
+         */
+        "placeholder": string;
+        /**
+          * @default false
+         */
+        "required": boolean;
+        /**
+          * @default 'text'
+         */
+        "type": 'text' | 'password' | 'email' | 'number' | 'url' | 'search';
+        /**
+          * @default ""
+         */
+        "value": string;
+    }
+    interface QReel {
+        /**
+          * @default 'grid'
+         */
+        "layout": 'grid' | 'carousel';
+        /**
+          * @default true
+         */
+        "lightbox": boolean;
+    }
+    interface QSidepanel {
+        /**
+          * @default false
+         */
+        "open": boolean;
+        /**
+          * @default "320px"
+         */
+        "panelSize": string;
+        /**
+          * @default 'right'
+         */
+        "side": 'left' | 'right' | 'top' | 'bottom';
+    }
+    interface QStepDiagram {
+        /**
+          * @default 'vertical'
+         */
+        "layout": 'vertical' | 'horizontal';
+    }
+    interface QStepDiagramItem {
+        /**
+          * @default 'vertical'
+         */
+        "layout": 'vertical' | 'horizontal';
+        /**
+          * @default 'solid'
+         */
+        "lineStyle": 'solid' | 'dashed' | 'dotted' | 'none';
+        /**
+          * @default 'completed'
+         */
+        "status": 'pending' | 'active' | 'completed' | 'success' | 'warning' | 'danger';
+    }
+    interface QTextarea {
+        "adjustHeight": () => Promise<void>;
+        /**
+          * @default true
+         */
+        "autoGrow": boolean;
+        /**
+          * @default false
+         */
+        "disabled": boolean;
+        "error"?: string;
+        "errorMessage"?: string;
+        "focusElement": () => Promise<void>;
+        "label"?: string;
+        /**
+          * @default ""
+         */
+        "placeholder": string;
+        /**
+          * @default false
+         */
+        "required": boolean;
+        /**
+          * @default 3
+         */
+        "rows": number;
+        /**
+          * @default ""
+         */
+        "value": string;
+    }
+    interface QThumbnail {
+        /**
+          * @default ""
+         */
+        "alt": string;
+        /**
+          * @default false
+         */
+        "highlighted": boolean;
+        "label"?: string;
+        /**
+          * @default ""
+         */
+        "src": string;
+        /**
+          * @default false
+         */
+        "video": boolean;
     }
 }
+export interface QCarouselCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQCarouselElement;
+}
+export interface QDropdownCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQDropdownElement;
+}
+export interface QInputCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQInputElement;
+}
+export interface QReelCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQReelElement;
+}
+export interface QSidepanelCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQSidepanelElement;
+}
+export interface QStepDiagramItemCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQStepDiagramItemElement;
+}
+export interface QTextareaCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQTextareaElement;
+}
+export interface QThumbnailCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQThumbnailElement;
+}
 declare global {
-    interface HTMLWqButtonElement extends Components.WqButton, HTMLStencilElement {
+    interface HTMLQButtonElement extends Components.QButton, HTMLStencilElement {
     }
-    var HTMLWqButtonElement: {
-        prototype: HTMLWqButtonElement;
-        new (): HTMLWqButtonElement;
+    var HTMLQButtonElement: {
+        prototype: HTMLQButtonElement;
+        new (): HTMLQButtonElement;
+    };
+    interface HTMLQCardElement extends Components.QCard, HTMLStencilElement {
+    }
+    var HTMLQCardElement: {
+        prototype: HTMLQCardElement;
+        new (): HTMLQCardElement;
+    };
+    interface HTMLQCarouselElementEventMap {
+        "qSlideChange": { index: number; element: HTMLElement };
+    }
+    interface HTMLQCarouselElement extends Components.QCarousel, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQCarouselElementEventMap>(type: K, listener: (this: HTMLQCarouselElement, ev: QCarouselCustomEvent<HTMLQCarouselElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQCarouselElementEventMap>(type: K, listener: (this: HTMLQCarouselElement, ev: QCarouselCustomEvent<HTMLQCarouselElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLQCarouselElement: {
+        prototype: HTMLQCarouselElement;
+        new (): HTMLQCarouselElement;
+    };
+    interface HTMLQCircularProgressElement extends Components.QCircularProgress, HTMLStencilElement {
+    }
+    var HTMLQCircularProgressElement: {
+        prototype: HTMLQCircularProgressElement;
+        new (): HTMLQCircularProgressElement;
+    };
+    interface HTMLQDropdownElementEventMap {
+        "qChange": string;
+        "qSelect": Option;
+    }
+    interface HTMLQDropdownElement extends Components.QDropdown, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQDropdownElementEventMap>(type: K, listener: (this: HTMLQDropdownElement, ev: QDropdownCustomEvent<HTMLQDropdownElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQDropdownElementEventMap>(type: K, listener: (this: HTMLQDropdownElement, ev: QDropdownCustomEvent<HTMLQDropdownElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLQDropdownElement: {
+        prototype: HTMLQDropdownElement;
+        new (): HTMLQDropdownElement;
+    };
+    interface HTMLQInputElementEventMap {
+        "qChange": string;
+        "qInput": string;
+        "qBlur": FocusEvent;
+        "qFocus": FocusEvent;
+    }
+    interface HTMLQInputElement extends Components.QInput, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQInputElementEventMap>(type: K, listener: (this: HTMLQInputElement, ev: QInputCustomEvent<HTMLQInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQInputElementEventMap>(type: K, listener: (this: HTMLQInputElement, ev: QInputCustomEvent<HTMLQInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLQInputElement: {
+        prototype: HTMLQInputElement;
+        new (): HTMLQInputElement;
+    };
+    interface HTMLQReelElementEventMap {
+        "qLightboxOpen": void;
+        "qLightboxClose": void;
+    }
+    interface HTMLQReelElement extends Components.QReel, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQReelElementEventMap>(type: K, listener: (this: HTMLQReelElement, ev: QReelCustomEvent<HTMLQReelElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQReelElementEventMap>(type: K, listener: (this: HTMLQReelElement, ev: QReelCustomEvent<HTMLQReelElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLQReelElement: {
+        prototype: HTMLQReelElement;
+        new (): HTMLQReelElement;
+    };
+    interface HTMLQSidepanelElementEventMap {
+        "qClose": void;
+    }
+    interface HTMLQSidepanelElement extends Components.QSidepanel, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQSidepanelElementEventMap>(type: K, listener: (this: HTMLQSidepanelElement, ev: QSidepanelCustomEvent<HTMLQSidepanelElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQSidepanelElementEventMap>(type: K, listener: (this: HTMLQSidepanelElement, ev: QSidepanelCustomEvent<HTMLQSidepanelElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLQSidepanelElement: {
+        prototype: HTMLQSidepanelElement;
+        new (): HTMLQSidepanelElement;
+    };
+    interface HTMLQStepDiagramElement extends Components.QStepDiagram, HTMLStencilElement {
+    }
+    var HTMLQStepDiagramElement: {
+        prototype: HTMLQStepDiagramElement;
+        new (): HTMLQStepDiagramElement;
+    };
+    interface HTMLQStepDiagramItemElementEventMap {
+        "qItemClick": void;
+    }
+    interface HTMLQStepDiagramItemElement extends Components.QStepDiagramItem, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQStepDiagramItemElementEventMap>(type: K, listener: (this: HTMLQStepDiagramItemElement, ev: QStepDiagramItemCustomEvent<HTMLQStepDiagramItemElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQStepDiagramItemElementEventMap>(type: K, listener: (this: HTMLQStepDiagramItemElement, ev: QStepDiagramItemCustomEvent<HTMLQStepDiagramItemElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLQStepDiagramItemElement: {
+        prototype: HTMLQStepDiagramItemElement;
+        new (): HTMLQStepDiagramItemElement;
+    };
+    interface HTMLQTextareaElementEventMap {
+        "qChange": string;
+        "qInput": string;
+        "qBlur": FocusEvent;
+        "qFocus": FocusEvent;
+    }
+    interface HTMLQTextareaElement extends Components.QTextarea, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQTextareaElementEventMap>(type: K, listener: (this: HTMLQTextareaElement, ev: QTextareaCustomEvent<HTMLQTextareaElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQTextareaElementEventMap>(type: K, listener: (this: HTMLQTextareaElement, ev: QTextareaCustomEvent<HTMLQTextareaElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLQTextareaElement: {
+        prototype: HTMLQTextareaElement;
+        new (): HTMLQTextareaElement;
+    };
+    interface HTMLQThumbnailElementEventMap {
+        "qMaximize": { src: string; label?: string; video: boolean; alt: string; triggerEl: HTMLElement };
+    }
+    interface HTMLQThumbnailElement extends Components.QThumbnail, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQThumbnailElementEventMap>(type: K, listener: (this: HTMLQThumbnailElement, ev: QThumbnailCustomEvent<HTMLQThumbnailElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQThumbnailElementEventMap>(type: K, listener: (this: HTMLQThumbnailElement, ev: QThumbnailCustomEvent<HTMLQThumbnailElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLQThumbnailElement: {
+        prototype: HTMLQThumbnailElement;
+        new (): HTMLQThumbnailElement;
     };
     interface HTMLElementTagNameMap {
-        "wq-button": HTMLWqButtonElement;
+        "q-button": HTMLQButtonElement;
+        "q-card": HTMLQCardElement;
+        "q-carousel": HTMLQCarouselElement;
+        "q-circular-progress": HTMLQCircularProgressElement;
+        "q-dropdown": HTMLQDropdownElement;
+        "q-input": HTMLQInputElement;
+        "q-reel": HTMLQReelElement;
+        "q-sidepanel": HTMLQSidepanelElement;
+        "q-step-diagram": HTMLQStepDiagramElement;
+        "q-step-diagram-item": HTMLQStepDiagramItemElement;
+        "q-textarea": HTMLQTextareaElement;
+        "q-thumbnail": HTMLQThumbnailElement;
     }
 }
 declare namespace LocalJSX {
-    interface WqButton {
+    interface QButton {
         /**
-          * The button text label
-          * @default 'Click me'
+          * @default false
          */
+        "disabled"?: boolean;
+        "download"?: string;
+        /**
+          * @default false
+         */
+        "expand"?: boolean;
+        "href"?: string;
+        /**
+          * @default false
+         */
+        "loading"?: boolean;
+        /**
+          * @default 'md'
+         */
+        "size"?: 'sm' | 'md' | 'lg';
+        "target"?: string;
+        /**
+          * @default 'button'
+         */
+        "type"?: 'button' | 'submit' | 'reset';
+        /**
+          * @default 'primary'
+         */
+        "variant"?: 'primary' | 'secondary' | 'success' | 'danger' | 'ghost' | 'text';
+    }
+    interface QCard {
+        /**
+          * @default 'medium'
+         */
+        "elevation"?: 'low' | 'medium' | 'high' | 1 | 2 | 3;
+        /**
+          * @default false
+         */
+        "glass"?: boolean;
+        /**
+          * @default false
+         */
+        "interactive"?: boolean;
+        /**
+          * @default false
+         */
+        "lift"?: boolean;
+    }
+    interface QCarousel {
+        /**
+          * @default "auto"
+         */
+        "itemWidth"?: string;
+        "onQSlideChange"?: (event: QCarouselCustomEvent<{ index: number; element: HTMLElement }>) => void;
+        /**
+          * @default false
+         */
+        "showArrows"?: boolean;
+        /**
+          * @default false
+         */
+        "showIndicators"?: boolean;
+        /**
+          * @default 'start'
+         */
+        "snapAlignment"?: 'start' | 'center' | 'end' | 'none';
+    }
+    interface QCircularProgress {
+        /**
+          * @default false
+         */
+        "indeterminate"?: boolean;
         "label"?: string;
+        /**
+          * @default 0
+         */
+        "value"?: number;
+    }
+    interface QDropdown {
+        /**
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        "label"?: string;
+        /**
+          * The name of the element, used when submitting an HTML form.
+         */
+        "name"?: string;
+        "onQChange"?: (event: QDropdownCustomEvent<string>) => void;
+        "onQSelect"?: (event: QDropdownCustomEvent<Option>) => void;
+        /**
+          * @default []
+         */
+        "options"?: Option[] | string;
+        /**
+          * @default "Select an option..."
+         */
+        "placeholder"?: string;
+        /**
+          * @default ""
+         */
+        "value"?: string;
+    }
+    interface QInput {
+        /**
+          * @default false
+         */
+        "clearable"?: boolean;
+        /**
+          * @default false
+         */
+        "disabled"?: boolean;
+        "error"?: string;
+        "errorMessage"?: string;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        "label"?: string;
+        /**
+          * The name of the element, used when submitting an HTML form.
+         */
+        "name"?: string;
+        "onQBlur"?: (event: QInputCustomEvent<FocusEvent>) => void;
+        "onQChange"?: (event: QInputCustomEvent<string>) => void;
+        "onQFocus"?: (event: QInputCustomEvent<FocusEvent>) => void;
+        "onQInput"?: (event: QInputCustomEvent<string>) => void;
+        /**
+          * @default ""
+         */
+        "placeholder"?: string;
+        /**
+          * @default false
+         */
+        "required"?: boolean;
+        /**
+          * @default 'text'
+         */
+        "type"?: 'text' | 'password' | 'email' | 'number' | 'url' | 'search';
+        /**
+          * @default ""
+         */
+        "value"?: string;
+    }
+    interface QReel {
+        /**
+          * @default 'grid'
+         */
+        "layout"?: 'grid' | 'carousel';
+        /**
+          * @default true
+         */
+        "lightbox"?: boolean;
+        "onQLightboxClose"?: (event: QReelCustomEvent<void>) => void;
+        "onQLightboxOpen"?: (event: QReelCustomEvent<void>) => void;
+    }
+    interface QSidepanel {
+        "onQClose"?: (event: QSidepanelCustomEvent<void>) => void;
+        /**
+          * @default false
+         */
+        "open"?: boolean;
+        /**
+          * @default "320px"
+         */
+        "panelSize"?: string;
+        /**
+          * @default 'right'
+         */
+        "side"?: 'left' | 'right' | 'top' | 'bottom';
+    }
+    interface QStepDiagram {
+        /**
+          * @default 'vertical'
+         */
+        "layout"?: 'vertical' | 'horizontal';
+    }
+    interface QStepDiagramItem {
+        /**
+          * @default 'vertical'
+         */
+        "layout"?: 'vertical' | 'horizontal';
+        /**
+          * @default 'solid'
+         */
+        "lineStyle"?: 'solid' | 'dashed' | 'dotted' | 'none';
+        "onQItemClick"?: (event: QStepDiagramItemCustomEvent<void>) => void;
+        /**
+          * @default 'completed'
+         */
+        "status"?: 'pending' | 'active' | 'completed' | 'success' | 'warning' | 'danger';
+    }
+    interface QTextarea {
+        /**
+          * @default true
+         */
+        "autoGrow"?: boolean;
+        /**
+          * @default false
+         */
+        "disabled"?: boolean;
+        "error"?: string;
+        "errorMessage"?: string;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        "label"?: string;
+        /**
+          * The name of the element, used when submitting an HTML form.
+         */
+        "name"?: string;
+        "onQBlur"?: (event: QTextareaCustomEvent<FocusEvent>) => void;
+        "onQChange"?: (event: QTextareaCustomEvent<string>) => void;
+        "onQFocus"?: (event: QTextareaCustomEvent<FocusEvent>) => void;
+        "onQInput"?: (event: QTextareaCustomEvent<string>) => void;
+        /**
+          * @default ""
+         */
+        "placeholder"?: string;
+        /**
+          * @default false
+         */
+        "required"?: boolean;
+        /**
+          * @default 3
+         */
+        "rows"?: number;
+        /**
+          * @default ""
+         */
+        "value"?: string;
+    }
+    interface QThumbnail {
+        /**
+          * @default ""
+         */
+        "alt"?: string;
+        /**
+          * @default false
+         */
+        "highlighted"?: boolean;
+        "label"?: string;
+        "onQMaximize"?: (event: QThumbnailCustomEvent<{ src: string; label?: string; video: boolean; alt: string; triggerEl: HTMLElement }>) => void;
+        /**
+          * @default ""
+         */
+        "src"?: string;
+        /**
+          * @default false
+         */
+        "video"?: boolean;
     }
 
-    interface WqButtonAttributes {
+    interface QButtonAttributes {
+        "variant": 'primary' | 'secondary' | 'success' | 'danger' | 'ghost' | 'text';
+        "size": 'sm' | 'md' | 'lg';
+        "disabled": boolean;
+        "loading": boolean;
+        "type": 'button' | 'submit' | 'reset';
+        "expand": boolean;
+        "href": string;
+        "target": string;
+        "download": string;
+    }
+    interface QCardAttributes {
+        "elevation": string;
+        "interactive": boolean;
+        "glass": boolean;
+        "lift": boolean;
+    }
+    interface QCarouselAttributes {
+        "snapAlignment": 'start' | 'center' | 'end' | 'none';
+        "showArrows": boolean;
+        "showIndicators": boolean;
+        "itemWidth": string;
+    }
+    interface QCircularProgressAttributes {
+        "value": number;
         "label": string;
+        "indeterminate": boolean;
+    }
+    interface QDropdownAttributes {
+        "value": string;
+        "label": string;
+        "placeholder": string;
+        "options": Option[] | string;
+        "disabled": boolean;
+    }
+    interface QInputAttributes {
+        "value": string;
+        "type": 'text' | 'password' | 'email' | 'number' | 'url' | 'search';
+        "placeholder": string;
+        "label": string;
+        "disabled": boolean;
+        "required": boolean;
+        "error": string;
+        "errorMessage": string;
+        "clearable": boolean;
+    }
+    interface QReelAttributes {
+        "layout": 'grid' | 'carousel';
+        "lightbox": boolean;
+    }
+    interface QSidepanelAttributes {
+        "open": boolean;
+        "side": 'left' | 'right' | 'top' | 'bottom';
+        "panelSize": string;
+    }
+    interface QStepDiagramAttributes {
+        "layout": 'vertical' | 'horizontal';
+    }
+    interface QStepDiagramItemAttributes {
+        "status": 'pending' | 'active' | 'completed' | 'success' | 'warning' | 'danger';
+        "lineStyle": 'solid' | 'dashed' | 'dotted' | 'none';
+        "layout": 'vertical' | 'horizontal';
+    }
+    interface QTextareaAttributes {
+        "value": string;
+        "placeholder": string;
+        "label": string;
+        "rows": number;
+        "autoGrow": boolean;
+        "disabled": boolean;
+        "required": boolean;
+        "error": string;
+        "errorMessage": string;
+    }
+    interface QThumbnailAttributes {
+        "src": string;
+        "video": boolean;
+        "label": string;
+        "alt": string;
+        "highlighted": boolean;
     }
 
     interface IntrinsicElements {
-        "wq-button": Omit<WqButton, keyof WqButtonAttributes> & { [K in keyof WqButton & keyof WqButtonAttributes]?: WqButton[K] } & { [K in keyof WqButton & keyof WqButtonAttributes as `attr:${K}`]?: WqButtonAttributes[K] } & { [K in keyof WqButton & keyof WqButtonAttributes as `prop:${K}`]?: WqButton[K] };
+        "q-button": Omit<QButton, keyof QButtonAttributes> & { [K in keyof QButton & keyof QButtonAttributes]?: QButton[K] } & { [K in keyof QButton & keyof QButtonAttributes as `attr:${K}`]?: QButtonAttributes[K] } & { [K in keyof QButton & keyof QButtonAttributes as `prop:${K}`]?: QButton[K] };
+        "q-card": Omit<QCard, keyof QCardAttributes> & { [K in keyof QCard & keyof QCardAttributes]?: QCard[K] } & { [K in keyof QCard & keyof QCardAttributes as `attr:${K}`]?: QCardAttributes[K] } & { [K in keyof QCard & keyof QCardAttributes as `prop:${K}`]?: QCard[K] };
+        "q-carousel": Omit<QCarousel, keyof QCarouselAttributes> & { [K in keyof QCarousel & keyof QCarouselAttributes]?: QCarousel[K] } & { [K in keyof QCarousel & keyof QCarouselAttributes as `attr:${K}`]?: QCarouselAttributes[K] } & { [K in keyof QCarousel & keyof QCarouselAttributes as `prop:${K}`]?: QCarousel[K] };
+        "q-circular-progress": Omit<QCircularProgress, keyof QCircularProgressAttributes> & { [K in keyof QCircularProgress & keyof QCircularProgressAttributes]?: QCircularProgress[K] } & { [K in keyof QCircularProgress & keyof QCircularProgressAttributes as `attr:${K}`]?: QCircularProgressAttributes[K] } & { [K in keyof QCircularProgress & keyof QCircularProgressAttributes as `prop:${K}`]?: QCircularProgress[K] };
+        "q-dropdown": Omit<QDropdown, keyof QDropdownAttributes> & { [K in keyof QDropdown & keyof QDropdownAttributes]?: QDropdown[K] } & { [K in keyof QDropdown & keyof QDropdownAttributes as `attr:${K}`]?: QDropdownAttributes[K] } & { [K in keyof QDropdown & keyof QDropdownAttributes as `prop:${K}`]?: QDropdown[K] };
+        "q-input": Omit<QInput, keyof QInputAttributes> & { [K in keyof QInput & keyof QInputAttributes]?: QInput[K] } & { [K in keyof QInput & keyof QInputAttributes as `attr:${K}`]?: QInputAttributes[K] } & { [K in keyof QInput & keyof QInputAttributes as `prop:${K}`]?: QInput[K] };
+        "q-reel": Omit<QReel, keyof QReelAttributes> & { [K in keyof QReel & keyof QReelAttributes]?: QReel[K] } & { [K in keyof QReel & keyof QReelAttributes as `attr:${K}`]?: QReelAttributes[K] } & { [K in keyof QReel & keyof QReelAttributes as `prop:${K}`]?: QReel[K] };
+        "q-sidepanel": Omit<QSidepanel, keyof QSidepanelAttributes> & { [K in keyof QSidepanel & keyof QSidepanelAttributes]?: QSidepanel[K] } & { [K in keyof QSidepanel & keyof QSidepanelAttributes as `attr:${K}`]?: QSidepanelAttributes[K] } & { [K in keyof QSidepanel & keyof QSidepanelAttributes as `prop:${K}`]?: QSidepanel[K] };
+        "q-step-diagram": Omit<QStepDiagram, keyof QStepDiagramAttributes> & { [K in keyof QStepDiagram & keyof QStepDiagramAttributes]?: QStepDiagram[K] } & { [K in keyof QStepDiagram & keyof QStepDiagramAttributes as `attr:${K}`]?: QStepDiagramAttributes[K] } & { [K in keyof QStepDiagram & keyof QStepDiagramAttributes as `prop:${K}`]?: QStepDiagram[K] };
+        "q-step-diagram-item": Omit<QStepDiagramItem, keyof QStepDiagramItemAttributes> & { [K in keyof QStepDiagramItem & keyof QStepDiagramItemAttributes]?: QStepDiagramItem[K] } & { [K in keyof QStepDiagramItem & keyof QStepDiagramItemAttributes as `attr:${K}`]?: QStepDiagramItemAttributes[K] } & { [K in keyof QStepDiagramItem & keyof QStepDiagramItemAttributes as `prop:${K}`]?: QStepDiagramItem[K] };
+        "q-textarea": Omit<QTextarea, keyof QTextareaAttributes> & { [K in keyof QTextarea & keyof QTextareaAttributes]?: QTextarea[K] } & { [K in keyof QTextarea & keyof QTextareaAttributes as `attr:${K}`]?: QTextareaAttributes[K] } & { [K in keyof QTextarea & keyof QTextareaAttributes as `prop:${K}`]?: QTextarea[K] };
+        "q-thumbnail": Omit<QThumbnail, keyof QThumbnailAttributes> & { [K in keyof QThumbnail & keyof QThumbnailAttributes]?: QThumbnail[K] } & { [K in keyof QThumbnail & keyof QThumbnailAttributes as `attr:${K}`]?: QThumbnailAttributes[K] } & { [K in keyof QThumbnail & keyof QThumbnailAttributes as `prop:${K}`]?: QThumbnail[K] };
     }
 }
 export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
-            "wq-button": LocalJSX.IntrinsicElements["wq-button"] & JSXBase.HTMLAttributes<HTMLWqButtonElement>;
+            "q-button": LocalJSX.IntrinsicElements["q-button"] & JSXBase.HTMLAttributes<HTMLQButtonElement>;
+            "q-card": LocalJSX.IntrinsicElements["q-card"] & JSXBase.HTMLAttributes<HTMLQCardElement>;
+            "q-carousel": LocalJSX.IntrinsicElements["q-carousel"] & JSXBase.HTMLAttributes<HTMLQCarouselElement>;
+            "q-circular-progress": LocalJSX.IntrinsicElements["q-circular-progress"] & JSXBase.HTMLAttributes<HTMLQCircularProgressElement>;
+            "q-dropdown": LocalJSX.IntrinsicElements["q-dropdown"] & JSXBase.HTMLAttributes<HTMLQDropdownElement>;
+            "q-input": LocalJSX.IntrinsicElements["q-input"] & JSXBase.HTMLAttributes<HTMLQInputElement>;
+            "q-reel": LocalJSX.IntrinsicElements["q-reel"] & JSXBase.HTMLAttributes<HTMLQReelElement>;
+            "q-sidepanel": LocalJSX.IntrinsicElements["q-sidepanel"] & JSXBase.HTMLAttributes<HTMLQSidepanelElement>;
+            "q-step-diagram": LocalJSX.IntrinsicElements["q-step-diagram"] & JSXBase.HTMLAttributes<HTMLQStepDiagramElement>;
+            "q-step-diagram-item": LocalJSX.IntrinsicElements["q-step-diagram-item"] & JSXBase.HTMLAttributes<HTMLQStepDiagramItemElement>;
+            "q-textarea": LocalJSX.IntrinsicElements["q-textarea"] & JSXBase.HTMLAttributes<HTMLQTextareaElement>;
+            "q-thumbnail": LocalJSX.IntrinsicElements["q-thumbnail"] & JSXBase.HTMLAttributes<HTMLQThumbnailElement>;
         }
     }
 }

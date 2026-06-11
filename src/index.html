@@ -1,17 +1,370 @@
 <!DOCTYPE html>
-<html dir="ltr" lang="en">
+<html dir="ltr" lang="en" data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
-    <title>Stencil Component Starter</title>
+    <title>WebQuark Component Sandbox & Verification Hub</title>
 
-    <script type="module" src="/build/temp-stencil.esm.js"></script>
-    <script nomodule src="/build/temp-stencil.js"></script>
+    <script type="module" src="/build/webquark.esm.js"></script>
+    <script nomodule src="/build/webquark.js"></script>
+    <link rel="stylesheet" href="/build/webquark.css" />
+
+    <style>
+      body {
+        margin: 0;
+        background-color: var(--q-bg-base);
+        color: var(--q-fg-base);
+        font-family: var(--q-font-family);
+        transition: background-color var(--q-transition-fast), color var(--q-transition-fast);
+        padding: 40px 20px;
+        box-sizing: border-box;
+      }
+
+      .sandbox-container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .sandbox-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: var(--q-border);
+        padding-bottom: 20px;
+        margin-bottom: 40px;
+      }
+
+      .sandbox-title h1 {
+        margin: 0;
+        font-size: 2.25rem;
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        background: linear-gradient(135deg, var(--q-color-primary), var(--q-color-primary-hover));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .sandbox-title p {
+        margin: 4px 0 0 0;
+        color: var(--q-color-secondary);
+        font-size: var(--q-font-size-sm);
+      }
+
+      .theme-toggle-btn {
+        background: var(--q-bg-surface-2);
+        border: var(--q-border);
+        color: var(--q-fg-base);
+        padding: 10px 18px;
+        border-radius: var(--q-radius-md);
+        font-weight: var(--q-font-weight-bold);
+        cursor: pointer;
+        outline: none;
+        transition: var(--q-btn-transition);
+      }
+
+      .theme-toggle-btn:hover {
+        background: var(--q-btn-hover-overlay);
+        border-color: var(--q-color-primary);
+      }
+
+      .component-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+
+      @media (min-width: 900px) {
+        .component-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      .component-section {
+        background: var(--q-bg-surface-1);
+        border: var(--q-border);
+        border-radius: var(--q-radius-lg);
+        padding: 30px;
+        box-sizing: border-box;
+        min-width: 0; /* Prevents grid cells from stretching under carousel flex overflow */
+      }
+
+      .component-section.span-2 {
+        grid-column: span 1;
+      }
+
+      @media (min-width: 900px) {
+        .component-section.span-2 {
+          grid-column: span 2;
+        }
+      }
+
+      .section-header {
+        margin-bottom: 24px;
+        border-bottom: 1px solid var(--q-border-color);
+        padding-bottom: 12px;
+      }
+
+      .section-header h2 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+      }
+
+      .section-header p {
+        margin: 4px 0 0 0;
+        font-size: 0.825rem;
+        color: var(--q-color-secondary);
+      }
+
+      .demo-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .demo-label {
+        font-size: var(--q-font-size-sm);
+        color: var(--q-color-secondary);
+        width: 100%;
+        margin-bottom: 6px;
+        font-weight: var(--q-font-weight-bold);
+      }
+    </style>
   </head>
   <body>
-    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; gap: 20px; background-color: var(--wq-bg-base); color: var(--wq-fg-base); font-family: var(--wq-font-family);">
-      <h1>WebQuark Component Sandbox</h1>
-      <wq-button label="Atomic Particle"></wq-button>
+
+    <div class="sandbox-container">
+      
+      <!-- HEADER -->
+      <header class="sandbox-header">
+        <div class="sandbox-title">
+          <h1>WebQuark Component Sandbox</h1>
+          <p>Local verification hub for Unreal Engine OSR and SSR compatible elements</p>
+        </div>
+        <button id="themeToggle" class="theme-toggle-btn" type="button">
+          Toggle Theme (Dark / Light)
+        </button>
+      </header>
+
+      <!-- COMPONENTS SANDBOX GRID -->
+      <main class="component-grid">
+
+        <!-- 1. Q-CARD -->
+        <section class="component-section">
+          <div class="section-header">
+            <h2>q-card</h2>
+            <p>UI Card Containers with shadows and interactive dynamics</p>
+          </div>
+          <div class="demo-row">
+            <q-card elevation="low">Low Elevation Card</q-card>
+            <q-card elevation="medium">Medium Elevation Card (Default)</q-card>
+            <q-card elevation="high" interactive="true">
+              <span slot="header">Interactive Card</span>
+              High elevation and lifts on hover/focus (tab to click).
+            </q-card>
+          </div>
+        </section>
+
+        <!-- 2. Q-BUTTON -->
+        <section class="component-section">
+          <div class="section-header">
+            <h2>q-button</h2>
+            <p>Premium customizable triggers (Buttons & Anchors)</p>
+          </div>
+          <div class="demo-row">
+            <q-button variant="primary">Primary</q-button>
+            <q-button variant="secondary">Secondary</q-button>
+            <q-button variant="ghost">Ghost</q-button>
+            <q-button variant="text">Text Button</q-button>
+          </div>
+          <div class="demo-row">
+            <q-button variant="primary" loading="true">Loading</q-button>
+            <q-button variant="danger" disabled="true">Disabled</q-button>
+            <q-button variant="success" href="https://google.com" target="_blank">Anchor Link</q-button>
+          </div>
+        </section>
+
+        <!-- 3. Q-CIRCULAR-PROGRESS -->
+        <section class="component-section">
+          <div class="section-header">
+            <h2>q-circular-progress</h2>
+            <p>SVG Progress indicator with unrotated label text</p>
+          </div>
+          <div style="display: flex; gap: 32px; align-items: center; justify-content: center;">
+            <q-circular-progress value="35"></q-circular-progress>
+            <q-circular-progress value="75" label="Done"></q-circular-progress>
+            <q-circular-progress indeterminate="true"></q-circular-progress>
+          </div>
+        </section>
+
+        <!-- 4. FORM FIELD ELEMENTS (Q-INPUT & Q-TEXTAREA) -->
+        <section class="component-section">
+          <div class="section-header">
+            <h2>q-input & q-textarea</h2>
+            <p>Form controls with floating labels and unique ID links</p>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <q-input label="Username" placeholder="Enter username" clearable="true"></q-input>
+            <q-input label="Password" type="password" placeholder="Enter password"></q-input>
+            <q-input label="Email" error="Please enter a valid email address" value="invalid-email"></q-input>
+            <q-textarea label="Comments" placeholder="Type comments here..." rows="3"></q-textarea>
+          </div>
+        </section>
+
+        <!-- 5. Q-DROPDOWN -->
+        <section class="component-section">
+          <div class="section-header">
+            <h2>q-dropdown</h2>
+            <p>Custom overlay selection menu (Unreal OSR safe dropdown)</p>
+          </div>
+          <div style="min-height: 200px;">
+            <q-dropdown id="demoDropdown" label="User Role"></q-dropdown>
+          </div>
+        </section>
+
+        <!-- 6. Q-SIDEPANEL -->
+        <section class="component-section">
+          <div class="section-header">
+            <h2>q-sidepanel</h2>
+            <p>Edge slide-out drawer sheets with focus traps</p>
+          </div>
+          <div class="demo-row">
+            <q-button id="openSidepanel" variant="secondary">Open Sidepanel Drawer</q-button>
+          </div>
+          <q-sidepanel id="sidepanel" side="right" panel-size="360px">
+            <span slot="header">Settings Drawer</span>
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              <p>Configure dashboard preferences here.</p>
+              <q-input label="Display Name"></q-input>
+              <q-button id="closeSidepanel" variant="primary">Save Configuration</q-button>
+            </div>
+          </q-sidepanel>
+        </section>
+
+        <!-- 7. Q-STEP-DIAGRAM -->
+        <section class="component-section span-2">
+          <div class="section-header">
+            <h2>q-step-diagram</h2>
+            <p>Vertical or horizontal timeline progress diagrams</p>
+          </div>
+          <div class="demo-row">
+            <div class="demo-label">Vertical Wizard Flow:</div>
+            <q-step-diagram layout="vertical" style="width: 100%;">
+              <q-step-diagram-item status="completed">
+                <span slot="title">Step 1: Code Specifications</span>
+                Establish architectural guidelines.
+              </q-step-diagram-item>
+              <q-step-diagram-item status="active">
+                <span slot="title">Step 2: Verification Review</span>
+                Obtain subagent audits.
+              </q-step-diagram-item>
+              <q-step-diagram-item status="pending" line-style="dashed">
+                <span slot="title">Step 3: Component Implementation</span>
+                Transpile files and proxies.
+              </q-step-diagram-item>
+            </q-step-diagram>
+          </div>
+        </section>
+
+        <!-- 8. Q-REEL & Q-THUMBNAIL -->
+        <section class="component-section span-2">
+          <div class="section-header">
+            <h2>q-reel & q-thumbnail</h2>
+            <p>Grid or horizontal media carousel with built-in lightbox viewer</p>
+          </div>
+          <q-reel layout="grid">
+            <q-thumbnail 
+              src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=350" 
+              label="Cyberspace Grid"
+              alt="Grid display representation"
+            ></q-thumbnail>
+            <q-thumbnail 
+              src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=350" 
+              label="Synthetics Laboratory"
+              alt="Lab mock representation"
+              highlighted="true"
+            ></q-thumbnail>
+            <q-thumbnail 
+              src="https://images.unsplash.com/photo-1614064641938-3bbee52942c7?q=80&w=350" 
+              label="Cyber Threat Map"
+              alt="Map mock representation"
+              video="true"
+            ></q-thumbnail>
+          </q-reel>
+        </section>
+
+        <!-- 9. Q-CAROUSEL -->
+        <section class="component-section span-2">
+          <div class="section-header">
+            <h2>q-carousel</h2>
+            <p>Horizontal scrolling cards viewport with snapping observer</p>
+          </div>
+          <q-carousel show-arrows="true" show-indicators="true" item-width="280px">
+            <q-card elevation="medium" interactive="true">
+              <span slot="header">Slide Card 1</span>
+              Horizontal touch swipe and slide indicators.
+            </q-card>
+            <q-card elevation="medium" interactive="true">
+              <span slot="header">Slide Card 2</span>
+              Horizontal touch swipe and slide indicators.
+            </q-card>
+            <q-card elevation="medium" interactive="true">
+              <span slot="header">Slide Card 3</span>
+              Horizontal touch swipe and slide indicators.
+            </q-card>
+            <q-card elevation="medium" interactive="true">
+              <span slot="header">Slide Card 4</span>
+              Horizontal touch swipe and slide indicators.
+            </q-card>
+          </q-carousel>
+        </section>
+
+      </main>
     </div>
+
+    <!-- CLIENT LOGIC -->
+    <script>
+      // 1. Theme Toggle logic
+      const toggle = document.getElementById('themeToggle');
+      toggle.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', nextTheme);
+      });
+
+      // 2. Dropdown dynamic mapping
+      const dropdown = document.getElementById('demoDropdown');
+      if (dropdown) {
+        dropdown.options = [
+          { label: 'Administrator', value: 'admin' },
+          { label: 'Coordinator', value: 'coord' },
+          { label: 'Operator', value: 'operator' },
+          { label: 'Guest User', value: 'guest' }
+        ];
+        dropdown.value = 'coord';
+        dropdown.addEventListener('qChange', (e) => {
+          console.log('Dropdown changed to value:', e.detail);
+        });
+      }
+
+      // 3. Sidepanel Drawer dynamic triggers
+      const sidepanel = document.getElementById('sidepanel');
+      const openBtn = document.getElementById('openSidepanel');
+      const closeBtn = document.getElementById('closeSidepanel');
+
+      openBtn.addEventListener('click', () => {
+        sidepanel.open = true;
+      });
+
+      closeBtn.addEventListener('click', () => {
+        sidepanel.open = false;
+      });
+
+      sidepanel.addEventListener('qClose', () => {
+        sidepanel.open = false;
+      });
+    </script>
   </body>
 </html>
