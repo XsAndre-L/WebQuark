@@ -1,0 +1,19 @@
+# q-tooltip
+
+
+
+<!-- Auto Generated Below -->
+
+
+## Properties
+
+| Property   | Attribute  | Description                                                                                                     | Type                                     | Default     |
+| ---------- | ---------- | --------------------------------------------------------------------------------------------------------------- | ---------------------------------------- | ----------- |
+| `content`  | `content`  | The text content to display inside the tooltip.                                                                 | `string`                                 | `undefined` |
+| `delay`    | `delay`    | The delay in milliseconds before the tooltip shows up.                                                          | `number`                                 | `200`       |
+| `position` | `position` | The placement position of the tooltip relative to its trigger parent. Options: 'top', 'bottom', 'left', 'right' | `"bottom" \| "left" \| "right" \| "top"` | `'top'`     |
+
+
+----------------------------------------------
+
+*Built with [StencilJS](https://stenciljs.com/)*

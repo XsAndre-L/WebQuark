@@ -7,13 +7,14 @@
 
 ## Properties
 
-| Property      | Attribute     | Description | Type                 | Default                 |
-| ------------- | ------------- | ----------- | -------------------- | ----------------------- |
-| `disabled`    | `disabled`    |             | `boolean`            | `false`                 |
-| `label`       | `label`       |             | `string`             | `undefined`             |
-| `options`     | `options`     |             | `Option[] \| string` | `[]`                    |
-| `placeholder` | `placeholder` |             | `string`             | `"Select an option..."` |
-| `value`       | `value`       |             | `string`             | `""`                    |
+| Property      | Attribute     | Description | Type                   | Default                 |
+| ------------- | ------------- | ----------- | ---------------------- | ----------------------- |
+| `disabled`    | `disabled`    |             | `boolean`              | `false`                 |
+| `label`       | `label`       |             | `string`               | `undefined`             |
+| `options`     | `options`     |             | `Option[] \| string`   | `[]`                    |
+| `placeholder` | `placeholder` |             | `string`               | `"Select an option..."` |
+| `size`        | `size`        |             | `"lg" \| "md" \| "sm"` | `'md'`                  |
+| `value`       | `value`       |             | `string`               | `""`                    |
 
 
 ## Events

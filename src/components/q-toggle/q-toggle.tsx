@@ -12,6 +12,7 @@ export class QToggle {
   @AttachInternals() internals!: ElementInternals;
 
   @Prop({ mutable: true, reflect: true }) checked: boolean = false;
+  @Prop() size: 'sm' | 'md' | 'lg' = 'md';
   @Prop() type: 'switch' | 'checkbox' = 'switch';
   @Prop() label?: string;
   @Prop({ reflect: true }) disabled: boolean = false;
@@ -101,6 +102,7 @@ export class QToggle {
             'is-required': this.required,
             'has-error': hasError,
             [`type-${this.type}`]: true,
+            [`size-${this.size}`]: true,
           }}
           role="checkbox"
           aria-checked={this.checked ? 'true' : 'false'}

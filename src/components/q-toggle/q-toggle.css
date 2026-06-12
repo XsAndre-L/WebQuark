@@ -164,3 +164,49 @@
   color: var(--q-toggle-error-color);
   margin-top: 4px;
 }
+
+/* Sizing Overrides */
+.toggle-wrapper.size-sm {
+  gap: 8px;
+  --q-toggle-switch-width: 32px;
+  --q-toggle-switch-height: 18px;
+  --q-toggle-thumb-size: 12px;
+  --q-toggle-checkbox-size: 16px;
+}
+.toggle-wrapper.size-sm .toggle-label-text {
+  font-size: var(--q-font-size-sm, 0.875rem);
+}
+.toggle-wrapper.size-sm .default-check-icon {
+  width: 10px;
+  height: 10px;
+}
+
+.toggle-wrapper.size-md {
+  gap: 12px;
+  --q-toggle-switch-width: 44px;
+  --q-toggle-switch-height: 24px;
+  --q-toggle-thumb-size: 18px;
+  --q-toggle-checkbox-size: 20px;
+}
+.toggle-wrapper.size-md .toggle-label-text {
+  font-size: 0.95rem;
+}
+.toggle-wrapper.size-md .default-check-icon {
+  width: 12px;
+  height: 12px;
+}
+
+.toggle-wrapper.size-lg {
+  gap: 16px;
+  --q-toggle-switch-width: 56px;
+  --q-toggle-switch-height: 30px;
+  --q-toggle-thumb-size: 24px;
+  --q-toggle-checkbox-size: 24px;
+}
+.toggle-wrapper.size-lg .toggle-label-text {
+  font-size: var(--q-font-size-lg, 1.125rem);
+}
+.toggle-wrapper.size-lg .default-check-icon {
+  width: 16px;
+  height: 16px;
+}

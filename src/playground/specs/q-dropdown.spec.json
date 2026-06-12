@@ -3,6 +3,7 @@
   "tag": "q-dropdown",
   "props": {
     "label": { "type": "string", "default": "Environment Server", "desc": "Floating form label caption" },
+    "size": { "type": "select", "options": ["sm", "md", "lg"], "default": "md", "desc": "Dropdown and trigger font display sizing" },
     "placeholder": { "type": "string", "default": "Select profile...", "desc": "Text displayed when value is empty" },
     "value": { "type": "string", "default": "staging", "desc": "Active selected options key" },
     "disabled": { "type": "boolean", "default": false, "desc": "Locks dropdown menu and styles disabled look" }
@@ -15,7 +16,9 @@
     { "label": "Disaster Recovery Vault", "value": "dr" }
   ],
   "variants": [
-    { "name": "Standard Dropdown", "props": { "label": "Server Instance", "value": "staging" } },
+    { "name": "Standard Dropdown", "props": { "label": "Server Instance", "value": "staging", "size": "md" } },
+    { "name": "Small Dropdown", "props": { "label": "Small Server", "size": "sm", "value": "staging" } },
+    { "name": "Large Dropdown", "props": { "label": "Large Server", "size": "lg", "value": "staging" } },
     { "name": "Without Title Label", "props": { "placeholder": "Select profile..." } },
     { "name": "Disabled Selection state", "props": { "label": "Immutable Setting", "disabled": true, "value": "prod" } }
   ],

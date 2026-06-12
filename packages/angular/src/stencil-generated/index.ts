@@ -7,6 +7,7 @@ export const DIRECTIVES = [
   d.QCarousel,
   d.QCircularProgress,
   d.QDropdown,
+  d.QIcon,
   d.QInput,
   d.QReel,
   d.QScrollable,
@@ -15,5 +16,6 @@ export const DIRECTIVES = [
   d.QStepDiagramItem,
   d.QTextarea,
   d.QThumbnail,
-  d.QToggle
+  d.QToggle,
+  d.QTooltip
 ];
