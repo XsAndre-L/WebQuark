@@ -14,7 +14,7 @@
 /* Header Label Typography */
 .input-label {
   font-family: var(--q-font-family, inherit);
-  font-size: var(--q-font-size-sm, 0.875rem);
+  font-size: var(--q-font-size-sm, 0.7rem);
   font-weight: var(--q-font-weight-bold, 700);
   color: var(--q-fg-muted, #9ca3af);
   margin-bottom: 6px;
@@ -94,7 +94,7 @@
 
 .error-msg {
   font-family: var(--q-font-family, inherit);
-  font-size: var(--q-font-size-sm, 0.875rem);
+  font-size: var(--q-font-size-sm, 0.7rem);
   font-weight: var(--q-font-weight-normal, 400);
   color: var(--q-color-danger, #ef4444);
   margin-top: 6px;
@@ -163,7 +163,7 @@ input.input-box[type="color"]::-moz-color-swatch {
 }
 .input-wrapper.size-sm .input-box {
   padding: 6px 10px;
-  font-size: var(--q-font-size-sm, 0.875rem);
+  font-size: var(--q-font-size-sm, 0.7rem);
 }
 .input-wrapper.size-sm .prefix-container,
 .input-wrapper.size-sm .suffix-container {
@@ -179,7 +179,7 @@ input.input-box[type="color"]::-moz-color-swatch {
 }
 
 .input-wrapper.size-md .input-label {
-  font-size: var(--q-font-size-sm, 0.875rem);
+  font-size: var(--q-font-size-sm, 0.7rem);
 }
 .input-wrapper.size-md .input-box {
   padding: 10px 14px;

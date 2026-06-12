@@ -206,7 +206,7 @@
 /* Content Text Typographies */
 .step-title {
   font-family: var(--q-font-family, inherit);
-  font-size: var(--q-font-size-sm, 0.875rem);
+  font-size: var(--q-font-size-sm, 0.7rem);
   font-weight: var(--q-font-weight-bold, 700);
   color: var(--q-color-primary, #60a5fa);
   margin-bottom: 4px;

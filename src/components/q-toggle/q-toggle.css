@@ -174,7 +174,7 @@
   --q-toggle-checkbox-size: 16px;
 }
 .toggle-wrapper.size-sm .toggle-label-text {
-  font-size: var(--q-font-size-sm, 0.875rem);
+  font-size: var(--q-font-size-sm, 0.7rem);
 }
 .toggle-wrapper.size-sm .default-check-icon {
   width: 10px;
