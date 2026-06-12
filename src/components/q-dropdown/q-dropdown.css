@@ -34,14 +34,15 @@
   box-sizing: border-box;
   outline: none;
   cursor: pointer;
-  
+
   color: var(--q-fg-base, #f9fafb);
   font-family: var(--q-font-family, inherit);
   font-size: var(--q-font-size-base, 1rem);
   font-weight: var(--q-font-weight-normal, 400);
-  
-  transition: border-color var(--q-transition-fast, 150ms ease), 
-              box-shadow var(--q-transition-fast, 150ms ease);
+
+  transition:
+    border-color var(--q-transition-fast, 150ms ease),
+    box-shadow var(--q-transition-fast, 150ms ease);
 }
 
 .dropdown-trigger:focus-visible {
@@ -82,11 +83,11 @@
   padding: 4px 0;
   list-style: none;
   z-index: 1000;
-  
+
   background: var(--q-dropdown-menu-bg, var(--q-bg-surface-3, #4b5563));
   border: var(--q-dropdown-border, var(--q-border, 1px solid var(--q-border-color, #4b5563)));
   border-radius: var(--q-dropdown-radius, var(--q-radius-md, 8px));
-  box-shadow: var(--q-shadow-medium, 0 8px 16px rgba(0,0,0,0.3));
+  box-shadow: var(--q-shadow-medium, 0 8px 16px rgba(0, 0, 0, 0.3));
   box-sizing: border-box;
 }
 
@@ -95,14 +96,15 @@
   padding: 10px 14px;
   cursor: pointer;
   box-sizing: border-box;
-  
+
   font-family: var(--q-font-family, inherit);
   font-size: var(--q-font-size-base, 1rem);
   font-weight: var(--q-font-weight-normal, 400);
   color: var(--q-fg-base, #f9fafb);
-  
-  transition: background var(--q-transition-fast, 150ms ease), 
-              color var(--q-transition-fast, 150ms ease);
+
+  transition:
+    background var(--q-transition-fast, 150ms ease),
+    color var(--q-transition-fast, 150ms ease);
 }
 
 /* Hover & Selected states mapping */
@@ -110,7 +112,7 @@
 .menu-item.is-focused,
 .menu-item:focus {
   background: var(--q-color-primary, #60a5fa);
-  color: var(--q-bg-base, #111827); /* Contrast text color */
+  color: var(--q-fg-base, #f9fafb); /* Contrast text color */
   outline: none;
 }
 
