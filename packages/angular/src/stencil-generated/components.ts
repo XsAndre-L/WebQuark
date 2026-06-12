@@ -18,20 +18,21 @@ import { defineCustomElement as defineQScrollable } from '@webquark/core/compone
 import { defineCustomElement as defineQSidepanel } from '@webquark/core/components/q-sidepanel.js';
 import { defineCustomElement as defineQStepDiagram } from '@webquark/core/components/q-step-diagram.js';
 import { defineCustomElement as defineQStepDiagramItem } from '@webquark/core/components/q-step-diagram-item.js';
+import { defineCustomElement as defineQSyntaxBox } from '@webquark/core/components/q-syntax-box.js';
 import { defineCustomElement as defineQTextarea } from '@webquark/core/components/q-textarea.js';
 import { defineCustomElement as defineQThumbnail } from '@webquark/core/components/q-thumbnail.js';
 import { defineCustomElement as defineQToggle } from '@webquark/core/components/q-toggle.js';
 import { defineCustomElement as defineQTooltip } from '@webquark/core/components/q-tooltip.js';
 @ProxyCmp({
   defineCustomElementFn: defineQButton,
-  inputs: ['disabled', 'download', 'expand', 'href', 'loading', 'size', 'target', 'type', 'variant']
+  inputs: ['disabled', 'download', 'expand', 'href', 'iconOnly', 'loading', 'size', 'target', 'type', 'variant']
 })
 @Component({
   selector: 'q-button',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'download', 'expand', 'href', 'loading', 'size', 'target', 'type', 'variant'],
+  inputs: ['disabled', 'download', 'expand', 'href', 'iconOnly', 'loading', 'size', 'target', 'type', 'variant'],
 })
 export class QButton {
   protected el: HTMLQButtonElement;
@@ -285,19 +286,20 @@ export declare interface QScrollable extends Components.QScrollable {
 
 @ProxyCmp({
   defineCustomElementFn: defineQSidepanel,
-  inputs: ['open', 'panelSize', 'side']
+  inputs: ['accordion', 'expanded', 'items', 'mode', 'open', 'panelSize', 'side', 'value', 'variant']
 })
 @Component({
   selector: 'q-sidepanel',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['open', 'panelSize', 'side'],
-  outputs: ['qClose'],
+  inputs: ['accordion', 'expanded', 'items', 'mode', 'open', 'panelSize', 'side', 'value', 'variant'],
+  outputs: ['qClose', 'qSelect'],
 })
 export class QSidepanel {
   protected el: HTMLQSidepanelElement;
   @Output() qClose = new EventEmitter<QSidepanelCustomEvent<void>>();
+  @Output() qSelect = new EventEmitter<QSidepanelCustomEvent<{ value: string; label: string; item: IQSidepanelSidepanelItem }>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -306,10 +308,17 @@ export class QSidepanel {
 
 
 import type { QSidepanelCustomEvent } from '@webquark/core/components';
+import type { SidepanelItem as IQSidepanelSidepanelItem } from '@webquark/core/components';
 
 export declare interface QSidepanel extends Components.QSidepanel {
-
+  /**
+   * Fires when the drawer is closed (drawer mode)
+   */
   qClose: EventEmitter<QSidepanelCustomEvent<void>>;
+  /**
+   * Fires when a leaf navigation item is clicked (nav mode)
+   */
+  qSelect: EventEmitter<QSidepanelCustomEvent<{ value: string; label: string; item: IQSidepanelSidepanelItem }>>;
 }
 
 
@@ -364,6 +373,30 @@ export declare interface QStepDiagramItem extends Components.QStepDiagramItem {
 
   qItemClick: EventEmitter<QStepDiagramItemCustomEvent<void>>;
 }
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineQSyntaxBox,
+  inputs: ['code', 'copyable', 'heading', 'height', 'language', 'variant'],
+  methods: ['scrollToBottom']
+})
+@Component({
+  selector: 'q-syntax-box',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['code', 'copyable', 'heading', 'height', 'language', 'variant'],
+})
+export class QSyntaxBox {
+  protected el: HTMLQSyntaxBoxElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface QSyntaxBox extends Components.QSyntaxBox {}
 
 
 @ProxyCmp({

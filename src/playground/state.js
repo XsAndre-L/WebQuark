@@ -3,6 +3,7 @@
 // ==========================================================================
 
 let activeEffect = null;
+const registeredEffects = new Set();
 
 export function signal(initialValue) {
   let value = initialValue;
@@ -19,7 +20,7 @@ export function signal(initialValue) {
     if (value !== newValue) {
       value = newValue;
       // Copy and run all effects to prevent issues if effects modify subscribers
-      [...subscribers].forEach(run => run());
+      [...subscribers].filter(fn => registeredEffects.has(fn)).forEach(run => run());
     }
   };
 
@@ -39,11 +40,9 @@ export function effect(fn) {
       activeEffect = null;
     }
   };
+  registeredEffects.add(run);
   run();
-  return () => {
-    // Basic cleanup: remove this effect from all subscriptions
-    // In our lightweight implementation, we just return a no-op or let the garbage collector clean it up if needed.
-  };
+  return () => registeredEffects.delete(run);
 }
 
 export function computed(fn) {
@@ -57,6 +56,8 @@ export function computed(fn) {
 // ==========================================================================
 // PLAYGROUND SHARED REACTIVE STATE
 // ==========================================================================
+
+const SPEC_BASE_URL = '/playground/specs';
 
 export const activeComponent = signal('q-button');
 export const activeTab = signal('sandbox'); // 'sandbox', 'variants', 'edgecases'
@@ -76,7 +77,7 @@ export async function fetchComponentSpec(tag) {
   if (registry[tag]) return;
 
   try {
-    const res = await fetch(`/playground/specs/${tag}.spec.json`);
+    const res = await fetch(`${SPEC_BASE_URL}/${tag}.spec.json`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const spec = await res.json();
 
@@ -113,4 +114,59 @@ export function updateKnobValue(type, name, value) {
 
   // Trigger signal change to update all subscribers
   componentRegistry.set(registry);
+}
+
+export function serializeComponentCode(tag, props, slots, appendScript = null) {
+  let code = `<${tag}`;
+
+  if (props) {
+    Object.keys(props).forEach(k => {
+      const p = props[k];
+      const val = (p && typeof p === 'object' && 'currentValue' in p) ? p.currentValue : p;
+      if (val === true) {
+        code += ` ${k}`;
+      } else if (val !== undefined && val !== null && val !== '') {
+        code += ` ${k}="${val}"`;
+      }
+    });
+  }
+
+  code += '>';
+
+  let slotContent = '';
+  if (slots) {
+    if (typeof slots === 'string') {
+      if (slots) {
+        slotContent += `\n  ${slots.replace(/\n/g, '\n  ')}\n`;
+      }
+    } else {
+      Object.keys(slots).forEach(slotName => {
+        const s = slots[slotName];
+        const val = (s && typeof s === 'object' && 'currentValue' in s) ? s.currentValue : s;
+        if (val) {
+          if (slotName === 'default') {
+            slotContent += `\n  ${val.replace(/\n/g, '\n  ')}\n`;
+          } else {
+            if (typeof val === 'string' && val.includes(`slot="${slotName}"`)) {
+              slotContent += `\n  ${val.replace(/\n/g, '\n  ')}\n`;
+            } else {
+              slotContent += `\n  <span slot="${slotName}">${val.replace(/\n/g, '\n  ')}</span>\n`;
+            }
+          }
+        }
+      });
+    }
+  }
+
+  if (slotContent) {
+    code += slotContent + `</${tag}>`;
+  } else {
+    code += `</${tag}>`;
+  }
+
+  if (appendScript) {
+    code += appendScript;
+  }
+
+  return code;
 }

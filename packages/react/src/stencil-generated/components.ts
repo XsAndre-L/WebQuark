@@ -11,7 +11,7 @@ import type { EventName, StencilReactComponent } from '@stencil/react-output-tar
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
 
-import { type Option, type QCarouselCustomEvent, type QDropdownCustomEvent, type QInputCustomEvent, type QReelCustomEvent, type QScrollableCustomEvent, type QSidepanelCustomEvent, type QStepDiagramItemCustomEvent, type QTextareaCustomEvent, type QThumbnailCustomEvent, type QToggleCustomEvent } from "@webquark/core";
+import { type Option, type QCarouselCustomEvent, type QDropdownCustomEvent, type QInputCustomEvent, type QReelCustomEvent, type QScrollableCustomEvent, type QSidepanelCustomEvent, type QStepDiagramItemCustomEvent, type QTextareaCustomEvent, type QThumbnailCustomEvent, type QToggleCustomEvent, type SidepanelItem } from "@webquark/core";
 import type { Components } from "@webquark/core/dist/components";
 import { QButton as QButtonElement, defineCustomElement as defineQButton } from "@webquark/core/dist/components/q-button.js";
 import { QCard as QCardElement, defineCustomElement as defineQCard } from "@webquark/core/dist/components/q-card.js";
@@ -25,6 +25,7 @@ import { QScrollable as QScrollableElement, defineCustomElement as defineQScroll
 import { QSidepanel as QSidepanelElement, defineCustomElement as defineQSidepanel } from "@webquark/core/dist/components/q-sidepanel.js";
 import { QStepDiagramItem as QStepDiagramItemElement, defineCustomElement as defineQStepDiagramItem } from "@webquark/core/dist/components/q-step-diagram-item.js";
 import { QStepDiagram as QStepDiagramElement, defineCustomElement as defineQStepDiagram } from "@webquark/core/dist/components/q-step-diagram.js";
+import { QSyntaxBox as QSyntaxBoxElement, defineCustomElement as defineQSyntaxBox } from "@webquark/core/dist/components/q-syntax-box.js";
 import { QTextarea as QTextareaElement, defineCustomElement as defineQTextarea } from "@webquark/core/dist/components/q-textarea.js";
 import { QThumbnail as QThumbnailElement, defineCustomElement as defineQThumbnail } from "@webquark/core/dist/components/q-thumbnail.js";
 import { QToggle as QToggleElement, defineCustomElement as defineQToggle } from "@webquark/core/dist/components/q-toggle.js";
@@ -151,14 +152,20 @@ export const QScrollable: StencilReactComponent<QScrollableElement, QScrollableE
     defineCustomElement: defineQScrollable
 });
 
-export type QSidepanelEvents = { onQClose: EventName<QSidepanelCustomEvent<void>> };
+export type QSidepanelEvents = {
+    onQClose: EventName<QSidepanelCustomEvent<void>>,
+    onQSelect: EventName<QSidepanelCustomEvent<{ value: string; label: string; item: SidepanelItem }>>
+};
 
 export const QSidepanel: StencilReactComponent<QSidepanelElement, QSidepanelEvents, Components.QSidepanel> = /*@__PURE__*/ createComponent<QSidepanelElement, QSidepanelEvents, Components.QSidepanel>({
     tagName: 'q-sidepanel',
     elementClass: QSidepanelElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
-    events: { onQClose: 'qClose' } as QSidepanelEvents,
+    events: {
+        onQClose: 'qClose',
+        onQSelect: 'qSelect'
+    } as QSidepanelEvents,
     defineCustomElement: defineQSidepanel
 });
 
@@ -182,6 +189,17 @@ export const QStepDiagramItem: StencilReactComponent<QStepDiagramItemElement, QS
     react: React,
     events: { onQItemClick: 'qItemClick' } as QStepDiagramItemEvents,
     defineCustomElement: defineQStepDiagramItem
+});
+
+export type QSyntaxBoxEvents = NonNullable<unknown>;
+
+export const QSyntaxBox: StencilReactComponent<QSyntaxBoxElement, QSyntaxBoxEvents, Components.QSyntaxBox> = /*@__PURE__*/ createComponent<QSyntaxBoxElement, QSyntaxBoxEvents, Components.QSyntaxBox>({
+    tagName: 'q-syntax-box',
+    elementClass: QSyntaxBoxElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: {} as QSyntaxBoxEvents,
+    defineCustomElement: defineQSyntaxBox
 });
 
 export type QTextareaEvents = {

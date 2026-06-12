@@ -1,27 +1,37 @@
 import { loadComponentResources } from '../loader-helper.js';
-import { activeComponent, activeTab, componentRegistry, effect } from '../../state.js';
+import { activeComponent, activeTab, componentRegistry, effect, serializeComponentCode } from '../../state.js';
 
-function highlightHTML(htmlText) {
-  let esc = htmlText;
-  if (!esc.includes('&lt;')) {
-    esc = esc.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  }
-
-  return (
-    esc
-      // Match comments
-      .replace(/(&lt;!--[\s\S]*?--&gt;)/g, '<span class="code-comment">$1</span>')
-      // Match attribute value strings
-      .replace(/(&quot;.*?&quot;)/gi, '<span class="code-value">$1</span>')
-      .replace(/(&#39;.*?&#39;)/gi, '<span class="code-value">$1</span>')
-      // Match attribute parameters
-      .replace(/(\s[a-z0-9-]+)=/gi, ' <span class="code-attr">$1</span>=')
-      // Match tag elements
-      .replace(/(&lt;\/?[a-z0-9-]+)/gi, '<span class="code-tag">$1</span>')
-      // Match close brackets
-      .replace(/(&gt;)/g, '<span class="code-tag">&gt;</span>')
-  );
+function setElementProperties(el, props) {
+  if (!el || !props) return;
+  Object.keys(props).forEach(pName => {
+    const val = props[pName];
+    if (typeof val === 'boolean') {
+      el[pName] = val;
+      if (val) el.setAttribute(pName, '');
+      else el.removeAttribute(pName);
+    } else {
+      el[pName] = val;
+      if (val !== undefined && val !== null && val !== '') {
+        el.setAttribute(pName, val);
+      } else {
+        el.removeAttribute(pName);
+      }
+    }
+  });
 }
+
+const SYNCBACK_MAP = {
+  'q-sidepanel': { qClose:  (cfg, _det) => { cfg.props.open.currentValue = false; } },
+  'q-dropdown':  { qChange: (cfg, det)  => { cfg.props.value.currentValue = det; } },
+  'q-input':     { qChange: (cfg, det)  => { cfg.props.value.currentValue = det; } },
+  'q-textarea':  { qChange: (cfg, det)  => { cfg.props.value.currentValue = det; } },
+  'q-toggle':    { qChange: (cfg, det)  => { cfg.props.checked.currentValue = det; } },
+};
+
+function emptyState(msg) {
+  return `<div class="grid-empty-state">${msg}</div>`;
+}
+
 
 class PlaygroundStage extends HTMLElement {
   async connectedCallback() {
@@ -241,15 +251,15 @@ class PlaygroundStage extends HTMLElement {
     }
 
     // 6. Programmatic overrides
-    if (tag === 'q-dropdown' && activeEl) {
+    if (spec.options && activeEl) {
       activeEl.options = spec.options;
     }
-    if (tag === 'q-sidepanel') {
+    if (spec.stageHelper) {
       const helper = document.createElement('div');
       helper.className = 'stage-helper-bar';
       helper.innerHTML = `
-        <span class="stage-helper-text">Sidepanel Drawer</span>
-        <q-button variant="secondary" size="sm" id="stageOpenPanelBtn">Open Drawer Panel</q-button>
+        <span class="stage-helper-text">${spec.stageHelper.label}</span>
+        <q-button variant="secondary" size="sm" id="${spec.stageHelper.buttonId}">${spec.stageHelper.buttonLabel}</q-button>
       `;
       this.stageContainer.appendChild(helper);
     }
@@ -307,24 +317,9 @@ class PlaygroundStage extends HTMLElement {
         const config = registry[tag];
         if (!config) return;
 
-        if (eventName === 'qClose' && tag === 'q-sidepanel') {
-          config.props.open.currentValue = false;
-          changed = true;
-        }
-        if (eventName === 'qChange' && tag === 'q-dropdown') {
-          config.props.value.currentValue = e.detail;
-          changed = true;
-        }
-        if (eventName === 'qChange' && tag === 'q-input') {
-          config.props.value.currentValue = e.detail;
-          changed = true;
-        }
-        if (eventName === 'qChange' && tag === 'q-textarea') {
-          config.props.value.currentValue = e.detail;
-          changed = true;
-        }
-        if (eventName === 'qChange' && tag === 'q-toggle') {
-          config.props.checked.currentValue = e.detail;
+        const handler = SYNCBACK_MAP[tag]?.[eventName];
+        if (handler) {
+          handler(config, e.detail);
           changed = true;
         }
 
@@ -339,29 +334,18 @@ class PlaygroundStage extends HTMLElement {
     if (!el || !spec) return;
 
     if (spec.props) {
-      Object.keys(spec.props).forEach(propName => {
-        const prop = spec.props[propName];
-        const val = prop.currentValue;
-        if (prop.type === 'boolean') {
-          el[propName] = !!val;
-          if (val) el.setAttribute(propName, '');
-          else el.removeAttribute(propName);
-        } else {
-          el[propName] = val;
-          if (val !== undefined && val !== null && val !== '') {
-            el.setAttribute(propName, val);
-          } else {
-            el.removeAttribute(propName);
-          }
-        }
+      const flatProps = {};
+      Object.keys(spec.props).forEach(pName => {
+        flatProps[pName] = spec.props[pName].currentValue;
       });
+      setElementProperties(el, flatProps);
     }
 
     if (spec.slots) {
       this.updateElementSlots(el, spec);
     }
 
-    if (this.loadedTag === 'q-dropdown') {
+    if (spec.options) {
       el.options = spec.options;
     }
   }
@@ -399,49 +383,75 @@ class PlaygroundStage extends HTMLElement {
     });
   }
 
-  setupSpecialInstanceProps(el, tag) {
-    if (tag === 'q-dropdown') {
-      const registry = componentRegistry();
-      if (registry['q-dropdown']) {
-        el.options = registry['q-dropdown'].options;
-      } else {
-        fetch('/playground/specs/q-dropdown.spec.json')
-          .then(res => res.json())
-          .then(spec => {
-            el.options = spec.options;
-          });
-      }
-    }
-  }
+  renderPlaygroundCard(tag, config, item) {
+    const card = document.createElement('div');
+    card.className = 'variant-card';
 
-  getStaticComponentCode(tag, props, slotText, slotObj) {
-    let code = `<${tag}`;
-    Object.keys(props || {}).forEach(k => {
-      const v = props[k];
-      if (typeof v === 'boolean') {
-        if (v) code += ` ${k}`;
-      } else {
-        if (v !== undefined && v !== '') {
-          code += ` ${k}="${v}"`;
+    const titleRow = document.createElement('div');
+    titleRow.className = 'variant-title-row';
+    titleRow.innerHTML = `<h4 class="variant-card-title">${item.name}</h4>`;
+    card.appendChild(titleRow);
+
+    const stage = document.createElement('div');
+    stage.className = 'variant-card-stage';
+
+    const el = document.createElement(tag);
+    setElementProperties(el, item.props);
+
+    const defaultSlot = item.slot !== undefined ? item.slot : config.slots?.default?.default || '';
+    if (defaultSlot !== undefined && defaultSlot !== '') {
+      el.innerHTML = defaultSlot;
+    }
+    if (item.slots) {
+      Object.keys(item.slots).forEach(slotName => {
+        const wrapper = document.createElement('span');
+        wrapper.setAttribute('slot', slotName);
+        wrapper.innerHTML = item.slots[slotName];
+        el.appendChild(wrapper);
+      });
+    } else if (config.slots) {
+      Object.keys(config.slots).forEach(slotName => {
+        if (slotName !== 'default' && config.slots[slotName].default) {
+          const wrapper = document.createElement('span');
+          wrapper.setAttribute('slot', slotName);
+          wrapper.innerHTML = config.slots[slotName].default;
+          el.appendChild(wrapper);
         }
-      }
-    });
-    code += '>';
-
-    let slots = '';
-    if (slotText) {
-      slots += `\n  ${slotText.replace(/\n/g, '\n  ')}\n`;
-    }
-    if (slotObj) {
-      Object.keys(slotObj).forEach(sName => {
-        slots += `\n  <span slot="${sName}">${slotObj[sName].replace(/\n/g, '\n  ')}</span>\n`;
       });
     }
 
-    if (slots) code += slots + `</${tag}>`;
-    else code += `</${tag}>`;
+    stage.appendChild(el);
+    card.appendChild(stage);
 
-    return code;
+    if (config.options) {
+      el.options = config.options;
+    }
+
+    if (tag === 'q-sidepanel') {
+      const btn = document.createElement('q-button');
+      btn.variant = 'secondary';
+      btn.size = 'sm';
+      btn.className = 'var-open-panel-btn';
+      btn.innerHTML = 'Trigger Drawer Panel';
+      card.appendChild(btn);
+    }
+
+    const slots = { default: defaultSlot };
+    if (item.slots) {
+      Object.assign(slots, item.slots);
+    }
+
+    const appendScript = (tag === 'q-dropdown' && config.options)
+      ? `\n\n<!-- Programmatic dropdown options population script -->\n<script>\n  const dropdown = document.querySelector('q-dropdown');\n  dropdown.options = ${JSON.stringify(config.options, null, 2).replace(/\n/g, '\n  ')};\n</script>`
+      : null;
+    const codeText = serializeComponentCode(tag, item.props, slots, appendScript);
+    const syntaxBox = document.createElement('q-syntax-box');
+    syntaxBox.variant = 'plain';
+    syntaxBox.code = codeText;
+    syntaxBox.className = 'variant-card-code';
+    card.appendChild(syntaxBox);
+
+    return card;
   }
 
   renderVariantsMatrix(tag, config) {
@@ -449,81 +459,13 @@ class PlaygroundStage extends HTMLElement {
     this.variantsGrid.innerHTML = '';
 
     if (!config.variants || config.variants.length === 0) {
-      this.variantsGrid.innerHTML = '<div style="grid-column: span 3; padding:40px; text-align:center; color:var(--text-muted)">No variant matrix defined for this component.</div>';
+      this.variantsGrid.innerHTML = emptyState('No variant matrix defined for this component.');
       return;
     }
 
     config.variants.forEach(variant => {
-      const card = document.createElement('div');
-      card.className = 'variant-card';
-
-      const titleRow = document.createElement('div');
-      titleRow.className = 'variant-title-row';
-      titleRow.innerHTML = `<h4 class="variant-card-title">${variant.name}</h4>`;
-      card.appendChild(titleRow);
-
-      const stage = document.createElement('div');
-      stage.className = 'variant-card-stage';
-
-      const el = document.createElement(tag);
-      Object.keys(variant.props || {}).forEach(pName => {
-        const val = variant.props[pName];
-        if (typeof val === 'boolean') {
-          el[pName] = val;
-          if (val) el.setAttribute(pName, '');
-        } else {
-          el[pName] = val;
-          el.setAttribute(pName, val);
-        }
-      });
-
-      const defaultSlot = variant.slot !== undefined ? variant.slot : config.slots?.default?.default || '';
-      if (defaultSlot) {
-        el.innerHTML = defaultSlot;
-      }
-      if (variant.slots) {
-        Object.keys(variant.slots).forEach(slotName => {
-          const wrapper = document.createElement('span');
-          wrapper.setAttribute('slot', slotName);
-          wrapper.innerHTML = variant.slots[slotName];
-          el.appendChild(wrapper);
-        });
-      } else if (config.slots) {
-        Object.keys(config.slots).forEach(slotName => {
-          if (slotName !== 'default' && config.slots[slotName].default) {
-            const wrapper = document.createElement('span');
-            wrapper.setAttribute('slot', slotName);
-            wrapper.innerHTML = config.slots[slotName].default;
-            el.appendChild(wrapper);
-          }
-        });
-      }
-
-      stage.appendChild(el);
-      card.appendChild(stage);
-
-      this.setupSpecialInstanceProps(el, tag);
-
-      if (tag === 'q-sidepanel') {
-        const btn = document.createElement('q-button');
-        btn.variant = 'secondary';
-        btn.size = 'sm';
-        btn.className = 'var-open-panel-btn';
-        btn.innerHTML = 'Trigger Drawer Panel';
-        card.appendChild(btn);
-      }
-
-      const codeText = this.getStaticComponentCode(tag, variant.props, defaultSlot, variant.slots || null);
-      const codePre = document.createElement('pre');
-      codePre.className = 'variant-card-code';
-      codePre.innerHTML = highlightHTML(codeText);
-      card.appendChild(codePre);
-
+      const card = this.renderPlaygroundCard(tag, config, variant);
       this.variantsGrid.appendChild(card);
-    });
-
-    this.variantsGrid.querySelectorAll('q-dropdown').forEach(dropdown => {
-      this.setupSpecialInstanceProps(dropdown, 'q-dropdown');
     });
   }
 
@@ -532,72 +474,13 @@ class PlaygroundStage extends HTMLElement {
     this.edgecasesGrid.innerHTML = '';
 
     if (!config.edgeCases || config.edgeCases.length === 0) {
-      this.edgecasesGrid.innerHTML = '<div style="grid-column: span 3; padding:40px; text-align:center; color:var(--text-muted)">No stress-test layout edge cases defined for this component.</div>';
+      this.edgecasesGrid.innerHTML = emptyState('No stress-test layout edge cases defined for this component.');
       return;
     }
 
     config.edgeCases.forEach(edge => {
-      const card = document.createElement('div');
-      card.className = 'variant-card';
-
-      const titleRow = document.createElement('div');
-      titleRow.className = 'variant-title-row';
-      titleRow.innerHTML = `<h4 class="variant-card-title">${edge.name}</h4>`;
-      card.appendChild(titleRow);
-
-      const stage = document.createElement('div');
-      stage.className = 'variant-card-stage';
-
-      const el = document.createElement(tag);
-      Object.keys(edge.props || {}).forEach(pName => {
-        const val = edge.props[pName];
-        if (typeof val === 'boolean') {
-          el[pName] = val;
-          if (val) el.setAttribute(pName, '');
-        } else {
-          el[pName] = val;
-          el.setAttribute(pName, val);
-        }
-      });
-
-      const defaultSlot = edge.slot !== undefined ? edge.slot : config.slots?.default?.default || '';
-      if (defaultSlot !== undefined) {
-        el.innerHTML = defaultSlot;
-      }
-      if (edge.slots) {
-        Object.keys(edge.slots).forEach(slotName => {
-          const wrapper = document.createElement('span');
-          wrapper.setAttribute('slot', slotName);
-          wrapper.innerHTML = edge.slots[slotName];
-          el.appendChild(wrapper);
-        });
-      }
-
-      stage.appendChild(el);
-      card.appendChild(stage);
-
-      this.setupSpecialInstanceProps(el, tag);
-
-      if (tag === 'q-sidepanel') {
-        const btn = document.createElement('q-button');
-        btn.variant = 'secondary';
-        btn.size = 'sm';
-        btn.className = 'var-open-panel-btn';
-        btn.innerHTML = 'Trigger Drawer Panel';
-        card.appendChild(btn);
-      }
-
-      const codeText = this.getStaticComponentCode(tag, edge.props, defaultSlot, edge.slots || null);
-      const codePre = document.createElement('pre');
-      codePre.className = 'variant-card-code';
-      codePre.innerHTML = highlightHTML(codeText);
-      card.appendChild(codePre);
-
+      const card = this.renderPlaygroundCard(tag, config, edge);
       this.edgecasesGrid.appendChild(card);
-    });
-
-    this.edgecasesGrid.querySelectorAll('q-dropdown').forEach(dropdown => {
-      this.setupSpecialInstanceProps(dropdown, 'q-dropdown');
     });
   }
 

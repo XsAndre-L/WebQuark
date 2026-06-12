@@ -19,12 +19,12 @@
     {
       "name": "Timeline Node Styles & Statuses",
       "props": { "layout": "vertical" },
-      "slot": "<q-step-diagram-item status=\"completed\" line-style=\"solid\"><span slot=\"title\">Completed</span>Status Completed</q-step-diagram-item>\n<q-step-diagram-item status=\"active\" line-style=\"dashed\"><span slot=\"title\">Active Status</span>Status Active</q-step-diagram-item>\n<q-step-diagram-item status=\"pending\" line-style=\"dotted\"><span slot=\"title\">Pending Status</span>Status Pending</q-step-diagram-item>\n<q-step-diagram-item status=\"success\" line-style=\"solid\"><span slot=\"title\">Success Status</span>Status Success</q-step-diagram-item>\n<q-step-diagram-item status=\"warning\" line-style=\"solid\"><span slot=\"title\">Warning Status</span>Status Warning</q-step-diagram-item>\n<q-step-diagram-item status=\"danger\" line-style=\"none\"><span slot=\"title\">Danger Status</span>Status Danger (End of path)</q-step-diagram-item>"
+      "slots": { "default": "<q-step-diagram-item status=\"completed\" line-style=\"solid\"><span slot=\"title\">Completed</span>Status Completed</q-step-diagram-item>\n<q-step-diagram-item status=\"active\" line-style=\"dashed\"><span slot=\"title\">Active Status</span>Status Active</q-step-diagram-item>\n<q-step-diagram-item status=\"pending\" line-style=\"dotted\"><span slot=\"title\">Pending Status</span>Status Pending</q-step-diagram-item>\n<q-step-diagram-item status=\"success\" line-style=\"solid\"><span slot=\"title\">Success Status</span>Status Success</q-step-diagram-item>\n<q-step-diagram-item status=\"warning\" line-style=\"solid\"><span slot=\"title\">Warning Status</span>Status Warning</q-step-diagram-item>\n<q-step-diagram-item status=\"danger\" line-style=\"none\"><span slot=\"title\">Danger Status</span>Status Danger (End of path)</q-step-diagram-item>" }
     },
     {
       "name": "Single Step Element",
       "props": { "layout": "vertical" },
-      "slot": "<q-step-diagram-item status=\"active\" line-style=\"none\"><span slot=\"title\">Isolated Node</span>Lone timeline item</q-step-diagram-item>"
+      "slots": { "default": "<q-step-diagram-item status=\"active\" line-style=\"none\"><span slot=\"title\">Isolated Node</span>Lone timeline item</q-step-diagram-item>" }
     }
   ]
 }

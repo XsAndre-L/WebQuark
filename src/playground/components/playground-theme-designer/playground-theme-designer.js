@@ -72,6 +72,7 @@ class PlaygroundThemeDesigner extends HTMLElement {
     const grid = this.querySelector('#themeSectionsGrid');
     const resetThemeBtn = this.querySelector('#resetThemeBtn');
     if (!grid) return;
+    this._tokenInputs = new Map();
 
     grid.innerHTML = '';
     const computedStyle = window.getComputedStyle(document.documentElement);
@@ -86,100 +87,7 @@ class PlaygroundThemeDesigner extends HTMLElement {
       card.appendChild(h3);
 
       cat.tokens.forEach(token => {
-        const val = computedStyle.getPropertyValue(token.name).trim();
-        const row = document.createElement('div');
-        row.className = 'token-row';
-
-        const info = document.createElement('div');
-        info.className = 'token-info';
-        
-        const label = document.createElement('span');
-        label.className = 'token-label';
-        label.innerText = token.label;
-        
-        const desc = document.createElement('span');
-        desc.className = 'token-desc';
-        desc.innerText = token.desc;
-
-        info.appendChild(label);
-        info.appendChild(desc);
-        row.appendChild(info);
-
-        const controlWrapper = document.createElement('div');
-        controlWrapper.className = 'token-control-wrapper';
-
-        if (token.type === 'color') {
-          const hexVal = convertToHex(val);
-
-          const colorContainer = document.createElement('div');
-          colorContainer.className = 'color-input-container';
-
-          const pickerWrapper = document.createElement('div');
-          pickerWrapper.className = 'color-picker-wrapper';
-
-          const picker = document.createElement('input');
-          picker.type = 'color';
-          picker.className = 'color-swatch-picker';
-          picker.dataset.token = token.name;
-          picker.value = hexVal;
-
-          pickerWrapper.appendChild(picker);
-
-          const textInput = document.createElement('input');
-          textInput.type = 'text';
-          textInput.className = 'color-text-input';
-          textInput.dataset.token = token.name;
-          textInput.value = hexVal;
-
-          colorContainer.appendChild(pickerWrapper);
-          colorContainer.appendChild(textInput);
-          controlWrapper.appendChild(colorContainer);
-
-          picker.addEventListener('input', (e) => {
-            const newColor = e.target.value;
-            textInput.value = newColor;
-            document.documentElement.style.setProperty(token.name, newColor);
-          });
-
-          textInput.addEventListener('input', (e) => {
-            const newColor = e.target.value;
-            if (/^#[0-9A-F]{6}$/i.test(newColor)) {
-              picker.value = newColor;
-              document.documentElement.style.setProperty(token.name, newColor);
-            }
-          });
-        } else if (token.type === 'radius') {
-          const numVal = parseInt(val, 10) || 0;
-
-          const rangeContainer = document.createElement('div');
-          rangeContainer.className = 'range-slider-container';
-
-          const slider = document.createElement('input');
-          slider.type = 'range';
-          slider.className = 'range-slider-input';
-          slider.min = token.min;
-          slider.max = token.max;
-          slider.value = numVal;
-          slider.dataset.token = token.name;
-
-          const valDisplay = document.createElement('span');
-          valDisplay.className = 'range-slider-value';
-          valDisplay.dataset.token = token.name;
-          valDisplay.innerText = `${numVal}px`;
-
-          rangeContainer.appendChild(slider);
-          rangeContainer.appendChild(valDisplay);
-          controlWrapper.appendChild(rangeContainer);
-
-          slider.addEventListener('input', (e) => {
-            const num = e.target.value;
-            valDisplay.innerText = `${num}px`;
-            document.documentElement.style.setProperty(token.name, `${num}px`);
-          });
-        }
-
-        row.appendChild(controlWrapper);
-        card.appendChild(row);
+        card.appendChild(this.buildTokenRow(token, computedStyle));
       });
 
       grid.appendChild(card);
@@ -201,26 +109,102 @@ class PlaygroundThemeDesigner extends HTMLElement {
     });
   }
 
-  syncThemeInputs() {
-    const computedStyle = window.getComputedStyle(document.documentElement);
-    THEME_TOKENS.forEach(category => {
-      category.tokens.forEach(token => {
-        const value = computedStyle.getPropertyValue(token.name).trim();
-        
-        if (token.type === 'color') {
-          const hex = convertToHex(value);
-          const colorPicker = this.querySelector(`input[type="color"][data-token="${token.name}"]`);
-          const colorText = this.querySelector(`input[type="text"][data-token="${token.name}"]`);
-          if (colorPicker) colorPicker.value = hex;
-          if (colorText) colorText.value = hex;
-        } else if (token.type === 'radius') {
-          const num = parseInt(value, 10) || 0;
-          const range = this.querySelector(`input[type="range"][data-token="${token.name}"]`);
-          const valueDisplay = this.querySelector(`.range-slider-value[data-token="${token.name}"]`);
-          if (range) range.value = num;
-          if (valueDisplay) valueDisplay.innerText = `${num}px`;
+  buildTokenRow(token, computedStyle) {
+    const val = computedStyle.getPropertyValue(token.name).trim();
+    const row = document.createElement('div');
+    row.className = 'token-row';
+
+    const info = document.createElement('div');
+    info.className = 'token-info';
+    const label = document.createElement('span');
+    label.className = 'token-label';
+    label.innerText = token.label;
+    const desc = document.createElement('span');
+    desc.className = 'token-desc';
+    desc.innerText = token.desc;
+    info.appendChild(label);
+    info.appendChild(desc);
+    row.appendChild(info);
+
+    const controlWrapper = document.createElement('div');
+    controlWrapper.className = 'token-control-wrapper';
+
+    if (token.type === 'color') {
+      const hexVal = convertToHex(val);
+      const colorContainer = document.createElement('div');
+      colorContainer.className = 'color-input-container';
+      const pickerWrapper = document.createElement('div');
+      pickerWrapper.className = 'color-picker-wrapper';
+      const picker = document.createElement('input');
+      picker.type = 'color';
+      picker.className = 'color-swatch-picker';
+      picker.dataset.token = token.name;
+      picker.value = hexVal;
+      pickerWrapper.appendChild(picker);
+      const textInput = document.createElement('input');
+      textInput.type = 'text';
+      textInput.className = 'color-text-input';
+      textInput.dataset.token = token.name;
+      textInput.value = hexVal;
+      colorContainer.appendChild(pickerWrapper);
+      colorContainer.appendChild(textInput);
+      controlWrapper.appendChild(colorContainer);
+      picker.addEventListener('input', (e) => {
+        const newColor = e.target.value;
+        textInput.value = newColor;
+        document.documentElement.style.setProperty(token.name, newColor);
+      });
+      textInput.addEventListener('input', (e) => {
+        const newColor = e.target.value;
+        if (/^#[0-9A-F]{6}$/i.test(newColor)) {
+          picker.value = newColor;
+          document.documentElement.style.setProperty(token.name, newColor);
         }
       });
+      this._tokenInputs.set(token.name, { type: 'color', picker, textInput });
+    } else if (token.type === 'radius') {
+      const numVal = parseInt(val, 10) || 0;
+      const rangeContainer = document.createElement('div');
+      rangeContainer.className = 'range-slider-container';
+      const slider = document.createElement('input');
+      slider.type = 'range';
+      slider.className = 'range-slider-input';
+      slider.min = token.min;
+      slider.max = token.max;
+      slider.value = numVal;
+      slider.dataset.token = token.name;
+      const valDisplay = document.createElement('span');
+      valDisplay.className = 'range-slider-value';
+      valDisplay.dataset.token = token.name;
+      valDisplay.innerText = `${numVal}px`;
+      rangeContainer.appendChild(slider);
+      rangeContainer.appendChild(valDisplay);
+      controlWrapper.appendChild(rangeContainer);
+      slider.addEventListener('input', (e) => {
+        const num = e.target.value;
+        valDisplay.innerText = `${num}px`;
+        document.documentElement.style.setProperty(token.name, `${num}px`);
+      });
+      this._tokenInputs.set(token.name, { type: 'radius', range: slider, valueDisplay: valDisplay });
+    }
+
+    row.appendChild(controlWrapper);
+    return row;
+  }
+
+  syncThemeInputs() {
+    const computedStyle = window.getComputedStyle(document.documentElement);
+    this._tokenInputs.forEach((refs, tokenName) => {
+      const value = computedStyle.getPropertyValue(tokenName).trim();
+      if (refs.type === 'color') {
+        const hex = convertToHex(value);
+        if (refs.picker) refs.picker.value = hex;
+        if (refs.textInput) refs.textInput.value = hex;
+      } else if (refs.type === 'radius') {
+        const num = parseInt(value, 10) || 0;
+        if (refs.range) refs.range.value = num;
+        if (refs.valueDisplay) refs.valueDisplay.innerText = `${num}px`;
+      }
     });
   }
 

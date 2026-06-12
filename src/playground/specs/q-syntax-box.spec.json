@@ -1,0 +1,79 @@
+{
+  "name": "Syntax Box",
+  "tag": "q-syntax-box",
+  "props": {
+    "variant": {
+      "type": "select",
+      "options": ["panel", "plain"],
+      "default": "panel",
+      "desc": "The layout variant of the syntax box container"
+    },
+    "language": {
+      "type": "select",
+      "options": ["html", "javascript", "css", "json"],
+      "default": "html",
+      "desc": "The programming language highlighting rules to apply"
+    },
+    "heading": {
+      "type": "string",
+      "default": "CODE PREVIEW",
+      "desc": "The header title displayed in the panel variant"
+    },
+    "copyable": {
+      "type": "boolean",
+      "default": true,
+      "desc": "Renders a copy-to-clipboard button in the header"
+    },
+    "height": {
+      "type": "string",
+      "default": "110px",
+      "desc": "The height of the scrollable viewport (e.g. '110px' or 'auto' for fitting content)"
+    },
+    "code": {
+      "type": "string",
+      "default": "",
+      "desc": "The source code string to highlight (takes precedence over slot content)"
+    }
+  },
+  "slots": {
+    "default": {
+      "type": "text",
+      "default": "<div class=\"app-container\">\n  <h1>Hello World</h1>\n  <q-button variant=\"primary\">Click Me</q-button>\n</div>",
+      "desc": "Fallback code/text to highlight if the 'code' property is not set"
+    }
+  },
+  "variants": [
+    {
+      "name": "Panel Variant (HTML)",
+      "props": { "variant": "panel", "heading": "HTML MARKUP", "copyable": true, "height": "110px" },
+      "slots": { "default": "<div class=\"demo\">\n  <span>Interactive Item</span>\n</div>" }
+    },
+    {
+      "name": "Plain Variant (HTML)",
+      "props": { "variant": "plain", "height": "auto" },
+      "slots": { "default": "<q-button size=\"sm\" disabled>Disabled Button</q-button>" }
+    },
+    {
+      "name": "JavaScript Highlight",
+      "props": { "variant": "plain", "language": "javascript", "height": "auto" },
+      "slots": { "default": "const clickHandler = (event) => {\n  console.log('Clicked!', event.target);\n  return true;\n};" }
+    },
+    {
+      "name": "CSS Highlight",
+      "props": { "variant": "plain", "language": "css", "height": "auto" },
+      "slots": { "default": ".demo-class {\n  display: flex;\n  color: var(--q-primary-color, #007bff);\n  font-size: 1.2rem;\n}" }
+    },
+    {
+      "name": "JSON Highlight",
+      "props": { "variant": "plain", "language": "json", "height": "auto" },
+      "slots": { "default": "{\n  \"name\": \"q-syntax-box\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}" }
+    }
+  ],
+  "edgeCases": [
+    {
+      "name": "Long Script Wrapping Test",
+      "props": { "variant": "panel", "language": "javascript", "heading": "LONG SCRIPT", "height": "110px" },
+      "slots": { "default": "function calculateFibonacciSequence(n) {\n  if (n <= 0) return [];\n  if (n === 1) return [0];\n  let sequence = [0, 1];\n  while (sequence.length < n) {\n    let nextValue = sequence[sequence.length - 1] + sequence[sequence.length - 2];\n    sequence.push(nextValue);\n  }\n  return sequence;\n}" }
+    }
+  ]
+}

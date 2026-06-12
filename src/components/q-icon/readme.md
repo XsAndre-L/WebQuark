@@ -16,6 +16,21 @@
 | `size`      | `size`       | The size of the icon. Can be a preset alias ('sm', 'md', 'lg'), a number (pixels), or any valid CSS size string (e.g., '1.5rem'). | `string` | `'md'`             |
 
 
+## Dependencies
+
+### Used by
+
+ - [q-sidepanel](../q-sidepanel)
+ - [q-syntax-box](../q-syntax-box)
+
+### Graph
+```mermaid
+graph TD;
+  q-sidepanel --> q-icon
+  q-syntax-box --> q-icon
+  style q-icon fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

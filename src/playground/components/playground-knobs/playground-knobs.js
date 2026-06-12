@@ -1,6 +1,44 @@
 import { loadComponentResources } from '../loader-helper.js';
 import { activeComponent, activeTab, componentRegistry, updateKnobValue, effect } from '../../state.js';
 
+const CONTROL_FACTORY = {
+  boolean: (propName, prop) => {
+    const toggle = document.createElement('q-toggle');
+    toggle.type = 'switch';
+    toggle.dataset.prop = propName;
+    toggle.checked = prop.currentValue;
+    toggle.addEventListener('qChange', e => updateKnobValue('prop', propName, e.detail));
+    return toggle;
+  },
+  select: (propName, prop) => {
+    const dropdown = document.createElement('q-dropdown');
+    dropdown.dataset.prop = propName;
+    dropdown.value = prop.currentValue;
+    dropdown.options = prop.options.map(opt => ({ label: opt || '(none)', value: opt }));
+    dropdown.addEventListener('qChange', e => updateKnobValue('prop', propName, e.detail));
+    return dropdown;
+  },
+  number: (propName, prop) => {
+    const input = document.createElement('q-input');
+    input.type = 'number';
+    input.dataset.prop = propName;
+    input.value = prop.currentValue;
+    input.addEventListener('qInput', e => updateKnobValue('prop', propName, e.detail));
+    return input;
+  },
+};
+
+function createPropControl(propName, prop) {
+  const factory = CONTROL_FACTORY[prop.type];
+  if (factory) return factory(propName, prop);
+  const input = document.createElement('q-input');
+  input.type = 'text';
+  input.dataset.prop = propName;
+  input.value = prop.currentValue;
+  input.addEventListener('qInput', e => updateKnobValue('prop', propName, e.detail));
+  return input;
+}
+
 class PlaygroundKnobs extends HTMLElement {
   async connectedCallback() {
     try {
@@ -15,7 +53,7 @@ class PlaygroundKnobs extends HTMLElement {
   init() {
     const toggleBtn = this.querySelector('#knobsToggleBtn');
     const closeBtn = this.querySelector('#knobsCloseBtn');
-    this.panel = this.querySelector('#knobsPanel') || this.firstElementChild;
+    this.panel = this.querySelector('#knobsPanel');
     this.attrContainer = this.querySelector('#attributeKnobs');
     this.slotContainer = this.querySelector('#slotKnobs');
 
@@ -76,53 +114,12 @@ class PlaygroundKnobs extends HTMLElement {
         row.appendChild(meta);
 
         const inputWrapper = document.createElement('div');
-
-        if (prop.type === 'boolean') {
-          const toggle = document.createElement('q-toggle');
-          toggle.type = 'switch';
-          toggle.dataset.prop = propName;
-          toggle.checked = prop.currentValue;
-          toggle.addEventListener('qChange', (e) => {
-            updateKnobValue('prop', propName, e.detail);
-          });
-          inputWrapper.appendChild(toggle);
-        } else if (prop.type === 'select') {
-          const dropdown = document.createElement('q-dropdown');
-          dropdown.dataset.prop = propName;
-          dropdown.value = prop.currentValue;
-          dropdown.options = prop.options.map(opt => ({
-            label: opt || '(none)',
-            value: opt
-          }));
-          dropdown.addEventListener('qChange', (e) => {
-            updateKnobValue('prop', propName, e.detail);
-          });
-          inputWrapper.appendChild(dropdown);
-        } else if (prop.type === 'number') {
-          const input = document.createElement('q-input');
-          input.type = 'number';
-          input.dataset.prop = propName;
-          input.value = prop.currentValue;
-          input.addEventListener('qInput', (e) => {
-            updateKnobValue('prop', propName, e.detail);
-          });
-          inputWrapper.appendChild(input);
-        } else {
-          const input = document.createElement('q-input');
-          input.type = 'text';
-          input.dataset.prop = propName;
-          input.value = prop.currentValue;
-          input.addEventListener('qInput', (e) => {
-            updateKnobValue('prop', propName, e.detail);
-          });
-          inputWrapper.appendChild(input);
-        }
-
+        inputWrapper.appendChild(createPropControl(propName, prop));
         row.appendChild(inputWrapper);
         this.attrContainer.appendChild(row);
       });
     } else {
-      this.attrContainer.innerHTML = '<div style="color:var(--text-muted);font-size:0.85rem;">No customizable attributes.</div>';
+      this.attrContainer.innerHTML = '<div class="knob-empty-state">No customizable attributes.</div>';
     }
 
     // B. Build Slot Knobs
@@ -159,7 +156,7 @@ class PlaygroundKnobs extends HTMLElement {
         this.slotContainer.appendChild(row);
       });
     } else {
-      this.slotContainer.innerHTML = '<div style="color:var(--text-muted);font-size:0.85rem;">No slot options configured.</div>';
+      this.slotContainer.innerHTML = '<div class="knob-empty-state">No slot options configured.</div>';
     }
   }
 

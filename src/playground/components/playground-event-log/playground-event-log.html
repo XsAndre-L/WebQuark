@@ -1,11 +1,9 @@
-<div class="event-log-container">
-  <div class="event-log-header">
-    <span>Event Dispatches Log</span>
-    <button class="clear-log-btn" id="clearLogBtn">Clear Log</button>
+<q-syntax-box variant="panel" heading="Event Dispatches Log" id="eventLogBox">
+  <q-button slot="actions" variant="ghost" size="sm" id="clearLogBtn">
+    <q-icon name="trash-2" size="sm"></q-icon>
+    <q-tooltip content="Clear Log"></q-tooltip>
+  </q-button>
+  <div id="eventLogBody" class="event-log-body">
+    <span class="log-placeholder">Interactive events will appear here in real-time...</span>
   </div>
-  <q-scrollable height="110px" id="eventLogScrollable">
-    <div class="event-log-body" id="eventLogBody">
-      <span class="log-placeholder">Interactive events will appear here in real-time...</span>
-    </div>
-  </q-scrollable>
-</div>
+</q-syntax-box>
