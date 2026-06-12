@@ -1,0 +1,45 @@
+{
+  "name": "Toggle / Checkbox",
+  "tag": "q-toggle",
+  "props": {
+    "checked": { "type": "boolean", "default": false, "desc": "Boolean active state of the toggle" },
+    "type": { "type": "select", "options": ["switch", "checkbox"], "default": "switch", "desc": "Visual presentation style" },
+    "label": { "type": "string", "default": "Toggle Label", "desc": "Text label adjacent to the toggle" },
+    "disabled": { "type": "boolean", "default": false, "desc": "Locks interaction" },
+    "required": { "type": "boolean", "default": false, "desc": "Required flag for form validation" },
+    "error": { "type": "string", "default": "", "desc": "Validation error message" }
+  },
+  "slots": {
+    "default": { "type": "text", "default": "", "desc": "Optional replacement for the text label" },
+    "checked-icon": { "type": "html", "default": "", "desc": "Custom checkmark SVG when checked is true" },
+    "unchecked-icon": { "type": "html", "default": "", "desc": "Custom checkmark SVG when checked is false" }
+  },
+  "variants": [
+    { "name": "Switch Mode Off", "props": { "type": "switch", "checked": false, "label": "Off State" } },
+    { "name": "Switch Mode On", "props": { "type": "switch", "checked": true, "label": "On State" } },
+    { "name": "Checkbox Mode Off", "props": { "type": "checkbox", "checked": false, "label": "Checkbox Off" } },
+    { "name": "Checkbox Mode On", "props": { "type": "checkbox", "checked": true, "label": "Checkbox On" } },
+    { "name": "Disabled Switch", "props": { "type": "switch", "disabled": true, "checked": true, "label": "Disabled On" } },
+    { "name": "Required Switch", "props": { "type": "switch", "required": true, "checked": false, "label": "Required Field" } },
+    { "name": "Switch with Error state", "props": { "type": "switch", "error": "This field is required", "checked": false, "label": "Invalid Field" } }
+  ],
+  "edgeCases": [
+    {
+      "name": "Custom SVG Icons (Heart)",
+      "props": { "type": "checkbox", "checked": true, "label": "Add to Favourites" },
+      "slots": {
+        "checked-icon": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\" width=\"16\" height=\"16\" style=\"color: #ef4444; display: block;\"><path d=\"M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z\"/></svg>",
+        "unchecked-icon": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" width=\"16\" height=\"16\" style=\"color: #9ca3af; display: block;\"><path d=\"M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z\"/></svg>"
+      }
+    },
+    {
+      "name": "Extremely Long Label text",
+      "props": { "type": "switch", "checked": false, "label": "This is a ridiculously long label text wrapper intended to test wrapping dynamics next to the slider pill" }
+    },
+    {
+      "name": "HTML Slotted content label",
+      "props": { "type": "switch", "checked": true },
+      "slot": "I agree to the <a href=\"#\" style=\"color:var(--primary);text-decoration:underline\">Terms & Conditions</a>"
+    }
+  ]
+}

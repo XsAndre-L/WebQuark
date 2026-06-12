@@ -21,6 +21,13 @@ export const config: Config = {
     {
       type: 'www',
       serviceWorker: null, // disable service workers
+      indexHtml: 'playground/index.html',
+      copy: [
+        { src: 'playground/index.html', dest: 'index.html' },
+        { src: 'playground/playground.css', dest: 'playground.css' },
+        { src: 'playground/playground.js', dest: 'playground.js' },
+        { src: 'playground/specs', dest: 'playground/specs' }
+      ]
     },
     reactOutputTarget({
       componentCorePackage: '@webquark/core',

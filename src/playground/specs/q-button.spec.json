@@ -1,0 +1,90 @@
+{
+  "name": "Button",
+  "tag": "q-button",
+  "props": {
+    "variant": {
+      "type": "select",
+      "options": ["primary", "secondary", "success", "danger", "ghost", "text"],
+      "default": "primary",
+      "desc": "Shorthand button background styling variant"
+    },
+    "size": {
+      "type": "select",
+      "options": ["sm", "md", "lg"],
+      "default": "md",
+      "desc": "Vertical padding & font size modifier"
+    },
+    "disabled": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Locks click events and styles disabled state"
+    },
+    "loading": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Swaps label with spinner icon while blocking events"
+    },
+    "expand": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Width layout block stretch (100% parent container width)"
+    },
+    "href": {
+      "type": "string",
+      "default": "",
+      "desc": "Turns the button element into a standard anchor link tag"
+    },
+    "target": {
+      "type": "select",
+      "options": ["", "_blank", "_self", "_parent", "_top"],
+      "default": "",
+      "desc": "Target link viewport target context (when href is set)"
+    }
+  },
+  "slots": {
+    "default": {
+      "type": "text",
+      "default": "Click Me",
+      "desc": "Default Slot label content text"
+    },
+    "icon-left": {
+      "type": "html",
+      "default": "",
+      "desc": "Appends inline element/icon to the left side"
+    },
+    "icon-right": {
+      "type": "html",
+      "default": "",
+      "desc": "Appends inline element/icon to the right side"
+    }
+  },
+  "variants": [
+    { "name": "Primary MD", "props": { "variant": "primary", "size": "md" }, "slot": "Primary Button" },
+    { "name": "Secondary MD", "props": { "variant": "secondary", "size": "md" }, "slot": "Secondary Button" },
+    { "name": "Success LG", "props": { "variant": "success", "size": "lg" }, "slot": "Success Action" },
+    { "name": "Danger SM", "props": { "variant": "danger", "size": "sm" }, "slot": "Danger Trigger" },
+    { "name": "Ghost Styling", "props": { "variant": "ghost" }, "slot": "Ghost Button" },
+    { "name": "Text Only link style", "props": { "variant": "text" }, "slot": "Text Button" },
+    { "name": "Disabled State", "props": { "variant": "primary", "disabled": true }, "slot": "Disabled Button" },
+    { "name": "Loading State spinner", "props": { "variant": "primary", "loading": true }, "slot": "Loading Button" },
+    { "name": "Expanded full width", "props": { "variant": "primary", "expand": true }, "slot": "Expanded Block Button" }
+  ],
+  "edgeCases": [
+    {
+      "name": "Super Long Text Wrapping",
+      "props": { "variant": "primary" },
+      "slot": "This is a button containing a ridiculously long text content that will test wrapping dynamics and grid boundaries"
+    },
+    {
+      "name": "HTML Injection Safe Verification",
+      "props": { "variant": "primary" },
+      "slot": "<b>Formatted HTML</b> <script>console.log(\"XSS block test\")<\/script>"
+    },
+    {
+      "name": "Icon-only Button",
+      "props": { "variant": "primary" },
+      "slot": "",
+      "slots": { "icon-left": "<span style=\"font-size:16px\">🔥</span>" }
+    }
+  ]
+}

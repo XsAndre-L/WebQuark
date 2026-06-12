@@ -10,6 +10,7 @@
 | Property         | Attribute         | Description | Type                                     | Default   |
 | ---------------- | ----------------- | ----------- | ---------------------------------------- | --------- |
 | `itemWidth`      | `item-width`      |             | `string`                                 | `"auto"`  |
+| `repeat`         | `repeat`          |             | `boolean`                                | `false`   |
 | `showArrows`     | `show-arrows`     |             | `boolean`                                | `false`   |
 | `showIndicators` | `show-indicators` |             | `boolean`                                | `false`   |
 | `snapAlignment`  | `snap-alignment`  |             | `"center" \| "end" \| "none" \| "start"` | `'start'` |

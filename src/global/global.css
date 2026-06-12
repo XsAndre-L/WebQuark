@@ -7,7 +7,7 @@
   /* Colors */
   --q-color-primary: #60a5fa;          /* Electric Blue (Dark Mode) */
   --q-color-primary-hover: #93c5fd;
-  --q-color-secondary: #9ca3af;        /* Slate Gray */
+  --q-color-secondary: #9777ea;        /* Royal Lavender (Dark Mode) */
   --q-color-success: #34d399;          /* Bright green for dark mode contrast */
   --q-color-warning: #fbbf24;          /* Warm orange for dark mode contrast */
   --q-color-danger: #f87171;           /* Bright red for dark mode contrast */
@@ -22,6 +22,7 @@
   --q-bg-overlay: rgba(0, 0, 0, 0.85);   /* OSR safe overlay backdrop dimmer */
   
   --q-fg-base: #f9fafb;                 /* Off-white text */
+  --q-fg-muted: #9ca3af;                /* Muted text/icons (Dark Mode) */
   --q-border-color: #374151;            /* Dark grey borders */
   
   /* Shadows & Glassmorphism */
@@ -153,7 +154,7 @@
     /* Colors (High contrast overrides) */
     --q-color-primary: #3b82f6;        /* High-contrast Digital Blue */
     --q-color-primary-hover: #2563eb;
-    --q-color-secondary: #4b5563;
+    --q-color-secondary: #7c3aed;        /* Royal Lavender (Light Mode) */
     --q-color-success: #10b981;        /* High contrast success (light mode) */
     --q-color-warning: #f59e0b;        /* High contrast warning (light mode) */
     --q-color-danger: #ef4444;         /* High contrast danger (light mode) */
@@ -168,6 +169,7 @@
     --q-bg-overlay: rgba(0, 0, 0, 0.6);
     
     --q-fg-base: #1f2937;               /* Dark text */
+    --q-fg-muted: #4b5563;              /* Muted text/icons (Light Mode) */
     --q-border-color: #e5e7eb;          /* Light grey borders */
 
     /* Shadows & Glows */
@@ -185,7 +187,7 @@
   /* Colors */
   --q-color-primary: #3b82f6;
   --q-color-primary-hover: #2563eb;
-  --q-color-secondary: #4b5563;
+  --q-color-secondary: #7c3aed;        /* Royal Lavender (Light Mode) */
   --q-color-success: #10b981;
   --q-color-warning: #f59e0b;
   --q-color-danger: #ef4444;
@@ -200,6 +202,7 @@
   --q-bg-overlay: rgba(0, 0, 0, 0.6);
   
   --q-fg-base: #1f2937;
+  --q-fg-muted: #4b5563;
   --q-border-color: #e5e7eb;
 
   /* Shadows & Glows */
@@ -215,7 +218,7 @@
 [data-theme="dark"] {
   --q-color-primary: #60a5fa;
   --q-color-primary-hover: #93c5fd;
-  --q-color-secondary: #9ca3af;
+  --q-color-secondary: #9777ea;        /* Royal Lavender (Dark Mode) */
   --q-color-success: #34d399;
   --q-color-warning: #fbbf24;
   --q-color-danger: #f87171;
@@ -229,6 +232,7 @@
   --q-bg-overlay: rgba(0, 0, 0, 0.85);
   
   --q-fg-base: #f9fafb;
+  --q-fg-muted: #9ca3af;
   --q-border-color: #374151;
   
   --q-shadow-low: 0 2px 4px rgba(0, 0, 0, 0.2);

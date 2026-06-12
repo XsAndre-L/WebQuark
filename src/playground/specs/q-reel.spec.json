@@ -1,0 +1,32 @@
+{
+  "name": "Reel (Gallery)",
+  "tag": "q-reel",
+  "props": {
+    "layout": { "type": "select", "options": ["grid", "carousel"], "default": "grid", "desc": "Layout structural mode" },
+    "lightbox": { "type": "boolean", "default": true, "desc": "Triggers fullscreen modal viewer overlay on item click" }
+  },
+  "slots": {
+    "default": {
+      "type": "html",
+      "default": "<q-thumbnail \n  src=\"https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=350\" \n  label=\"Cyberspace Grid\"\n  alt=\"Grid display representation\"\n></q-thumbnail>\n<q-thumbnail \n  src=\"https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=350\" \n  label=\"Synthetics Laboratory\"\n  alt=\"Lab mock representation\"\n  highlighted=\"true\"\n></q-thumbnail>\n<q-thumbnail \n  src=\"https://images.unsplash.com/photo-1614064641938-3bbee52942c7?q=80&w=350\" \n  label=\"Cyber Threat Map\"\n  alt=\"Map mock representation\"\n  video=\"true\"\n></q-thumbnail>",
+      "desc": "Slotted child q-thumbnail elements"
+    }
+  },
+  "variants": [
+    { "name": "Grid Layout with Lightbox", "props": { "layout": "grid", "lightbox": true } },
+    { "name": "Carousel View Layout", "props": { "layout": "carousel", "lightbox": true } },
+    { "name": "No Lightbox (Clicks ignored)", "props": { "layout": "grid", "lightbox": false } }
+  ],
+  "edgeCases": [
+    {
+      "name": "Single Thumbnail Card",
+      "props": { "layout": "grid" },
+      "slot": "<q-thumbnail src=\"https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=350\" label=\"Single Image\" alt=\"Only item\"></q-thumbnail>"
+    },
+    {
+      "name": "Empty Captions Highlighted",
+      "props": { "layout": "grid" },
+      "slot": "<q-thumbnail src=\"https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=350\" alt=\"No caption text\"></q-thumbnail>\n<q-thumbnail src=\"https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=350\" alt=\"Highlight text\" highlighted=\"true\"></q-thumbnail>"
+    }
+  ]
+}

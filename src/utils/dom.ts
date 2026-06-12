@@ -63,12 +63,19 @@ export function getFocusableElements(container: HTMLElement): HTMLElement[] {
     if (node.nodeType !== 1) return;
     const el = node as HTMLElement;
 
-    const isVisible = el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0;
+    // Check display: none via computed style to skip subtrees entirely
+    const style = typeof window !== 'undefined' ? window.getComputedStyle(el) : null;
+    if (style && style.display === 'none') return;
+
     const isTabEnabled = el.getAttribute('tabindex') !== '-1';
     const isAriaHidden = el.getAttribute('aria-hidden') === 'true';
 
-    if (el.matches(selector) && !(el as any).disabled && isTabEnabled && isVisible && !isAriaHidden) {
-      focusables.push(el);
+    if (el.matches(selector) && !(el as any).disabled && isTabEnabled && !isAriaHidden) {
+      // Only read layout-triggering properties if the element matches the focusable selector
+      const isVisible = el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0;
+      if (isVisible) {
+        focusables.push(el);
+      }
     }
 
     // Traverse shadow DOM of nested elements

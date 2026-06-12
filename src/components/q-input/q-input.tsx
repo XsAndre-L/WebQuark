@@ -1,5 +1,4 @@
-import { Component, Prop, Event, EventEmitter, Element, Method, AttachInternals, Watch, h } from '@stencil/core';
-import { getSlottedElements } from '../../utils/dom';
+import { Component, Prop, State, Event, EventEmitter, Element, Method, AttachInternals, Watch, h } from '@stencil/core';
 
 @Component({
   tag: 'q-input',
@@ -24,6 +23,9 @@ export class QInput {
 
   @AttachInternals() internals!: ElementInternals;
 
+  @State() hasPrefix: boolean = false;
+  @State() hasSuffix: boolean = false;
+
   @Event() qChange!: EventEmitter<string>;
   @Event() qInput!: EventEmitter<string>;
   @Event() qBlur!: EventEmitter<FocusEvent>;
@@ -31,6 +33,16 @@ export class QInput {
 
   private inputEl?: HTMLInputElement;
   private initialValue: string = "";
+
+  private handlePrefixSlotChange = (ev: Event) => {
+    const slot = ev.target as HTMLSlotElement;
+    this.hasPrefix = slot.assignedNodes({ flatten: true }).length > 0;
+  };
+
+  private handleSuffixSlotChange = (ev: Event) => {
+    const slot = ev.target as HTMLSlotElement;
+    this.hasSuffix = slot.assignedNodes({ flatten: true }).length > 0;
+  };
 
   @Watch('value')
   watchValue(newValue: string) {
@@ -91,10 +103,7 @@ export class QInput {
     const displayError = this.error || this.errorMessage;
     const showClearBtn = this.clearable && !this.disabled && this.value.length > 0;
     
-    // Check if slots are populated to prevent empty margin boxes, using DOM helper
-    const lightChildren = getSlottedElements(this.el);
-    const hasPrefix = lightChildren.some(el => el.getAttribute('slot') === 'prefix');
-    const hasSuffix = lightChildren.some(el => el.getAttribute('slot') === 'suffix') || showClearBtn;
+    const showSuffixContainer = this.hasSuffix || showClearBtn;
 
     return (
       <div 
@@ -114,12 +123,14 @@ export class QInput {
         {/* Input Box Wrapper */}
         <div class="input-control" part="control">
           
-          {/* Prefix Slot Container rendered conditionally */}
-          {hasPrefix && (
-            <span class="prefix-container" part="prefix">
-              <slot name="prefix" />
-            </span>
-          )}
+          {/* Prefix Slot Container */}
+          <span 
+            class="prefix-container" 
+            style={{ display: this.hasPrefix ? 'flex' : 'none' }}
+            part="prefix"
+          >
+            <slot name="prefix" onSlotchange={this.handlePrefixSlotChange} />
+          </span>
 
           {/* Native HTML Input */}
           <input
@@ -127,8 +138,8 @@ export class QInput {
             id="q-field"
             class={{
               'input-box': true,
-              'has-prefix-padding': hasPrefix,
-              'has-suffix-padding': hasSuffix
+              'has-prefix-padding': this.hasPrefix,
+              'has-suffix-padding': showSuffixContainer
             }}
             type={this.type}
             value={this.value}
@@ -143,25 +154,31 @@ export class QInput {
             aria-describedby={hasError ? 'q-field-error' : undefined}
           />
 
-          {/* Suffix / Clear Button Container rendered conditionally */}
-          {hasSuffix && (
-            <span class="suffix-container" part="suffix">
-              {showClearBtn ? (
-                <button 
-                  class="clear-btn" 
-                  type="button" 
-                  onClick={this.handleClear}
-                  aria-label="Clear input"
-                >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 6L6 18M6 6l12 12" />
-                  </svg>
-                </button>
-              ) : (
-                <slot name="suffix" />
-              )}
+          {/* Suffix / Clear Button Container */}
+          <span 
+            class="suffix-container" 
+            style={{ display: showSuffixContainer ? 'flex' : 'none' }}
+            part="suffix"
+          >
+            {showClearBtn && (
+              <button 
+                class="clear-btn" 
+                type="button" 
+                onClick={this.handleClear}
+                aria-label="Clear input"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+            <span style={{ display: showClearBtn ? 'none' : 'block' }}>
+              <slot 
+                name="suffix" 
+                onSlotchange={this.handleSuffixSlotChange} 
+              />
             </span>
-          )}
+          </span>
 
         </div>
 

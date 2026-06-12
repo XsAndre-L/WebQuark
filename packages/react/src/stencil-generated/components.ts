@@ -11,7 +11,7 @@ import type { EventName, StencilReactComponent } from '@stencil/react-output-tar
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
 
-import { type Option, type QCarouselCustomEvent, type QDropdownCustomEvent, type QInputCustomEvent, type QReelCustomEvent, type QSidepanelCustomEvent, type QStepDiagramItemCustomEvent, type QTextareaCustomEvent, type QThumbnailCustomEvent } from "@webquark/core";
+import { type Option, type QCarouselCustomEvent, type QDropdownCustomEvent, type QInputCustomEvent, type QReelCustomEvent, type QScrollableCustomEvent, type QSidepanelCustomEvent, type QStepDiagramItemCustomEvent, type QTextareaCustomEvent, type QThumbnailCustomEvent, type QToggleCustomEvent } from "@webquark/core";
 import type { Components } from "@webquark/core/dist/components";
 import { QButton as QButtonElement, defineCustomElement as defineQButton } from "@webquark/core/dist/components/q-button.js";
 import { QCard as QCardElement, defineCustomElement as defineQCard } from "@webquark/core/dist/components/q-card.js";
@@ -20,11 +20,13 @@ import { QCircularProgress as QCircularProgressElement, defineCustomElement as d
 import { QDropdown as QDropdownElement, defineCustomElement as defineQDropdown } from "@webquark/core/dist/components/q-dropdown.js";
 import { QInput as QInputElement, defineCustomElement as defineQInput } from "@webquark/core/dist/components/q-input.js";
 import { QReel as QReelElement, defineCustomElement as defineQReel } from "@webquark/core/dist/components/q-reel.js";
+import { QScrollable as QScrollableElement, defineCustomElement as defineQScrollable } from "@webquark/core/dist/components/q-scrollable.js";
 import { QSidepanel as QSidepanelElement, defineCustomElement as defineQSidepanel } from "@webquark/core/dist/components/q-sidepanel.js";
 import { QStepDiagramItem as QStepDiagramItemElement, defineCustomElement as defineQStepDiagramItem } from "@webquark/core/dist/components/q-step-diagram-item.js";
 import { QStepDiagram as QStepDiagramElement, defineCustomElement as defineQStepDiagram } from "@webquark/core/dist/components/q-step-diagram.js";
 import { QTextarea as QTextareaElement, defineCustomElement as defineQTextarea } from "@webquark/core/dist/components/q-textarea.js";
 import { QThumbnail as QThumbnailElement, defineCustomElement as defineQThumbnail } from "@webquark/core/dist/components/q-thumbnail.js";
+import { QToggle as QToggleElement, defineCustomElement as defineQToggle } from "@webquark/core/dist/components/q-toggle.js";
 
 export type QButtonEvents = NonNullable<unknown>;
 
@@ -125,6 +127,17 @@ export const QReel: StencilReactComponent<QReelElement, QReelEvents, Components.
     defineCustomElement: defineQReel
 });
 
+export type QScrollableEvents = { onQScroll: EventName<QScrollableCustomEvent<{ scrollTop: number; scrollHeight: number; clientHeight: number }>> };
+
+export const QScrollable: StencilReactComponent<QScrollableElement, QScrollableEvents, Components.QScrollable> = /*@__PURE__*/ createComponent<QScrollableElement, QScrollableEvents, Components.QScrollable>({
+    tagName: 'q-scrollable',
+    elementClass: QScrollableElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: { onQScroll: 'qScroll' } as QScrollableEvents,
+    defineCustomElement: defineQScrollable
+});
+
 export type QSidepanelEvents = { onQClose: EventName<QSidepanelCustomEvent<void>> };
 
 export const QSidepanel: StencilReactComponent<QSidepanelElement, QSidepanelEvents, Components.QSidepanel> = /*@__PURE__*/ createComponent<QSidepanelElement, QSidepanelEvents, Components.QSidepanel>({
@@ -188,4 +201,15 @@ export const QThumbnail: StencilReactComponent<QThumbnailElement, QThumbnailEven
     react: React,
     events: { onQMaximize: 'qMaximize' } as QThumbnailEvents,
     defineCustomElement: defineQThumbnail
+});
+
+export type QToggleEvents = { onQChange: EventName<QToggleCustomEvent<boolean>> };
+
+export const QToggle: StencilReactComponent<QToggleElement, QToggleEvents, Components.QToggle> = /*@__PURE__*/ createComponent<QToggleElement, QToggleEvents, Components.QToggle>({
+    tagName: 'q-toggle',
+    elementClass: QToggleElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: { onQChange: 'qChange' } as QToggleEvents,
+    defineCustomElement: defineQToggle
 });

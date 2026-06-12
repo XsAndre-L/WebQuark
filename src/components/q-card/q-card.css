@@ -4,8 +4,7 @@
   box-sizing: border-box;
   position: relative;
   z-index: 1;
-  transition: transform var(--q-card-transition-duration, 250ms ease),
-              z-index var(--q-card-transition-duration, 250ms ease);
+  transition: transform var(--q-card-transition-duration, 250ms ease);
 }
 
 /* Elevate host z-index and apply hover lift/scale transforms on the host */

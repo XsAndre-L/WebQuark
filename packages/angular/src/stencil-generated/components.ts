@@ -13,11 +13,13 @@ import { defineCustomElement as defineQCircularProgress } from '@webquark/core/c
 import { defineCustomElement as defineQDropdown } from '@webquark/core/components/q-dropdown.js';
 import { defineCustomElement as defineQInput } from '@webquark/core/components/q-input.js';
 import { defineCustomElement as defineQReel } from '@webquark/core/components/q-reel.js';
+import { defineCustomElement as defineQScrollable } from '@webquark/core/components/q-scrollable.js';
 import { defineCustomElement as defineQSidepanel } from '@webquark/core/components/q-sidepanel.js';
 import { defineCustomElement as defineQStepDiagram } from '@webquark/core/components/q-step-diagram.js';
 import { defineCustomElement as defineQStepDiagramItem } from '@webquark/core/components/q-step-diagram-item.js';
 import { defineCustomElement as defineQTextarea } from '@webquark/core/components/q-textarea.js';
 import { defineCustomElement as defineQThumbnail } from '@webquark/core/components/q-thumbnail.js';
+import { defineCustomElement as defineQToggle } from '@webquark/core/components/q-toggle.js';
 @ProxyCmp({
   defineCustomElementFn: defineQButton,
   inputs: ['disabled', 'download', 'expand', 'href', 'loading', 'size', 'target', 'type', 'variant']
@@ -66,7 +68,7 @@ export declare interface QCard extends Components.QCard {}
 
 @ProxyCmp({
   defineCustomElementFn: defineQCarousel,
-  inputs: ['itemWidth', 'showArrows', 'showIndicators', 'snapAlignment'],
+  inputs: ['itemWidth', 'repeat', 'showArrows', 'showIndicators', 'snapAlignment'],
   methods: ['slideTo', 'updateLimits']
 })
 @Component({
@@ -74,7 +76,7 @@ export declare interface QCard extends Components.QCard {}
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['itemWidth', 'showArrows', 'showIndicators', 'snapAlignment'],
+  inputs: ['itemWidth', 'repeat', 'showArrows', 'showIndicators', 'snapAlignment'],
   outputs: ['qSlideChange'],
 })
 export class QCarousel {
@@ -222,6 +224,37 @@ export declare interface QReel extends Components.QReel {
   qLightboxOpen: EventEmitter<QReelCustomEvent<void>>;
 
   qLightboxClose: EventEmitter<QReelCustomEvent<void>>;
+}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineQScrollable,
+  inputs: ['autoHide', 'height', 'maxHeight', 'mode', 'nativeOnMobile', 'target'],
+  methods: ['scrollToBottom', 'scrollToPosition']
+})
+@Component({
+  selector: 'q-scrollable',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['autoHide', 'height', 'maxHeight', 'mode', 'nativeOnMobile', 'target'],
+  outputs: ['qScroll'],
+})
+export class QScrollable {
+  protected el: HTMLQScrollableElement;
+  @Output() qScroll = new EventEmitter<QScrollableCustomEvent<{ scrollTop: number; scrollHeight: number; clientHeight: number }>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+import type { QScrollableCustomEvent } from '@webquark/core/components';
+
+export declare interface QScrollable extends Components.QScrollable {
+
+  qScroll: EventEmitter<QScrollableCustomEvent<{ scrollTop: number; scrollHeight: number; clientHeight: number }>>;
 }
 
 
@@ -375,6 +408,37 @@ import type { QThumbnailCustomEvent } from '@webquark/core/components';
 export declare interface QThumbnail extends Components.QThumbnail {
 
   qMaximize: EventEmitter<QThumbnailCustomEvent<{ src: string; label?: string; video: boolean; alt: string; triggerEl: HTMLElement }>>;
+}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineQToggle,
+  inputs: ['checked', 'disabled', 'error', 'label', 'required', 'type'],
+  methods: ['toggle']
+})
+@Component({
+  selector: 'q-toggle',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['checked', 'disabled', 'error', 'label', 'required', 'type'],
+  outputs: ['qChange'],
+})
+export class QToggle {
+  protected el: HTMLQToggleElement;
+  @Output() qChange = new EventEmitter<QToggleCustomEvent<boolean>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+import type { QToggleCustomEvent } from '@webquark/core/components';
+
+export declare interface QToggle extends Components.QToggle {
+
+  qChange: EventEmitter<QToggleCustomEvent<boolean>>;
 }
 
 
