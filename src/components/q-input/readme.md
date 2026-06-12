@@ -7,17 +7,18 @@
 
 ## Properties
 
-| Property       | Attribute       | Description | Type                                                               | Default     |
-| -------------- | --------------- | ----------- | ------------------------------------------------------------------ | ----------- |
-| `clearable`    | `clearable`     |             | `boolean`                                                          | `false`     |
-| `disabled`     | `disabled`      |             | `boolean`                                                          | `false`     |
-| `error`        | `error`         |             | `string`                                                           | `undefined` |
-| `errorMessage` | `error-message` |             | `string`                                                           | `undefined` |
-| `label`        | `label`         |             | `string`                                                           | `undefined` |
-| `placeholder`  | `placeholder`   |             | `string`                                                           | `""`        |
-| `required`     | `required`      |             | `boolean`                                                          | `false`     |
-| `type`         | `type`          |             | `"email" \| "number" \| "password" \| "search" \| "text" \| "url"` | `'text'`    |
-| `value`        | `value`         |             | `string`                                                           | `""`        |
+| Property       | Attribute       | Description | Type                                                                          | Default     |
+| -------------- | --------------- | ----------- | ----------------------------------------------------------------------------- | ----------- |
+| `clearable`    | `clearable`     |             | `boolean`                                                                     | `false`     |
+| `disabled`     | `disabled`      |             | `boolean`                                                                     | `false`     |
+| `error`        | `error`         |             | `string`                                                                      | `undefined` |
+| `errorMessage` | `error-message` |             | `string`                                                                      | `undefined` |
+| `label`        | `label`         |             | `string`                                                                      | `undefined` |
+| `placeholder`  | `placeholder`   |             | `string`                                                                      | `""`        |
+| `required`     | `required`      |             | `boolean`                                                                     | `false`     |
+| `size`         | `size`          |             | `"lg" \| "md" \| "sm"`                                                        | `'md'`      |
+| `type`         | `type`          |             | `"color" \| "email" \| "number" \| "password" \| "search" \| "text" \| "url"` | `'text'`    |
+| `value`        | `value`         |             | `string`                                                                      | `""`        |
 
 
 ## Events

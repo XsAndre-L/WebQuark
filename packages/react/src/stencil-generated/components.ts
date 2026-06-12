@@ -18,6 +18,7 @@ import { QCard as QCardElement, defineCustomElement as defineQCard } from "@webq
 import { QCarousel as QCarouselElement, defineCustomElement as defineQCarousel } from "@webquark/core/dist/components/q-carousel.js";
 import { QCircularProgress as QCircularProgressElement, defineCustomElement as defineQCircularProgress } from "@webquark/core/dist/components/q-circular-progress.js";
 import { QDropdown as QDropdownElement, defineCustomElement as defineQDropdown } from "@webquark/core/dist/components/q-dropdown.js";
+import { QIcon as QIconElement, defineCustomElement as defineQIcon } from "@webquark/core/dist/components/q-icon.js";
 import { QInput as QInputElement, defineCustomElement as defineQInput } from "@webquark/core/dist/components/q-input.js";
 import { QReel as QReelElement, defineCustomElement as defineQReel } from "@webquark/core/dist/components/q-reel.js";
 import { QScrollable as QScrollableElement, defineCustomElement as defineQScrollable } from "@webquark/core/dist/components/q-scrollable.js";
@@ -27,6 +28,7 @@ import { QStepDiagram as QStepDiagramElement, defineCustomElement as defineQStep
 import { QTextarea as QTextareaElement, defineCustomElement as defineQTextarea } from "@webquark/core/dist/components/q-textarea.js";
 import { QThumbnail as QThumbnailElement, defineCustomElement as defineQThumbnail } from "@webquark/core/dist/components/q-thumbnail.js";
 import { QToggle as QToggleElement, defineCustomElement as defineQToggle } from "@webquark/core/dist/components/q-toggle.js";
+import { QTooltip as QTooltipElement, defineCustomElement as defineQTooltip } from "@webquark/core/dist/components/q-tooltip.js";
 
 export type QButtonEvents = NonNullable<unknown>;
 
@@ -87,6 +89,17 @@ export const QDropdown: StencilReactComponent<QDropdownElement, QDropdownEvents,
         onQSelect: 'qSelect'
     } as QDropdownEvents,
     defineCustomElement: defineQDropdown
+});
+
+export type QIconEvents = NonNullable<unknown>;
+
+export const QIcon: StencilReactComponent<QIconElement, QIconEvents, Components.QIcon> = /*@__PURE__*/ createComponent<QIconElement, QIconEvents, Components.QIcon>({
+    tagName: 'q-icon',
+    elementClass: QIconElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: {} as QIconEvents,
+    defineCustomElement: defineQIcon
 });
 
 export type QInputEvents = {
@@ -212,4 +225,15 @@ export const QToggle: StencilReactComponent<QToggleElement, QToggleEvents, Compo
     react: React,
     events: { onQChange: 'qChange' } as QToggleEvents,
     defineCustomElement: defineQToggle
+});
+
+export type QTooltipEvents = NonNullable<unknown>;
+
+export const QTooltip: StencilReactComponent<QTooltipElement, QTooltipEvents, Components.QTooltip> = /*@__PURE__*/ createComponent<QTooltipElement, QTooltipEvents, Components.QTooltip>({
+    tagName: 'q-tooltip',
+    elementClass: QTooltipElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: {} as QTooltipEvents,
+    defineCustomElement: defineQTooltip
 });

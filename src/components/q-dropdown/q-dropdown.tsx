@@ -19,6 +19,7 @@ export class QDropdown {
   @Prop() placeholder: string = "Select an option...";
   @Prop() options: Option[] | string = [];
   @Prop({ reflect: true }) disabled: boolean = false;
+  @Prop() size: 'sm' | 'md' | 'lg' = 'md';
 
   @State() isOpen: boolean = false;
   @State() focusedIndex: number = -1;
@@ -183,7 +184,8 @@ export class QDropdown {
         class={{
           'dropdown-wrapper': true,
           'is-open': this.isOpen,
-          'is-disabled': this.disabled
+          'is-disabled': this.disabled,
+          [`size-${this.size}`]: true
         }}
         onKeyDown={this.handleKeyDown}
       >

@@ -10,13 +10,14 @@ import { Component, Prop, State, Event, EventEmitter, Element, Method, AttachInt
 })
 export class QInput {
   @Prop({ mutable: true }) value: string = "";
-  @Prop() type: 'text' | 'password' | 'email' | 'number' | 'url' | 'search' = 'text';
+  @Prop() type: 'text' | 'password' | 'email' | 'number' | 'url' | 'search' | 'color' = 'text';
   @Prop() placeholder: string = "";
   @Prop() label?: string;
   @Prop({ reflect: true }) disabled: boolean = false;
   @Prop({ reflect: true }) required: boolean = false;
   @Prop({ reflect: true }) error?: string;
   @Prop() errorMessage?: string;
+  @Prop() size: 'sm' | 'md' | 'lg' = 'md';
   @Prop() clearable: boolean = false;
 
   @Element() el!: HTMLElement;
@@ -110,7 +111,8 @@ export class QInput {
         class={{
           'input-wrapper': true,
           'is-disabled': this.disabled,
-          'has-error': hasError
+          'has-error': hasError,
+          [`size-${this.size}`]: true
         }}
       >
         {/* Optional Header Label linked via htmlFor */}

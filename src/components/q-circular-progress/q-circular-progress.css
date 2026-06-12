@@ -5,6 +5,24 @@
   box-sizing: border-box;
 }
 
+:host([size="sm"]) {
+  --q-progress-size: 64px;
+  --q-progress-stroke-width: 6px;
+  --q-progress-font-size: var(--q-font-size-xs, 0.75rem);
+}
+
+:host([size="md"]) {
+  --q-progress-size: 120px;
+  --q-progress-stroke-width: 8px;
+  --q-progress-font-size: var(--q-font-size-lg, 1.125rem);
+}
+
+:host([size="lg"]) {
+  --q-progress-size: 180px;
+  --q-progress-stroke-width: 10px;
+  --q-progress-font-size: var(--q-font-size-2xl, 1.5rem);
+}
+
 .progress-container {
   width: 100%;
   height: 100%;

@@ -4,6 +4,7 @@
   "props": {
     "checked": { "type": "boolean", "default": false, "desc": "Boolean active state of the toggle" },
     "type": { "type": "select", "options": ["switch", "checkbox"], "default": "switch", "desc": "Visual presentation style" },
+    "size": { "type": "select", "options": ["sm", "md", "lg"], "default": "md", "desc": "Toggle and checkbox display sizing" },
     "label": { "type": "string", "default": "Toggle Label", "desc": "Text label adjacent to the toggle" },
     "disabled": { "type": "boolean", "default": false, "desc": "Locks interaction" },
     "required": { "type": "boolean", "default": false, "desc": "Required flag for form validation" },
@@ -17,8 +18,12 @@
   "variants": [
     { "name": "Switch Mode Off", "props": { "type": "switch", "checked": false, "label": "Off State" } },
     { "name": "Switch Mode On", "props": { "type": "switch", "checked": true, "label": "On State" } },
+    { "name": "Switch Small On", "props": { "type": "switch", "size": "sm", "checked": true, "label": "Small Toggle" } },
+    { "name": "Switch Large On", "props": { "type": "switch", "size": "lg", "checked": true, "label": "Large Toggle" } },
     { "name": "Checkbox Mode Off", "props": { "type": "checkbox", "checked": false, "label": "Checkbox Off" } },
     { "name": "Checkbox Mode On", "props": { "type": "checkbox", "checked": true, "label": "Checkbox On" } },
+    { "name": "Checkbox Small On", "props": { "type": "checkbox", "size": "sm", "checked": true, "label": "Small Checkbox" } },
+    { "name": "Checkbox Large On", "props": { "type": "checkbox", "size": "lg", "checked": true, "label": "Large Checkbox" } },
     { "name": "Disabled Switch", "props": { "type": "switch", "disabled": true, "checked": true, "label": "Disabled On" } },
     { "name": "Required Switch", "props": { "type": "switch", "required": true, "checked": false, "label": "Required Field" } },
     { "name": "Switch with Error state", "props": { "type": "switch", "error": "This field is required", "checked": false, "label": "Invalid Field" } }

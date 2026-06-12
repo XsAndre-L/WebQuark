@@ -3,9 +3,10 @@
   "tag": "q-input",
   "props": {
     "value": { "type": "string", "default": "", "desc": "Active text content value" },
-    "type": { "type": "select", "options": ["text", "password", "email", "number", "url", "search"], "default": "text", "desc": "Browser native input element type" },
+    "type": { "type": "select", "options": ["text", "password", "email", "number", "url", "search", "color"], "default": "text", "desc": "Browser native input element type" },
     "placeholder": { "type": "string", "default": "Enter text here...", "desc": "Native placeholder text" },
     "label": { "type": "string", "default": "Credential Login", "desc": "Floating input title label" },
+    "size": { "type": "select", "options": ["sm", "md", "lg"], "default": "md", "desc": "Input box and font display size" },
     "disabled": { "type": "boolean", "default": false, "desc": "Disables typing and styles greyed state" },
     "required": { "type": "boolean", "default": false, "desc": "Aria-required validation identifier" },
     "clearable": { "type": "boolean", "default": true, "desc": "Displays clean icon button when value is populated" },
@@ -17,6 +18,9 @@
   },
   "variants": [
     { "name": "Standard Input Box", "props": { "label": "Full Name", "placeholder": "John Doe" } },
+    { "name": "Small Input Box", "props": { "label": "Small Username", "placeholder": "sm-user", "size": "sm" } },
+    { "name": "Large Input Box", "props": { "label": "Large Username", "placeholder": "lg-user", "size": "lg" } },
+    { "name": "Color Picker Input", "props": { "label": "Accent Color Theme", "type": "color", "value": "#60a5fa" } },
     { "name": "Password type input", "props": { "label": "Security Password", "type": "password", "placeholder": "Enter code..." } },
     { "name": "Email with Error validation", "props": { "label": "Email Address", "type": "email", "value": "bad-email-format", "error": "Please enter a valid email address" } },
     { "name": "Disabled State lock", "props": { "label": "Hardware Address", "value": "00:1A:2B:3C:4D:5E", "disabled": true } },

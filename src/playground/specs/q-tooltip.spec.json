@@ -1,0 +1,60 @@
+{
+  "tag": "q-tooltip",
+  "name": "Tooltip",
+  "description": "Custom CSS-styled hover and focus tooltip component.",
+  "props": {
+    "content": {
+      "type": "string",
+      "default": "This is a premium tooltip",
+      "desc": "The text content inside the tooltip bubble"
+    },
+    "position": {
+      "type": "select",
+      "options": ["top", "bottom", "left", "right"],
+      "default": "top",
+      "desc": "The positioning alignment relative to the trigger element"
+    },
+    "delay": {
+      "type": "number",
+      "min": 0,
+      "max": 2000,
+      "default": 200,
+      "desc": "The delay in milliseconds before the tooltip fades in"
+    }
+  },
+  "variants": [
+    {
+      "name": "Default Top Tooltip",
+      "props": {
+        "content": "Default Top Tooltip",
+        "position": "top",
+        "delay": 200
+      }
+    },
+    {
+      "name": "Right Alignment Tooltip",
+      "props": {
+        "content": "Tooltip on the Right",
+        "position": "right",
+        "delay": 100
+      }
+    },
+    {
+      "name": "Immediate Bottom Tooltip",
+      "props": {
+        "content": "No hover delay",
+        "position": "bottom",
+        "delay": 0
+      }
+    }
+  ],
+  "edgeCases": [
+    {
+      "name": "Very Long Tooltip Text",
+      "props": {
+        "content": "This is a very long tooltip message containing multiple words to verify how horizontal bounds are constrained.",
+        "position": "top"
+      }
+    }
+  ]
+}

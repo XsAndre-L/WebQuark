@@ -86,6 +86,10 @@ export namespace Components {
         "indeterminate": boolean;
         "label"?: string;
         /**
+          * @default 'md'
+         */
+        "size": 'sm' | 'md' | 'lg';
+        /**
           * @default 0
          */
         "value": number;
@@ -105,9 +109,39 @@ export namespace Components {
          */
         "placeholder": string;
         /**
+          * @default 'md'
+         */
+        "size": 'sm' | 'md' | 'lg';
+        /**
           * @default ""
          */
         "value": string;
+    }
+    interface QIcon {
+        /**
+          * The color of the icon. Defaults to 'currentColor'.
+          * @default 'currentColor'
+         */
+        "color": string;
+        /**
+          * The library to load the icon from. Options: 'lucide', 'font-awesome', 'local', or a custom base URL / template URL.
+          * @default 'lucide'
+         */
+        "lib": string;
+        /**
+          * The default path for local assets when `lib` is set to 'local'.
+          * @default '/assets/icons/'
+         */
+        "localPath": string;
+        /**
+          * The name of the icon (e.g., 'settings', 'heart', or a filename like 'logo.png').
+         */
+        "name": string;
+        /**
+          * The size of the icon. Can be a preset alias ('sm', 'md', 'lg'), a number (pixels), or any valid CSS size string (e.g., '1.5rem').
+          * @default 'md'
+         */
+        "size": string;
     }
     interface QInput {
         "clearValue": () => Promise<void>;
@@ -132,9 +166,13 @@ export namespace Components {
          */
         "required": boolean;
         /**
+          * @default 'md'
+         */
+        "size": 'sm' | 'md' | 'lg';
+        /**
           * @default 'text'
          */
-        "type": 'text' | 'password' | 'email' | 'number' | 'url' | 'search';
+        "type": 'text' | 'password' | 'email' | 'number' | 'url' | 'search' | 'color';
         /**
           * @default ""
          */
@@ -277,11 +315,31 @@ export namespace Components {
           * @default false
          */
         "required": boolean;
+        /**
+          * @default 'md'
+         */
+        "size": 'sm' | 'md' | 'lg';
         "toggle": () => Promise<void>;
         /**
           * @default 'switch'
          */
         "type": 'switch' | 'checkbox';
+    }
+    interface QTooltip {
+        /**
+          * The text content to display inside the tooltip.
+         */
+        "content": string;
+        /**
+          * The delay in milliseconds before the tooltip shows up.
+          * @default 200
+         */
+        "delay": number;
+        /**
+          * The placement position of the tooltip relative to its trigger parent. Options: 'top', 'bottom', 'left', 'right'
+          * @default 'top'
+         */
+        "position": 'top' | 'bottom' | 'left' | 'right';
     }
 }
 export interface QCarouselCustomEvent<T> extends CustomEvent<T> {
@@ -377,6 +435,12 @@ declare global {
     var HTMLQDropdownElement: {
         prototype: HTMLQDropdownElement;
         new (): HTMLQDropdownElement;
+    };
+    interface HTMLQIconElement extends Components.QIcon, HTMLStencilElement {
+    }
+    var HTMLQIconElement: {
+        prototype: HTMLQIconElement;
+        new (): HTMLQIconElement;
     };
     interface HTMLQInputElementEventMap {
         "qChange": string;
@@ -527,12 +591,19 @@ declare global {
         prototype: HTMLQToggleElement;
         new (): HTMLQToggleElement;
     };
+    interface HTMLQTooltipElement extends Components.QTooltip, HTMLStencilElement {
+    }
+    var HTMLQTooltipElement: {
+        prototype: HTMLQTooltipElement;
+        new (): HTMLQTooltipElement;
+    };
     interface HTMLElementTagNameMap {
         "q-button": HTMLQButtonElement;
         "q-card": HTMLQCardElement;
         "q-carousel": HTMLQCarouselElement;
         "q-circular-progress": HTMLQCircularProgressElement;
         "q-dropdown": HTMLQDropdownElement;
+        "q-icon": HTMLQIconElement;
         "q-input": HTMLQInputElement;
         "q-reel": HTMLQReelElement;
         "q-scrollable": HTMLQScrollableElement;
@@ -542,6 +613,7 @@ declare global {
         "q-textarea": HTMLQTextareaElement;
         "q-thumbnail": HTMLQThumbnailElement;
         "q-toggle": HTMLQToggleElement;
+        "q-tooltip": HTMLQTooltipElement;
     }
 }
 declare namespace LocalJSX {
@@ -622,6 +694,10 @@ declare namespace LocalJSX {
         "indeterminate"?: boolean;
         "label"?: string;
         /**
+          * @default 'md'
+         */
+        "size"?: 'sm' | 'md' | 'lg';
+        /**
           * @default 0
          */
         "value"?: number;
@@ -651,9 +727,39 @@ declare namespace LocalJSX {
          */
         "placeholder"?: string;
         /**
+          * @default 'md'
+         */
+        "size"?: 'sm' | 'md' | 'lg';
+        /**
           * @default ""
          */
         "value"?: string;
+    }
+    interface QIcon {
+        /**
+          * The color of the icon. Defaults to 'currentColor'.
+          * @default 'currentColor'
+         */
+        "color"?: string;
+        /**
+          * The library to load the icon from. Options: 'lucide', 'font-awesome', 'local', or a custom base URL / template URL.
+          * @default 'lucide'
+         */
+        "lib"?: string;
+        /**
+          * The default path for local assets when `lib` is set to 'local'.
+          * @default '/assets/icons/'
+         */
+        "localPath"?: string;
+        /**
+          * The name of the icon (e.g., 'settings', 'heart', or a filename like 'logo.png').
+         */
+        "name"?: string;
+        /**
+          * The size of the icon. Can be a preset alias ('sm', 'md', 'lg'), a number (pixels), or any valid CSS size string (e.g., '1.5rem').
+          * @default 'md'
+         */
+        "size"?: string;
     }
     interface QInput {
         /**
@@ -688,9 +794,13 @@ declare namespace LocalJSX {
          */
         "required"?: boolean;
         /**
+          * @default 'md'
+         */
+        "size"?: 'sm' | 'md' | 'lg';
+        /**
           * @default 'text'
          */
-        "type"?: 'text' | 'password' | 'email' | 'number' | 'url' | 'search';
+        "type"?: 'text' | 'password' | 'email' | 'number' | 'url' | 'search' | 'color';
         /**
           * @default ""
          */
@@ -857,9 +967,29 @@ declare namespace LocalJSX {
          */
         "required"?: boolean;
         /**
+          * @default 'md'
+         */
+        "size"?: 'sm' | 'md' | 'lg';
+        /**
           * @default 'switch'
          */
         "type"?: 'switch' | 'checkbox';
+    }
+    interface QTooltip {
+        /**
+          * The text content to display inside the tooltip.
+         */
+        "content"?: string;
+        /**
+          * The delay in milliseconds before the tooltip shows up.
+          * @default 200
+         */
+        "delay"?: number;
+        /**
+          * The placement position of the tooltip relative to its trigger parent. Options: 'top', 'bottom', 'left', 'right'
+          * @default 'top'
+         */
+        "position"?: 'top' | 'bottom' | 'left' | 'right';
     }
 
     interface QButtonAttributes {
@@ -890,6 +1020,7 @@ declare namespace LocalJSX {
         "value": number;
         "label": string;
         "indeterminate": boolean;
+        "size": 'sm' | 'md' | 'lg';
     }
     interface QDropdownAttributes {
         "value": string;
@@ -897,16 +1028,25 @@ declare namespace LocalJSX {
         "placeholder": string;
         "options": Option[] | string;
         "disabled": boolean;
+        "size": 'sm' | 'md' | 'lg';
+    }
+    interface QIconAttributes {
+        "name": string;
+        "lib": string;
+        "size": string;
+        "color": string;
+        "localPath": string;
     }
     interface QInputAttributes {
         "value": string;
-        "type": 'text' | 'password' | 'email' | 'number' | 'url' | 'search';
+        "type": 'text' | 'password' | 'email' | 'number' | 'url' | 'search' | 'color';
         "placeholder": string;
         "label": string;
         "disabled": boolean;
         "required": boolean;
         "error": string;
         "errorMessage": string;
+        "size": 'sm' | 'md' | 'lg';
         "clearable": boolean;
     }
     interface QReelAttributes {
@@ -954,11 +1094,17 @@ declare namespace LocalJSX {
     }
     interface QToggleAttributes {
         "checked": boolean;
+        "size": 'sm' | 'md' | 'lg';
         "type": 'switch' | 'checkbox';
         "label": string;
         "disabled": boolean;
         "required": boolean;
         "error": string;
+    }
+    interface QTooltipAttributes {
+        "content": string;
+        "position": 'top' | 'bottom' | 'left' | 'right';
+        "delay": number;
     }
 
     interface IntrinsicElements {
@@ -967,6 +1113,7 @@ declare namespace LocalJSX {
         "q-carousel": Omit<QCarousel, keyof QCarouselAttributes> & { [K in keyof QCarousel & keyof QCarouselAttributes]?: QCarousel[K] } & { [K in keyof QCarousel & keyof QCarouselAttributes as `attr:${K}`]?: QCarouselAttributes[K] } & { [K in keyof QCarousel & keyof QCarouselAttributes as `prop:${K}`]?: QCarousel[K] };
         "q-circular-progress": Omit<QCircularProgress, keyof QCircularProgressAttributes> & { [K in keyof QCircularProgress & keyof QCircularProgressAttributes]?: QCircularProgress[K] } & { [K in keyof QCircularProgress & keyof QCircularProgressAttributes as `attr:${K}`]?: QCircularProgressAttributes[K] } & { [K in keyof QCircularProgress & keyof QCircularProgressAttributes as `prop:${K}`]?: QCircularProgress[K] };
         "q-dropdown": Omit<QDropdown, keyof QDropdownAttributes> & { [K in keyof QDropdown & keyof QDropdownAttributes]?: QDropdown[K] } & { [K in keyof QDropdown & keyof QDropdownAttributes as `attr:${K}`]?: QDropdownAttributes[K] } & { [K in keyof QDropdown & keyof QDropdownAttributes as `prop:${K}`]?: QDropdown[K] };
+        "q-icon": Omit<QIcon, keyof QIconAttributes> & { [K in keyof QIcon & keyof QIconAttributes]?: QIcon[K] } & { [K in keyof QIcon & keyof QIconAttributes as `attr:${K}`]?: QIconAttributes[K] } & { [K in keyof QIcon & keyof QIconAttributes as `prop:${K}`]?: QIcon[K] };
         "q-input": Omit<QInput, keyof QInputAttributes> & { [K in keyof QInput & keyof QInputAttributes]?: QInput[K] } & { [K in keyof QInput & keyof QInputAttributes as `attr:${K}`]?: QInputAttributes[K] } & { [K in keyof QInput & keyof QInputAttributes as `prop:${K}`]?: QInput[K] };
         "q-reel": Omit<QReel, keyof QReelAttributes> & { [K in keyof QReel & keyof QReelAttributes]?: QReel[K] } & { [K in keyof QReel & keyof QReelAttributes as `attr:${K}`]?: QReelAttributes[K] } & { [K in keyof QReel & keyof QReelAttributes as `prop:${K}`]?: QReel[K] };
         "q-scrollable": Omit<QScrollable, keyof QScrollableAttributes> & { [K in keyof QScrollable & keyof QScrollableAttributes]?: QScrollable[K] } & { [K in keyof QScrollable & keyof QScrollableAttributes as `attr:${K}`]?: QScrollableAttributes[K] } & { [K in keyof QScrollable & keyof QScrollableAttributes as `prop:${K}`]?: QScrollable[K] };
@@ -976,6 +1123,7 @@ declare namespace LocalJSX {
         "q-textarea": Omit<QTextarea, keyof QTextareaAttributes> & { [K in keyof QTextarea & keyof QTextareaAttributes]?: QTextarea[K] } & { [K in keyof QTextarea & keyof QTextareaAttributes as `attr:${K}`]?: QTextareaAttributes[K] } & { [K in keyof QTextarea & keyof QTextareaAttributes as `prop:${K}`]?: QTextarea[K] };
         "q-thumbnail": Omit<QThumbnail, keyof QThumbnailAttributes> & { [K in keyof QThumbnail & keyof QThumbnailAttributes]?: QThumbnail[K] } & { [K in keyof QThumbnail & keyof QThumbnailAttributes as `attr:${K}`]?: QThumbnailAttributes[K] } & { [K in keyof QThumbnail & keyof QThumbnailAttributes as `prop:${K}`]?: QThumbnail[K] };
         "q-toggle": Omit<QToggle, keyof QToggleAttributes> & { [K in keyof QToggle & keyof QToggleAttributes]?: QToggle[K] } & { [K in keyof QToggle & keyof QToggleAttributes as `attr:${K}`]?: QToggleAttributes[K] } & { [K in keyof QToggle & keyof QToggleAttributes as `prop:${K}`]?: QToggle[K] };
+        "q-tooltip": Omit<QTooltip, keyof QTooltipAttributes> & { [K in keyof QTooltip & keyof QTooltipAttributes]?: QTooltip[K] } & { [K in keyof QTooltip & keyof QTooltipAttributes as `attr:${K}`]?: QTooltipAttributes[K] } & { [K in keyof QTooltip & keyof QTooltipAttributes as `prop:${K}`]?: QTooltip[K] };
     }
 }
 export { LocalJSX as JSX };
@@ -987,6 +1135,7 @@ declare module "@stencil/core" {
             "q-carousel": LocalJSX.IntrinsicElements["q-carousel"] & JSXBase.HTMLAttributes<HTMLQCarouselElement>;
             "q-circular-progress": LocalJSX.IntrinsicElements["q-circular-progress"] & JSXBase.HTMLAttributes<HTMLQCircularProgressElement>;
             "q-dropdown": LocalJSX.IntrinsicElements["q-dropdown"] & JSXBase.HTMLAttributes<HTMLQDropdownElement>;
+            "q-icon": LocalJSX.IntrinsicElements["q-icon"] & JSXBase.HTMLAttributes<HTMLQIconElement>;
             "q-input": LocalJSX.IntrinsicElements["q-input"] & JSXBase.HTMLAttributes<HTMLQInputElement>;
             "q-reel": LocalJSX.IntrinsicElements["q-reel"] & JSXBase.HTMLAttributes<HTMLQReelElement>;
             "q-scrollable": LocalJSX.IntrinsicElements["q-scrollable"] & JSXBase.HTMLAttributes<HTMLQScrollableElement>;
@@ -996,6 +1145,7 @@ declare module "@stencil/core" {
             "q-textarea": LocalJSX.IntrinsicElements["q-textarea"] & JSXBase.HTMLAttributes<HTMLQTextareaElement>;
             "q-thumbnail": LocalJSX.IntrinsicElements["q-thumbnail"] & JSXBase.HTMLAttributes<HTMLQThumbnailElement>;
             "q-toggle": LocalJSX.IntrinsicElements["q-toggle"] & JSXBase.HTMLAttributes<HTMLQToggleElement>;
+            "q-tooltip": LocalJSX.IntrinsicElements["q-tooltip"] & JSXBase.HTMLAttributes<HTMLQTooltipElement>;
         }
     }
 }

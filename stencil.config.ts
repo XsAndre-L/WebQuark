@@ -26,7 +26,11 @@ export const config: Config = {
         { src: 'playground/index.html', dest: 'index.html' },
         { src: 'playground/playground.css', dest: 'playground.css' },
         { src: 'playground/playground.js', dest: 'playground.js' },
-        { src: 'playground/specs', dest: 'playground/specs' }
+        { src: 'playground/state.js', dest: 'state.js' },
+        { src: 'playground/components', dest: 'components' },
+        { src: 'playground/specs', dest: 'playground/specs' },
+        { src: 'playground/css', dest: 'css' },
+        { src: 'playground/views', dest: 'views' }
       ]
     },
     reactOutputTarget({

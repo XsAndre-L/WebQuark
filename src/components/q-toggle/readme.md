@@ -14,6 +14,7 @@
 | `error`    | `error`    |             | `string`                 | `undefined` |
 | `label`    | `label`    |             | `string`                 | `undefined` |
 | `required` | `required` |             | `boolean`                | `false`     |
+| `size`     | `size`     |             | `"lg" \| "md" \| "sm"`   | `'md'`      |
 | `type`     | `type`     |             | `"checkbox" \| "switch"` | `'switch'`  |
 
 

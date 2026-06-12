@@ -1,0 +1,31 @@
+{
+  "name": "Icon",
+  "tag": "q-icon",
+  "props": {
+    "name": { "type": "string", "default": "settings", "desc": "The name of the icon (e.g. settings, heart, or logo.png)" },
+    "lib": { "type": "select", "options": ["lucide", "font-awesome", "local"], "default": "lucide", "desc": "Library source for the icon file" },
+    "size": {
+      "type": "select",
+      "options": ["sm", "md", "lg", "16", "24", "32", "48", "64"],
+      "default": "md",
+      "desc": "Preset alias (sm, md, lg) or numeric pixel size string"
+    },
+    "color": { "type": "string", "default": "currentColor", "desc": "CSS color override" },
+    "localPath": { "type": "string", "default": "/assets/icons/", "desc": "Custom local assets base path" }
+  },
+  "slots": {},
+  "variants": [
+    { "name": "Lucide Settings (Small)", "props": { "lib": "lucide", "name": "settings", "size": "sm", "color": "var(--q-color-primary)" } },
+    { "name": "Lucide Settings (Medium)", "props": { "lib": "lucide", "name": "settings", "size": "md", "color": "var(--q-color-primary)" } },
+    { "name": "Lucide Settings (Large)", "props": { "lib": "lucide", "name": "settings", "size": "lg", "color": "var(--q-color-primary)" } },
+    { "name": "Lucide Heart (Large Red)", "props": { "lib": "lucide", "name": "heart", "size": "48", "color": "var(--q-color-danger)" } },
+    { "name": "FontAwesome Heart", "props": { "lib": "font-awesome", "name": "heart", "size": "24", "color": "var(--q-color-success)" } },
+    { "name": "FontAwesome Star (Gold)", "props": { "lib": "font-awesome", "name": "star", "size": "32", "color": "var(--q-color-warning)" } },
+    { "name": "Local Asset SVG (Standard)", "props": { "lib": "local", "name": "checkmark", "size": "24", "color": "var(--q-color-success)" } }
+  ],
+  "edgeCases": [
+    { "name": "Missing Icon Fallback", "props": { "lib": "lucide", "name": "non-existent-icon-name-xyz" } },
+    { "name": "Binary Image File (.png)", "props": { "lib": "local", "name": "logo-test.png", "size": "64" } },
+    { "name": "Extremely Large Custom Size", "props": { "lib": "lucide", "name": "bell", "size": "120", "color": "var(--q-color-secondary)" } }
+  ]
+}

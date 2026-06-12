@@ -1,0 +1,136 @@
+:root {
+  /* Playground shell local variables (custom navy theme for the dashboard) */
+  --bg-app: #0b0f19;
+  --bg-sidebar: #111827;
+  --bg-surface: #1e293b;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --text-main: #f3f4f6;
+  --text-muted: var(--q-fg-muted);
+  --primary: var(--q-color-primary);
+  --accent-glow: rgba(59, 130, 246, 0.15);
+  --shadow-main: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme='light'] {
+  /* Playground shell local variables for light mode */
+  --bg-app: #f3f4f6;
+  --bg-sidebar: #ffffff;
+  --bg-surface: #e5e7eb;
+  --border-color: rgba(0, 0, 0, 0.08);
+  --text-main: #1f2937;
+  --accent-glow: rgba(37, 99, 235, 0.1);
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  font-family: var(--q-font-family);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+playground-header {
+  display: block;
+  flex-shrink: 0;
+}
+
+playground-sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  flex-shrink: 0;
+}
+
+playground-stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+playground-knobs {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  flex-shrink: 0;
+}
+
+/* Prevent layout text selection on UI components */
+.header-logo,
+.tabs-bar,
+.tab-btn,
+.action-btn,
+.clear-log-btn,
+.copy-btn,
+.knobs-section-title,
+.event-log-header,
+.code-preview-header,
+.variant-card-title,
+.active-component-badge,
+.hamburger-menu,
+.knobs-toggle-btn,
+.knobs-close-btn,
+.sidebar-item {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ==========================================================================
+   SCROLLABLE CONTAINER & NATIVE SCROLLBAR CUSTOMIZATION
+   ========================================================================== */
+q-scrollable {
+  flex: 1;
+  min-height: 0;
+  display: block;
+}
+
+/* Custom Scrollbar Styles for Native Overflows (e.g. horizontal scroll in code boxes) */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--q-bg-surface-3, #4b5563);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--q-color-primary, #60a5fa);
+}
+
+/* Firefox Support */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--q-bg-surface-3, #4b5563) transparent;
+}
+
+/* Global Shell Layouts */
+.app-workspace {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  height: 100%;
+}
+
+.main-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--bg-app);
+  overflow: hidden;
+  height: 100%;
+}

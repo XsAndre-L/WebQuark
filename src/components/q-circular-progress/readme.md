@@ -7,11 +7,12 @@
 
 ## Properties
 
-| Property        | Attribute       | Description | Type      | Default     |
-| --------------- | --------------- | ----------- | --------- | ----------- |
-| `indeterminate` | `indeterminate` |             | `boolean` | `false`     |
-| `label`         | `label`         |             | `string`  | `undefined` |
-| `value`         | `value`         |             | `number`  | `0`         |
+| Property        | Attribute       | Description | Type                   | Default     |
+| --------------- | --------------- | ----------- | ---------------------- | ----------- |
+| `indeterminate` | `indeterminate` |             | `boolean`              | `false`     |
+| `label`         | `label`         |             | `string`               | `undefined` |
+| `size`          | `size`          |             | `"lg" \| "md" \| "sm"` | `'md'`      |
+| `value`         | `value`         |             | `number`               | `0`         |
 
 
 ----------------------------------------------

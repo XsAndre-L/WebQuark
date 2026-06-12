@@ -11,6 +11,7 @@ import { defineCustomElement as defineQCard } from '@webquark/core/components/q-
 import { defineCustomElement as defineQCarousel } from '@webquark/core/components/q-carousel.js';
 import { defineCustomElement as defineQCircularProgress } from '@webquark/core/components/q-circular-progress.js';
 import { defineCustomElement as defineQDropdown } from '@webquark/core/components/q-dropdown.js';
+import { defineCustomElement as defineQIcon } from '@webquark/core/components/q-icon.js';
 import { defineCustomElement as defineQInput } from '@webquark/core/components/q-input.js';
 import { defineCustomElement as defineQReel } from '@webquark/core/components/q-reel.js';
 import { defineCustomElement as defineQScrollable } from '@webquark/core/components/q-scrollable.js';
@@ -20,6 +21,7 @@ import { defineCustomElement as defineQStepDiagramItem } from '@webquark/core/co
 import { defineCustomElement as defineQTextarea } from '@webquark/core/components/q-textarea.js';
 import { defineCustomElement as defineQThumbnail } from '@webquark/core/components/q-thumbnail.js';
 import { defineCustomElement as defineQToggle } from '@webquark/core/components/q-toggle.js';
+import { defineCustomElement as defineQTooltip } from '@webquark/core/components/q-tooltip.js';
 @ProxyCmp({
   defineCustomElementFn: defineQButton,
   inputs: ['disabled', 'download', 'expand', 'href', 'loading', 'size', 'target', 'type', 'variant']
@@ -99,14 +101,14 @@ export declare interface QCarousel extends Components.QCarousel {
 
 @ProxyCmp({
   defineCustomElementFn: defineQCircularProgress,
-  inputs: ['indeterminate', 'label', 'value']
+  inputs: ['indeterminate', 'label', 'size', 'value']
 })
 @Component({
   selector: 'q-circular-progress',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['indeterminate', 'label', 'value'],
+  inputs: ['indeterminate', 'label', 'size', 'value'],
 })
 export class QCircularProgress {
   protected el: HTMLQCircularProgressElement;
@@ -122,14 +124,14 @@ export declare interface QCircularProgress extends Components.QCircularProgress 
 
 @ProxyCmp({
   defineCustomElementFn: defineQDropdown,
-  inputs: ['disabled', 'label', 'options', 'placeholder', 'value']
+  inputs: ['disabled', 'label', 'options', 'placeholder', 'size', 'value']
 })
 @Component({
   selector: 'q-dropdown',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'label', 'options', 'placeholder', 'value'],
+  inputs: ['disabled', 'label', 'options', 'placeholder', 'size', 'value'],
   outputs: ['qChange', 'qSelect'],
 })
 export class QDropdown {
@@ -155,8 +157,31 @@ export declare interface QDropdown extends Components.QDropdown {
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineQIcon,
+  inputs: ['color', 'lib', 'localPath', 'name', 'size']
+})
+@Component({
+  selector: 'q-icon',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['color', 'lib', 'localPath', 'name', 'size'],
+})
+export class QIcon {
+  protected el: HTMLQIconElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface QIcon extends Components.QIcon {}
+
+
+@ProxyCmp({
   defineCustomElementFn: defineQInput,
-  inputs: ['clearable', 'disabled', 'error', 'errorMessage', 'label', 'placeholder', 'required', 'type', 'value'],
+  inputs: ['clearable', 'disabled', 'error', 'errorMessage', 'label', 'placeholder', 'required', 'size', 'type', 'value'],
   methods: ['focusElement', 'clearValue']
 })
 @Component({
@@ -164,7 +189,7 @@ export declare interface QDropdown extends Components.QDropdown {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['clearable', 'disabled', 'error', 'errorMessage', 'label', 'placeholder', 'required', 'type', 'value'],
+  inputs: ['clearable', 'disabled', 'error', 'errorMessage', 'label', 'placeholder', 'required', 'size', 'type', 'value'],
   outputs: ['qChange', 'qInput', 'qBlur', 'qFocus'],
 })
 export class QInput {
@@ -413,7 +438,7 @@ export declare interface QThumbnail extends Components.QThumbnail {
 
 @ProxyCmp({
   defineCustomElementFn: defineQToggle,
-  inputs: ['checked', 'disabled', 'error', 'label', 'required', 'type'],
+  inputs: ['checked', 'disabled', 'error', 'label', 'required', 'size', 'type'],
   methods: ['toggle']
 })
 @Component({
@@ -421,7 +446,7 @@ export declare interface QThumbnail extends Components.QThumbnail {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['checked', 'disabled', 'error', 'label', 'required', 'type'],
+  inputs: ['checked', 'disabled', 'error', 'label', 'required', 'size', 'type'],
   outputs: ['qChange'],
 })
 export class QToggle {
@@ -440,5 +465,28 @@ export declare interface QToggle extends Components.QToggle {
 
   qChange: EventEmitter<QToggleCustomEvent<boolean>>;
 }
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineQTooltip,
+  inputs: ['content', 'delay', 'position']
+})
+@Component({
+  selector: 'q-tooltip',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['content', 'delay', 'position'],
+})
+export class QTooltip {
+  protected el: HTMLQTooltipElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface QTooltip extends Components.QTooltip {}
 
 
