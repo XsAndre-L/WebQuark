@@ -14,7 +14,7 @@
 /* Header Label Typography */
 .textarea-label {
   font-family: var(--q-font-family, inherit);
-  font-size: var(--q-font-size-sm, 0.875rem);
+  font-size: var(--q-font-size-sm, 0.7rem);
   font-weight: var(--q-font-weight-bold, 700);
   color: var(--q-fg-muted, #9ca3af);
   margin-bottom: 6px;
@@ -67,7 +67,7 @@
 /* Error message text below textarea */
 .error-msg {
   font-family: var(--q-font-family, inherit);
-  font-size: var(--q-font-size-sm, 0.875rem);
+  font-size: var(--q-font-size-sm, 0.7rem);
   font-weight: var(--q-font-weight-normal, 400);
   color: var(--q-color-danger, #ef4444);
   margin-top: 6px;

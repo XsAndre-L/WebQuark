@@ -15,7 +15,7 @@
 /* Header Label Typography */
 .dropdown-label {
   font-family: var(--q-font-family, inherit);
-  font-size: var(--q-font-size-sm, 0.875rem);
+  font-size: var(--q-font-size-sm, 0.7rem);
   font-weight: var(--q-font-weight-bold, 700);
   color: var(--q-fg-muted, #9ca3af);
   margin-bottom: 6px;
@@ -139,7 +139,7 @@
 }
 .dropdown-wrapper.size-sm .dropdown-trigger {
   padding: 6px 10px;
-  font-size: var(--q-font-size-sm, 0.875rem);
+  font-size: var(--q-font-size-sm, 0.7rem);
 }
 .dropdown-wrapper.size-sm .chevron-icon {
   width: 14px;
@@ -147,14 +147,14 @@
 }
 .dropdown-wrapper.size-sm .menu-item {
   padding: 6px 10px;
-  font-size: var(--q-font-size-sm, 0.875rem);
+  font-size: var(--q-font-size-sm, 0.7rem);
 }
 .dropdown-wrapper.size-sm .menu-item.is-selected {
   padding-left: 7px;
 }
 
 .dropdown-wrapper.size-md .dropdown-label {
-  font-size: var(--q-font-size-sm, 0.875rem);
+  font-size: var(--q-font-size-sm, 0.7rem);
 }
 .dropdown-wrapper.size-md .dropdown-trigger {
   padding: 10px 14px;
