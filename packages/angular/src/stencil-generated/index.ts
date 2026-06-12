@@ -14,6 +14,7 @@ export const DIRECTIVES = [
   d.QSidepanel,
   d.QStepDiagram,
   d.QStepDiagramItem,
+  d.QSyntaxBox,
   d.QTextarea,
   d.QThumbnail,
   d.QToggle,

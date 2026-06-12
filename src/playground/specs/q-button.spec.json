@@ -59,32 +59,31 @@
     }
   },
   "variants": [
-    { "name": "Primary MD", "props": { "variant": "primary", "size": "md" }, "slot": "Primary Button" },
-    { "name": "Secondary MD", "props": { "variant": "secondary", "size": "md" }, "slot": "Secondary Button" },
-    { "name": "Success LG", "props": { "variant": "success", "size": "lg" }, "slot": "Success Action" },
-    { "name": "Danger SM", "props": { "variant": "danger", "size": "sm" }, "slot": "Danger Trigger" },
-    { "name": "Ghost Styling", "props": { "variant": "ghost" }, "slot": "Ghost Button" },
-    { "name": "Text Only link style", "props": { "variant": "text" }, "slot": "Text Button" },
-    { "name": "Disabled State", "props": { "variant": "primary", "disabled": true }, "slot": "Disabled Button" },
-    { "name": "Loading State spinner", "props": { "variant": "primary", "loading": true }, "slot": "Loading Button" },
-    { "name": "Expanded full width", "props": { "variant": "primary", "expand": true }, "slot": "Expanded Block Button" }
+    { "name": "Primary MD", "props": { "variant": "primary", "size": "md" }, "slots": { "default": "Primary Button" } },
+    { "name": "Secondary MD", "props": { "variant": "secondary", "size": "md" }, "slots": { "default": "Secondary Button" } },
+    { "name": "Success LG", "props": { "variant": "success", "size": "lg" }, "slots": { "default": "Success Action" } },
+    { "name": "Danger SM", "props": { "variant": "danger", "size": "sm" }, "slots": { "default": "Danger Trigger" } },
+    { "name": "Ghost Styling", "props": { "variant": "ghost" }, "slots": { "default": "Ghost Button" } },
+    { "name": "Text Only link style", "props": { "variant": "text" }, "slots": { "default": "Text Button" } },
+    { "name": "Disabled State", "props": { "variant": "primary", "disabled": true }, "slots": { "default": "Disabled Button" } },
+    { "name": "Loading State spinner", "props": { "variant": "primary", "loading": true }, "slots": { "default": "Loading Button" } },
+    { "name": "Expanded full width", "props": { "variant": "primary", "expand": true }, "slots": { "default": "Expanded Block Button" } }
   ],
   "edgeCases": [
     {
       "name": "Super Long Text Wrapping",
       "props": { "variant": "primary" },
-      "slot": "This is a button containing a ridiculously long text content that will test wrapping dynamics and grid boundaries"
+      "slots": { "default": "This is a button containing a ridiculously long text content that will test wrapping dynamics and grid boundaries" }
     },
     {
       "name": "HTML Injection Safe Verification",
       "props": { "variant": "primary" },
-      "slot": "<b>Formatted HTML</b> <script>console.log(\"XSS block test\")<\/script>"
+      "slots": { "default": "<b>Formatted HTML</b> <script>console.log(\"XSS block test\")<\/script>" }
     },
     {
       "name": "Icon-only Button",
       "props": { "variant": "primary" },
-      "slot": "",
-      "slots": { "icon-left": "<span style=\"font-size:16px\">🔥</span>" }
+      "slots": { "default": "", "icon-left": "<span style=\"font-size:16px\">🔥</span>" }
     }
   ]
 }

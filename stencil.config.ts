@@ -28,6 +28,7 @@ export const config: Config = {
         { src: 'playground/playground.js', dest: 'playground.js' },
         { src: 'playground/state.js', dest: 'state.js' },
         { src: 'playground/components', dest: 'components' },
+        { src: 'playground/components.manifest.json', dest: 'playground/components.manifest.json' },
         { src: 'playground/specs', dest: 'playground/specs' },
         { src: 'playground/css', dest: 'css' },
         { src: 'playground/views', dest: 'views' }

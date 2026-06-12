@@ -44,7 +44,7 @@
     {
       "name": "HTML Slotted content label",
       "props": { "type": "switch", "checked": true },
-      "slot": "I agree to the <a href=\"#\" style=\"color:var(--primary);text-decoration:underline\">Terms & Conditions</a>"
+      "slots": { "default": "I agree to the <a href=\"#\" style=\"color:var(--primary);text-decoration:underline\">Terms & Conditions</a>" }
     }
   ]
 }

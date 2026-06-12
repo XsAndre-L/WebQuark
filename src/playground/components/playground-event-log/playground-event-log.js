@@ -14,7 +14,7 @@ class PlaygroundEventLog extends HTMLElement {
   init() {
     const clearBtn = this.querySelector('#clearLogBtn');
     this.logBody = this.querySelector('#eventLogBody');
-    this.scrollable = this.querySelector('#eventLogScrollable');
+    this.syntaxBox = this.querySelector('#eventLogBox');
 
     if (clearBtn) {
       clearBtn.addEventListener('click', () => this.clearLog());
@@ -47,9 +47,9 @@ class PlaygroundEventLog extends HTMLElement {
 
     this.logBody.appendChild(line);
 
-    // Scroll to bottom
-    if (this.scrollable && typeof this.scrollable.scrollToBottom === 'function') {
-      this.scrollable.scrollToBottom();
+    // Scroll to bottom using q-syntax-box scrollToBottom method
+    if (this.syntaxBox && typeof this.syntaxBox.scrollToBottom === 'function') {
+      this.syntaxBox.scrollToBottom();
     }
   }
 

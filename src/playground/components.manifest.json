@@ -1,0 +1,17 @@
+[
+  { "tag": "q-button",            "name": "Button" },
+  { "tag": "q-toggle",            "name": "Toggle" },
+  { "tag": "q-card",              "name": "Card" },
+  { "tag": "q-carousel",          "name": "Carousel" },
+  { "tag": "q-circular-progress", "name": "Circular Progress" },
+  { "tag": "q-dropdown",          "name": "Dropdown" },
+  { "tag": "q-input",             "name": "Input" },
+  { "tag": "q-textarea",          "name": "Textarea" },
+  { "tag": "q-reel",              "name": "Reel" },
+  { "tag": "q-sidepanel",         "name": "Sidepanel" },
+  { "tag": "q-step-diagram",      "name": "Step Diagram" },
+  { "tag": "q-scrollable",        "name": "Scrollable" },
+  { "tag": "q-syntax-box",        "name": "Syntax Box" },
+  { "tag": "q-icon",              "name": "Icon" },
+  { "tag": "q-tooltip",           "name": "Tooltip" }
+]

@@ -1,4 +1,4 @@
-import { Component, Prop, h } from '@stencil/core';
+import { Component, Prop, Element, State, h } from '@stencil/core';
 
 @Component({
   tag: 'q-button',
@@ -8,6 +8,8 @@ import { Component, Prop, h } from '@stencil/core';
   },
 })
 export class QButton {
+  @Element() el!: HTMLElement;
+
   @Prop() variant: 'primary' | 'secondary' | 'success' | 'danger' | 'ghost' | 'text' = 'primary';
   @Prop() size: 'sm' | 'md' | 'lg' = 'md';
   @Prop({ reflect: true }) disabled: boolean = false;
@@ -17,6 +19,30 @@ export class QButton {
   @Prop() href?: string;
   @Prop() target?: string;
   @Prop() download?: string;
+  @Prop({ reflect: true }) iconOnly?: boolean;
+
+  @State() autoIconOnly: boolean = false;
+
+  componentWillLoad() {
+    this.checkIconOnly();
+  }
+
+  componentWillUpdate() {
+    this.checkIconOnly();
+  }
+
+  private checkIconOnly = () => {
+    if (!this.el) return;
+    const text = this.el.textContent ? this.el.textContent.trim() : '';
+    const hasIcon = this.el.querySelector('q-icon') !== null ||
+                    this.el.querySelector('[slot="icon-left"]') !== null ||
+                    this.el.querySelector('[slot="icon-right"]') !== null;
+    this.autoIconOnly = text === '' && hasIcon;
+  };
+
+  private handleSlotChange = () => {
+    this.checkIconOnly();
+  };
 
   private handleClick = (e: MouseEvent) => {
     if (this.disabled || this.loading) {
@@ -28,6 +54,7 @@ export class QButton {
   render() {
     const isLink = this.href !== undefined;
     const isBtnDisabled = this.disabled || this.loading;
+    const isIcon = this.iconOnly !== undefined ? this.iconOnly : this.autoIconOnly;
     
     const classes = {
       'btn': true,
@@ -35,15 +62,16 @@ export class QButton {
       [`size-${this.size}`]: true,
       'is-loading': this.loading,
       'is-disabled': isBtnDisabled,
-      'is-expanded': this.expand
+      'is-expanded': this.expand,
+      'is-icon-only': isIcon
     };
 
     const innerContent = [
       this.loading && <div class="btn-spinner" part="spinner" />,
       <span class="btn-content-wrap" style={{ visibility: this.loading ? 'hidden' : 'visible' }}>
-        <slot name="icon-left" />
-        <span class="btn-label"><slot /></span>
-        <slot name="icon-right" />
+        <slot name="icon-left" onSlotchange={this.handleSlotChange} />
+        <span class="btn-label"><slot onSlotchange={this.handleSlotChange} /></span>
+        <slot name="icon-right" onSlotchange={this.handleSlotChange} />
       </span>
     ];
 

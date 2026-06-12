@@ -1,91 +1,26 @@
-.sidebar {
-  width: 260px;
-  background: var(--bg-sidebar);
-  border-right: 1px solid var(--border-color);
+/* playground-sidebar.css
+   All nav item rendering is handled by q-sidepanel variant="nav".
+   This file only styles the host element layout, the Global Styling footer
+   button (slotted light DOM), and mobile responsive overrides. */
+
+playground-sidebar {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
   height: 100%;
 }
 
-.sidebar-scrollable {
-  flex: 1;
-  min-height: 0;
-}
-
-.sidebar-nav {
-  display: flex;
-  flex-direction: column;
-  padding: 8px 0;
-}
-
-.sidebar-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 20px;
-  margin: 2px 12px;
-  border-radius: var(--q-radius-md, 8px);
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  box-sizing: border-box;
-  transition:
-    background-color 0.2s ease-in-out,
-    color 0.2s ease-in-out;
-}
-
-.sidebar-item:hover {
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--text-main);
-}
-
-.sidebar-item.active {
-  background: var(--accent-glow);
-  color: var(--primary);
-  font-weight: 600;
-}
-
-.sidebar-item:focus-visible {
-  outline: var(--q-focus-ring, 2px solid var(--primary));
-  outline-offset: -2px;
-}
-
-.sidebar-item span:first-child {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  margin-right: 8px;
-}
-
-.sidebar-item-tag {
-  font-family: monospace;
-  font-size: 0.75rem;
-  opacity: 0.7;
-  margin-left: auto;
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-
-.sidebar-footer {
-  padding: 16px 20px;
-  border-top: 1px solid var(--border-color);
-  background: var(--bg-sidebar);
-  flex-shrink: 0;
-}
-
+/* Global Styling footer button — lives in q-sidepanel's footer slot (light DOM) */
 .global-styling-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  width: 100%;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  color: var(--text-main);
+  width: calc(100% - 24px);
+  margin: 4px 12px;
+  background: var(--bg-surface, transparent);
+  border: 1px solid var(--border-color, var(--q-border-color, #374151));
+  color: var(--text-main, var(--q-fg-base, #f9fafb));
   padding: 10px 16px;
   border-radius: var(--q-radius-md, 8px);
   font-size: 0.9rem;
@@ -96,24 +31,25 @@
 }
 
 .global-styling-btn:hover {
-  background: rgba(255, 255, 255, 0.03);
-  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-main, var(--q-fg-base, #f9fafb));
 }
 
 .global-styling-btn.active {
-  background: var(--accent-glow);
-  color: var(--primary);
-  border-color: var(--primary);
+  background: var(--accent-glow, color-mix(in srgb, var(--q-color-primary, #6366f1) 12%, transparent));
+  color: var(--primary, var(--q-color-primary, #818cf8));
+  border-color: var(--primary, var(--q-color-primary, #6366f1));
 }
 
 .global-styling-btn:focus-visible {
-  outline: var(--q-focus-ring, 2px solid var(--primary));
+  outline: var(--q-focus-ring, 2px solid var(--primary, var(--q-color-primary)));
   outline-offset: -2px;
 }
 
-/* Mobile responsive menu overrides */
+/* Mobile responsive: q-sidepanel handles its own internal layout,
+   we just control the host element position on small screens */
 @media (max-width: 900px) {
-  .sidebar {
+  playground-sidebar {
     position: fixed;
     top: 64px;
     left: 0;
@@ -122,11 +58,11 @@
     height: calc(100vh - 64px);
     z-index: 1000;
     transform: translateX(-100%);
-    transition: transform 0.3s ease-in-out;
+    transition: transform 220ms ease-out;
     box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
   }
 
-  .sidebar.open {
+  playground-sidebar.open {
     transform: translateX(0);
   }
 }

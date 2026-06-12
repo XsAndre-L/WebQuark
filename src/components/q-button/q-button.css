@@ -33,8 +33,8 @@
 
 /* Sizing Layouts */
 .size-sm {
-  padding: var(--q-btn-padding-sm, 6px 12px);
-  font-size: var(--q-font-size-sm, 0.875rem);
+  padding: var(--q-btn-padding-sm, 4px 8px);
+  font-size: var(--q-font-size-sm, 0.8rem);
 }
 .size-md {
   padding: var(--q-btn-padding-md, 10px 20px);
@@ -43,6 +43,17 @@
 .size-lg {
   padding: var(--q-btn-padding-lg, 14px 28px);
   font-size: var(--q-font-size-lg, 1.125rem);
+}
+
+/* Icon-Only Sizing Overrides */
+.btn.is-icon-only.size-sm {
+  padding: var(--q-btn-icon-padding-sm, 5px);
+}
+.btn.is-icon-only.size-md {
+  padding: var(--q-btn-icon-padding-md, 8px);
+}
+.btn.is-icon-only.size-lg {
+  padding: var(--q-btn-icon-padding-lg, 12px);
 }
 
 /* Theme Variants */

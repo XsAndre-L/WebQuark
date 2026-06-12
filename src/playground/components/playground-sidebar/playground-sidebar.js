@@ -1,28 +1,23 @@
 import { loadComponentResources } from '../loader-helper.js';
 import { activeComponent, activeTab, fetchComponentSpec, effect } from '../../state.js';
 
-const COMPONENTS = [
-  { tag: 'q-button', name: 'Button' },
-  { tag: 'q-toggle', name: 'Toggle' },
-  { tag: 'q-card', name: 'Card' },
-  { tag: 'q-carousel', name: 'Carousel' },
-  { tag: 'q-circular-progress', name: 'Circular Progress' },
-  { tag: 'q-dropdown', name: 'Dropdown' },
-  { tag: 'q-input', name: 'Input' },
-  { tag: 'q-textarea', name: 'Textarea' },
-  { tag: 'q-reel', name: 'Reel' },
-  { tag: 'q-sidepanel', name: 'Sidepanel' },
-  { tag: 'q-step-diagram', name: 'Step Diagram' },
-  { tag: 'q-scrollable', name: 'Scrollable' },
-  { tag: 'q-icon', name: 'Icon' },
-  { tag: 'q-tooltip', name: 'Tooltip' }
-];
-
 class PlaygroundSidebar extends HTMLElement {
   async connectedCallback() {
     try {
+      // Load HTML template first — this must succeed for anything to render
       const html = await loadComponentResources('playground-sidebar');
       this.innerHTML = html;
+
+      // Load manifest separately so a fetch failure gives a clear error, not a silent empty shell
+      try {
+        const res = await fetch('/playground/components.manifest.json');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        this.components = await res.json();
+      } catch (err) {
+        console.error('[playground-sidebar] Failed to load components.manifest.json:', err);
+        this.components = [];
+      }
+
       this.init();
     } catch (err) {
       console.error('Failed to load sidebar component:', err);
@@ -30,83 +25,50 @@ class PlaygroundSidebar extends HTMLElement {
   }
 
   init() {
-    const nav = this.querySelector('#sidebarNav');
-    const globalStylingBtn = this.querySelector('#globalStylingBtn');
+    this.navPanel = this.querySelector('#sidebarNav');
+    this.globalStylingBtn = this.querySelector('#globalStylingBtn');
 
-    // 1. Render sidebar component navigation links
-    nav.innerHTML = '';
-    COMPONENTS.forEach(comp => {
-      const item = document.createElement('div');
-      item.setAttribute('role', 'button');
-      item.setAttribute('tabindex', '0');
-      item.className = 'sidebar-item';
-      item.dataset.tag = comp.tag;
-      item.innerHTML = `
-        <span>${comp.name}</span>
-        <q-tooltip content="&lt;${comp.tag}&gt;" position="right" delay="100"></q-tooltip>
-      `;
+    if (!this.navPanel) return;
 
-      const select = async () => {
-        activeTab.set('sandbox'); // Reset to sandbox tab
-        await fetchComponentSpec(comp.tag);
-        activeComponent.set(comp.tag);
-        this.closeMobileSidebar();
-      };
+    // 1. Build items array for q-sidepanel
+    this.navPanel.items = this.components.map(comp => ({
+      label: comp.name,
+      value: comp.tag,
+    }));
 
-      item.addEventListener('click', select);
-      item.addEventListener('keydown', e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          select();
-        }
-      });
+    // 2. Handle qSelect event from q-sidepanel nav
+    this.handleNavSelect = async (e) => {
+      const { value } = e.detail;
+      activeTab.set('sandbox');
+      await fetchComponentSpec(value);
+      activeComponent.set(value);
+    };
+    this.navPanel.addEventListener('qSelect', this.handleNavSelect);
 
-      nav.appendChild(item);
-    });
-
-    // 2. Global Styling button click listener
-    if (globalStylingBtn) {
-      const selectGlobal = () => {
+    // 3. Global Styling button
+    if (this.globalStylingBtn) {
+      this.globalStylingBtn.addEventListener('click', () => {
         activeComponent.set('global-styling');
-        this.closeMobileSidebar();
-      };
-
-      globalStylingBtn.addEventListener('click', selectGlobal);
-      globalStylingBtn.addEventListener('keydown', e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          selectGlobal();
-        }
       });
     }
 
-    // 3. React to Active Component changes (Angular-style Signal Effect)
+    // 4. React to Active Component changes — sync q-sidepanel value prop + global btn
     this.cleanupActiveEffect = effect(() => {
       const active = activeComponent();
+      this.navPanel.value = active;
 
-      // Update active highlights on sidebar items
-      this.querySelectorAll('.sidebar-nav .sidebar-item').forEach(item => {
-        item.classList.toggle('active', item.dataset.tag === active);
-      });
-
-      // Update active highlight on Global Styling footer button
-      if (globalStylingBtn) {
-        globalStylingBtn.classList.toggle('active', active === 'global-styling');
+      if (this.globalStylingBtn) {
+        this.globalStylingBtn.classList.toggle('active', active === 'global-styling');
       }
     });
-  }
-
-  closeMobileSidebar() {
-    this.classList.remove('open');
-    const backdrop = document.getElementById('sidebarBackdrop');
-    if (backdrop) backdrop.classList.remove('active');
-    const hamburger = document.getElementById('hamburgerMenu');
-    if (hamburger) hamburger.classList.remove('open');
   }
 
   disconnectedCallback() {
     if (this.cleanupActiveEffect) {
       this.cleanupActiveEffect();
+    }
+    if (this.navPanel && this.handleNavSelect) {
+      this.navPanel.removeEventListener('qSelect', this.handleNavSelect);
     }
   }
 }

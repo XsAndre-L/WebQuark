@@ -1,0 +1,107 @@
+:host {
+  --q-syntax-bg: #0d1117;
+  --q-syntax-border: #21262d;
+  --q-syntax-header-bg: #161b22;
+  --q-syntax-text: #c9d1d9;
+  --q-syntax-comment: #8b949e;
+  --q-syntax-tag: #ff7b72;
+  --q-syntax-attr: #79c0ff;
+  --q-syntax-value: #a5d6ff;
+  --q-syntax-number: #f0883e;
+
+  display: block;
+  box-sizing: border-box;
+}
+
+/* Panel Layout */
+.panel-container {
+  position: relative;
+  border-radius: var(--q-radius-lg, 12px);
+  background: var(--q-syntax-bg);
+  border: 1px solid var(--q-syntax-border);
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  background: var(--q-syntax-header-bg);
+  border-bottom: 1px solid var(--q-syntax-border);
+  font-size: 0.8rem;
+  color: var(--q-syntax-comment);
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+
+/* Plain Layout */
+.plain-container {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Code Typography and Style */
+.code-body {
+  margin: 0;
+  padding: 16px;
+  overflow-x: auto;
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    SF Mono,
+    Menlo,
+    Consolas,
+    Liberation Mono,
+    monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--q-syntax-text);
+  white-space: pre;
+}
+
+/* For plain variant custom classes if needed */
+:host(.variant-card-code) .code-body {
+  padding: 10px;
+  font-size: 0.75rem;
+  border-radius: var(--q-radius-md, 8px);
+  background: var(--q-syntax-bg);
+  border: 1px solid var(--q-syntax-border);
+}
+
+/* Syntax Highlighting Tokens */
+.code-comment {
+  color: var(--q-syntax-comment);
+  font-style: italic;
+}
+
+.code-tag {
+  color: var(--q-syntax-tag);
+  font-weight: 600;
+}
+
+.code-attr {
+  color: var(--q-syntax-attr);
+}
+
+.code-value {
+  color: var(--q-syntax-value);
+}
+
+.code-number {
+  color: var(--q-syntax-number);
+}
+
+

@@ -6,7 +6,9 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { Option } from "./components/q-dropdown/q-dropdown";
+import { SidepanelItem } from "./components/q-sidepanel/q-sidepanel";
 export { Option } from "./components/q-dropdown/q-dropdown";
+export { SidepanelItem } from "./components/q-sidepanel/q-sidepanel";
 export namespace Components {
     interface QButton {
         /**
@@ -19,6 +21,7 @@ export namespace Components {
          */
         "expand": boolean;
         "href"?: string;
+        "iconOnly"?: boolean;
         /**
           * @default false
          */
@@ -218,17 +221,50 @@ export namespace Components {
     }
     interface QSidepanel {
         /**
+          * If true, opening one group collapses all sibling groups (nav mode only)
+          * @default false
+         */
+        "accordion": boolean;
+        /**
+          * Whether all parent groups start expanded on first render (nav mode only)
+          * @default true
+         */
+        "expanded": boolean;
+        /**
+          * Navigation item tree passed programmatically (nav mode only)
+          * @default []
+         */
+        "items": SidepanelItem[];
+        /**
+          * Display mode for items: flat list, one-level groups, or deep tree
+          * @default 'flat'
+         */
+        "mode": 'flat' | 'grouped' | 'tree';
+        /**
+          * Controls drawer open/close state (drawer mode only)
           * @default false
          */
         "open": boolean;
         /**
-          * @default "320px"
+          * Panel dimension – width or height depending on side (drawer mode only)
+          * @default '320px'
          */
         "panelSize": string;
         /**
+          * Screen edge the drawer slides from (drawer mode only)
           * @default 'right'
          */
         "side": 'left' | 'right' | 'top' | 'bottom';
+        /**
+          * Value of the currently active/selected item (nav mode only)
+          * @default ''
+         */
+        "value": string;
+        /**
+          * Selects behavior: 'drawer' = slide-in overlay, 'nav' = fixed navigation sidebar
+          * @default 'nav'
+         */
+        "variant": 'drawer' | 'nav';
     }
     interface QStepDiagram {
         /**
@@ -249,6 +285,24 @@ export namespace Components {
           * @default 'completed'
          */
         "status": 'pending' | 'active' | 'completed' | 'success' | 'warning' | 'danger';
+    }
+    interface QSyntaxBox {
+        "code"?: string;
+        /**
+          * @default false
+         */
+        "copyable": boolean;
+        "heading"?: string;
+        "height"?: string;
+        /**
+          * @default 'html'
+         */
+        "language": 'html' | 'javascript' | 'css' | 'json';
+        "scrollToBottom": () => Promise<void>;
+        /**
+          * @default 'panel'
+         */
+        "variant": 'panel' | 'plain';
     }
     interface QTextarea {
         "adjustHeight": () => Promise<void>;
@@ -503,6 +557,7 @@ declare global {
     };
     interface HTMLQSidepanelElementEventMap {
         "qClose": void;
+        "qSelect": { value: string; label: string; item: SidepanelItem };
     }
     interface HTMLQSidepanelElement extends Components.QSidepanel, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQSidepanelElementEventMap>(type: K, listener: (this: HTMLQSidepanelElement, ev: QSidepanelCustomEvent<HTMLQSidepanelElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -540,6 +595,12 @@ declare global {
     var HTMLQStepDiagramItemElement: {
         prototype: HTMLQStepDiagramItemElement;
         new (): HTMLQStepDiagramItemElement;
+    };
+    interface HTMLQSyntaxBoxElement extends Components.QSyntaxBox, HTMLStencilElement {
+    }
+    var HTMLQSyntaxBoxElement: {
+        prototype: HTMLQSyntaxBoxElement;
+        new (): HTMLQSyntaxBoxElement;
     };
     interface HTMLQTextareaElementEventMap {
         "qChange": string;
@@ -614,6 +675,7 @@ declare global {
         "q-sidepanel": HTMLQSidepanelElement;
         "q-step-diagram": HTMLQStepDiagramElement;
         "q-step-diagram-item": HTMLQStepDiagramItemElement;
+        "q-syntax-box": HTMLQSyntaxBoxElement;
         "q-textarea": HTMLQTextareaElement;
         "q-thumbnail": HTMLQThumbnailElement;
         "q-toggle": HTMLQToggleElement;
@@ -632,6 +694,7 @@ declare namespace LocalJSX {
          */
         "expand"?: boolean;
         "href"?: string;
+        "iconOnly"?: boolean;
         /**
           * @default false
          */
@@ -850,19 +913,59 @@ declare namespace LocalJSX {
         "target"?: string;
     }
     interface QSidepanel {
+        /**
+          * If true, opening one group collapses all sibling groups (nav mode only)
+          * @default false
+         */
+        "accordion"?: boolean;
+        /**
+          * Whether all parent groups start expanded on first render (nav mode only)
+          * @default true
+         */
+        "expanded"?: boolean;
+        /**
+          * Navigation item tree passed programmatically (nav mode only)
+          * @default []
+         */
+        "items"?: SidepanelItem[];
+        /**
+          * Display mode for items: flat list, one-level groups, or deep tree
+          * @default 'flat'
+         */
+        "mode"?: 'flat' | 'grouped' | 'tree';
+        /**
+          * Fires when the drawer is closed (drawer mode)
+         */
         "onQClose"?: (event: QSidepanelCustomEvent<void>) => void;
         /**
+          * Fires when a leaf navigation item is clicked (nav mode)
+         */
+        "onQSelect"?: (event: QSidepanelCustomEvent<{ value: string; label: string; item: SidepanelItem }>) => void;
+        /**
+          * Controls drawer open/close state (drawer mode only)
           * @default false
          */
         "open"?: boolean;
         /**
-          * @default "320px"
+          * Panel dimension – width or height depending on side (drawer mode only)
+          * @default '320px'
          */
         "panelSize"?: string;
         /**
+          * Screen edge the drawer slides from (drawer mode only)
           * @default 'right'
          */
         "side"?: 'left' | 'right' | 'top' | 'bottom';
+        /**
+          * Value of the currently active/selected item (nav mode only)
+          * @default ''
+         */
+        "value"?: string;
+        /**
+          * Selects behavior: 'drawer' = slide-in overlay, 'nav' = fixed navigation sidebar
+          * @default 'nav'
+         */
+        "variant"?: 'drawer' | 'nav';
     }
     interface QStepDiagram {
         /**
@@ -884,6 +987,23 @@ declare namespace LocalJSX {
           * @default 'completed'
          */
         "status"?: 'pending' | 'active' | 'completed' | 'success' | 'warning' | 'danger';
+    }
+    interface QSyntaxBox {
+        "code"?: string;
+        /**
+          * @default false
+         */
+        "copyable"?: boolean;
+        "heading"?: string;
+        "height"?: string;
+        /**
+          * @default 'html'
+         */
+        "language"?: 'html' | 'javascript' | 'css' | 'json';
+        /**
+          * @default 'panel'
+         */
+        "variant"?: 'panel' | 'plain';
     }
     interface QTextarea {
         /**
@@ -1010,6 +1130,7 @@ declare namespace LocalJSX {
         "href": string;
         "target": string;
         "download": string;
+        "iconOnly": boolean;
     }
     interface QCardAttributes {
         "elevation": string;
@@ -1070,9 +1191,14 @@ declare namespace LocalJSX {
         "target": string;
     }
     interface QSidepanelAttributes {
+        "variant": 'drawer' | 'nav';
         "open": boolean;
         "side": 'left' | 'right' | 'top' | 'bottom';
         "panelSize": string;
+        "value": string;
+        "mode": 'flat' | 'grouped' | 'tree';
+        "expanded": boolean;
+        "accordion": boolean;
     }
     interface QStepDiagramAttributes {
         "layout": 'vertical' | 'horizontal';
@@ -1081,6 +1207,14 @@ declare namespace LocalJSX {
         "status": 'pending' | 'active' | 'completed' | 'success' | 'warning' | 'danger';
         "lineStyle": 'solid' | 'dashed' | 'dotted' | 'none';
         "layout": 'vertical' | 'horizontal';
+    }
+    interface QSyntaxBoxAttributes {
+        "variant": 'panel' | 'plain';
+        "language": 'html' | 'javascript' | 'css' | 'json';
+        "code": string;
+        "heading": string;
+        "copyable": boolean;
+        "height": string;
     }
     interface QTextareaAttributes {
         "value": string;
@@ -1129,6 +1263,7 @@ declare namespace LocalJSX {
         "q-sidepanel": Omit<QSidepanel, keyof QSidepanelAttributes> & { [K in keyof QSidepanel & keyof QSidepanelAttributes]?: QSidepanel[K] } & { [K in keyof QSidepanel & keyof QSidepanelAttributes as `attr:${K}`]?: QSidepanelAttributes[K] } & { [K in keyof QSidepanel & keyof QSidepanelAttributes as `prop:${K}`]?: QSidepanel[K] };
         "q-step-diagram": Omit<QStepDiagram, keyof QStepDiagramAttributes> & { [K in keyof QStepDiagram & keyof QStepDiagramAttributes]?: QStepDiagram[K] } & { [K in keyof QStepDiagram & keyof QStepDiagramAttributes as `attr:${K}`]?: QStepDiagramAttributes[K] } & { [K in keyof QStepDiagram & keyof QStepDiagramAttributes as `prop:${K}`]?: QStepDiagram[K] };
         "q-step-diagram-item": Omit<QStepDiagramItem, keyof QStepDiagramItemAttributes> & { [K in keyof QStepDiagramItem & keyof QStepDiagramItemAttributes]?: QStepDiagramItem[K] } & { [K in keyof QStepDiagramItem & keyof QStepDiagramItemAttributes as `attr:${K}`]?: QStepDiagramItemAttributes[K] } & { [K in keyof QStepDiagramItem & keyof QStepDiagramItemAttributes as `prop:${K}`]?: QStepDiagramItem[K] };
+        "q-syntax-box": Omit<QSyntaxBox, keyof QSyntaxBoxAttributes> & { [K in keyof QSyntaxBox & keyof QSyntaxBoxAttributes]?: QSyntaxBox[K] } & { [K in keyof QSyntaxBox & keyof QSyntaxBoxAttributes as `attr:${K}`]?: QSyntaxBoxAttributes[K] } & { [K in keyof QSyntaxBox & keyof QSyntaxBoxAttributes as `prop:${K}`]?: QSyntaxBox[K] };
         "q-textarea": Omit<QTextarea, keyof QTextareaAttributes> & { [K in keyof QTextarea & keyof QTextareaAttributes]?: QTextarea[K] } & { [K in keyof QTextarea & keyof QTextareaAttributes as `attr:${K}`]?: QTextareaAttributes[K] } & { [K in keyof QTextarea & keyof QTextareaAttributes as `prop:${K}`]?: QTextarea[K] };
         "q-thumbnail": Omit<QThumbnail, keyof QThumbnailAttributes> & { [K in keyof QThumbnail & keyof QThumbnailAttributes]?: QThumbnail[K] } & { [K in keyof QThumbnail & keyof QThumbnailAttributes as `attr:${K}`]?: QThumbnailAttributes[K] } & { [K in keyof QThumbnail & keyof QThumbnailAttributes as `prop:${K}`]?: QThumbnail[K] };
         "q-toggle": Omit<QToggle, keyof QToggleAttributes> & { [K in keyof QToggle & keyof QToggleAttributes]?: QToggle[K] } & { [K in keyof QToggle & keyof QToggleAttributes as `attr:${K}`]?: QToggleAttributes[K] } & { [K in keyof QToggle & keyof QToggleAttributes as `prop:${K}`]?: QToggle[K] };
@@ -1151,6 +1286,7 @@ declare module "@stencil/core" {
             "q-sidepanel": LocalJSX.IntrinsicElements["q-sidepanel"] & JSXBase.HTMLAttributes<HTMLQSidepanelElement>;
             "q-step-diagram": LocalJSX.IntrinsicElements["q-step-diagram"] & JSXBase.HTMLAttributes<HTMLQStepDiagramElement>;
             "q-step-diagram-item": LocalJSX.IntrinsicElements["q-step-diagram-item"] & JSXBase.HTMLAttributes<HTMLQStepDiagramItemElement>;
+            "q-syntax-box": LocalJSX.IntrinsicElements["q-syntax-box"] & JSXBase.HTMLAttributes<HTMLQSyntaxBoxElement>;
             "q-textarea": LocalJSX.IntrinsicElements["q-textarea"] & JSXBase.HTMLAttributes<HTMLQTextareaElement>;
             "q-thumbnail": LocalJSX.IntrinsicElements["q-thumbnail"] & JSXBase.HTMLAttributes<HTMLQThumbnailElement>;
             "q-toggle": LocalJSX.IntrinsicElements["q-toggle"] & JSXBase.HTMLAttributes<HTMLQToggleElement>;

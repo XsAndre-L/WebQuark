@@ -273,3 +273,10 @@ playground-code-preview {
     height: auto;
   }
 }
+
+.grid-empty-state {
+  grid-column: span 3;
+  padding: 40px;
+  text-align: center;
+  color: var(--text-muted);
+}

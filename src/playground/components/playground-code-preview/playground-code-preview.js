@@ -1,27 +1,5 @@
 import { loadComponentResources } from '../loader-helper.js';
-import { activeComponent, componentRegistry, effect } from '../../state.js';
-
-function highlightHTML(htmlText) {
-  let esc = htmlText;
-  if (!esc.includes('&lt;')) {
-    esc = esc.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  }
-
-  return (
-    esc
-      // Match comments
-      .replace(/(&lt;!--[\s\S]*?--&gt;)/g, '<span class="code-comment">$1</span>')
-      // Match attribute value strings
-      .replace(/(&quot;.*?&quot;)/gi, '<span class="code-value">$1</span>')
-      .replace(/(&#39;.*?&#39;)/gi, '<span class="code-value">$1</span>')
-      // Match attribute parameters
-      .replace(/(\s[a-z0-9-]+)=/gi, ' <span class="code-attr">$1</span>=')
-      // Match tag elements
-      .replace(/(&lt;\/?[a-z0-9-]+)/gi, '<span class="code-tag">$1</span>')
-      // Match close brackets
-      .replace(/(&gt;)/g, '<span class="code-tag">&gt;</span>')
-  );
-}
+import { activeComponent, componentRegistry, effect, serializeComponentCode } from '../../state.js';
 
 class PlaygroundCodePreview extends HTMLElement {
   async connectedCallback() {
@@ -35,12 +13,7 @@ class PlaygroundCodePreview extends HTMLElement {
   }
 
   init() {
-    const copyBtn = this.querySelector('#copyBtn');
-    this.codeBlock = this.querySelector('#codeBlock');
-
-    if (copyBtn) {
-      copyBtn.addEventListener('click', () => this.copyCode());
-    }
+    this.codeBlockBox = this.querySelector('#codeBlockBox');
 
     // React to spec value modifications (Angular-style Signal Effect)
     this.cleanupCodeEffect = effect(() => {
@@ -55,71 +28,11 @@ class PlaygroundCodePreview extends HTMLElement {
   }
 
   updateCodeBlock(tag, config) {
-    if (!this.codeBlock || !config) return;
-
-    let code = `<${tag}`;
-
-    // 1. Attributes
-    if (config.props) {
-      Object.keys(config.props).forEach(propName => {
-        const prop = config.props[propName];
-        const val = prop.currentValue;
-        if (prop.type === 'boolean') {
-          if (val) code += ` ${propName}`;
-        } else {
-          if (val !== undefined && val !== null && val !== '') {
-            code += ` ${propName}="${val}"`;
-          }
-        }
-      });
-    }
-
-    code += '>';
-
-    // 2. Slots
-    let slotContent = '';
-    if (config.slots) {
-      Object.keys(config.slots).forEach(slotName => {
-        const slot = config.slots[slotName];
-        const content = slot.currentValue;
-        if (content) {
-          if (slotName === 'default') {
-            slotContent += `\n  ${content.replace(/\n/g, '\n  ')}\n`;
-          } else {
-            slotContent += `\n  <span slot="${slotName}">${content.replace(/\n/g, '\n  ')}</span>\n`;
-          }
-        }
-      });
-    }
-
-    if (slotContent) {
-      code += slotContent + `</${tag}>`;
-    } else {
-      code += `</${tag}>`;
-    }
-
-    // Programmatic options population representation for q-dropdown
-    if (tag === 'q-dropdown') {
-      const optsJson = JSON.stringify(config.options, null, 2);
-      code += `\n\n&lt;!-- Programmatic dropdown options population script --&gt;\n&lt;script&gt;\n  const dropdown = document.querySelector('q-dropdown');\n  dropdown.options = ${optsJson.replace(/\n/g, '\n  ')};\n&lt;/script&gt;`;
-    }
-
-    this.codeBlock.innerHTML = highlightHTML(code);
-  }
-
-  copyCode() {
-    if (!this.codeBlock) return;
-    const codeText = this.codeBlock.innerText;
-    navigator.clipboard.writeText(codeText).then(() => {
-      const copyBtn = this.querySelector('#copyBtn');
-      if (copyBtn) {
-        const originalText = copyBtn.innerText;
-        copyBtn.innerText = 'Copied!';
-        setTimeout(() => {
-          copyBtn.innerText = originalText;
-        }, 1500);
-      }
-    });
+    if (!this.codeBlockBox || !config) return;
+    const appendScript = (tag === 'q-dropdown' && config.options)
+      ? `\n\n<!-- Programmatic dropdown options population script -->\n<script>\n  const dropdown = document.querySelector('${tag}');\n  dropdown.options = ${JSON.stringify(config.options, null, 2).replace(/\n/g, '\n  ')};\n</script>`
+      : null;
+    this.codeBlockBox.code = serializeComponentCode(tag, config.props, config.slots, appendScript);
   }
 
   disconnectedCallback() {
