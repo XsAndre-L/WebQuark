@@ -63,6 +63,10 @@ export namespace Components {
         /**
           * @default false
          */
+        "repeat": boolean;
+        /**
+          * @default false
+         */
         "showArrows": boolean;
         /**
           * @default false
@@ -145,6 +149,34 @@ export namespace Components {
           * @default true
          */
         "lightbox": boolean;
+    }
+    interface QScrollable {
+        /**
+          * @default true
+         */
+        "autoHide": boolean;
+        /**
+          * @default '100%'
+         */
+        "height": string;
+        /**
+          * @default ''
+         */
+        "maxHeight": string;
+        /**
+          * @default 'custom'
+         */
+        "mode": 'custom' | 'native';
+        /**
+          * @default true
+         */
+        "nativeOnMobile": boolean;
+        "scrollToBottom": () => Promise<void>;
+        "scrollToPosition": (top: number) => Promise<void>;
+        /**
+          * @default ''
+         */
+        "target": string;
     }
     interface QSidepanel {
         /**
@@ -230,6 +262,27 @@ export namespace Components {
          */
         "video": boolean;
     }
+    interface QToggle {
+        /**
+          * @default false
+         */
+        "checked": boolean;
+        /**
+          * @default false
+         */
+        "disabled": boolean;
+        "error"?: string;
+        "label"?: string;
+        /**
+          * @default false
+         */
+        "required": boolean;
+        "toggle": () => Promise<void>;
+        /**
+          * @default 'switch'
+         */
+        "type": 'switch' | 'checkbox';
+    }
 }
 export interface QCarouselCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -247,6 +300,10 @@ export interface QReelCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLQReelElement;
 }
+export interface QScrollableCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQScrollableElement;
+}
 export interface QSidepanelCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLQSidepanelElement;
@@ -262,6 +319,10 @@ export interface QTextareaCustomEvent<T> extends CustomEvent<T> {
 export interface QThumbnailCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLQThumbnailElement;
+}
+export interface QToggleCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQToggleElement;
 }
 declare global {
     interface HTMLQButtonElement extends Components.QButton, HTMLStencilElement {
@@ -355,6 +416,23 @@ declare global {
         prototype: HTMLQReelElement;
         new (): HTMLQReelElement;
     };
+    interface HTMLQScrollableElementEventMap {
+        "qScroll": { scrollTop: number; scrollHeight: number; clientHeight: number };
+    }
+    interface HTMLQScrollableElement extends Components.QScrollable, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQScrollableElementEventMap>(type: K, listener: (this: HTMLQScrollableElement, ev: QScrollableCustomEvent<HTMLQScrollableElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQScrollableElementEventMap>(type: K, listener: (this: HTMLQScrollableElement, ev: QScrollableCustomEvent<HTMLQScrollableElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLQScrollableElement: {
+        prototype: HTMLQScrollableElement;
+        new (): HTMLQScrollableElement;
+    };
     interface HTMLQSidepanelElementEventMap {
         "qClose": void;
     }
@@ -432,6 +510,23 @@ declare global {
         prototype: HTMLQThumbnailElement;
         new (): HTMLQThumbnailElement;
     };
+    interface HTMLQToggleElementEventMap {
+        "qChange": boolean;
+    }
+    interface HTMLQToggleElement extends Components.QToggle, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQToggleElementEventMap>(type: K, listener: (this: HTMLQToggleElement, ev: QToggleCustomEvent<HTMLQToggleElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQToggleElementEventMap>(type: K, listener: (this: HTMLQToggleElement, ev: QToggleCustomEvent<HTMLQToggleElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLQToggleElement: {
+        prototype: HTMLQToggleElement;
+        new (): HTMLQToggleElement;
+    };
     interface HTMLElementTagNameMap {
         "q-button": HTMLQButtonElement;
         "q-card": HTMLQCardElement;
@@ -440,11 +535,13 @@ declare global {
         "q-dropdown": HTMLQDropdownElement;
         "q-input": HTMLQInputElement;
         "q-reel": HTMLQReelElement;
+        "q-scrollable": HTMLQScrollableElement;
         "q-sidepanel": HTMLQSidepanelElement;
         "q-step-diagram": HTMLQStepDiagramElement;
         "q-step-diagram-item": HTMLQStepDiagramItemElement;
         "q-textarea": HTMLQTextareaElement;
         "q-thumbnail": HTMLQThumbnailElement;
+        "q-toggle": HTMLQToggleElement;
     }
 }
 declare namespace LocalJSX {
@@ -501,6 +598,10 @@ declare namespace LocalJSX {
          */
         "itemWidth"?: string;
         "onQSlideChange"?: (event: QCarouselCustomEvent<{ index: number; element: HTMLElement }>) => void;
+        /**
+          * @default false
+         */
+        "repeat"?: boolean;
         /**
           * @default false
          */
@@ -607,6 +708,33 @@ declare namespace LocalJSX {
         "onQLightboxClose"?: (event: QReelCustomEvent<void>) => void;
         "onQLightboxOpen"?: (event: QReelCustomEvent<void>) => void;
     }
+    interface QScrollable {
+        /**
+          * @default true
+         */
+        "autoHide"?: boolean;
+        /**
+          * @default '100%'
+         */
+        "height"?: string;
+        /**
+          * @default ''
+         */
+        "maxHeight"?: string;
+        /**
+          * @default 'custom'
+         */
+        "mode"?: 'custom' | 'native';
+        /**
+          * @default true
+         */
+        "nativeOnMobile"?: boolean;
+        "onQScroll"?: (event: QScrollableCustomEvent<{ scrollTop: number; scrollHeight: number; clientHeight: number }>) => void;
+        /**
+          * @default ''
+         */
+        "target"?: string;
+    }
     interface QSidepanel {
         "onQClose"?: (event: QSidepanelCustomEvent<void>) => void;
         /**
@@ -704,6 +832,35 @@ declare namespace LocalJSX {
          */
         "video"?: boolean;
     }
+    interface QToggle {
+        /**
+          * @default false
+         */
+        "checked"?: boolean;
+        /**
+          * @default false
+         */
+        "disabled"?: boolean;
+        "error"?: string;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        "label"?: string;
+        /**
+          * The name of the element, used when submitting an HTML form.
+         */
+        "name"?: string;
+        "onQChange"?: (event: QToggleCustomEvent<boolean>) => void;
+        /**
+          * @default false
+         */
+        "required"?: boolean;
+        /**
+          * @default 'switch'
+         */
+        "type"?: 'switch' | 'checkbox';
+    }
 
     interface QButtonAttributes {
         "variant": 'primary' | 'secondary' | 'success' | 'danger' | 'ghost' | 'text';
@@ -726,6 +883,7 @@ declare namespace LocalJSX {
         "snapAlignment": 'start' | 'center' | 'end' | 'none';
         "showArrows": boolean;
         "showIndicators": boolean;
+        "repeat": boolean;
         "itemWidth": string;
     }
     interface QCircularProgressAttributes {
@@ -754,6 +912,14 @@ declare namespace LocalJSX {
     interface QReelAttributes {
         "layout": 'grid' | 'carousel';
         "lightbox": boolean;
+    }
+    interface QScrollableAttributes {
+        "height": string;
+        "maxHeight": string;
+        "autoHide": boolean;
+        "nativeOnMobile": boolean;
+        "mode": 'custom' | 'native';
+        "target": string;
     }
     interface QSidepanelAttributes {
         "open": boolean;
@@ -786,6 +952,14 @@ declare namespace LocalJSX {
         "alt": string;
         "highlighted": boolean;
     }
+    interface QToggleAttributes {
+        "checked": boolean;
+        "type": 'switch' | 'checkbox';
+        "label": string;
+        "disabled": boolean;
+        "required": boolean;
+        "error": string;
+    }
 
     interface IntrinsicElements {
         "q-button": Omit<QButton, keyof QButtonAttributes> & { [K in keyof QButton & keyof QButtonAttributes]?: QButton[K] } & { [K in keyof QButton & keyof QButtonAttributes as `attr:${K}`]?: QButtonAttributes[K] } & { [K in keyof QButton & keyof QButtonAttributes as `prop:${K}`]?: QButton[K] };
@@ -795,11 +969,13 @@ declare namespace LocalJSX {
         "q-dropdown": Omit<QDropdown, keyof QDropdownAttributes> & { [K in keyof QDropdown & keyof QDropdownAttributes]?: QDropdown[K] } & { [K in keyof QDropdown & keyof QDropdownAttributes as `attr:${K}`]?: QDropdownAttributes[K] } & { [K in keyof QDropdown & keyof QDropdownAttributes as `prop:${K}`]?: QDropdown[K] };
         "q-input": Omit<QInput, keyof QInputAttributes> & { [K in keyof QInput & keyof QInputAttributes]?: QInput[K] } & { [K in keyof QInput & keyof QInputAttributes as `attr:${K}`]?: QInputAttributes[K] } & { [K in keyof QInput & keyof QInputAttributes as `prop:${K}`]?: QInput[K] };
         "q-reel": Omit<QReel, keyof QReelAttributes> & { [K in keyof QReel & keyof QReelAttributes]?: QReel[K] } & { [K in keyof QReel & keyof QReelAttributes as `attr:${K}`]?: QReelAttributes[K] } & { [K in keyof QReel & keyof QReelAttributes as `prop:${K}`]?: QReel[K] };
+        "q-scrollable": Omit<QScrollable, keyof QScrollableAttributes> & { [K in keyof QScrollable & keyof QScrollableAttributes]?: QScrollable[K] } & { [K in keyof QScrollable & keyof QScrollableAttributes as `attr:${K}`]?: QScrollableAttributes[K] } & { [K in keyof QScrollable & keyof QScrollableAttributes as `prop:${K}`]?: QScrollable[K] };
         "q-sidepanel": Omit<QSidepanel, keyof QSidepanelAttributes> & { [K in keyof QSidepanel & keyof QSidepanelAttributes]?: QSidepanel[K] } & { [K in keyof QSidepanel & keyof QSidepanelAttributes as `attr:${K}`]?: QSidepanelAttributes[K] } & { [K in keyof QSidepanel & keyof QSidepanelAttributes as `prop:${K}`]?: QSidepanel[K] };
         "q-step-diagram": Omit<QStepDiagram, keyof QStepDiagramAttributes> & { [K in keyof QStepDiagram & keyof QStepDiagramAttributes]?: QStepDiagram[K] } & { [K in keyof QStepDiagram & keyof QStepDiagramAttributes as `attr:${K}`]?: QStepDiagramAttributes[K] } & { [K in keyof QStepDiagram & keyof QStepDiagramAttributes as `prop:${K}`]?: QStepDiagram[K] };
         "q-step-diagram-item": Omit<QStepDiagramItem, keyof QStepDiagramItemAttributes> & { [K in keyof QStepDiagramItem & keyof QStepDiagramItemAttributes]?: QStepDiagramItem[K] } & { [K in keyof QStepDiagramItem & keyof QStepDiagramItemAttributes as `attr:${K}`]?: QStepDiagramItemAttributes[K] } & { [K in keyof QStepDiagramItem & keyof QStepDiagramItemAttributes as `prop:${K}`]?: QStepDiagramItem[K] };
         "q-textarea": Omit<QTextarea, keyof QTextareaAttributes> & { [K in keyof QTextarea & keyof QTextareaAttributes]?: QTextarea[K] } & { [K in keyof QTextarea & keyof QTextareaAttributes as `attr:${K}`]?: QTextareaAttributes[K] } & { [K in keyof QTextarea & keyof QTextareaAttributes as `prop:${K}`]?: QTextarea[K] };
         "q-thumbnail": Omit<QThumbnail, keyof QThumbnailAttributes> & { [K in keyof QThumbnail & keyof QThumbnailAttributes]?: QThumbnail[K] } & { [K in keyof QThumbnail & keyof QThumbnailAttributes as `attr:${K}`]?: QThumbnailAttributes[K] } & { [K in keyof QThumbnail & keyof QThumbnailAttributes as `prop:${K}`]?: QThumbnail[K] };
+        "q-toggle": Omit<QToggle, keyof QToggleAttributes> & { [K in keyof QToggle & keyof QToggleAttributes]?: QToggle[K] } & { [K in keyof QToggle & keyof QToggleAttributes as `attr:${K}`]?: QToggleAttributes[K] } & { [K in keyof QToggle & keyof QToggleAttributes as `prop:${K}`]?: QToggle[K] };
     }
 }
 export { LocalJSX as JSX };
@@ -813,11 +989,13 @@ declare module "@stencil/core" {
             "q-dropdown": LocalJSX.IntrinsicElements["q-dropdown"] & JSXBase.HTMLAttributes<HTMLQDropdownElement>;
             "q-input": LocalJSX.IntrinsicElements["q-input"] & JSXBase.HTMLAttributes<HTMLQInputElement>;
             "q-reel": LocalJSX.IntrinsicElements["q-reel"] & JSXBase.HTMLAttributes<HTMLQReelElement>;
+            "q-scrollable": LocalJSX.IntrinsicElements["q-scrollable"] & JSXBase.HTMLAttributes<HTMLQScrollableElement>;
             "q-sidepanel": LocalJSX.IntrinsicElements["q-sidepanel"] & JSXBase.HTMLAttributes<HTMLQSidepanelElement>;
             "q-step-diagram": LocalJSX.IntrinsicElements["q-step-diagram"] & JSXBase.HTMLAttributes<HTMLQStepDiagramElement>;
             "q-step-diagram-item": LocalJSX.IntrinsicElements["q-step-diagram-item"] & JSXBase.HTMLAttributes<HTMLQStepDiagramItemElement>;
             "q-textarea": LocalJSX.IntrinsicElements["q-textarea"] & JSXBase.HTMLAttributes<HTMLQTextareaElement>;
             "q-thumbnail": LocalJSX.IntrinsicElements["q-thumbnail"] & JSXBase.HTMLAttributes<HTMLQThumbnailElement>;
+            "q-toggle": LocalJSX.IntrinsicElements["q-toggle"] & JSXBase.HTMLAttributes<HTMLQToggleElement>;
         }
     }
 }

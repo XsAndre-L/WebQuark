@@ -10,6 +10,7 @@ export class QCarousel {
   @Prop({ reflect: true }) snapAlignment: 'start' | 'center' | 'end' | 'none' = 'start';
   @Prop({ reflect: true }) showArrows: boolean = false;
   @Prop({ reflect: true }) showIndicators: boolean = false;
+  @Prop({ reflect: true }) repeat: boolean = false;
   @Prop() itemWidth: string = "auto";
 
   @State() activeIndex: number = 0;
@@ -27,42 +28,46 @@ export class QCarousel {
   private itemOffsets: number[] = [];
   private itemWidths: number[] = [];
   private containerWidth: number = 0;
+  private maxScrollLeft: number = 0;
+  private cachedChildren: HTMLElement[] = [];
+  private rafId?: number;
+  private scrollRafId?: number;
 
-  private touchStartX: number = 0;
-  private touchStartY: number = 0;
-  private isDragging: boolean = false;
   private isProgrammaticScroll: boolean = false;
   private programmaticScrollTimer?: any;
 
   componentDidLoad() {
+    this.updateCachedChildren();
     this.updateItemStyles();
     this.calculateLimits();
-    
-    if (this.scrollContainer) {
-      this.scrollContainer.addEventListener('touchstart', this.handleTouchStart, { passive: true });
-      this.scrollContainer.addEventListener('touchmove', this.handleTouchMove, { passive: false });
-      this.scrollContainer.addEventListener('touchend', this.handleTouchEnd, { passive: true });
-    }
 
-    // Set up ResizeObserver to recalculate slides if viewport or item bounds change
+    // Set up ResizeObserver to recalculate slides if viewport bounds change
     if (typeof ResizeObserver !== 'undefined' && this.scrollContainer) {
-      this.resizeObserver = new ResizeObserver(() => this.calculateLimits());
+      this.resizeObserver = new ResizeObserver(() => this.scheduleCalculateLimits());
       this.resizeObserver.observe(this.scrollContainer);
-      
-      // Also observe all child items (for asynchronous layout rendering)
-      const children = this.getSlottedChildren();
-      children.forEach(child => this.resizeObserver?.observe(child));
+    }
+  }
+
+  connectedCallback() {
+    if (this.scrollContainer && !this.resizeObserver && typeof ResizeObserver !== 'undefined') {
+      this.resizeObserver = new ResizeObserver(() => this.scheduleCalculateLimits());
+      this.resizeObserver.observe(this.scrollContainer);
     }
   }
 
   disconnectedCallback() {
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
+      this.resizeObserver = undefined;
     }
-    if (this.scrollContainer) {
-      this.scrollContainer.removeEventListener('touchstart', this.handleTouchStart);
-      this.scrollContainer.removeEventListener('touchmove', this.handleTouchMove);
-      this.scrollContainer.removeEventListener('touchend', this.handleTouchEnd);
+    if (this.rafId) {
+      cancelAnimationFrame(this.rafId);
+    }
+    if (this.scrollRafId) {
+      cancelAnimationFrame(this.scrollRafId);
+    }
+    if (this.programmaticScrollTimer) {
+      clearTimeout(this.programmaticScrollTimer);
     }
   }
 
@@ -77,27 +82,22 @@ export class QCarousel {
   }
 
   private handleSlotChange = () => {
+    this.updateCachedChildren();
     this.updateItemStyles();
-    this.calculateLimits();
-    
-    // Dynamically observe new slotted items
-    if (this.resizeObserver && this.scrollContainer) {
-      this.resizeObserver.disconnect();
-      this.resizeObserver.observe(this.scrollContainer);
-      const children = this.getSlottedChildren();
-      children.forEach(child => this.resizeObserver?.observe(child));
-    }
+    this.scheduleCalculateLimits();
   };
 
-  private getSlottedChildren(): HTMLElement[] {
-    if (!this.scrollContainer) return [];
-    return getSlottedElements(this.scrollContainer);
+
+  private updateCachedChildren() {
+    if (!this.scrollContainer) {
+      this.cachedChildren = [];
+      return;
+    }
+    this.cachedChildren = getSlottedElements(this.scrollContainer);
   }
 
   private updateItemStyles() {
-    if (!this.scrollContainer) return;
-    const children = this.getSlottedChildren();
-    children.forEach((child) => {
+    this.cachedChildren.forEach((child) => {
       // Force custom item width if specified
       if (this.itemWidth !== 'auto') {
         child.style.width = this.itemWidth;
@@ -113,91 +113,130 @@ export class QCarousel {
     });
   }
 
+  private scheduleCalculateLimits = () => {
+    if (this.rafId) {
+      cancelAnimationFrame(this.rafId);
+    }
+    this.rafId = requestAnimationFrame(() => {
+      this.calculateLimits();
+      this.rafId = undefined;
+    });
+  };
+
   private calculateLimits = () => {
     if (!this.scrollContainer) return;
-    const children = this.getSlottedChildren();
     
     // Cache element offsets and sizes to prevent high-frequency layout reflows (OSR safe)
-    this.itemOffsets = children.map(child => child.offsetLeft - this.scrollContainer!.offsetLeft);
-    this.itemWidths = children.map(child => child.clientWidth);
+    this.itemOffsets = this.cachedChildren.map(child => child.offsetLeft - this.scrollContainer!.offsetLeft);
+    this.itemWidths = this.cachedChildren.map(child => child.clientWidth);
     this.containerWidth = this.scrollContainer.clientWidth;
 
     const scrollWidth = this.scrollContainer.scrollWidth;
-    const maxScrollLeft = Math.max(0, scrollWidth - this.containerWidth);
+    this.maxScrollLeft = Math.max(0, scrollWidth - this.containerWidth);
 
     this.isScrollable = scrollWidth > this.containerWidth;
-    this.maxIndex = Math.max(0, children.length - 1);
+    this.maxIndex = Math.max(0, this.cachedChildren.length - 1);
     
     // Initialize start/end states on load
     const scrollLeft = this.scrollContainer.scrollLeft;
     const startOffset = this.itemOffsets[0] || 0;
-    this.isAtStart = scrollLeft <= startOffset + 5;
-    this.isAtEnd = scrollLeft >= maxScrollLeft - 5;
+    
+    const nextAtStart = scrollLeft <= startOffset + 5;
+    const nextAtEnd = scrollLeft >= this.maxScrollLeft - 5;
+    if (this.isAtStart !== nextAtStart) {
+      this.isAtStart = nextAtStart;
+    }
+    if (this.isAtEnd !== nextAtEnd) {
+      this.isAtEnd = nextAtEnd;
+    }
     
     this.handleScroll();
   };
 
   private handleScroll = () => {
     if (!this.scrollContainer || this.itemOffsets.length === 0) return;
-
-    const scrollLeft = this.scrollContainer.scrollLeft;
-    const maxScrollLeft = this.scrollContainer.scrollWidth - this.scrollContainer.clientWidth;
-
-    const startOffset = this.itemOffsets[0] || 0;
-    this.isAtStart = scrollLeft <= startOffset + 5;
-    this.isAtEnd = scrollLeft >= maxScrollLeft - 5;
-    
-    // Ignore scroll event index updates during programmatic scrolling to avoid indicator jumping
     if (this.isProgrammaticScroll) return;
 
-    // Math alignment targets for snapping modes
-    let targetScroll = scrollLeft;
-    if (this.snapAlignment === 'center') {
-      targetScroll = scrollLeft + this.containerWidth / 2;
-    } else if (this.snapAlignment === 'end') {
-      targetScroll = scrollLeft + this.containerWidth;
-    }
+    if (this.scrollRafId) return;
 
-    // Find closest cached offset
-    let closestIndex = 0;
-    let minDiff = Infinity;
+    this.scrollRafId = requestAnimationFrame(() => {
+      this.scrollRafId = undefined;
+      if (!this.scrollContainer || this.itemOffsets.length === 0 || this.isProgrammaticScroll) return;
 
-    this.itemOffsets.forEach((offset, index) => {
-      let comparisonOffset = offset;
-      const itemWidth = this.itemWidths[index] || 0;
-      if (this.snapAlignment === 'center') {
-        comparisonOffset = offset + itemWidth / 2;
-      } else if (this.snapAlignment === 'end') {
-        comparisonOffset = offset + itemWidth;
+      const scrollLeft = this.scrollContainer.scrollLeft;
+      const startOffset = this.itemOffsets[0] || 0;
+      
+      const nextAtStart = scrollLeft <= startOffset + 5;
+      const nextAtEnd = scrollLeft >= this.maxScrollLeft - 5;
+      if (this.isAtStart !== nextAtStart) {
+        this.isAtStart = nextAtStart;
+      }
+      if (this.isAtEnd !== nextAtEnd) {
+        this.isAtEnd = nextAtEnd;
       }
 
-      const diff = Math.abs(comparisonOffset - targetScroll);
-      if (diff < minDiff) {
-        minDiff = diff;
-        closestIndex = index;
+      // Math alignment targets for snapping modes
+      let targetScroll = scrollLeft;
+      if (this.snapAlignment === 'center') {
+        targetScroll = scrollLeft + this.containerWidth / 2;
+      } else if (this.snapAlignment === 'end') {
+        targetScroll = scrollLeft + this.containerWidth;
+      }
+
+      // Find closest cached offset
+      let closestIndex = 0;
+      let minDiff = Infinity;
+
+      this.itemOffsets.forEach((offset, index) => {
+        let comparisonOffset = offset;
+        const itemWidth = this.itemWidths[index] || 0;
+        if (this.snapAlignment === 'center') {
+          comparisonOffset = offset + itemWidth / 2;
+        } else if (this.snapAlignment === 'end') {
+          comparisonOffset = offset + itemWidth;
+        }
+
+        const diff = Math.abs(comparisonOffset - targetScroll);
+        if (diff < minDiff) {
+          minDiff = diff;
+          closestIndex = index;
+        }
+      });
+
+      if (this.activeIndex !== closestIndex) {
+        this.activeIndex = closestIndex;
+        const children = this.cachedChildren;
+        if (children[this.activeIndex]) {
+          this.qSlideChange.emit({
+            index: this.activeIndex,
+            element: children[this.activeIndex]
+          });
+        }
       }
     });
-
-    if (this.activeIndex !== closestIndex) {
-      this.activeIndex = closestIndex;
-      const children = this.getSlottedChildren();
-      if (children[this.activeIndex]) {
-        this.qSlideChange.emit({
-          index: this.activeIndex,
-          element: children[this.activeIndex]
-        });
-      }
-    }
   };
 
   private scrollToIndex(index: number) {
-    if (!this.scrollContainer || index < 0 || index >= this.itemOffsets.length) return;
+    if (!this.scrollContainer || this.itemOffsets.length === 0 || this.maxIndex <= 0) return;
+    
+    let targetIndex = index;
+    if (this.repeat) {
+      if (targetIndex < 0) {
+        targetIndex = this.maxIndex;
+      } else if (targetIndex > this.maxIndex) {
+        targetIndex = 0;
+      }
+    } else {
+      if (targetIndex < 0 || targetIndex > this.maxIndex) return;
+    }
+
+    if (this.itemOffsets[targetIndex] === undefined) return;
     
     this.isProgrammaticScroll = true;
     clearTimeout(this.programmaticScrollTimer);
     
-    this.activeIndex = Math.min(index, this.maxIndex);
-    const children = this.getSlottedChildren();
+    this.activeIndex = targetIndex;
+    const children = this.cachedChildren;
     if (children[this.activeIndex]) {
       this.qSlideChange.emit({
         index: this.activeIndex,
@@ -206,61 +245,37 @@ export class QCarousel {
     }
 
     this.scrollContainer.scrollTo({
-      left: this.itemOffsets[index],
+      left: this.itemOffsets[targetIndex],
       behavior: 'smooth'
     });
 
-    // Clear programmatic scroll flag after scroll transition completes (400ms)
-    this.programmaticScrollTimer = setTimeout(() => {
+    const onScrollEnd = () => {
       this.isProgrammaticScroll = false;
-    }, 400);
+      this.handleScroll();
+      clearTimeout(this.programmaticScrollTimer);
+      if (this.scrollContainer) {
+        this.scrollContainer.removeEventListener('scrollend', onScrollEnd);
+      }
+    };
+
+    if (this.scrollContainer) {
+      this.scrollContainer.addEventListener('scrollend', onScrollEnd, { once: true });
+    }
+
+    // 600ms safety fallback timer in case browser scrollend doesn't fire
+    this.programmaticScrollTimer = setTimeout(onScrollEnd, 600);
   }
 
   private slidePrev = () => {
+    const isFirst = this.repeat ? (!this.isScrollable || this.maxIndex <= 0) : (this.isAtStart || !this.isScrollable);
+    if (isFirst) return;
     this.scrollToIndex(this.activeIndex - 1);
   };
 
   private slideNext = () => {
+    const isLast = this.repeat ? (!this.isScrollable || this.maxIndex <= 0) : (this.isAtEnd || !this.isScrollable);
+    if (isLast) return;
     this.scrollToIndex(this.activeIndex + 1);
-  };
-
-  private handleTouchStart = (e: TouchEvent) => {
-    this.touchStartX = e.touches[0].clientX;
-    this.touchStartY = e.touches[0].clientY;
-    this.isDragging = false;
-  };
-
-  private handleTouchMove = (e: TouchEvent) => {
-    const currentX = e.touches[0].clientX;
-    const currentY = e.touches[0].clientY;
-    const diffX = Math.abs(currentX - this.touchStartX);
-    const diffY = Math.abs(currentY - this.touchStartY);
-
-    if (diffX > 5 || diffY > 5) {
-      this.isDragging = true;
-      if (e.cancelable) {
-        e.preventDefault();
-      }
-      if (this.scrollContainer) {
-        const deltaX = this.touchStartX - currentX;
-        this.scrollContainer.scrollLeft += deltaX;
-        this.touchStartX = currentX;
-      }
-    }
-  };
-
-  private handleTouchEnd = () => {
-    if (this.isDragging) {
-      const blockClick = (e: MouseEvent) => {
-        e.stopImmediatePropagation();
-        e.preventDefault();
-        this.el.removeEventListener('click', blockClick, true);
-      };
-      this.el.addEventListener('click', blockClick, true);
-      setTimeout(() => {
-        this.el.removeEventListener('click', blockClick, true);
-      }, 50);
-    }
   };
 
   private handleIndicatorKeyDown = (e: KeyboardEvent) => {
@@ -286,8 +301,8 @@ export class QCarousel {
   };
 
   render() {
-    const isFirst = this.isAtStart || !this.isScrollable;
-    const isLast = this.isAtEnd || !this.isScrollable;
+    const isFirst = this.repeat ? (!this.isScrollable || this.maxIndex <= 0) : (this.isAtStart || !this.isScrollable);
+    const isLast = this.repeat ? (!this.isScrollable || this.maxIndex <= 0) : (this.isAtEnd || !this.isScrollable);
 
     return (
       <div class="carousel-wrapper">
@@ -296,8 +311,8 @@ export class QCarousel {
         {this.showArrows && (
           <button 
             class={{ 'arrow-btn': true, 'arrow-left': true }}
-            disabled={isFirst}
-            onClick={this.slidePrev}
+            aria-disabled={isFirst ? 'true' : 'false'}
+            onClick={isFirst ? undefined : this.slidePrev}
             aria-label="Previous slide"
             type="button"
           >
@@ -324,8 +339,8 @@ export class QCarousel {
         {this.showArrows && (
           <button 
             class={{ 'arrow-btn': true, 'arrow-right': true }}
-            disabled={isLast}
-            onClick={this.slideNext}
+            aria-disabled={isLast ? 'true' : 'false'}
+            onClick={isLast ? undefined : this.slideNext}
             aria-label="Next slide"
             type="button"
           >

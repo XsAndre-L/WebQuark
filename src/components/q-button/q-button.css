@@ -21,6 +21,8 @@
   box-sizing: border-box;
   outline: none;
   cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
   
   transition: var(--q-btn-transition, all 150ms cubic-bezier(0.4, 0, 0.2, 1));
 }
@@ -56,7 +58,7 @@
 /* Secondary */
 .variant-secondary {
   background: var(--q-color-secondary, #4b5563);
-  color: var(--q-fg-base, #f9fafb);
+  color: #ffffff;
 }
 .variant-secondary:hover:not(.is-disabled) {
   opacity: 0.9;

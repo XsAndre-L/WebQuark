@@ -1,0 +1,37 @@
+{
+  "name": "Scrollable Container",
+  "tag": "q-scrollable",
+  "props": {
+    "height": { "type": "string", "default": "250px", "desc": "The vertical height of the scroll container" },
+    "maxHeight": { "type": "string", "default": "", "desc": "Optional maximum height constraint" },
+    "autoHide": { "type": "boolean", "default": true, "desc": "Fades out custom scrollbar thumb when idle" },
+    "nativeOnMobile": { "type": "boolean", "default": true, "desc": "Enforces native OS scrollbars on touch devices" },
+    "mode": { "type": "select", "options": ["custom", "native"], "default": "custom", "desc": "Use premium overlay or native styling engine" },
+    "target": { "type": "string", "default": "", "desc": "Optional CSS selector to target for native scrollbar style injection" }
+  },
+  "slots": {
+    "default": {
+      "type": "html",
+      "default": "<div style=\"padding: 15px; line-height: 1.6; font-size: 0.95rem;\">\n  <h3 style=\"margin-top: 0; color: var(--primary);\">Premium Hybrid Scroll Container</h3>\n  <p>This component merges the performance of native compositor-driven scrolling with the pixel-perfect styling of custom scrollbars.</p>\n  <p>Try scrolling using your wheel, trackpad, or touch screen. In custom mode, you will see a subtle glassmorphic track and thumb that auto-hides after 1.5s of inactivity.</p>\n  <p>In native mode, we can style the browser's scrollbars using native APIs (like ::-webkit-scrollbar and scrollbar-width) injected directly via CSS style rules.</p>\n  <p>Duis iaculis congue tristique. Phasellus at erat sem. Curabitur sed tempor quam, ac volutpat est. Proin sit amet nibh in dui imperdiet convallis. Integer pretium justo vel lectus tincidunt, egestas luctus ex facilisis.</p>\n  <p>Morbi porta magna eget erat eleifend aliquet. Aliquam nec feugiat lectus, sit amet dictum leo. Nam pulvinar erat nec ex mollis, vitae molestie velit imperdiet. Vestibulum tristique sit amet ante id rhoncus.</p>\n  <p style=\"margin-bottom: 0;\">Congratulations! You have reached the bottom of this scrollable viewport container area.</p>\n</div>",
+      "desc": "Main scrollable viewport content"
+    }
+  },
+  "variants": [
+    { "name": "Custom Mode (Height 200px)", "props": { "mode": "custom", "height": "200px", "autoHide": true } },
+    { "name": "Custom Mode (No Auto-Hide)", "props": { "mode": "custom", "height": "200px", "autoHide": false } },
+    { "name": "Native Mode Styled", "props": { "mode": "native", "height": "200px" } },
+    { "name": "Max Height Constraint (150px)", "props": { "mode": "custom", "height": "auto", "maxHeight": "150px" } }
+  ],
+  "edgeCases": [
+    {
+      "name": "Short Content (No Scrollbar)",
+      "props": { "height": "250px", "mode": "custom" },
+      "slot": "<div style=\"padding:15px;color:var(--text-muted);\">This content is too short to trigger scrollbars, verify scrollbar hidden.</div>"
+    },
+    {
+      "name": "Extremely Long Scroll Content",
+      "props": { "height": "200px", "mode": "custom" },
+      "slot": "<p style=\"padding: 5px 15px; margin: 0; background: rgba(255,255,255,0.02)\">Paragraph line entry index #1</p>\n<p style=\"padding: 5px 15px; margin: 0; background: transparent\">Paragraph line entry index #2</p>\n<p style=\"padding: 5px 15px; margin: 0; background: rgba(255,255,255,0.02)\">Paragraph line entry index #3</p>\n<p style=\"padding: 5px 15px; margin: 0; background: transparent\">Paragraph line entry index #4</p>\n<p style=\"padding: 5px 15px; margin: 0; background: rgba(255,255,255,0.02)\">Paragraph line entry index #5</p>\n<p style=\"padding: 5px 15px; margin: 0; background: transparent\">Paragraph line entry index #6</p>\n<p style=\"padding: 5px 15px; margin: 0; background: rgba(255,255,255,0.02)\">Paragraph line entry index #7</p>\n<p style=\"padding: 5px 15px; margin: 0; background: transparent\">Paragraph line entry index #8</p>\n<p style=\"padding: 5px 15px; margin: 0; background: rgba(255,255,255,0.02)\">Paragraph line entry index #9</p>\n<p style=\"padding: 5px 15px; margin: 0; background: transparent\">Paragraph line entry index #10</p>"
+    }
+  ]
+}

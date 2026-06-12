@@ -69,6 +69,8 @@
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* static fallback */
   box-shadow: var(--q-shadow-medium, 0 8px 16px rgba(0,0,0,0.3));
   opacity: 0; /* Fade in on hover or focus */
+  user-select: none;
+  -webkit-user-select: none;
   
   /* Restrict transitions to opacity and transform only */
   transition: opacity var(--q-transition-normal, 250ms ease),
@@ -80,9 +82,15 @@
 
 /* Reveal arrows on hover or focus of the component wrapper */
 .carousel-wrapper:hover .arrow-btn,
-.carousel-wrapper:focus-within .arrow-btn,
-.arrow-btn:focus-visible {
+.carousel-wrapper:focus-within .arrow-btn {
   opacity: 1;
+}
+
+.arrow-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--q-bg-base, #111827), 0 0 0 4px var(--q-color-primary, #60a5fa);
+  opacity: 1;
+  z-index: 12;
 }
 
 .arrow-btn:hover {
@@ -100,9 +108,8 @@
 }
 
 /* Navigation button helper states */
-.arrow-btn:disabled {
-  opacity: 0 !important;
-  visibility: hidden;
+.arrow-btn[aria-disabled="true"] {
+  opacity: 0.25 !important;
   pointer-events: none;
   cursor: not-allowed;
   transform: translateY(-50%) scale(0.9);
@@ -131,21 +138,27 @@
   height: var(--q-carousel-indicator-size, 6px);
   border-radius: var(--q-carousel-indicator-size, 6px);
   background: #9ca3af; /* static fallback */
-  background: var(--q-color-secondary, #9ca3af);
+  background: var(--q-fg-muted, #9ca3af);
   border: none;
   cursor: pointer;
   outline: none;
   opacity: 0.5;
+  user-select: none;
+  -webkit-user-select: none;
   
   /* Animate width for a perfect pill shape (prevents scaleX ellipse distortion) */
   transition: width var(--q-transition-normal, 250ms ease),
               opacity var(--q-transition-normal, 250ms ease);
 }
 
-.indicator-dot:hover,
-.indicator-dot:focus-visible {
+.indicator-dot:hover {
   opacity: 0.8;
+}
+
+.indicator-dot:focus-visible {
   outline: none;
+  box-shadow: 0 0 0 2px var(--q-bg-base, #111827), 0 0 0 4px var(--q-color-primary, #60a5fa);
+  opacity: 1;
 }
 
 .indicator-dot.is-active {

@@ -1,0 +1,30 @@
+{
+  "name": "Step Diagram",
+  "tag": "q-step-diagram",
+  "props": {
+    "layout": { "type": "select", "options": ["vertical", "horizontal"], "default": "vertical", "desc": "Timeline orientation path" }
+  },
+  "slots": {
+    "default": {
+      "type": "html",
+      "default": "<q-step-diagram-item status=\"completed\">\n  <span slot=\"title\">Step 1: Code Specs</span>\n  Establish architectural guidelines.\n</q-step-diagram-item>\n<q-step-diagram-item status=\"active\">\n  <span slot=\"title\">Step 2: Interactive Sandbox</span>\n  Implement dashboard controls & knobs.\n</q-step-diagram-item>\n<q-step-diagram-item status=\"pending\" line-style=\"dashed\">\n  <span slot=\"title\">Step 3: Verification Build</span>\n  Transpile assets and execute production checks.\n</q-step-diagram-item>",
+      "desc": "Timeline step diagram items list"
+    }
+  },
+  "variants": [
+    { "name": "Vertical Layout timeline", "props": { "layout": "vertical" } },
+    { "name": "Horizontal Layout timeline", "props": { "layout": "horizontal" } }
+  ],
+  "edgeCases": [
+    {
+      "name": "Timeline Node Styles & Statuses",
+      "props": { "layout": "vertical" },
+      "slot": "<q-step-diagram-item status=\"completed\" line-style=\"solid\"><span slot=\"title\">Completed</span>Status Completed</q-step-diagram-item>\n<q-step-diagram-item status=\"active\" line-style=\"dashed\"><span slot=\"title\">Active Status</span>Status Active</q-step-diagram-item>\n<q-step-diagram-item status=\"pending\" line-style=\"dotted\"><span slot=\"title\">Pending Status</span>Status Pending</q-step-diagram-item>\n<q-step-diagram-item status=\"success\" line-style=\"solid\"><span slot=\"title\">Success Status</span>Status Success</q-step-diagram-item>\n<q-step-diagram-item status=\"warning\" line-style=\"solid\"><span slot=\"title\">Warning Status</span>Status Warning</q-step-diagram-item>\n<q-step-diagram-item status=\"danger\" line-style=\"none\"><span slot=\"title\">Danger Status</span>Status Danger (End of path)</q-step-diagram-item>"
+    },
+    {
+      "name": "Single Step Element",
+      "props": { "layout": "vertical" },
+      "slot": "<q-step-diagram-item status=\"active\" line-style=\"none\"><span slot=\"title\">Isolated Node</span>Lone timeline item</q-step-diagram-item>"
+    }
+  ]
+}

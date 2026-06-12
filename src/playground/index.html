@@ -1,0 +1,156 @@
+<!doctype html>
+<html dir="ltr" lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0" />
+    <title>WebQuark Playground</title>
+
+    <script type="module" src="/build/webquark.esm.js"></script>
+    <script nomodule src="/build/webquark.js"></script>
+    <link rel="stylesheet" href="/build/webquark.css" />
+    <link rel="stylesheet" href="/playground.css" />
+  </head>
+  <body>
+    <!-- BACKDROP FOR MOBILE SIDEBAR -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <!-- TOP HEADER -->
+    <header class="app-header">
+      <button class="hamburger-menu" id="hamburgerMenu" aria-label="Toggle Menu" type="button">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+      <div class="header-logo">
+        <div class="logo-icon">Q</div>
+        <div class="logo-text">WebQuark Sandbox</div>
+      </div>
+      <div class="header-actions">
+        <!-- Overlay toggle -->
+        <div class="toggle-control">
+          <span class="toggle-label">Page Overlay Mode</span>
+          <label class="switch">
+            <input type="checkbox" id="pageOverlayToggle" />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <!-- Theme Switcher -->
+        <button id="themeToggle" class="action-btn" type="button">Toggle Theme</button>
+      </div>
+    </header>
+
+    <!-- WORKSPACE -->
+    <div class="app-workspace">
+      <!-- SIDE NAVIGATION -->
+      <aside class="sidebar">
+        <q-scrollable height="100%">
+          <div style="padding: 16px 20px 8px 20px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); font-weight: 700">Components</div>
+          <nav class="sidebar-nav" id="sidebarNav">
+            <!-- Populated by JS -->
+          </nav>
+        </q-scrollable>
+      </aside>
+
+      <!-- MAIN SANDBOX -->
+      <main class="main-panel">
+        <!-- SUB-TABS -->
+        <div class="tabs-bar">
+          <div class="tab-buttons">
+            <button class="tab-btn active" data-tab="sandbox">Interactive Sandbox</button>
+            <button class="tab-btn" data-tab="variants">All Variants Matrix</button>
+            <button class="tab-btn" data-tab="edgecases">Edge Cases</button>
+          </div>
+          <div class="active-component-badge" id="activeCompBadge">q-button</div>
+        </div>
+
+        <!-- 1. INTERACTIVE SANDBOX CONTENT -->
+        <div class="tab-content active" id="content-sandbox">
+          <div class="sandbox-layout">
+            <!-- Stage Panel -->
+            <div class="sandbox-main">
+              <q-scrollable height="100%">
+                <div class="sandbox-scroll-content">
+                  <div class="stage-container" id="stageContainer">
+                    <!-- Rendered element -->
+                  </div>
+
+                  <!-- Event Log -->
+                  <div class="event-log-container">
+                    <div class="event-log-header">
+                      <span>Event Dispatches Log</span>
+                      <button class="clear-log-btn" id="clearLogBtn">Clear Log</button>
+                    </div>
+                    <q-scrollable height="110px">
+                      <div class="event-log-body" id="eventLogBody">
+                        <span class="log-placeholder">Interactive events will appear here in real-time...</span>
+                      </div>
+                    </q-scrollable>
+                  </div>
+
+                  <!-- Live Code snippet -->
+                  <div class="code-preview-container">
+                    <div class="code-preview-header">
+                      <span>LIVE RENDER MARKUP</span>
+                      <button class="copy-btn" id="copyBtn">Copy Code</button>
+                    </div>
+                    <pre class="code-preview-body"><code id="codeBlock"></code></pre>
+                  </div>
+                </div>
+              </q-scrollable>
+            </div>
+
+            <!-- Knobs Panel -->
+            <aside class="knobs-panel">
+              <q-scrollable height="100%">
+                <div class="knobs-scroll-content">
+                  <div class="knobs-panel-header">
+                    <span>Controls</span>
+                    <button id="knobsCloseBtn" class="knobs-close-btn" aria-label="Close Controls" type="button">&times;</button>
+                  </div>
+                  <div class="knobs-section">
+                    <h3 class="knobs-section-title">Attributes (Properties)</h3>
+                    <div id="attributeKnobs">
+                      <!-- Dynamically filled -->
+                    </div>
+                  </div>
+                  <div class="knobs-section">
+                    <h3 class="knobs-section-title">Slots (Content)</h3>
+                    <div id="slotKnobs">
+                      <!-- Dynamically filled -->
+                    </div>
+                  </div>
+                </div>
+              </q-scrollable>
+            </aside>
+          </div>
+        </div>
+
+        <!-- 2. ALL VARIANTS CONTENT -->
+        <div class="tab-content" id="content-variants">
+          <q-scrollable height="100%">
+            <div class="variants-grid" id="variantsGrid">
+              <!-- Dynamically filled -->
+            </div>
+          </q-scrollable>
+        </div>
+
+        <!-- 3. EDGE CASES CONTENT -->
+        <div class="tab-content" id="content-edgecases">
+          <q-scrollable height="100%">
+            <div class="variants-grid" id="edgecasesGrid">
+              <!-- Dynamically filled -->
+            </div>
+          </q-scrollable>
+        </div>
+      </main>
+    </div>
+
+    <!-- Floating knobs toggle button for mobile -->
+    <button id="knobsToggleBtn" class="knobs-toggle-btn" aria-label="Toggle Controls" type="button">
+      <span class="knobs-toggle-icon">⚙️</span>
+      <span class="knobs-toggle-text">Controls</span>
+    </button>
+
+    <script src="/playground.js"></script>
+  </body>
+</html>

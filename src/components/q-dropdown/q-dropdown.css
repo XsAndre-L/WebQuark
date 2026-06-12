@@ -17,7 +17,7 @@
   font-family: var(--q-font-family, inherit);
   font-size: var(--q-font-size-sm, 0.875rem);
   font-weight: var(--q-font-weight-bold, 700);
-  color: var(--q-color-secondary, #9ca3af);
+  color: var(--q-fg-muted, #9ca3af);
   margin-bottom: 6px;
 }
 
@@ -56,7 +56,7 @@
 }
 
 .trigger-text.is-placeholder {
-  color: var(--q-color-secondary, #9ca3af);
+  color: var(--q-fg-muted, #9ca3af);
   opacity: 0.8;
 }
 
@@ -64,7 +64,7 @@
 .chevron-icon {
   width: 16px;
   height: 16px;
-  color: var(--q-color-secondary, #9ca3af);
+  color: var(--q-fg-muted, #9ca3af);
   transition: transform var(--q-transition-fast, 150ms ease);
 }
 

@@ -9,9 +9,11 @@ export const DIRECTIVES = [
   d.QDropdown,
   d.QInput,
   d.QReel,
+  d.QScrollable,
   d.QSidepanel,
   d.QStepDiagram,
   d.QStepDiagramItem,
   d.QTextarea,
-  d.QThumbnail
+  d.QThumbnail,
+  d.QToggle
 ];

@@ -1,0 +1,38 @@
+{
+  "name": "Carousel",
+  "tag": "q-carousel",
+  "props": {
+    "snapAlignment": { "type": "select", "options": ["start", "center", "end", "none"], "default": "start", "desc": "CSS scroll snap align point" },
+    "showArrows": { "type": "boolean", "default": true, "desc": "Renders absolute positioned layout nav arrows" },
+    "showIndicators": { "type": "boolean", "default": true, "desc": "Renders dot navigation indicators at footer" },
+    "repeat": { "type": "boolean", "default": false, "desc": "Loops and wraps items infinitely" },
+    "itemWidth": { "type": "string", "default": "280px", "desc": "Forces scroll items width (e.g. 280px or 100%)" }
+  },
+  "slots": {
+    "default": {
+      "type": "html",
+      "default": "<q-card elevation=\"medium\" interactive=\"true\">\n  <span slot=\"header\">Slide Card 1</span>\n  Horizontal touch swipe and slide indicators.\n</q-card>\n<q-card elevation=\"medium\" interactive=\"true\">\n  <span slot=\"header\">Slide Card 2</span>\n  Second slide panel content in carousel view.\n</q-card>\n<q-card elevation=\"medium\" interactive=\"true\">\n  <span slot=\"header\">Slide Card 3</span>\n  Third card item displaying custom slots.\n</q-card>\n<q-card elevation=\"medium\" interactive=\"true\">\n  <span slot=\"header\">Slide Card 4</span>\n  Fourth card item in carousel viewport.\n</q-card>",
+      "desc": "Slotted slide list content cards"
+    }
+  },
+  "variants": [
+    { "name": "Default Arrows & Indicators", "props": { "showArrows": true, "showIndicators": true, "itemWidth": "280px" } },
+    { "name": "Infinite Repeating Loop", "props": { "showArrows": true, "showIndicators": true, "repeat": true, "itemWidth": "280px" } },
+    { "name": "Indicators Only layout", "props": { "showArrows": false, "showIndicators": true, "itemWidth": "280px" } },
+    { "name": "Arrows Only layout", "props": { "showArrows": true, "showIndicators": false, "itemWidth": "280px" } },
+    { "name": "Center Snap Alignment", "props": { "showArrows": true, "showIndicators": true, "snapAlignment": "center", "itemWidth": "280px" } },
+    { "name": "Small Card Deck items", "props": { "showArrows": true, "showIndicators": true, "itemWidth": "160px" } }
+  ],
+  "edgeCases": [
+    {
+      "name": "Single Slide Card (Zero scroll)",
+      "props": { "showArrows": true, "showIndicators": true, "itemWidth": "100%" },
+      "slot": "<q-card elevation=\"medium\">\n  <span slot=\"header\">Single Card Slide</span>\n  Verify that arrows and indicators automatically disable or hide when content fits inside container.\n</q-card>"
+    },
+    {
+      "name": "Many Short Blocks list",
+      "props": { "showArrows": true, "showIndicators": true, "itemWidth": "90px" },
+      "slot": "<div style=\"background:var(--q-bg-surface-2);border:var(--q-border);padding:15px;text-align:center;border-radius:8px\">Item 1</div>\n<div style=\"background:var(--q-bg-surface-2);border:var(--q-border);padding:15px;text-align:center;border-radius:8px\">Item 2</div>\n<div style=\"background:var(--q-bg-surface-2);border:var(--q-border);padding:15px;text-align:center;border-radius:8px\">Item 3</div>\n<div style=\"background:var(--q-bg-surface-2);border:var(--q-border);padding:15px;text-align:center;border-radius:8px\">Item 4</div>\n<div style=\"background:var(--q-bg-surface-2);border:var(--q-border);padding:15px;text-align:center;border-radius:8px\">Item 5</div>\n<div style=\"background:var(--q-bg-surface-2);border:var(--q-border);padding:15px;text-align:center;border-radius:8px\">Item 6</div>\n<div style=\"background:var(--q-bg-surface-2);border:var(--q-border);padding:15px;text-align:center;border-radius:8px\">Item 7</div>\n<div style=\"background:var(--q-bg-surface-2);border:var(--q-border);padding:15px;text-align:center;border-radius:8px\">Item 8</div>\n<div style=\"background:var(--q-bg-surface-2);border:var(--q-border);padding:15px;text-align:center;border-radius:8px\">Item 9</div>\n<div style=\"background:var(--q-bg-surface-2);border:var(--q-border);padding:15px;text-align:center;border-radius:8px\">Item 10</div>\n<div style=\"background:var(--q-bg-surface-2);border:var(--q-border);padding:15px;text-align:center;border-radius:8px\">Item 11</div>\n<div style=\"background:var(--q-bg-surface-2);border:var(--q-border);padding:15px;text-align:center;border-radius:8px\">Item 12</div>"
+    }
+  ]
+}

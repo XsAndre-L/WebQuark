@@ -1,0 +1,38 @@
+{
+  "name": "Textarea",
+  "tag": "q-textarea",
+  "props": {
+    "value": { "type": "string", "default": "", "desc": "Active textarea text content value" },
+    "placeholder": { "type": "string", "default": "Write feedback...", "desc": "Text placeholder" },
+    "label": { "type": "string", "default": "Review comments", "desc": "Floating form label caption" },
+    "rows": { "type": "number", "default": 3, "desc": "Initial row height spacing" },
+    "autoGrow": { "type": "boolean", "default": true, "desc": "Expands vertical size reactively as user types new lines" },
+    "disabled": { "type": "boolean", "default": false, "desc": "Greyed out locks input element edits" },
+    "required": { "type": "boolean", "default": false, "desc": "Native required validation attribute" },
+    "error": { "type": "string", "default": "", "desc": "Swaps borders to red warning styles and shows error message" }
+  },
+  "slots": {},
+  "variants": [
+    { "name": "Standard Textarea", "props": { "label": "Feedback Comments", "placeholder": "Write suggestions..." } },
+    {
+      "name": "Auto-Grow Expanded (Default)",
+      "props": { "label": "Auto-Growing Area", "autoGrow": true, "placeholder": "Will expand dynamically height-wise as you press Enter key." }
+    },
+    {
+      "name": "Fixed Height scrollbar",
+      "props": { "label": "Fixed 4 Rows", "autoGrow": false, "rows": 4, "placeholder": "Type multiple lines to trigger vertical scrollbar indicator." }
+    },
+    {
+      "name": "Disabled State",
+      "props": { "label": "Configuration Log", "value": "10:04:12 - Build started\n10:04:14 - Transpiling components\n10:04:15 - Successful bundle generation.", "disabled": true }
+    },
+    {
+      "name": "Textarea with Error",
+      "props": { "label": "Feedback Description", "error": "Content exceeds character limit of 500 characters.", "value": "Initial text content value" }
+    }
+  ],
+  "edgeCases": [
+    { "name": "Massive Auto-Grow Height", "props": { "label": "Stress Test Heights", "autoGrow": true, "value": "Line\nLine\nLine\nLine\nLine\nLine\nLine\nLine\nLine\nLine\nLine\nLine\n" } },
+    { "name": "Empty Label & Placeholder", "props": { "label": "", "placeholder": "" } }
+  ]
+}

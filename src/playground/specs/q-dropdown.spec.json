@@ -1,0 +1,25 @@
+{
+  "name": "Dropdown",
+  "tag": "q-dropdown",
+  "props": {
+    "label": { "type": "string", "default": "Environment Server", "desc": "Floating form label caption" },
+    "placeholder": { "type": "string", "default": "Select profile...", "desc": "Text displayed when value is empty" },
+    "value": { "type": "string", "default": "staging", "desc": "Active selected options key" },
+    "disabled": { "type": "boolean", "default": false, "desc": "Locks dropdown menu and styles disabled look" }
+  },
+  "slots": {},
+  "options": [
+    { "label": "Production Server Host", "value": "prod" },
+    { "label": "Staging Sandbox Gateway", "value": "staging" },
+    { "label": "Local Development Server", "value": "dev" },
+    { "label": "Disaster Recovery Vault", "value": "dr" }
+  ],
+  "variants": [
+    { "name": "Standard Dropdown", "props": { "label": "Server Instance", "value": "staging" } },
+    { "name": "Without Title Label", "props": { "placeholder": "Select profile..." } },
+    { "name": "Disabled Selection state", "props": { "label": "Immutable Setting", "disabled": true, "value": "prod" } }
+  ],
+  "edgeCases": [
+    { "name": "Super Long Title label test", "props": { "label": "This is a super long label caption designed to test form field text overflow boundaries" } }
+  ]
+}

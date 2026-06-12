@@ -230,7 +230,7 @@
 }
 
 .status-pending .step-title {
-  color: var(--q-color-secondary, #9ca3af);
+  color: var(--q-fg-muted, #9ca3af);
 }
 
 .step-body {
