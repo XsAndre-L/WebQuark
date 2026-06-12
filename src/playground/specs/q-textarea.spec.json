@@ -7,6 +7,7 @@
     "label": { "type": "string", "default": "Review comments", "desc": "Floating form label caption" },
     "rows": { "type": "number", "default": 3, "desc": "Initial row height spacing" },
     "autoGrow": { "type": "boolean", "default": true, "desc": "Expands vertical size reactively as user types new lines" },
+    "resizeMode": { "type": "select", "options": ["auto", "manual", "fixed"], "default": "auto", "desc": "Controls resizing behavior (auto-grow, manual drag, or fixed)" },
     "disabled": { "type": "boolean", "default": false, "desc": "Greyed out locks input element edits" },
     "required": { "type": "boolean", "default": false, "desc": "Native required validation attribute" },
     "error": { "type": "string", "default": "", "desc": "Swaps borders to red warning styles and shows error message" }
@@ -15,8 +16,16 @@
   "variants": [
     { "name": "Standard Textarea", "props": { "label": "Feedback Comments", "placeholder": "Write suggestions..." } },
     {
+      "name": "Manual Resizable drag",
+      "props": { "label": "Manual Drag Resizable", "resizeMode": "manual", "placeholder": "Drag the bottom-right handle to vertically resize me." }
+    },
+    {
       "name": "Auto-Grow Expanded (Default)",
       "props": { "label": "Auto-Growing Area", "autoGrow": true, "placeholder": "Will expand dynamically height-wise as you press Enter key." }
+    },
+    {
+      "name": "Fixed Height (Static)",
+      "props": { "label": "Fixed 3 Rows", "resizeMode": "fixed", "rows": 3, "placeholder": "Fixed size, cannot be dragged or auto-grown." }
     },
     {
       "name": "Fixed Height scrollbar",

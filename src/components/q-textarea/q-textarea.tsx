@@ -16,6 +16,7 @@ export class QTextarea {
   @Prop() label?: string;
   @Prop() rows: number = 3;
   @Prop() autoGrow: boolean = true;
+  @Prop() resizeMode: 'auto' | 'manual' | 'fixed' = 'auto';
   @Prop({ reflect: true }) disabled: boolean = false;
   @Prop({ reflect: true }) required: boolean = false;
   @Prop({ reflect: true }) error?: string;
@@ -83,8 +84,15 @@ export class QTextarea {
     this.qFocus.emit(ev);
   };
 
+  private get activeResizeMode(): 'auto' | 'manual' | 'fixed' {
+    if (!this.autoGrow && this.resizeMode === 'auto') {
+      return 'fixed';
+    }
+    return this.resizeMode;
+  }
+
   private adjustHeightInternal() {
-    if (!this.autoGrow || !this.textareaEl) return;
+    if (this.activeResizeMode !== 'auto' || !this.textareaEl) return;
     
     // OSR Safe calculation: reset height to recalculate scrollHeight
     this.textareaEl.style.height = 'auto';
@@ -122,6 +130,7 @@ export class QTextarea {
           ref={(el) => (this.textareaEl = el as HTMLTextAreaElement)}
           id="q-field"
           class="textarea-box"
+          style={{ resize: this.activeResizeMode === 'manual' ? 'vertical' : 'none' }}
           part="textarea"
           value={this.value}
           placeholder={this.placeholder}

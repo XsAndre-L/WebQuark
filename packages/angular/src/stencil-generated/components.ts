@@ -368,7 +368,7 @@ export declare interface QStepDiagramItem extends Components.QStepDiagramItem {
 
 @ProxyCmp({
   defineCustomElementFn: defineQTextarea,
-  inputs: ['autoGrow', 'disabled', 'error', 'errorMessage', 'label', 'placeholder', 'required', 'rows', 'value'],
+  inputs: ['autoGrow', 'disabled', 'error', 'errorMessage', 'label', 'placeholder', 'required', 'resizeMode', 'rows', 'value'],
   methods: ['focusElement', 'adjustHeight']
 })
 @Component({
@@ -376,7 +376,7 @@ export declare interface QStepDiagramItem extends Components.QStepDiagramItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['autoGrow', 'disabled', 'error', 'errorMessage', 'label', 'placeholder', 'required', 'rows', 'value'],
+  inputs: ['autoGrow', 'disabled', 'error', 'errorMessage', 'label', 'placeholder', 'required', 'resizeMode', 'rows', 'value'],
   outputs: ['qChange', 'qInput', 'qBlur', 'qFocus'],
 })
 export class QTextarea {

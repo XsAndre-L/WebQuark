@@ -273,6 +273,10 @@ export namespace Components {
          */
         "required": boolean;
         /**
+          * @default 'auto'
+         */
+        "resizeMode": 'auto' | 'manual' | 'fixed';
+        /**
           * @default 3
          */
         "rows": number;
@@ -914,6 +918,10 @@ declare namespace LocalJSX {
          */
         "required"?: boolean;
         /**
+          * @default 'auto'
+         */
+        "resizeMode"?: 'auto' | 'manual' | 'fixed';
+        /**
           * @default 3
          */
         "rows"?: number;
@@ -1080,6 +1088,7 @@ declare namespace LocalJSX {
         "label": string;
         "rows": number;
         "autoGrow": boolean;
+        "resizeMode": 'auto' | 'manual' | 'fixed';
         "disabled": boolean;
         "required": boolean;
         "error": string;
