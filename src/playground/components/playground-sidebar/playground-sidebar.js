@@ -37,11 +37,11 @@ class PlaygroundSidebar extends HTMLElement {
     }));
 
     // 2. Handle qSelect event from q-sidepanel nav
-    this.handleNavSelect = async (e) => {
+    this.handleNavSelect = (e) => {
       const { value } = e.detail;
       activeTab.set('sandbox');
-      await fetchComponentSpec(value);
       activeComponent.set(value);
+      fetchComponentSpec(value);
     };
     this.navPanel.addEventListener('qSelect', this.handleNavSelect);
 

@@ -11,12 +11,14 @@ import type { EventName, StencilReactComponent } from '@stencil/react-output-tar
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
 
-import { type Option, type QCarouselCustomEvent, type QDropdownCustomEvent, type QInputCustomEvent, type QReelCustomEvent, type QScrollableCustomEvent, type QSidepanelCustomEvent, type QStepDiagramItemCustomEvent, type QTextareaCustomEvent, type QThumbnailCustomEvent, type QToggleCustomEvent, type SidepanelItem } from "@webquark/core";
+import { type Option, type QCarouselCustomEvent, type QDataTableCustomEvent, type QDialogCustomEvent, type QDropdownCustomEvent, type QInputCustomEvent, type QReelCustomEvent, type QScrollableCustomEvent, type QSidepanelCustomEvent, type QStepDiagramItemCustomEvent, type QTextareaCustomEvent, type QThumbnailCustomEvent, type QToggleCustomEvent, type SidepanelItem } from "@webquark/core";
 import type { Components } from "@webquark/core/dist/components";
 import { QButton as QButtonElement, defineCustomElement as defineQButton } from "@webquark/core/dist/components/q-button.js";
 import { QCard as QCardElement, defineCustomElement as defineQCard } from "@webquark/core/dist/components/q-card.js";
 import { QCarousel as QCarouselElement, defineCustomElement as defineQCarousel } from "@webquark/core/dist/components/q-carousel.js";
 import { QCircularProgress as QCircularProgressElement, defineCustomElement as defineQCircularProgress } from "@webquark/core/dist/components/q-circular-progress.js";
+import { QDataTable as QDataTableElement, defineCustomElement as defineQDataTable } from "@webquark/core/dist/components/q-data-table.js";
+import { QDialog as QDialogElement, defineCustomElement as defineQDialog } from "@webquark/core/dist/components/q-dialog.js";
 import { QDropdown as QDropdownElement, defineCustomElement as defineQDropdown } from "@webquark/core/dist/components/q-dropdown.js";
 import { QIcon as QIconElement, defineCustomElement as defineQIcon } from "@webquark/core/dist/components/q-icon.js";
 import { QInput as QInputElement, defineCustomElement as defineQInput } from "@webquark/core/dist/components/q-input.js";
@@ -73,6 +75,42 @@ export const QCircularProgress: StencilReactComponent<QCircularProgressElement, 
     react: React,
     events: {} as QCircularProgressEvents,
     defineCustomElement: defineQCircularProgress
+});
+
+export type QDataTableEvents = {
+    onQRowClick: EventName<QDataTableCustomEvent<{ item: any; index: number; originalEvent: MouseEvent | KeyboardEvent }>>,
+    onQSelectionChange: EventName<QDataTableCustomEvent<{ selectedKeys: any[]; selectedItems: any[] }>>
+};
+
+export const QDataTable: StencilReactComponent<QDataTableElement, QDataTableEvents, Components.QDataTable> = /*@__PURE__*/ createComponent<QDataTableElement, QDataTableEvents, Components.QDataTable>({
+    tagName: 'q-data-table',
+    elementClass: QDataTableElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: {
+        onQRowClick: 'qRowClick',
+        onQSelectionChange: 'qSelectionChange'
+    } as QDataTableEvents,
+    defineCustomElement: defineQDataTable
+});
+
+export type QDialogEvents = {
+    onQConfirm: EventName<QDialogCustomEvent<void>>,
+    onQCancel: EventName<QDialogCustomEvent<void>>,
+    onQClose: EventName<QDialogCustomEvent<void>>
+};
+
+export const QDialog: StencilReactComponent<QDialogElement, QDialogEvents, Components.QDialog> = /*@__PURE__*/ createComponent<QDialogElement, QDialogEvents, Components.QDialog>({
+    tagName: 'q-dialog',
+    elementClass: QDialogElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: {
+        onQConfirm: 'qConfirm',
+        onQCancel: 'qCancel',
+        onQClose: 'qClose'
+    } as QDialogEvents,
+    defineCustomElement: defineQDialog
 });
 
 export type QDropdownEvents = {

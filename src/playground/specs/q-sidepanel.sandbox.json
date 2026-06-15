@@ -8,7 +8,7 @@
   },
   "props": {
     "variant": { "type": "select", "options": ["drawer", "nav"], "default": "drawer", "desc": "Behavior mode: drawer = slide-in overlay, nav = fixed navigation sidebar" },
-    "open": { "type": "boolean", "default": false, "desc": "Controls drawer open/close state (drawer mode only)" },
+    "open": { "type": "boolean", "default": true, "desc": "Controls drawer open/close state (drawer mode only)" },
     "side": { "type": "select", "options": ["left", "right", "top", "bottom"], "default": "right", "desc": "Screen edge slide positioning (drawer mode only)" },
     "panelSize": { "type": "string", "default": "320px", "desc": "Panel dimension — width or height depending on side (drawer mode only)" },
     "mode": { "type": "select", "options": ["flat", "grouped", "tree"], "default": "flat", "desc": "Item display mode: flat list, collapsible groups, or deep tree (nav mode only)" },

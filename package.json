@@ -10,6 +10,7 @@
   "unpkg": "dist/webquark/webquark.esm.js",
   "exports": {
     ".": {
+      "types": "./dist/types/index.d.ts",
       "import": "./dist/webquark/webquark.esm.js",
       "require": "./dist/webquark/webquark.cjs.js"
     },
@@ -52,7 +53,8 @@
     "start": "stencil build --dev --watch --serve",
     "test": "stencil-test --prod",
     "test:watch": "stencil-test --prod --watch",
-    "generate": "stencil generate"
+    "generate": "stencil generate",
+    "publish": "node scripts/publish.js"
   },
   "devDependencies": {
     "@stencil/angular-output-target": "^1.3.2",

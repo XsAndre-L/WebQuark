@@ -6,6 +6,8 @@ export const DIRECTIVES = [
   d.QCard,
   d.QCarousel,
   d.QCircularProgress,
+  d.QDataTable,
+  d.QDialog,
   d.QDropdown,
   d.QIcon,
   d.QInput,

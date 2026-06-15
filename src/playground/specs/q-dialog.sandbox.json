@@ -1,0 +1,108 @@
+{
+  "name": "Dialog",
+  "tag": "q-dialog",
+  "stageHelper": {
+    "label": "Dialog Component Control",
+    "buttonId": "stageOpenDialogBtn",
+    "buttonLabel": "Trigger Dialog Overlay"
+  },
+  "props": {
+    "open": {
+      "type": "boolean",
+      "default": true,
+      "desc": "Controls visibility of the dialog overlay"
+    },
+    "dialogTitle": {
+      "type": "string",
+      "default": "Perform Operations",
+      "desc": "Header label for dialog"
+    },
+    "message": {
+      "type": "textarea",
+      "default": "Are you sure you want to proceed with this configuration update? This action is permanent.",
+      "desc": "Short descriptive text inside the body"
+    },
+    "closeOnEsc": {
+      "type": "boolean",
+      "default": true,
+      "desc": "Enables Escape key trigger close"
+    },
+    "closeOnOverlayClick": {
+      "type": "boolean",
+      "default": true,
+      "desc": "Enables backdrop clicks to trigger cancel"
+    },
+    "loading": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Shows busy spinner and disables all button interactions"
+    },
+    "confirmLabel": {
+      "type": "string",
+      "default": "Confirm Action",
+      "desc": "Label text for confirmation button"
+    },
+    "cancelLabel": {
+      "type": "string",
+      "default": "Dismiss",
+      "desc": "Label text for cancellation button"
+    },
+    "showCancel": {
+      "type": "boolean",
+      "default": true,
+      "desc": "Whether to render the cancellation action button"
+    },
+    "showConfirm": {
+      "type": "boolean",
+      "default": true,
+      "desc": "Whether to render the confirmation action button"
+    }
+  },
+  "slots": {
+    "default": {
+      "type": "html",
+      "default": "",
+      "desc": "Rich HTML content override for the dialog body"
+    },
+    "header": {
+      "type": "html",
+      "default": "",
+      "desc": "Slotted custom header layout (replaces default title)"
+    },
+    "footer": {
+      "type": "html",
+      "default": "",
+      "desc": "Slotted custom footer layout (replaces action buttons)"
+    }
+  },
+  "variants": [
+    {
+      "name": "Action Confirmation",
+      "props": {
+        "dialogTitle": "Save Settings?",
+        "message": "Do you want to save all changes to the profile?",
+        "confirmLabel": "Save Changes",
+        "cancelLabel": "Keep Editing",
+        "open": false
+      }
+    },
+    {
+      "name": "Processing / Loading",
+      "props": {
+        "dialogTitle": "Syncing Data",
+        "message": "Uploading invoice reports to the database server. Please wait...",
+        "loading": true,
+        "open": false
+      }
+    },
+    {
+      "name": "Destructive / Alert style",
+      "props": {
+        "dialogTitle": "Delete Database Record?",
+        "message": "Warning: Deleting this database profile will remove all scraped logs forever. This cannot be undone.",
+        "confirmLabel": "Yes, Delete It",
+        "open": false
+      }
+    }
+  ]
+}
