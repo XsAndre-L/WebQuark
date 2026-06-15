@@ -127,6 +127,8 @@ class PlaygroundStage extends HTMLElement {
       const registry = componentRegistry();
       const spec = registry[active];
       console.log('[stage effect] active component:', active, 'has spec:', !!spec, 'tab:', tab);
+
+      this.setAttribute('active-component', active);
  
       // A. Update Active Component Badge
       if (this.activeCompBadge) {
@@ -451,6 +453,24 @@ class PlaygroundStage extends HTMLElement {
     }
 
     stage.appendChild(el);
+    
+    // Add real-time dimensions badge
+    const dimensionsBadge = document.createElement('span');
+    dimensionsBadge.className = 'variant-card-dimensions';
+    dimensionsBadge.innerText = '0px × 0px';
+    stage.appendChild(dimensionsBadge);
+
+    if (typeof ResizeObserver !== 'undefined') {
+      const observer = new ResizeObserver(() => {
+        const rect = el.getBoundingClientRect();
+        const width = Math.round(rect.width);
+        const height = Math.round(rect.height);
+        dimensionsBadge.innerText = `${width}px × ${height}px`;
+      });
+      observer.observe(el);
+      el._resizeObserver = observer;
+    }
+
     card.appendChild(stage);
 
     if (config.options) {

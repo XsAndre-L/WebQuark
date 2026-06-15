@@ -21,6 +21,31 @@
       "type": "string",
       "default": "id",
       "desc": "Unique field key representing each row identity"
+    },
+    "showToolbar": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Enables top toolbar layout with search, filters, and actions"
+    },
+    "toolbarTitle": {
+      "type": "string",
+      "default": "",
+      "desc": "Title text displayed in the top-left section of the toolbar"
+    },
+    "showSearch": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Enables search text input in the toolbar"
+    },
+    "searchPlaceholder": {
+      "type": "string",
+      "default": "Search...",
+      "desc": "Placeholder text for the search input"
+    },
+    "searchValue": {
+      "type": "string",
+      "default": "",
+      "desc": "Current search input value"
     }
   },
   "slots": {
@@ -28,6 +53,21 @@
       "type": "text",
       "default": "No items found in this section.",
       "desc": "Custom component fallback layout when rows are empty"
+    },
+    "toolbar-left": {
+      "type": "text",
+      "default": "",
+      "desc": "Slot for elements rendered on the left of the toolbar (e.g. badges, counters)"
+    },
+    "filters": {
+      "type": "text",
+      "default": "",
+      "desc": "Slot for filter elements (e.g. QDropdowns) rendered in the toolbar"
+    },
+    "actions": {
+      "type": "text",
+      "default": "",
+      "desc": "Slot for action elements (e.g. buttons) rendered on the right of the toolbar"
     }
   },
   "variants": [
@@ -41,6 +81,15 @@
       "name": "Selectable Grid",
       "props": {
         "selectable": true
+      }
+    },
+    {
+      "name": "Grid with Toolbar & Search",
+      "props": {
+        "showToolbar": true,
+        "toolbarTitle": "Users Directory",
+        "showSearch": true,
+        "searchPlaceholder": "Search users..."
       }
     },
     {

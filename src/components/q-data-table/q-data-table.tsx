@@ -26,9 +26,15 @@ export class QDataTable {
   @Prop() selectable: boolean = false;
   @Prop({ mutable: true }) selectedKeys: any[] = [];
   @Prop() keyField: string = 'id';
+  @Prop() showToolbar: boolean = false;
+  @Prop() toolbarTitle?: string;
+  @Prop() showSearch: boolean = false;
+  @Prop() searchPlaceholder: string = 'Search...';
+  @Prop({ mutable: true }) searchValue: string = '';
 
   @Event() qRowClick!: EventEmitter<{ item: any; index: number; originalEvent: MouseEvent | KeyboardEvent }>;
   @Event() qSelectionChange!: EventEmitter<{ selectedKeys: any[]; selectedItems: any[] }>;
+  @Event() qSearch!: EventEmitter<string>;
 
   private getParsedColumns(): TableColumn[] {
     if (typeof this.columns === 'string') {
@@ -135,6 +141,12 @@ export class QDataTable {
     });
   }
 
+  private handleSearchInput = (event: Event) => {
+    const input = event.target as HTMLInputElement;
+    this.searchValue = input.value;
+    this.qSearch.emit(this.searchValue);
+  };
+
   private handleRowKeyDown(item: any, index: number, event: KeyboardEvent) {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
@@ -197,11 +209,39 @@ export class QDataTable {
 
     return (
       <div class="table-container" role="grid">
-        <table class="table-el">
-          <thead>
-            <tr role="row">
-              {this.selectable && (
-                <th class="col-selection" role="columnheader">
+        {this.showToolbar && (
+          <div class="table-toolbar">
+            <div class="toolbar-left">
+              {this.toolbarTitle && <span class="toolbar-title">{this.toolbarTitle}</span>}
+              <slot name="toolbar-left" />
+              {this.showSearch && (
+                <div class="search-box">
+                  <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                  <input
+                    type="text"
+                    class="search-input"
+                    placeholder={this.searchPlaceholder}
+                    value={this.searchValue}
+                    onInput={this.handleSearchInput}
+                  />
+                </div>
+              )}
+              <slot name="filters" />
+            </div>
+            <div class="toolbar-right">
+              <slot name="actions" />
+            </div>
+          </div>
+        )}
+        <div class="table-scroll-area">
+          <table class="table-el">
+            <thead>
+              <tr role="row">
+                {this.selectable && (
+                  <th class="col-selection" role="columnheader">
                   <input
                     type="checkbox"
                     class="checkbox-input"
@@ -282,6 +322,8 @@ export class QDataTable {
             )}
           </tbody>
         </table>
+       </div>
+       <slot name="footer" />
       </div>
     );
   }

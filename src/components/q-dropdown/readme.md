@@ -13,6 +13,7 @@
 | `label`       | `label`       |             | `string`               | `undefined`             |
 | `options`     | `options`     |             | `Option[] \| string`   | `[]`                    |
 | `placeholder` | `placeholder` |             | `string`               | `"Select an option..."` |
+| `searchable`  | `searchable`  |             | `boolean`              | `false`                 |
 | `size`        | `size`        |             | `"lg" \| "md" \| "sm"` | `'md'`                  |
 | `value`       | `value`       |             | `string`               | `""`                    |
 

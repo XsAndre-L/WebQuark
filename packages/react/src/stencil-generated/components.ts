@@ -79,7 +79,8 @@ export const QCircularProgress: StencilReactComponent<QCircularProgressElement, 
 
 export type QDataTableEvents = {
     onQRowClick: EventName<QDataTableCustomEvent<{ item: any; index: number; originalEvent: MouseEvent | KeyboardEvent }>>,
-    onQSelectionChange: EventName<QDataTableCustomEvent<{ selectedKeys: any[]; selectedItems: any[] }>>
+    onQSelectionChange: EventName<QDataTableCustomEvent<{ selectedKeys: any[]; selectedItems: any[] }>>,
+    onQSearch: EventName<QDataTableCustomEvent<string>>
 };
 
 export const QDataTable: StencilReactComponent<QDataTableElement, QDataTableEvents, Components.QDataTable> = /*@__PURE__*/ createComponent<QDataTableElement, QDataTableEvents, Components.QDataTable>({
@@ -89,7 +90,8 @@ export const QDataTable: StencilReactComponent<QDataTableElement, QDataTableEven
     react: React,
     events: {
         onQRowClick: 'qRowClick',
-        onQSelectionChange: 'qSelectionChange'
+        onQSelectionChange: 'qSelectionChange',
+        onQSearch: 'qSearch'
     } as QDataTableEvents,
     defineCustomElement: defineQDataTable
 });

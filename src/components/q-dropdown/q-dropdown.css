@@ -4,6 +4,12 @@
   box-sizing: border-box;
 }
 
+:host([size="sm"]) {
+  display: inline-block;
+  vertical-align: middle;
+  width: auto;
+}
+
 .dropdown-wrapper {
   display: flex;
   flex-direction: column;
@@ -190,3 +196,77 @@
 .dropdown-wrapper.size-lg .menu-item.is-selected {
   padding-left: 15px;
 }
+
+/* Search Box Container */
+.dropdown-search-container {
+  padding: 8px;
+  border-bottom: 1px solid var(--q-dropdown-border-color, var(--q-border-color, #4b5563));
+  box-sizing: border-box;
+}
+
+/* Search Box Input */
+.dropdown-search-input {
+  width: 100%;
+  padding: 8px 12px;
+  font-family: var(--q-font-family, inherit);
+  font-size: var(--q-font-size-sm, 0.875rem);
+  color: var(--q-fg-base, #f9fafb);
+  background: var(--q-bg-surface-2, #374151);
+  border: 1px solid var(--q-dropdown-border-color, var(--q-border-color, #4b5563));
+  border-radius: var(--q-radius-sm, 4px);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color var(--q-transition-fast, 150ms ease);
+}
+
+.dropdown-search-input:focus {
+  border-color: var(--q-color-primary, #60a5fa);
+}
+
+/* Dropdown items scroll container */
+.dropdown-items-list {
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  max-height: 240px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/* Empty option text styling */
+.menu-item.is-empty {
+  color: var(--q-fg-muted, #9ca3af);
+  font-style: italic;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Loading more spinner styling */
+.menu-item.is-loading-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--q-fg-muted, #9ca3af);
+  font-size: var(--q-font-size-sm, 0.75rem);
+  padding: 8px;
+  cursor: default;
+  pointer-events: none;
+  background: transparent !important;
+}
+
+.spinner-circle {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--q-border-color, #4b5563);
+  border-top-color: var(--q-color-primary, #60a5fa);
+  border-radius: 50%;
+  animation: dropdown-spin 0.6s linear infinite;
+  box-sizing: border-box;
+}
+
+@keyframes dropdown-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+

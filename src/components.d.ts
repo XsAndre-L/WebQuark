@@ -113,6 +113,14 @@ export namespace Components {
          */
         "keyField": string;
         /**
+          * @default 'Search...'
+         */
+        "searchPlaceholder": string;
+        /**
+          * @default ''
+         */
+        "searchValue": string;
+        /**
           * @default false
          */
         "selectable": boolean;
@@ -120,6 +128,15 @@ export namespace Components {
           * @default []
          */
         "selectedKeys": any[];
+        /**
+          * @default false
+         */
+        "showSearch": boolean;
+        /**
+          * @default false
+         */
+        "showToolbar": boolean;
+        "toolbarTitle"?: string;
     }
     interface QDialog {
         "cancel": () => Promise<void>;
@@ -175,6 +192,10 @@ export namespace Components {
           * @default "Select an option..."
          */
         "placeholder": string;
+        /**
+          * @default false
+         */
+        "searchable": boolean;
         /**
           * @default 'md'
          */
@@ -551,6 +572,7 @@ declare global {
     interface HTMLQDataTableElementEventMap {
         "qRowClick": { item: any; index: number; originalEvent: MouseEvent | KeyboardEvent };
         "qSelectionChange": { selectedKeys: any[]; selectedItems: any[] };
+        "qSearch": string;
     }
     interface HTMLQDataTableElement extends Components.QDataTable, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQDataTableElementEventMap>(type: K, listener: (this: HTMLQDataTableElement, ev: QDataTableCustomEvent<HTMLQDataTableElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -894,7 +916,16 @@ declare namespace LocalJSX {
          */
         "keyField"?: string;
         "onQRowClick"?: (event: QDataTableCustomEvent<{ item: any; index: number; originalEvent: MouseEvent | KeyboardEvent }>) => void;
+        "onQSearch"?: (event: QDataTableCustomEvent<string>) => void;
         "onQSelectionChange"?: (event: QDataTableCustomEvent<{ selectedKeys: any[]; selectedItems: any[] }>) => void;
+        /**
+          * @default 'Search...'
+         */
+        "searchPlaceholder"?: string;
+        /**
+          * @default ''
+         */
+        "searchValue"?: string;
         /**
           * @default false
          */
@@ -903,6 +934,15 @@ declare namespace LocalJSX {
           * @default []
          */
         "selectedKeys"?: any[];
+        /**
+          * @default false
+         */
+        "showSearch"?: boolean;
+        /**
+          * @default false
+         */
+        "showToolbar"?: boolean;
+        "toolbarTitle"?: string;
     }
     interface QDialog {
         /**
@@ -967,6 +1007,10 @@ declare namespace LocalJSX {
           * @default "Select an option..."
          */
         "placeholder"?: string;
+        /**
+          * @default false
+         */
+        "searchable"?: boolean;
         /**
           * @default 'md'
          */
@@ -1330,6 +1374,11 @@ declare namespace LocalJSX {
         "items": any[] | string;
         "selectable": boolean;
         "keyField": string;
+        "showToolbar": boolean;
+        "toolbarTitle": string;
+        "showSearch": boolean;
+        "searchPlaceholder": string;
+        "searchValue": string;
     }
     interface QDialogAttributes {
         "open": boolean;
@@ -1350,6 +1399,7 @@ declare namespace LocalJSX {
         "options": Option[] | string;
         "disabled": boolean;
         "size": 'sm' | 'md' | 'lg';
+        "searchable": boolean;
     }
     interface QIconAttributes {
         "name": string;
