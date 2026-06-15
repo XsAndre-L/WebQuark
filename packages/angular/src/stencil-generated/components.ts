@@ -127,20 +127,21 @@ export declare interface QCircularProgress extends Components.QCircularProgress 
 
 @ProxyCmp({
   defineCustomElementFn: defineQDataTable,
-  inputs: ['columns', 'items', 'keyField', 'selectable', 'selectedKeys']
+  inputs: ['columns', 'items', 'keyField', 'searchPlaceholder', 'searchValue', 'selectable', 'selectedKeys', 'showSearch', 'showToolbar', 'toolbarTitle']
 })
 @Component({
   selector: 'q-data-table',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['columns', 'items', 'keyField', 'selectable', 'selectedKeys'],
-  outputs: ['qRowClick', 'qSelectionChange'],
+  inputs: ['columns', 'items', 'keyField', 'searchPlaceholder', 'searchValue', 'selectable', 'selectedKeys', 'showSearch', 'showToolbar', 'toolbarTitle'],
+  outputs: ['qRowClick', 'qSelectionChange', 'qSearch'],
 })
 export class QDataTable {
   protected el: HTMLQDataTableElement;
   @Output() qRowClick = new EventEmitter<QDataTableCustomEvent<{ item: any; index: number; originalEvent: MouseEvent | KeyboardEvent }>>();
   @Output() qSelectionChange = new EventEmitter<QDataTableCustomEvent<{ selectedKeys: any[]; selectedItems: any[] }>>();
+  @Output() qSearch = new EventEmitter<QDataTableCustomEvent<string>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -155,6 +156,8 @@ export declare interface QDataTable extends Components.QDataTable {
   qRowClick: EventEmitter<QDataTableCustomEvent<{ item: any; index: number; originalEvent: MouseEvent | KeyboardEvent }>>;
 
   qSelectionChange: EventEmitter<QDataTableCustomEvent<{ selectedKeys: any[]; selectedItems: any[] }>>;
+
+  qSearch: EventEmitter<QDataTableCustomEvent<string>>;
 }
 
 
@@ -197,14 +200,14 @@ export declare interface QDialog extends Components.QDialog {
 
 @ProxyCmp({
   defineCustomElementFn: defineQDropdown,
-  inputs: ['disabled', 'label', 'options', 'placeholder', 'size', 'value']
+  inputs: ['disabled', 'label', 'options', 'placeholder', 'searchable', 'size', 'value']
 })
 @Component({
   selector: 'q-dropdown',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'label', 'options', 'placeholder', 'size', 'value'],
+  inputs: ['disabled', 'label', 'options', 'placeholder', 'searchable', 'size', 'value'],
   outputs: ['qChange', 'qSelect'],
 })
 export class QDropdown {
