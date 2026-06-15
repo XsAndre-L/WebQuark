@@ -10,6 +10,8 @@ import { defineCustomElement as defineQButton } from '@webquark/core/components/
 import { defineCustomElement as defineQCard } from '@webquark/core/components/q-card.js';
 import { defineCustomElement as defineQCarousel } from '@webquark/core/components/q-carousel.js';
 import { defineCustomElement as defineQCircularProgress } from '@webquark/core/components/q-circular-progress.js';
+import { defineCustomElement as defineQDataTable } from '@webquark/core/components/q-data-table.js';
+import { defineCustomElement as defineQDialog } from '@webquark/core/components/q-dialog.js';
 import { defineCustomElement as defineQDropdown } from '@webquark/core/components/q-dropdown.js';
 import { defineCustomElement as defineQIcon } from '@webquark/core/components/q-icon.js';
 import { defineCustomElement as defineQInput } from '@webquark/core/components/q-input.js';
@@ -121,6 +123,76 @@ export class QCircularProgress {
 
 
 export declare interface QCircularProgress extends Components.QCircularProgress {}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineQDataTable,
+  inputs: ['columns', 'items', 'keyField', 'selectable', 'selectedKeys']
+})
+@Component({
+  selector: 'q-data-table',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['columns', 'items', 'keyField', 'selectable', 'selectedKeys'],
+  outputs: ['qRowClick', 'qSelectionChange'],
+})
+export class QDataTable {
+  protected el: HTMLQDataTableElement;
+  @Output() qRowClick = new EventEmitter<QDataTableCustomEvent<{ item: any; index: number; originalEvent: MouseEvent | KeyboardEvent }>>();
+  @Output() qSelectionChange = new EventEmitter<QDataTableCustomEvent<{ selectedKeys: any[]; selectedItems: any[] }>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+import type { QDataTableCustomEvent } from '@webquark/core/components';
+
+export declare interface QDataTable extends Components.QDataTable {
+
+  qRowClick: EventEmitter<QDataTableCustomEvent<{ item: any; index: number; originalEvent: MouseEvent | KeyboardEvent }>>;
+
+  qSelectionChange: EventEmitter<QDataTableCustomEvent<{ selectedKeys: any[]; selectedItems: any[] }>>;
+}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineQDialog,
+  inputs: ['cancelLabel', 'closeOnEsc', 'closeOnOverlayClick', 'confirmLabel', 'dialogTitle', 'loading', 'message', 'open', 'showCancel', 'showConfirm'],
+  methods: ['show', 'close', 'confirm', 'cancel']
+})
+@Component({
+  selector: 'q-dialog',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['cancelLabel', 'closeOnEsc', 'closeOnOverlayClick', 'confirmLabel', 'dialogTitle', 'loading', 'message', 'open', 'showCancel', 'showConfirm'],
+  outputs: ['qConfirm', 'qCancel', 'qClose'],
+})
+export class QDialog {
+  protected el: HTMLQDialogElement;
+  @Output() qConfirm = new EventEmitter<QDialogCustomEvent<void>>();
+  @Output() qCancel = new EventEmitter<QDialogCustomEvent<void>>();
+  @Output() qClose = new EventEmitter<QDialogCustomEvent<void>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+import type { QDialogCustomEvent } from '@webquark/core/components';
+
+export declare interface QDialog extends Components.QDialog {
+
+  qConfirm: EventEmitter<QDialogCustomEvent<void>>;
+
+  qCancel: EventEmitter<QDialogCustomEvent<void>>;
+
+  qClose: EventEmitter<QDialogCustomEvent<void>>;
+}
 
 
 @ProxyCmp({

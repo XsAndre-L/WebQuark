@@ -77,7 +77,7 @@ export async function fetchComponentSpec(tag) {
   if (registry[tag]) return;
 
   try {
-    const res = await fetch(`${SPEC_BASE_URL}/${tag}.spec.json`);
+    const res = await fetch(`${SPEC_BASE_URL}/${tag}.sandbox.json`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const spec = await res.json();
 

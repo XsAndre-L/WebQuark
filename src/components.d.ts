@@ -5,8 +5,10 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { TableColumn } from "./components/q-data-table/q-data-table";
 import { Option } from "./components/q-dropdown/q-dropdown";
 import { SidepanelItem } from "./components/q-sidepanel/q-sidepanel";
+export { TableColumn } from "./components/q-data-table/q-data-table";
 export { Option } from "./components/q-dropdown/q-dropdown";
 export { SidepanelItem } from "./components/q-sidepanel/q-sidepanel";
 export namespace Components {
@@ -96,6 +98,68 @@ export namespace Components {
           * @default 0
          */
         "value": number;
+    }
+    interface QDataTable {
+        /**
+          * @default []
+         */
+        "columns": TableColumn[] | string;
+        /**
+          * @default []
+         */
+        "items": any[] | string;
+        /**
+          * @default 'id'
+         */
+        "keyField": string;
+        /**
+          * @default false
+         */
+        "selectable": boolean;
+        /**
+          * @default []
+         */
+        "selectedKeys": any[];
+    }
+    interface QDialog {
+        "cancel": () => Promise<void>;
+        /**
+          * @default 'Cancel'
+         */
+        "cancelLabel": string;
+        "close": () => Promise<void>;
+        /**
+          * @default true
+         */
+        "closeOnEsc": boolean;
+        /**
+          * @default true
+         */
+        "closeOnOverlayClick": boolean;
+        "confirm": () => Promise<void>;
+        /**
+          * @default 'Confirm'
+         */
+        "confirmLabel": string;
+        "dialogTitle"?: string;
+        /**
+          * @default false
+         */
+        "loading": boolean;
+        "message"?: string;
+        /**
+          * @default false
+         */
+        "open": boolean;
+        "show": () => Promise<void>;
+        /**
+          * @default true
+         */
+        "showCancel": boolean;
+        /**
+          * @default true
+         */
+        "showConfirm": boolean;
     }
     interface QDropdown {
         /**
@@ -404,6 +468,14 @@ export interface QCarouselCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLQCarouselElement;
 }
+export interface QDataTableCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQDataTableElement;
+}
+export interface QDialogCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQDialogElement;
+}
 export interface QDropdownCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLQDropdownElement;
@@ -475,6 +547,43 @@ declare global {
     var HTMLQCircularProgressElement: {
         prototype: HTMLQCircularProgressElement;
         new (): HTMLQCircularProgressElement;
+    };
+    interface HTMLQDataTableElementEventMap {
+        "qRowClick": { item: any; index: number; originalEvent: MouseEvent | KeyboardEvent };
+        "qSelectionChange": { selectedKeys: any[]; selectedItems: any[] };
+    }
+    interface HTMLQDataTableElement extends Components.QDataTable, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQDataTableElementEventMap>(type: K, listener: (this: HTMLQDataTableElement, ev: QDataTableCustomEvent<HTMLQDataTableElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQDataTableElementEventMap>(type: K, listener: (this: HTMLQDataTableElement, ev: QDataTableCustomEvent<HTMLQDataTableElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLQDataTableElement: {
+        prototype: HTMLQDataTableElement;
+        new (): HTMLQDataTableElement;
+    };
+    interface HTMLQDialogElementEventMap {
+        "qConfirm": void;
+        "qCancel": void;
+        "qClose": void;
+    }
+    interface HTMLQDialogElement extends Components.QDialog, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQDialogElementEventMap>(type: K, listener: (this: HTMLQDialogElement, ev: QDialogCustomEvent<HTMLQDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQDialogElementEventMap>(type: K, listener: (this: HTMLQDialogElement, ev: QDialogCustomEvent<HTMLQDialogElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLQDialogElement: {
+        prototype: HTMLQDialogElement;
+        new (): HTMLQDialogElement;
     };
     interface HTMLQDropdownElementEventMap {
         "qChange": string;
@@ -667,6 +776,8 @@ declare global {
         "q-card": HTMLQCardElement;
         "q-carousel": HTMLQCarouselElement;
         "q-circular-progress": HTMLQCircularProgressElement;
+        "q-data-table": HTMLQDataTableElement;
+        "q-dialog": HTMLQDialogElement;
         "q-dropdown": HTMLQDropdownElement;
         "q-icon": HTMLQIconElement;
         "q-input": HTMLQInputElement;
@@ -768,6 +879,69 @@ declare namespace LocalJSX {
           * @default 0
          */
         "value"?: number;
+    }
+    interface QDataTable {
+        /**
+          * @default []
+         */
+        "columns"?: TableColumn[] | string;
+        /**
+          * @default []
+         */
+        "items"?: any[] | string;
+        /**
+          * @default 'id'
+         */
+        "keyField"?: string;
+        "onQRowClick"?: (event: QDataTableCustomEvent<{ item: any; index: number; originalEvent: MouseEvent | KeyboardEvent }>) => void;
+        "onQSelectionChange"?: (event: QDataTableCustomEvent<{ selectedKeys: any[]; selectedItems: any[] }>) => void;
+        /**
+          * @default false
+         */
+        "selectable"?: boolean;
+        /**
+          * @default []
+         */
+        "selectedKeys"?: any[];
+    }
+    interface QDialog {
+        /**
+          * @default 'Cancel'
+         */
+        "cancelLabel"?: string;
+        /**
+          * @default true
+         */
+        "closeOnEsc"?: boolean;
+        /**
+          * @default true
+         */
+        "closeOnOverlayClick"?: boolean;
+        /**
+          * @default 'Confirm'
+         */
+        "confirmLabel"?: string;
+        "dialogTitle"?: string;
+        /**
+          * @default false
+         */
+        "loading"?: boolean;
+        "message"?: string;
+        "onQCancel"?: (event: QDialogCustomEvent<void>) => void;
+        "onQClose"?: (event: QDialogCustomEvent<void>) => void;
+        "onQConfirm"?: (event: QDialogCustomEvent<void>) => void;
+        /**
+          * @default false
+         */
+        "open"?: boolean;
+        /**
+          * @default true
+         */
+        "showCancel"?: boolean;
+        /**
+          * @default true
+         */
+        "showConfirm"?: boolean;
     }
     interface QDropdown {
         /**
@@ -1151,6 +1325,24 @@ declare namespace LocalJSX {
         "indeterminate": boolean;
         "size": 'sm' | 'md' | 'lg';
     }
+    interface QDataTableAttributes {
+        "columns": TableColumn[] | string;
+        "items": any[] | string;
+        "selectable": boolean;
+        "keyField": string;
+    }
+    interface QDialogAttributes {
+        "open": boolean;
+        "dialogTitle": string;
+        "message": string;
+        "closeOnEsc": boolean;
+        "closeOnOverlayClick": boolean;
+        "loading": boolean;
+        "confirmLabel": string;
+        "cancelLabel": string;
+        "showCancel": boolean;
+        "showConfirm": boolean;
+    }
     interface QDropdownAttributes {
         "value": string;
         "label": string;
@@ -1255,6 +1447,8 @@ declare namespace LocalJSX {
         "q-card": Omit<QCard, keyof QCardAttributes> & { [K in keyof QCard & keyof QCardAttributes]?: QCard[K] } & { [K in keyof QCard & keyof QCardAttributes as `attr:${K}`]?: QCardAttributes[K] } & { [K in keyof QCard & keyof QCardAttributes as `prop:${K}`]?: QCard[K] };
         "q-carousel": Omit<QCarousel, keyof QCarouselAttributes> & { [K in keyof QCarousel & keyof QCarouselAttributes]?: QCarousel[K] } & { [K in keyof QCarousel & keyof QCarouselAttributes as `attr:${K}`]?: QCarouselAttributes[K] } & { [K in keyof QCarousel & keyof QCarouselAttributes as `prop:${K}`]?: QCarousel[K] };
         "q-circular-progress": Omit<QCircularProgress, keyof QCircularProgressAttributes> & { [K in keyof QCircularProgress & keyof QCircularProgressAttributes]?: QCircularProgress[K] } & { [K in keyof QCircularProgress & keyof QCircularProgressAttributes as `attr:${K}`]?: QCircularProgressAttributes[K] } & { [K in keyof QCircularProgress & keyof QCircularProgressAttributes as `prop:${K}`]?: QCircularProgress[K] };
+        "q-data-table": Omit<QDataTable, keyof QDataTableAttributes> & { [K in keyof QDataTable & keyof QDataTableAttributes]?: QDataTable[K] } & { [K in keyof QDataTable & keyof QDataTableAttributes as `attr:${K}`]?: QDataTableAttributes[K] } & { [K in keyof QDataTable & keyof QDataTableAttributes as `prop:${K}`]?: QDataTable[K] };
+        "q-dialog": Omit<QDialog, keyof QDialogAttributes> & { [K in keyof QDialog & keyof QDialogAttributes]?: QDialog[K] } & { [K in keyof QDialog & keyof QDialogAttributes as `attr:${K}`]?: QDialogAttributes[K] } & { [K in keyof QDialog & keyof QDialogAttributes as `prop:${K}`]?: QDialog[K] };
         "q-dropdown": Omit<QDropdown, keyof QDropdownAttributes> & { [K in keyof QDropdown & keyof QDropdownAttributes]?: QDropdown[K] } & { [K in keyof QDropdown & keyof QDropdownAttributes as `attr:${K}`]?: QDropdownAttributes[K] } & { [K in keyof QDropdown & keyof QDropdownAttributes as `prop:${K}`]?: QDropdown[K] };
         "q-icon": Omit<QIcon, keyof QIconAttributes> & { [K in keyof QIcon & keyof QIconAttributes]?: QIcon[K] } & { [K in keyof QIcon & keyof QIconAttributes as `attr:${K}`]?: QIconAttributes[K] } & { [K in keyof QIcon & keyof QIconAttributes as `prop:${K}`]?: QIcon[K] };
         "q-input": Omit<QInput, keyof QInputAttributes> & { [K in keyof QInput & keyof QInputAttributes]?: QInput[K] } & { [K in keyof QInput & keyof QInputAttributes as `attr:${K}`]?: QInputAttributes[K] } & { [K in keyof QInput & keyof QInputAttributes as `prop:${K}`]?: QInput[K] };
@@ -1278,6 +1472,8 @@ declare module "@stencil/core" {
             "q-card": LocalJSX.IntrinsicElements["q-card"] & JSXBase.HTMLAttributes<HTMLQCardElement>;
             "q-carousel": LocalJSX.IntrinsicElements["q-carousel"] & JSXBase.HTMLAttributes<HTMLQCarouselElement>;
             "q-circular-progress": LocalJSX.IntrinsicElements["q-circular-progress"] & JSXBase.HTMLAttributes<HTMLQCircularProgressElement>;
+            "q-data-table": LocalJSX.IntrinsicElements["q-data-table"] & JSXBase.HTMLAttributes<HTMLQDataTableElement>;
+            "q-dialog": LocalJSX.IntrinsicElements["q-dialog"] & JSXBase.HTMLAttributes<HTMLQDialogElement>;
             "q-dropdown": LocalJSX.IntrinsicElements["q-dropdown"] & JSXBase.HTMLAttributes<HTMLQDropdownElement>;
             "q-icon": LocalJSX.IntrinsicElements["q-icon"] & JSXBase.HTMLAttributes<HTMLQIconElement>;
             "q-input": LocalJSX.IntrinsicElements["q-input"] & JSXBase.HTMLAttributes<HTMLQInputElement>;

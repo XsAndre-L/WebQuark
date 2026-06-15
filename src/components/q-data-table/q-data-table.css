@@ -1,0 +1,99 @@
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  border: var(--q-border, 1px solid var(--q-border-color, #374151));
+  border-radius: var(--q-radius-lg, 11px);
+  background: var(--q-bg-base, #111827);
+  box-shadow: var(--q-shadow-low, 0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.table-el {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  text-align: left;
+  font-family: var(--q-font-family, inherit);
+  font-size: var(--q-font-size-base, 0.9rem);
+  color: var(--q-fg-base, #f9fafb);
+}
+
+th, td {
+  padding: var(--q-padding-md, 12px 16px);
+  box-sizing: border-box;
+}
+
+th {
+  background: var(--q-bg-surface-1, #1f2937);
+  color: var(--q-fg-muted, #9ca3af);
+  font-weight: var(--q-font-weight-bold, 600);
+  font-size: var(--q-font-size-sm, 0.75rem);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: var(--q-border, 1px solid var(--q-border-color, #374151));
+  user-select: none;
+}
+
+.col-selection, .cell-selection {
+  width: 48px;
+  text-align: center;
+  padding-right: 0;
+}
+
+.checkbox-input {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--q-radius-sm, 4px);
+  border: 1px solid var(--q-border-color, #374151);
+  background: var(--q-bg-surface-2, #374151);
+  accent-color: var(--q-color-primary, #60a5fa);
+  cursor: pointer;
+  outline: none;
+  transition: var(--q-transition-fast, 150ms ease);
+}
+
+.checkbox-input:focus-visible {
+  outline: var(--q-focus-ring, 2px solid var(--q-color-primary, #60a5fa));
+  outline-offset: 2px;
+}
+
+.row-el {
+  background: transparent;
+  cursor: pointer;
+  outline: none;
+  border-bottom: 1px solid var(--q-border-color, #374151);
+  transition: background var(--q-transition-fast, 150ms ease);
+}
+
+.row-el:last-child {
+  border-bottom: none;
+}
+
+.row-el:hover {
+  background: var(--q-bg-surface-1, #1f2937);
+}
+
+.row-el:focus-visible {
+  outline: var(--q-focus-ring, 2px solid var(--q-color-primary, #60a5fa));
+  outline-offset: -2px;
+}
+
+/* Selected row style */
+.row-el.is-selected {
+  background: color-mix(in srgb, var(--q-color-primary, #60a5fa) 8%, var(--q-bg-base, #111827));
+}
+
+.row-el.is-selected:hover {
+  background: color-mix(in srgb, var(--q-color-primary, #60a5fa) 12%, var(--q-bg-base, #111827));
+}
+
+.empty-cell {
+  text-align: center;
+  color: var(--q-fg-muted, #9ca3af);
+  padding: calc(var(--q-padding-lg, 16px) * 2) var(--q-padding-lg, 16px);
+}

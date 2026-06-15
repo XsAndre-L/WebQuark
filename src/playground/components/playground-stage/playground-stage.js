@@ -22,6 +22,7 @@ function setElementProperties(el, props) {
 
 const SYNCBACK_MAP = {
   'q-sidepanel': { qClose:  (cfg, _det) => { cfg.props.open.currentValue = false; } },
+  'q-dialog':    { qClose:  (cfg, _det) => { cfg.props.open.currentValue = false; } },
   'q-dropdown':  { qChange: (cfg, det)  => { cfg.props.value.currentValue = det; } },
   'q-input':     { qChange: (cfg, det)  => { cfg.props.value.currentValue = det; } },
   'q-textarea':  { qChange: (cfg, det)  => { cfg.props.value.currentValue = det; } },
@@ -86,6 +87,17 @@ class PlaygroundStage extends HTMLElement {
           }
         }
       }
+      if (e.target && e.target.id === 'stageOpenDialogBtn') {
+        const dialog = this.stageContainer.querySelector('q-dialog');
+        if (dialog) {
+          dialog.open = true;
+          const registry = componentRegistry();
+          if (registry['q-dialog']) {
+            registry['q-dialog'].props.open.currentValue = true;
+            componentRegistry.set({ ...registry });
+          }
+        }
+      }
     };
     this.stageContainer.addEventListener('click', this.handleStageClick);
 
@@ -98,6 +110,13 @@ class PlaygroundStage extends HTMLElement {
           if (panel) panel.open = true;
         }
       }
+      if (e.target && e.target.classList.contains('var-open-dialog-btn')) {
+        const card = e.target.closest('.variant-card');
+        if (card) {
+          const dialog = card.querySelector('q-dialog');
+          if (dialog) dialog.open = true;
+        }
+      }
     };
     document.addEventListener('click', this.handleGlobalClick);
 
@@ -107,22 +126,23 @@ class PlaygroundStage extends HTMLElement {
       const tab = activeTab();
       const registry = componentRegistry();
       const spec = registry[active];
-
+      console.log('[stage effect] active component:', active, 'has spec:', !!spec, 'tab:', tab);
+ 
       // A. Update Active Component Badge
       if (this.activeCompBadge) {
         this.activeCompBadge.innerText = active === 'global-styling' ? 'Global Styling' : active;
       }
-
+ 
       // B. Manage Header Tabs Bar visibility
       if (this.tabsBar) {
         this.tabsBar.style.display = active === 'global-styling' ? 'none' : '';
       }
-
+ 
       // C. Highlight selected tab button
       tabBtns.forEach(btn => {
         btn.classList.toggle('active', btn.dataset.tab === tab);
       });
-
+ 
       // D. Toggle visibility of content wrappers
       this.querySelectorAll('.stage-content-wrapper > .tab-content').forEach(c => {
         if (active === 'global-styling') {
@@ -131,15 +151,22 @@ class PlaygroundStage extends HTMLElement {
           c.classList.toggle('active', c.id === `content-${tab}`);
         }
       });
-
+ 
       // E. Render selected view content based on Tab choice
       if (active !== 'global-styling' && spec) {
         if (tab === 'sandbox') {
           // If we haven't rendered this component or are switching back to sandbox, re-render
           if (this.loadedTag !== active) {
+            console.log('[stage effect] switching view to:', active);
             this.loadedTag = active;
-            await this.loadComponentSandboxView(active, spec, registry);
+            const CUSTOM_VIEW_TAGS = ['q-button', 'q-input'];
+            if (CUSTOM_VIEW_TAGS.includes(active)) {
+              await this.loadComponentSandboxView(active, spec, registry);
+            } else {
+              this.renderFallback(active, spec);
+            }
           } else {
+            console.log('[stage effect] component already loaded, updating props:', active);
             // Component is already loaded, update its properties dynamically
             const activeEl = this.stageContainer.querySelector(active);
             if (activeEl) {
@@ -195,6 +222,9 @@ class PlaygroundStage extends HTMLElement {
       const htmlRes = await fetch(htmlUrl);
       if (htmlRes.ok) {
         const htmlText = await htmlRes.text();
+        if (htmlText.trim().startsWith('<!DOCTYPE') || htmlText.includes('<html')) {
+          throw new Error('SPA fallback page returned instead of view fragment');
+        }
         this.stageContainer.innerHTML = htmlText;
 
         const el = this.stageContainer.querySelector(tag);
@@ -433,6 +463,14 @@ class PlaygroundStage extends HTMLElement {
       btn.size = 'sm';
       btn.className = 'var-open-panel-btn';
       btn.innerHTML = 'Trigger Drawer Panel';
+      card.appendChild(btn);
+    }
+    if (tag === 'q-dialog') {
+      const btn = document.createElement('q-button');
+      btn.variant = 'secondary';
+      btn.size = 'sm';
+      btn.className = 'var-open-dialog-btn';
+      btn.innerHTML = 'Trigger Dialog Overlay';
       card.appendChild(btn);
     }
 
