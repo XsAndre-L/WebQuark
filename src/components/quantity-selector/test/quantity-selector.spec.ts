@@ -1,5 +1,6 @@
 import { expect, describe, it } from 'vitest';
-import { defineCustomElements } from '../../../../loader';
+// @ts-ignore
+import { defineCustomElements } from '../../../../dist/loader';
 
 defineCustomElements();
 

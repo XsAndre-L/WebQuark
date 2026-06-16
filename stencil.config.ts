@@ -5,10 +5,13 @@ import { angularOutputTarget } from '@stencil/angular-output-target';
 export const config: Config = {
   namespace: 'webquark',
   globalStyle: 'src/global/global.css',
+  minifyCss: true,
+  minifyJs: true,
+  sourceMap: false,
   outputTargets: [
     {
       type: 'dist',
-      esmLoaderPath: '../loader',
+      esmLoaderPath: 'loader',
     },
     {
       type: 'dist-custom-elements',
@@ -21,6 +24,7 @@ export const config: Config = {
     },
     {
       type: 'www',
+      dir: 'dist/www',
       serviceWorker: null, // disable service workers
       indexHtml: 'playground/index.html',
       copy: [
