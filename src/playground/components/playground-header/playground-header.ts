@@ -1,24 +1,33 @@
-import { loadComponentResources } from '../loader-helper.js';
-import { theme, effect } from '../../state.js';
+import { theme, effect } from '../../state';
+import html from './playground-header.html';
+import css from './playground-header.css';
 
 class PlaygroundHeader extends HTMLElement {
-  async connectedCallback() {
-    try {
-      const html = await loadComponentResources('playground-header');
-      this.innerHTML = html;
-      this.init();
-    } catch (err) {
-      console.error('Failed to load header component:', err);
+  private cleanupThemeEffect?: () => void;
+
+  connectedCallback(): void {
+    // 1. Inject template HTML
+    this.innerHTML = html;
+
+    // 2. Inject CSS stylesheet (scoped style wrapper)
+    const styleId = 'playground-header-style';
+    if (!document.getElementById(styleId)) {
+      const style = document.createElement('style');
+      style.id = styleId;
+      style.textContent = css;
+      document.head.appendChild(style);
     }
+
+    this.init();
   }
 
-  init() {
-    const themeBtn = this.querySelector('#themeToggle');
-    const hamburgerBtn = this.querySelector('#hamburgerMenu');
-    const backdrop = document.getElementById('sidebarBackdrop');
+  private init(): void {
+    const themeBtn = this.querySelector('#themeToggle') as HTMLElement | null;
+    const hamburgerBtn = this.querySelector('#hamburgerMenu') as HTMLElement | null;
+    const backdrop = document.getElementById('sidebarBackdrop') as HTMLElement | null;
 
     // 1. Theme Button Click Listener
-    themeBtn.addEventListener('click', () => {
+    themeBtn?.addEventListener('click', () => {
       const newTheme = theme() === 'dark' ? 'light' : 'dark';
       theme.set(newTheme);
     });
@@ -55,7 +64,7 @@ class PlaygroundHeader extends HTMLElement {
     }
   }
 
-  disconnectedCallback() {
+  disconnectedCallback(): void {
     if (this.cleanupThemeEffect) {
       this.cleanupThemeEffect();
     }

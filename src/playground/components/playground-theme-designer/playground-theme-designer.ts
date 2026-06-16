@@ -1,7 +1,22 @@
-import { loadComponentResources } from '../loader-helper.js';
-import { theme, effect } from '../../state.js';
+import { theme, effect } from '../../state';
+import html from './playground-theme-designer.html';
+import css from './playground-theme-designer.css';
 
-const THEME_TOKENS = [
+interface TokenItem {
+  name: string;
+  label: string;
+  type: 'color' | 'radius';
+  desc: string;
+  min?: number;
+  max?: number;
+}
+
+interface TokenCategory {
+  category: string;
+  tokens: TokenItem[];
+}
+
+const THEME_TOKENS: TokenCategory[] = [
   {
     category: 'Brand & Status Colors',
     tokens: [
@@ -38,7 +53,7 @@ const THEME_TOKENS = [
   }
 ];
 
-function convertToHex(rgbVal) {
+function convertToHex(rgbVal: string): string {
   if (!rgbVal) return '#000000';
   rgbVal = rgbVal.trim();
   if (rgbVal.startsWith('#')) {
@@ -58,17 +73,26 @@ function convertToHex(rgbVal) {
 }
 
 class PlaygroundThemeDesigner extends HTMLElement {
-  async connectedCallback() {
-    try {
-      const html = await loadComponentResources('playground-theme-designer');
-      this.innerHTML = html;
-      this.init();
-    } catch (err) {
-      console.error('Failed to load theme designer component:', err);
+  private _tokenInputs = new Map<string, any>();
+  private cleanupThemeSync?: () => void;
+
+  connectedCallback(): void {
+    // 1. Inject template HTML
+    this.innerHTML = html;
+
+    // 2. Inject CSS stylesheet (scoped style wrapper)
+    const styleId = 'playground-theme-designer-style';
+    if (!document.getElementById(styleId)) {
+      const style = document.createElement('style');
+      style.id = styleId;
+      style.textContent = css;
+      document.head.appendChild(style);
     }
+
+    this.init();
   }
 
-  init() {
+  private init(): void {
     const grid = this.querySelector('#themeSectionsGrid');
     const resetThemeBtn = this.querySelector('#resetThemeBtn');
     if (!grid) return;
@@ -109,7 +133,7 @@ class PlaygroundThemeDesigner extends HTMLElement {
     });
   }
 
-  buildTokenRow(token, computedStyle) {
+  private buildTokenRow(token: TokenItem, computedStyle: CSSStyleDeclaration): HTMLElement {
     const val = computedStyle.getPropertyValue(token.name).trim();
     const row = document.createElement('div');
     row.className = 'token-row';
@@ -149,13 +173,15 @@ class PlaygroundThemeDesigner extends HTMLElement {
       colorContainer.appendChild(pickerWrapper);
       colorContainer.appendChild(textInput);
       controlWrapper.appendChild(colorContainer);
-      picker.addEventListener('input', (e) => {
-        const newColor = e.target.value;
+      picker.addEventListener('input', (e: Event) => {
+        const target = e.target as HTMLInputElement;
+        const newColor = target.value;
         textInput.value = newColor;
         document.documentElement.style.setProperty(token.name, newColor);
       });
-      textInput.addEventListener('input', (e) => {
-        const newColor = e.target.value;
+      textInput.addEventListener('input', (e: Event) => {
+        const target = e.target as HTMLInputElement;
+        const newColor = target.value;
         if (/^#[0-9A-F]{6}$/i.test(newColor)) {
           picker.value = newColor;
           document.documentElement.style.setProperty(token.name, newColor);
@@ -169,9 +195,9 @@ class PlaygroundThemeDesigner extends HTMLElement {
       const slider = document.createElement('input');
       slider.type = 'range';
       slider.className = 'range-slider-input';
-      slider.min = token.min;
-      slider.max = token.max;
-      slider.value = numVal;
+      slider.min = String(token.min ?? 0);
+      slider.max = String(token.max ?? 40);
+      slider.value = String(numVal);
       slider.dataset.token = token.name;
       const valDisplay = document.createElement('span');
       valDisplay.className = 'range-slider-value';
@@ -180,8 +206,9 @@ class PlaygroundThemeDesigner extends HTMLElement {
       rangeContainer.appendChild(slider);
       rangeContainer.appendChild(valDisplay);
       controlWrapper.appendChild(rangeContainer);
-      slider.addEventListener('input', (e) => {
-        const num = e.target.value;
+      slider.addEventListener('input', (e: Event) => {
+        const target = e.target as HTMLInputElement;
+        const num = target.value;
         valDisplay.innerText = `${num}px`;
         document.documentElement.style.setProperty(token.name, `${num}px`);
       });
@@ -192,7 +219,7 @@ class PlaygroundThemeDesigner extends HTMLElement {
     return row;
   }
 
-  syncThemeInputs() {
+  private syncThemeInputs(): void {
     const computedStyle = window.getComputedStyle(document.documentElement);
     this._tokenInputs.forEach((refs, tokenName) => {
       const value = computedStyle.getPropertyValue(tokenName).trim();
@@ -202,13 +229,13 @@ class PlaygroundThemeDesigner extends HTMLElement {
         if (refs.textInput) refs.textInput.value = hex;
       } else if (refs.type === 'radius') {
         const num = parseInt(value, 10) || 0;
-        if (refs.range) refs.range.value = num;
+        if (refs.range) refs.range.value = String(num);
         if (refs.valueDisplay) refs.valueDisplay.innerText = `${num}px`;
       }
     });
   }
 
-  disconnectedCallback() {
+  disconnectedCallback(): void {
     if (this.cleanupThemeSync) {
       this.cleanupThemeSync();
     }

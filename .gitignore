@@ -26,3 +26,7 @@ UserInterfaceState.xcuserstate
 .env
 
 agents/
+
+# Compiled Playground Bundle
+src/playground/playground.bundled.js
+
