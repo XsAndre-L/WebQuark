@@ -99,6 +99,7 @@ export class QSyntaxBox {
   }
 
   private copyCode = () => {
+    if (this.disabled) return;
     const codeToCopy = this.code !== undefined ? this.code : this.el.textContent || '';
     navigator.clipboard.writeText(codeToCopy).then(() => {
       this.copied = true;
@@ -251,6 +252,7 @@ export class QSyntaxBox {
   };
 
   private handleFormat = () => {
+    if (this.disabled) return;
     if (this.code) {
       const formatted = formatCode(this.code, this.language);
       this.code = formatted;
@@ -323,13 +325,13 @@ export class QSyntaxBox {
               <div class="panel-actions">
                 <slot name="actions"></slot>
                 {this.editable && (
-                  <q-button class="format-btn" variant="ghost" size="sm" onClick={this.handleFormat}>
-                    <q-icon slot="icon-left" lib="local" name="sparkles" size="sm"></q-icon>
+                  <q-button class="format-btn" variant="ghost" size="sm" onClick={this.handleFormat} disabled={this.disabled}>
+                    <q-icon slot="icon-left" lib="local" name="braces" size="sm"></q-icon>
                     <q-tooltip slot="icon-left" content="Format Code"></q-tooltip>
                   </q-button>
                 )}
                 {this.copyable && (
-                  <q-button variant="ghost" size="sm" onClick={this.copyCode}>
+                  <q-button variant="ghost" size="sm" onClick={this.copyCode} disabled={this.disabled}>
                     <q-icon slot="icon-left" lib="local" name={this.copied ? "check" : "copy"} size="sm"></q-icon>
                     <q-tooltip slot="icon-left" content={this.copied ? "Copied!" : "Copy"}></q-tooltip>
                   </q-button>
