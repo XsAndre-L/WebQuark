@@ -32,9 +32,9 @@
       "types": "./dist/*.d.ts"
     },
     "./loader": {
-      "import": "./loader/index.js",
-      "require": "./loader/index.cjs",
-      "types": "./loader/index.d.ts"
+      "import": "./dist/loader/index.js",
+      "require": "./dist/loader/index.cjs",
+      "types": "./dist/loader/index.d.ts"
     }
   },
   "workspaces": [
@@ -46,8 +46,7 @@
     "url": "https://github.com/stenciljs/component-starter.git"
   },
   "files": [
-    "dist/",
-    "loader/"
+    "dist/"
   ],
   "scripts": {
     "build": "stencil build",
