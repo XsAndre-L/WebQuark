@@ -1,4 +1,4 @@
-import { Component, Prop, Element, State, h } from '@stencil/core';
+import { Component, Prop, Element, State, Event, EventEmitter, h } from '@stencil/core';
 
 @Component({
   tag: 'q-button',
@@ -21,6 +21,10 @@ export class QButton {
   @Prop() target?: string;
   @Prop() download?: string;
   @Prop({ reflect: true }) iconOnly?: boolean;
+
+  @Event() qClick!: EventEmitter<MouseEvent>;
+  @Event() qFocus!: EventEmitter<FocusEvent>;
+  @Event() qBlur!: EventEmitter<FocusEvent>;
 
   @State() autoIconOnly: boolean = false;
 
@@ -53,7 +57,17 @@ export class QButton {
     if (this.disabled || this.loading) {
       e.preventDefault();
       e.stopPropagation();
+      return;
     }
+    this.qClick.emit(e);
+  };
+
+  private handleFocus = (ev: FocusEvent) => {
+    this.qFocus.emit(ev);
+  };
+
+  private handleBlur = (ev: FocusEvent) => {
+    this.qBlur.emit(ev);
   };
 
   // ===================== [6] RENDER (Visual Template Only) =====================
@@ -92,6 +106,8 @@ export class QButton {
           tabindex={isBtnDisabled ? -1 : undefined}
           aria-disabled={isBtnDisabled ? 'true' : 'false'}
           onClick={this.handleClick}
+          onFocus={this.handleFocus}
+          onBlur={this.handleBlur}
         >
           {innerContent}
         </a>
@@ -105,6 +121,8 @@ export class QButton {
         disabled={isBtnDisabled}
         aria-busy={this.loading ? 'true' : 'false'}
         onClick={this.handleClick}
+        onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
       >
         {innerContent}
       </button>

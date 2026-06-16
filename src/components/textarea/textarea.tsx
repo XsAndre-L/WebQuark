@@ -29,6 +29,7 @@ export class QTextarea {
   @Event() qInput!: EventEmitter<string>;
   @Event() qBlur!: EventEmitter<FocusEvent>;
   @Event() qFocus!: EventEmitter<FocusEvent>;
+  @Event() qClick!: EventEmitter<MouseEvent>;
 
   private textareaEl?: HTMLTextAreaElement;
 
@@ -100,6 +101,11 @@ export class QTextarea {
     this.qFocus.emit(ev);
   };
 
+  private handleClick = (ev: MouseEvent) => {
+    if (this.disabled) return;
+    this.qClick.emit(ev);
+  };
+
   private get activeResizeMode(): 'auto' | 'manual' | 'fixed' {
     if (!this.autoGrow && this.resizeMode === 'auto') {
       return 'fixed';
@@ -159,6 +165,7 @@ export class QTextarea {
           onChange={this.handleChange}
           onBlur={this.handleBlur}
           onFocus={this.handleFocus}
+          onClick={this.handleClick}
           aria-invalid={hasError ? 'true' : 'false'}
           aria-describedby={hasError ? 'q-field-error' : undefined}
         />

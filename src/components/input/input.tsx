@@ -35,6 +35,7 @@ export class QInput {
   @Event() qInput!: EventEmitter<string>;
   @Event() qBlur!: EventEmitter<FocusEvent>;
   @Event() qFocus!: EventEmitter<FocusEvent>;
+  @Event() qClick!: EventEmitter<MouseEvent>;
 
   private inputEl?: HTMLInputElement;
 
@@ -184,6 +185,11 @@ export class QInput {
     this.qFocus.emit(ev);
   };
 
+  private handleClick = (ev: MouseEvent) => {
+    if (this.disabled) return;
+    this.qClick.emit(ev);
+  };
+
   private handleClear = () => {
     this.value = "";
     this.qInput.emit(this.value);
@@ -252,6 +258,7 @@ export class QInput {
             onChange={this.handleChange}
             onBlur={this.handleBlur}
             onFocus={this.handleFocus}
+            onClick={this.handleClick}
             aria-invalid={hasError ? 'true' : 'false'}
             aria-describedby={hasError ? 'q-field-error' : undefined}
           />

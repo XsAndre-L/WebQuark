@@ -39,6 +39,9 @@ export class QDropdown {
 
   @Event() qChange!: EventEmitter<string>;
   @Event() qSelect!: EventEmitter<Option>;
+  @Event() qFocus!: EventEmitter<FocusEvent>;
+  @Event() qBlur!: EventEmitter<FocusEvent>;
+  @Event() qClick!: EventEmitter<MouseEvent>;
 
   private triggerEl?: HTMLButtonElement;
 
@@ -133,6 +136,20 @@ export class QDropdown {
     this.qChange.emit(option.value);
     this.qSelect.emit(option);
     requestAnimationFrame(() => this.triggerEl?.focus());
+  };
+
+  private handleFocus = (ev: FocusEvent) => {
+    this.qFocus.emit(ev);
+  };
+
+  private handleBlur = (ev: FocusEvent) => {
+    this.qBlur.emit(ev);
+  };
+
+  private handleTriggerClick = (ev: MouseEvent) => {
+    if (this.disabled) return;
+    this.qClick.emit(ev);
+    this.toggleMenu();
   };
 
   private handleSearchInput = (ev: Event) => {
@@ -351,7 +368,9 @@ export class QDropdown {
           part="trigger"
           type="button"
           disabled={this.disabled}
-          onClick={this.toggleMenu}
+          onClick={this.handleTriggerClick}
+          onFocus={this.handleFocus}
+          onBlur={this.handleBlur}
           aria-haspopup="listbox"
           aria-expanded={this.isOpen ? 'true' : 'false'}
           aria-controls={this.isOpen ? 'q-field-menu' : undefined}
