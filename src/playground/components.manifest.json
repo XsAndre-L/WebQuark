@@ -15,5 +15,6 @@
   { "tag": "q-icon",              "name": "Icon" },
   { "tag": "q-tooltip",           "name": "Tooltip" },
   { "tag": "q-data-table",        "name": "Data Table" },
-  { "tag": "q-dialog",            "name": "Dialog" }
+  { "tag": "q-dialog",            "name": "Dialog" },
+  { "tag": "q-quantity-selector", "name": "Quantity Selector" }
 ]

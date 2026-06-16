@@ -22,6 +22,7 @@
     { "name": "Large Input Box", "props": { "label": "Large Username", "placeholder": "lg-user", "size": "lg" } },
     { "name": "Color Picker Input", "props": { "label": "Accent Color Theme", "type": "color", "value": "#60a5fa" } },
     { "name": "Password type input", "props": { "label": "Security Password", "type": "password", "placeholder": "Enter code..." } },
+    { "name": "Numeric Input", "props": { "label": "Quantity Bound", "type": "number", "value": "42", "placeholder": "Enter number..." } },
     { "name": "Email with Error validation", "props": { "label": "Email Address", "type": "email", "value": "bad-email-format", "error": "Please enter a valid email address" } },
     { "name": "Disabled State lock", "props": { "label": "Hardware Address", "value": "00:1A:2B:3C:4D:5E", "disabled": true } },
     {

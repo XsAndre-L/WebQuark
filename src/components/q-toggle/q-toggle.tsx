@@ -26,11 +26,16 @@ export class QToggle {
   @Event() qChange!: EventEmitter<boolean>;
 
   private initialValue: boolean = false;
+  /** Prevents qChange from re-firing when checked is set programmatically from outside */
+  private _suppressChange: boolean = false;
 
   @Watch('checked')
   watchChecked(newValue: boolean) {
     this.internals.setFormValue(newValue ? 'true' : null);
-    this.qChange.emit(newValue);
+    if (!this._suppressChange) {
+      this.qChange.emit(newValue);
+    }
+    this._suppressChange = false;
   }
 
   componentWillLoad() {
@@ -47,8 +52,24 @@ export class QToggle {
   @Method()
   async toggle() {
     if (!this.disabled) {
+      // User-initiated: allow qChange to emit normally
       this.checked = !this.checked;
     }
+  }
+
+  /**
+   * Programmatically set checked state without emitting qChange.
+   * Use this from external controllers (e.g. playground) to avoid
+   * the SYNCBACK_MAP → registry → effect → prop-set feedback loop.
+   */
+  @Method()
+  async setChecked(value: boolean) {
+    this._suppressChange = true;
+    this.checked = value;
+    // @Watch fires synchronously when value changes and resets _suppressChange there.
+    // If value === this.checked, @Watch does NOT fire, so we reset the flag here
+    // to avoid silencing the next genuine user interaction.
+    this._suppressChange = false;
   }
 
   private handleSlotChange = () => {
@@ -76,6 +97,7 @@ export class QToggle {
       e.stopPropagation();
       return;
     }
+    // User-initiated toggle: emit qChange normally
     this.checked = !this.checked;
   };
 
@@ -83,6 +105,7 @@ export class QToggle {
     if (this.disabled) return;
     if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
+      // User-initiated toggle: emit qChange normally
       this.checked = !this.checked;
     }
   };

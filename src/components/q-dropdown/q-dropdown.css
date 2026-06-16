@@ -37,6 +37,7 @@
   border: var(--q-dropdown-border, var(--q-border, 1px solid var(--q-border-color, #4b5563)));
   border-radius: var(--q-dropdown-radius, var(--q-radius-md, 8px));
   padding: var(--q-dropdown-padding, var(--q-field-padding, 10px 14px));
+  line-height: 1.2;
   box-sizing: border-box;
   outline: none;
   cursor: pointer;

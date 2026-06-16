@@ -1,0 +1,131 @@
+:host {
+  /* Dimensions */
+  --q-quantity-selector-height: 38px;
+  --q-quantity-selector-width-vertical: 50px;
+  
+  /* Colors */
+  --q-quantity-selector-bg: var(--q-bg-surface-2, #374151);
+  --q-quantity-selector-border-color: var(--q-border-color, #4b5563);
+  --q-quantity-selector-radius: var(--q-radius-md, 8px);
+  
+  /* Input area */
+  --q-quantity-selector-input-bg: var(--q-bg-base, #111827);
+  --q-quantity-selector-input-fg: var(--q-fg-base, #f9fafb);
+  
+  /* Buttons */
+  --q-quantity-selector-btn-bg: transparent;
+  --q-quantity-selector-btn-bg-hover: var(--q-bg-surface-3, #4b5563);
+  --q-quantity-selector-btn-fg: var(--q-fg-muted, #9ca3af);
+  --q-quantity-selector-btn-fg-hover: var(--q-fg-base, #f9fafb);
+
+  /* Internal customization variables */
+  --q-quantity-selector-char-width: 1ch;
+  --q-quantity-selector-input-padding: 16px;
+
+  display: inline-block;
+  box-sizing: border-box;
+}
+
+.quantity-selector {
+  display: inline-flex;
+  border: 1px solid var(--q-quantity-selector-border-color);
+  border-radius: var(--q-quantity-selector-radius);
+  background: var(--q-quantity-selector-bg);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* Horizontal Layout */
+.quantity-selector.variant-horizontal {
+  flex-direction: row;
+  align-items: center;
+  height: var(--q-quantity-selector-height);
+}
+
+/* Vertical Layout */
+.quantity-selector.variant-vertical {
+  flex-direction: column;
+  align-items: center;
+  width: var(--q-quantity-selector-width-vertical);
+}
+
+/* Input element */
+.quantity-input {
+  border: none;
+  background: var(--q-quantity-selector-input-bg);
+  color: var(--q-quantity-selector-input-fg);
+  text-align: center;
+  font-family: var(--q-font-family, inherit);
+  font-size: var(--q-font-size-base, 1rem);
+  margin: 0;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.variant-horizontal .quantity-input {
+  height: 100%;
+}
+
+.variant-vertical .quantity-input {
+  width: 100%;
+  padding: 6px 0;
+}
+
+/* Buttons */
+.quantity-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: var(--q-quantity-selector-btn-bg);
+  color: var(--q-quantity-selector-btn-fg);
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  transition: background-color var(--q-transition-fast, 150ms ease), 
+              color var(--q-transition-fast, 150ms ease);
+}
+
+.quantity-btn:hover:not(:disabled) {
+  background: var(--q-quantity-selector-btn-bg-hover);
+  color: var(--q-quantity-selector-btn-fg-hover);
+}
+
+.quantity-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Button dimensions for horizontal */
+.variant-horizontal .quantity-btn {
+  width: var(--q-quantity-selector-height);
+  height: 100%;
+}
+
+.variant-horizontal .quantity-btn-decrement {
+  border-right: 1px solid var(--q-quantity-selector-border-color);
+}
+
+.variant-horizontal .quantity-btn-increment {
+  border-left: 1px solid var(--q-quantity-selector-border-color);
+}
+
+/* Button dimensions for vertical */
+.variant-vertical .quantity-btn {
+  width: 100%;
+  height: var(--q-quantity-selector-height);
+}
+
+.variant-vertical .quantity-btn-increment {
+  border-bottom: 1px solid var(--q-quantity-selector-border-color);
+}
+
+.variant-vertical .quantity-btn-decrement {
+  border-top: 1px solid var(--q-quantity-selector-border-color);
+}
+
+.btn-icon {
+  width: 16px;
+  height: 16px;
+}

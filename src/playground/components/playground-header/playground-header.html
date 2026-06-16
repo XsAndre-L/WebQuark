@@ -5,10 +5,12 @@
     <span class="hamburger-line"></span>
   </button>
   <div class="header-logo">
-    <div class="logo-icon">Q</div>
+    <img src="/logo.svg" class="logo-image" alt="WebQuark Logo" />
     <div class="logo-text">WebQuark Sandbox</div>
   </div>
   <div class="header-actions">
-    <button id="themeToggle" class="action-btn" type="button">Toggle Theme</button>
+    <q-button id="themeToggle" variant="ghost">
+      <q-icon id="themeIcon" slot="icon-left" name="sun"></q-icon>
+    </q-button>
   </div>
 </header>

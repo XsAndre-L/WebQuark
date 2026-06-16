@@ -1,0 +1,23 @@
+{
+  "name": "Quantity Selector",
+  "tag": "q-quantity-selector",
+  "props": {
+    "value": { "type": "number", "default": 0, "desc": "The current quantity value" },
+    "step": { "type": "number", "default": 1, "desc": "The increment/decrement step amount" },
+    "min": { "type": "number", "default": 0, "desc": "Minimum allowed value limit" },
+    "max": { "type": "number", "default": 100, "desc": "Maximum allowed value limit" },
+    "variant": { "type": "select", "options": ["horizontal", "vertical"], "default": "horizontal", "desc": "Layout alignment variant" }
+  },
+  "variants": [
+    { "name": "Standard Horizontal", "props": { "value": 5 } },
+    { "name": "Vertical Stack", "props": { "variant": "vertical", "value": 10 } },
+    { "name": "Stepping by 5", "props": { "value": 25, "step": 5 } },
+    { "name": "Bounded (1 to 10)", "props": { "value": 5, "min": 1, "max": 10 } },
+    { "name": "Negative Bounds (-50 to 50)", "props": { "value": 0, "min": -50, "max": 50 } }
+  ],
+  "edgeCases": [
+    { "name": "No limits (unbounded)", "props": { "value": 1000, "min": null, "max": null } },
+    { "name": "Locked to Min", "props": { "value": 1, "min": 1, "max": 10 } },
+    { "name": "Locked to Max", "props": { "value": 10, "min": 1, "max": 10 } }
+  ]
+}

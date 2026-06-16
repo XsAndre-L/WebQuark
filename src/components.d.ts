@@ -113,6 +113,10 @@ export namespace Components {
          */
         "keyField": string;
         /**
+          * @default false
+         */
+        "loading": boolean;
+        /**
           * @default 'Search...'
          */
         "searchPlaceholder": string;
@@ -245,6 +249,8 @@ export namespace Components {
         "errorMessage"?: string;
         "focusElement": () => Promise<void>;
         "label"?: string;
+        "max"?: number;
+        "min"?: number;
         /**
           * @default ""
          */
@@ -258,6 +264,10 @@ export namespace Components {
          */
         "size": 'sm' | 'md' | 'lg';
         /**
+          * @default 1
+         */
+        "step"?: number;
+        /**
           * @default 'text'
          */
         "type": 'text' | 'password' | 'email' | 'number' | 'url' | 'search' | 'color';
@@ -265,6 +275,31 @@ export namespace Components {
           * @default ""
          */
         "value": string;
+    }
+    interface QQuantitySelector {
+        /**
+          * Maximum allowed value limit (optional).
+         */
+        "max"?: number;
+        /**
+          * Minimum allowed value limit (optional).
+         */
+        "min"?: number;
+        /**
+          * The increment/decrement step amount.
+          * @default 1
+         */
+        "step": number;
+        /**
+          * The current quantity value.
+          * @default 0
+         */
+        "value": number;
+        /**
+          * Layout alignment variants: 'horizontal' or 'vertical'.
+          * @default 'horizontal'
+         */
+        "variant": 'horizontal' | 'vertical';
     }
     interface QReel {
         /**
@@ -459,6 +494,10 @@ export namespace Components {
          */
         "required": boolean;
         /**
+          * Programmatically set checked state without emitting qChange. Use this from external controllers (e.g. playground) to avoid the SYNCBACK_MAP → registry → effect → prop-set feedback loop.
+         */
+        "setChecked": (value: boolean) => Promise<void>;
+        /**
           * @default 'md'
          */
         "size": 'sm' | 'md' | 'lg';
@@ -504,6 +543,10 @@ export interface QDropdownCustomEvent<T> extends CustomEvent<T> {
 export interface QInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLQInputElement;
+}
+export interface QQuantitySelectorCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQQuantitySelectorElement;
 }
 export interface QReelCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -650,6 +693,23 @@ declare global {
     var HTMLQInputElement: {
         prototype: HTMLQInputElement;
         new (): HTMLQInputElement;
+    };
+    interface HTMLQQuantitySelectorElementEventMap {
+        "qChange": number;
+    }
+    interface HTMLQQuantitySelectorElement extends Components.QQuantitySelector, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQQuantitySelectorElementEventMap>(type: K, listener: (this: HTMLQQuantitySelectorElement, ev: QQuantitySelectorCustomEvent<HTMLQQuantitySelectorElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQQuantitySelectorElementEventMap>(type: K, listener: (this: HTMLQQuantitySelectorElement, ev: QQuantitySelectorCustomEvent<HTMLQQuantitySelectorElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLQQuantitySelectorElement: {
+        prototype: HTMLQQuantitySelectorElement;
+        new (): HTMLQQuantitySelectorElement;
     };
     interface HTMLQReelElementEventMap {
         "qLightboxOpen": void;
@@ -803,6 +863,7 @@ declare global {
         "q-dropdown": HTMLQDropdownElement;
         "q-icon": HTMLQIconElement;
         "q-input": HTMLQInputElement;
+        "q-quantity-selector": HTMLQQuantitySelectorElement;
         "q-reel": HTMLQReelElement;
         "q-scrollable": HTMLQScrollableElement;
         "q-sidepanel": HTMLQSidepanelElement;
@@ -915,6 +976,10 @@ declare namespace LocalJSX {
           * @default 'id'
          */
         "keyField"?: string;
+        /**
+          * @default false
+         */
+        "loading"?: boolean;
         "onQRowClick"?: (event: QDataTableCustomEvent<{ item: any; index: number; originalEvent: MouseEvent | KeyboardEvent }>) => void;
         "onQSearch"?: (event: QDataTableCustomEvent<string>) => void;
         "onQSelectionChange"?: (event: QDataTableCustomEvent<{ selectedKeys: any[]; selectedItems: any[] }>) => void;
@@ -1062,6 +1127,8 @@ declare namespace LocalJSX {
          */
         "form"?: string;
         "label"?: string;
+        "max"?: number;
+        "min"?: number;
         /**
           * The name of the element, used when submitting an HTML form.
          */
@@ -1083,6 +1150,10 @@ declare namespace LocalJSX {
          */
         "size"?: 'sm' | 'md' | 'lg';
         /**
+          * @default 1
+         */
+        "step"?: number;
+        /**
           * @default 'text'
          */
         "type"?: 'text' | 'password' | 'email' | 'number' | 'url' | 'search' | 'color';
@@ -1090,6 +1161,35 @@ declare namespace LocalJSX {
           * @default ""
          */
         "value"?: string;
+    }
+    interface QQuantitySelector {
+        /**
+          * Maximum allowed value limit (optional).
+         */
+        "max"?: number;
+        /**
+          * Minimum allowed value limit (optional).
+         */
+        "min"?: number;
+        /**
+          * Emitted when the quantity value changes.
+         */
+        "onQChange"?: (event: QQuantitySelectorCustomEvent<number>) => void;
+        /**
+          * The increment/decrement step amount.
+          * @default 1
+         */
+        "step"?: number;
+        /**
+          * The current quantity value.
+          * @default 0
+         */
+        "value"?: number;
+        /**
+          * Layout alignment variants: 'horizontal' or 'vertical'.
+          * @default 'horizontal'
+         */
+        "variant"?: 'horizontal' | 'vertical';
     }
     interface QReel {
         /**
@@ -1372,6 +1472,7 @@ declare namespace LocalJSX {
     interface QDataTableAttributes {
         "columns": TableColumn[] | string;
         "items": any[] | string;
+        "loading": boolean;
         "selectable": boolean;
         "keyField": string;
         "showToolbar": boolean;
@@ -1419,6 +1520,16 @@ declare namespace LocalJSX {
         "errorMessage": string;
         "size": 'sm' | 'md' | 'lg';
         "clearable": boolean;
+        "min": number;
+        "max": number;
+        "step": number;
+    }
+    interface QQuantitySelectorAttributes {
+        "value": number;
+        "step": number;
+        "min": number;
+        "max": number;
+        "variant": 'horizontal' | 'vertical';
     }
     interface QReelAttributes {
         "layout": 'grid' | 'carousel';
@@ -1502,6 +1613,7 @@ declare namespace LocalJSX {
         "q-dropdown": Omit<QDropdown, keyof QDropdownAttributes> & { [K in keyof QDropdown & keyof QDropdownAttributes]?: QDropdown[K] } & { [K in keyof QDropdown & keyof QDropdownAttributes as `attr:${K}`]?: QDropdownAttributes[K] } & { [K in keyof QDropdown & keyof QDropdownAttributes as `prop:${K}`]?: QDropdown[K] };
         "q-icon": Omit<QIcon, keyof QIconAttributes> & { [K in keyof QIcon & keyof QIconAttributes]?: QIcon[K] } & { [K in keyof QIcon & keyof QIconAttributes as `attr:${K}`]?: QIconAttributes[K] } & { [K in keyof QIcon & keyof QIconAttributes as `prop:${K}`]?: QIcon[K] };
         "q-input": Omit<QInput, keyof QInputAttributes> & { [K in keyof QInput & keyof QInputAttributes]?: QInput[K] } & { [K in keyof QInput & keyof QInputAttributes as `attr:${K}`]?: QInputAttributes[K] } & { [K in keyof QInput & keyof QInputAttributes as `prop:${K}`]?: QInput[K] };
+        "q-quantity-selector": Omit<QQuantitySelector, keyof QQuantitySelectorAttributes> & { [K in keyof QQuantitySelector & keyof QQuantitySelectorAttributes]?: QQuantitySelector[K] } & { [K in keyof QQuantitySelector & keyof QQuantitySelectorAttributes as `attr:${K}`]?: QQuantitySelectorAttributes[K] } & { [K in keyof QQuantitySelector & keyof QQuantitySelectorAttributes as `prop:${K}`]?: QQuantitySelector[K] };
         "q-reel": Omit<QReel, keyof QReelAttributes> & { [K in keyof QReel & keyof QReelAttributes]?: QReel[K] } & { [K in keyof QReel & keyof QReelAttributes as `attr:${K}`]?: QReelAttributes[K] } & { [K in keyof QReel & keyof QReelAttributes as `prop:${K}`]?: QReel[K] };
         "q-scrollable": Omit<QScrollable, keyof QScrollableAttributes> & { [K in keyof QScrollable & keyof QScrollableAttributes]?: QScrollable[K] } & { [K in keyof QScrollable & keyof QScrollableAttributes as `attr:${K}`]?: QScrollableAttributes[K] } & { [K in keyof QScrollable & keyof QScrollableAttributes as `prop:${K}`]?: QScrollable[K] };
         "q-sidepanel": Omit<QSidepanel, keyof QSidepanelAttributes> & { [K in keyof QSidepanel & keyof QSidepanelAttributes]?: QSidepanel[K] } & { [K in keyof QSidepanel & keyof QSidepanelAttributes as `attr:${K}`]?: QSidepanelAttributes[K] } & { [K in keyof QSidepanel & keyof QSidepanelAttributes as `prop:${K}`]?: QSidepanel[K] };
@@ -1527,6 +1639,7 @@ declare module "@stencil/core" {
             "q-dropdown": LocalJSX.IntrinsicElements["q-dropdown"] & JSXBase.HTMLAttributes<HTMLQDropdownElement>;
             "q-icon": LocalJSX.IntrinsicElements["q-icon"] & JSXBase.HTMLAttributes<HTMLQIconElement>;
             "q-input": LocalJSX.IntrinsicElements["q-input"] & JSXBase.HTMLAttributes<HTMLQInputElement>;
+            "q-quantity-selector": LocalJSX.IntrinsicElements["q-quantity-selector"] & JSXBase.HTMLAttributes<HTMLQQuantitySelectorElement>;
             "q-reel": LocalJSX.IntrinsicElements["q-reel"] & JSXBase.HTMLAttributes<HTMLQReelElement>;
             "q-scrollable": LocalJSX.IntrinsicElements["q-scrollable"] & JSXBase.HTMLAttributes<HTMLQScrollableElement>;
             "q-sidepanel": LocalJSX.IntrinsicElements["q-sidepanel"] & JSXBase.HTMLAttributes<HTMLQSidepanelElement>;

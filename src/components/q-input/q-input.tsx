@@ -19,6 +19,9 @@ export class QInput {
   @Prop() errorMessage?: string;
   @Prop() size: 'sm' | 'md' | 'lg' = 'md';
   @Prop() clearable: boolean = false;
+  @Prop() min?: number;
+  @Prop() max?: number;
+  @Prop() step?: number = 1;
 
   @Element() el!: HTMLElement;
 
@@ -47,17 +50,23 @@ export class QInput {
 
   @Watch('value')
   watchValue(newValue: string) {
-    this.internals.setFormValue(newValue);
+    if (this.internals && typeof this.internals.setFormValue === 'function') {
+      this.internals.setFormValue(newValue);
+    }
   }
 
   componentWillLoad() {
     this.initialValue = this.value || "";
-    this.internals.setFormValue(this.value);
+    if (this.internals && typeof this.internals.setFormValue === 'function') {
+      this.internals.setFormValue(this.value);
+    }
   }
 
   formResetCallback() {
     this.value = this.initialValue;
-    this.internals.setFormValue(this.value);
+    if (this.internals && typeof this.internals.setFormValue === 'function') {
+      this.internals.setFormValue(this.value);
+    }
   }
 
   @Method()
@@ -82,7 +91,82 @@ export class QInput {
     this.qChange.emit(this.value);
   };
 
+  private handleIncrement = () => {
+    if (this.disabled) return;
+    let base = parseFloat(this.value);
+    if (isNaN(base)) {
+      if (this.min !== undefined && this.min !== null && this.min > 0) {
+        base = this.min;
+      } else if (this.max !== undefined && this.max !== null && this.max < 0) {
+        base = this.max;
+      } else {
+        base = 0;
+      }
+    }
+    const stepVal = (this.step !== undefined && this.step !== null) ? this.step : 1;
+    let newValue = base + stepVal;
+    if (this.max !== undefined && this.max !== null) {
+      newValue = Math.min(this.max, newValue);
+    }
+    if (this.min !== undefined && this.min !== null) {
+      newValue = Math.max(this.min, newValue);
+    }
+    this.value = String(newValue);
+    // Imperatively update the native input so the display refreshes immediately.
+    // Stencil's async VDOM re-render can be skipped when this.value was already
+    // set to the same string before the effect fires (SYNCBACK_MAP race).
+    if (this.inputEl) this.inputEl.value = this.value;
+    this.qInput.emit(this.value);
+    this.qChange.emit(this.value);
+  };
+
+  private handleDecrement = () => {
+    if (this.disabled) return;
+    let base = parseFloat(this.value);
+    if (isNaN(base)) {
+      if (this.min !== undefined && this.min !== null && this.min > 0) {
+        base = this.min;
+      } else if (this.max !== undefined && this.max !== null && this.max < 0) {
+        base = this.max;
+      } else {
+        base = 0;
+      }
+    }
+    const stepVal = (this.step !== undefined && this.step !== null) ? this.step : 1;
+    let newValue = base - stepVal;
+    if (this.min !== undefined && this.min !== null) {
+      newValue = Math.max(this.min, newValue);
+    }
+    if (this.max !== undefined && this.max !== null) {
+      newValue = Math.min(this.max, newValue);
+    }
+    this.value = String(newValue);
+    // Same imperative update as handleIncrement — see comment there.
+    if (this.inputEl) this.inputEl.value = this.value;
+    this.qInput.emit(this.value);
+    this.qChange.emit(this.value);
+  };
+
   private handleBlur = (ev: FocusEvent) => {
+    if (this.type === 'number' && this.value !== undefined && this.value !== null && this.value !== "") {
+      const parsed = parseFloat(this.value);
+      if (!isNaN(parsed)) {
+        let clamped = parsed;
+        if (this.min !== undefined && this.min !== null) {
+          clamped = Math.max(this.min, clamped);
+        }
+        if (this.max !== undefined && this.max !== null) {
+          clamped = Math.min(this.max, clamped);
+        }
+        if (clamped !== parsed) {
+          this.value = String(clamped);
+          // Force the native input to show the clamped value immediately.
+          if (this.inputEl) this.inputEl.value = this.value;
+          this.qInput.emit(this.value);
+          this.qChange.emit(this.value);
+        }
+      }
+    }
     this.qBlur.emit(ev);
   };
 
@@ -136,6 +220,7 @@ export class QInput {
 
           {/* Native HTML Input */}
           <input
+            key={this.type}
             ref={(el) => (this.inputEl = el as HTMLInputElement)}
             id="q-field"
             class={{
@@ -148,6 +233,9 @@ export class QInput {
             placeholder={this.placeholder}
             disabled={this.disabled}
             required={this.required}
+            min={this.min}
+            max={this.max}
+            step={this.step}
             onInput={this.handleInput}
             onChange={this.handleChange}
             onBlur={this.handleBlur}
@@ -155,6 +243,21 @@ export class QInput {
             aria-invalid={hasError ? 'true' : 'false'}
             aria-describedby={hasError ? 'q-field-error' : undefined}
           />
+
+          {this.type === 'number' && !this.disabled && (
+            <div class="input-spinners" part="spinners">
+              <button class="spinner-btn spinner-up" type="button" onClick={this.handleIncrement} tabindex="-1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 15l-6-6-6 6" />
+                </svg>
+              </button>
+              <button class="spinner-btn spinner-down" type="button" onClick={this.handleDecrement} tabindex="-1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </button>
+            </div>
+          )}
 
           {/* Suffix / Clear Button Container */}
           <span 

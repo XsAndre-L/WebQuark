@@ -12,6 +12,7 @@
 | `columns`           | `columns`            |             | `TableColumn[] \| string` | `[]`          |
 | `items`             | `items`              |             | `any[] \| string`         | `[]`          |
 | `keyField`          | `key-field`          |             | `string`                  | `'id'`        |
+| `loading`           | `loading`            |             | `boolean`                 | `false`       |
 | `searchPlaceholder` | `search-placeholder` |             | `string`                  | `'Search...'` |
 | `searchValue`       | `search-value`       |             | `string`                  | `''`          |
 | `selectable`        | `selectable`         |             | `boolean`                 | `false`       |
@@ -29,6 +30,21 @@
 | `qSearch`          |             | `CustomEvent<string>`                                                                    |
 | `qSelectionChange` |             | `CustomEvent<{ selectedKeys: any[]; selectedItems: any[]; }>`                            |
 
+
+## Dependencies
+
+### Depends on
+
+- [q-input](../q-input)
+- [q-circular-progress](../q-circular-progress)
+
+### Graph
+```mermaid
+graph TD;
+  q-data-table --> q-input
+  q-data-table --> q-circular-progress
+  style q-data-table fill:#f9f,stroke:#333,stroke-width:4px
+```
 
 ----------------------------------------------
 

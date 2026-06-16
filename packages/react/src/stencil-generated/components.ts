@@ -11,7 +11,7 @@ import type { EventName, StencilReactComponent } from '@stencil/react-output-tar
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
 
-import { type Option, type QCarouselCustomEvent, type QDataTableCustomEvent, type QDialogCustomEvent, type QDropdownCustomEvent, type QInputCustomEvent, type QReelCustomEvent, type QScrollableCustomEvent, type QSidepanelCustomEvent, type QStepDiagramItemCustomEvent, type QTextareaCustomEvent, type QThumbnailCustomEvent, type QToggleCustomEvent, type SidepanelItem } from "@webquark/core";
+import { type Option, type QCarouselCustomEvent, type QDataTableCustomEvent, type QDialogCustomEvent, type QDropdownCustomEvent, type QInputCustomEvent, type QQuantitySelectorCustomEvent, type QReelCustomEvent, type QScrollableCustomEvent, type QSidepanelCustomEvent, type QStepDiagramItemCustomEvent, type QTextareaCustomEvent, type QThumbnailCustomEvent, type QToggleCustomEvent, type SidepanelItem } from "@webquark/core";
 import type { Components } from "@webquark/core/dist/components";
 import { QButton as QButtonElement, defineCustomElement as defineQButton } from "@webquark/core/dist/components/q-button.js";
 import { QCard as QCardElement, defineCustomElement as defineQCard } from "@webquark/core/dist/components/q-card.js";
@@ -22,6 +22,7 @@ import { QDialog as QDialogElement, defineCustomElement as defineQDialog } from 
 import { QDropdown as QDropdownElement, defineCustomElement as defineQDropdown } from "@webquark/core/dist/components/q-dropdown.js";
 import { QIcon as QIconElement, defineCustomElement as defineQIcon } from "@webquark/core/dist/components/q-icon.js";
 import { QInput as QInputElement, defineCustomElement as defineQInput } from "@webquark/core/dist/components/q-input.js";
+import { QQuantitySelector as QQuantitySelectorElement, defineCustomElement as defineQQuantitySelector } from "@webquark/core/dist/components/q-quantity-selector.js";
 import { QReel as QReelElement, defineCustomElement as defineQReel } from "@webquark/core/dist/components/q-reel.js";
 import { QScrollable as QScrollableElement, defineCustomElement as defineQScrollable } from "@webquark/core/dist/components/q-scrollable.js";
 import { QSidepanel as QSidepanelElement, defineCustomElement as defineQSidepanel } from "@webquark/core/dist/components/q-sidepanel.js";
@@ -162,6 +163,17 @@ export const QInput: StencilReactComponent<QInputElement, QInputEvents, Componen
         onQFocus: 'qFocus'
     } as QInputEvents,
     defineCustomElement: defineQInput
+});
+
+export type QQuantitySelectorEvents = { onQChange: EventName<QQuantitySelectorCustomEvent<number>> };
+
+export const QQuantitySelector: StencilReactComponent<QQuantitySelectorElement, QQuantitySelectorEvents, Components.QQuantitySelector> = /*@__PURE__*/ createComponent<QQuantitySelectorElement, QQuantitySelectorEvents, Components.QQuantitySelector>({
+    tagName: 'q-quantity-selector',
+    elementClass: QQuantitySelectorElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: { onQChange: 'qChange' } as QQuantitySelectorEvents,
+    defineCustomElement: defineQQuantitySelector
 });
 
 export type QReelEvents = {

@@ -27,7 +27,10 @@ class PlaygroundHeader extends HTMLElement {
     this.cleanupThemeEffect = effect(() => {
       const currentTheme = theme();
       document.documentElement.setAttribute('data-theme', currentTheme);
-      themeBtn.textContent = currentTheme === 'dark' ? 'Light Theme' : 'Dark Theme';
+      const iconEl = this.querySelector('#themeIcon');
+      if (iconEl) {
+        iconEl.setAttribute('name', currentTheme === 'dark' ? 'sun' : 'moon');
+      }
     });
 
     // 3. Hamburger Menu (Mobile responsive sidebar toggler)

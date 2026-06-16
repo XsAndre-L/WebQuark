@@ -18,6 +18,7 @@
   font-family: var(--q-font-family, inherit);
   font-weight: var(--q-btn-font-weight, var(--q-font-weight-bold, 600));
   border: 1px solid transparent;
+  line-height: 1.2;
   box-sizing: border-box;
   outline: none;
   cursor: pointer;
@@ -33,14 +34,17 @@
 
 /* Sizing Layouts */
 .size-sm {
+  border-radius: var(--q-btn-radius-sm, var(--q-radius-sm, 4px));
   padding: var(--q-btn-padding-sm, 6px 10px);
   font-size: var(--q-font-size-sm, 0.7rem);
 }
 .size-md {
+  border-radius: var(--q-btn-radius-md, var(--q-radius-md, 8px));
   padding: var(--q-btn-padding-md, 4px 6px);
   font-size: var(--q-btn-font-size, var(--q-font-size-base, 0.9rem));
 }
 .size-lg {
+  border-radius: var(--q-btn-radius-lg, var(--q-radius-lg, 12px));
   padding: var(--q-btn-padding-lg, 8px 12px);
   font-size: var(--q-font-size-lg, 1rem);
 }
@@ -154,6 +158,10 @@
 
 .size-sm .btn-content-wrap {
   gap: 4px;
+}
+
+.btn.is-icon-only .btn-label {
+  display: none;
 }
 
 @keyframes btn-spin {

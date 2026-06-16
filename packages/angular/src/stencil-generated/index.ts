@@ -11,6 +11,7 @@ export const DIRECTIVES = [
   d.QDropdown,
   d.QIcon,
   d.QInput,
+  d.QQuantitySelector,
   d.QReel,
   d.QScrollable,
   d.QSidepanel,
