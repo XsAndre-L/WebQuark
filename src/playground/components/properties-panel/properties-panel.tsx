@@ -35,7 +35,7 @@ export class PropertiesPanel extends HTMLElement {
             </div>
             
             <div class="properties-section">
-              <h3 class="properties-section-title">Component Properties</h3>
+              <h3 class="properties-section-title">Properties</h3>
               <div id="attributeProperties">
                 {/* Attributes list */}
               </div>
