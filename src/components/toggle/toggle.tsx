@@ -33,9 +33,6 @@ export class QToggle {
 
   // ========================= [2] INTERNAL STATE & REFS =========================
 
-  /** Prevents qChange from re-firing when checked is set programmatically from outside */
-  private _suppressChange: boolean = false;
-
   // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
   @Watch('checked')
@@ -43,10 +40,6 @@ export class QToggle {
     if (this.internals && typeof this.internals.setFormValue === 'function') {
       this.internals.setFormValue(newValue ? 'true' : null);
     }
-    if (!this._suppressChange) {
-      this.qChange.emit(newValue);
-    }
-    this._suppressChange = false;
   }
 
   componentWillLoad() {
@@ -69,23 +62,13 @@ export class QToggle {
    * Use this from external controllers (e.g. playground) to avoid
    * the SYNCBACK_MAP → registry → effect → prop-set feedback loop.
    */
-  @Method()
-  async setChecked(value: boolean) {
-    this._suppressChange = true;
-    this.checked = value;
-    // @Watch fires synchronously when value changes and resets _suppressChange there.
-    // If value === this.checked, @Watch does NOT fire, so we reset the flag here
-    // to avoid silencing the next genuine user interaction.
-    this._suppressChange = false;
-  }
-
   // ============================ [4] EXPOSED METHODS ============================
 
   @Method()
   async toggle() {
     if (!this.disabled) {
-      // User-initiated: allow qChange to emit normally
       this.checked = !this.checked;
+      this.qChange.emit(this.checked);
     }
   }
 
@@ -117,8 +100,8 @@ export class QToggle {
       return;
     }
     this.qClick.emit(e);
-    // User-initiated toggle: emit qChange normally
     this.checked = !this.checked;
+    this.qChange.emit(this.checked);
   };
 
   private handleKeyDown = (e: KeyboardEvent) => {
@@ -132,8 +115,8 @@ export class QToggle {
         view: window
       });
       this.qClick.emit(clickEvent);
-      // User-initiated toggle: emit qChange normally
       this.checked = !this.checked;
+      this.qChange.emit(this.checked);
     }
   };
 
@@ -150,7 +133,7 @@ export class QToggle {
   render() {
     const hasLabel = this.label !== undefined && this.label !== '';
     const showLabel = hasLabel || this.hasDefaultSlot;
-    const hasError = this.error !== undefined && this.error.length > 0;
+    const hasError = !!this.error;
 
     return (
       <div class="toggle-container">

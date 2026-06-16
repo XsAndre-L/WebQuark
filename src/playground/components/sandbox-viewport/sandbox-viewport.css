@@ -308,10 +308,10 @@ playground-code-preview {
 }
 
 /* Wide components full-width layouts */
-playground-stage[active-component="q-data-table"] .variants-grid,
-playground-stage[active-component="q-data-table"] .edgecases-grid,
-playground-stage[active-component="q-step-diagram"] .variants-grid,
-playground-stage[active-component="q-step-diagram"] .edgecases-grid {
+sandbox-viewport[active-component="q-data-table"] .variants-grid,
+sandbox-viewport[active-component="q-data-table"] .edgecases-grid,
+sandbox-viewport[active-component="q-step-diagram"] .variants-grid,
+sandbox-viewport[active-component="q-step-diagram"] .edgecases-grid {
   grid-template-columns: 1fr;
 }
 

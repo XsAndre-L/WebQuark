@@ -100,17 +100,68 @@ export class QScrollable {
 
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
+  private setViewportRef = (el: HTMLDivElement | null) => {
+    if (this.viewportEl && this.resizeObserver) {
+      try {
+        this.resizeObserver.unobserve(this.viewportEl);
+      } catch (e) {
+        // Ignore
+      }
+    }
+
+    this.viewportEl = el || undefined;
+
+    if (this.mode === 'custom' && el) {
+      if (typeof ResizeObserver !== 'undefined') {
+        if (!this.resizeObserver) {
+          this.resizeObserver = new ResizeObserver(() => {
+            this.updateScrollbarSize();
+          });
+        }
+        this.resizeObserver.observe(el);
+      }
+      this.updateScrollbarSize();
+    }
+  };
+
+  private setContentRef = (el: HTMLDivElement | null) => {
+    if (this.contentEl && this.resizeObserver) {
+      try {
+        this.resizeObserver.unobserve(this.contentEl);
+      } catch (e) {
+        // Ignore
+      }
+    }
+
+    this.contentEl = el || undefined;
+
+    if (this.mode === 'custom' && el) {
+      if (typeof ResizeObserver !== 'undefined') {
+        if (!this.resizeObserver) {
+          this.resizeObserver = new ResizeObserver(() => {
+            this.updateScrollbarSize();
+          });
+        }
+        this.resizeObserver.observe(el);
+      }
+      this.updateScrollbarSize();
+    }
+  };
+
   private setupCustomScroll() {
     if (this.mode !== 'custom') {
       return;
     }
 
-    if (typeof ResizeObserver !== 'undefined' && this.viewportEl) {
-      this.resizeObserver = new ResizeObserver(() => {
-        this.updateScrollbarSize();
-      });
-      this.resizeObserver.observe(this.viewportEl);
-
+    if (typeof ResizeObserver !== 'undefined') {
+      if (!this.resizeObserver) {
+        this.resizeObserver = new ResizeObserver(() => {
+          this.updateScrollbarSize();
+        });
+      }
+      if (this.viewportEl) {
+        this.resizeObserver.observe(this.viewportEl);
+      }
       if (this.contentEl) {
         this.resizeObserver.observe(this.contentEl);
       }
@@ -353,10 +404,10 @@ export class QScrollable {
         <div class="q-scrollable-host">
           <div
             class="q-scrollable-viewport"
-            ref={(el) => (this.viewportEl = el as HTMLDivElement)}
+            ref={this.setViewportRef}
             onScroll={this.handleScroll}
           >
-            <div class="q-scrollable-content" ref={(el) => (this.contentEl = el as HTMLDivElement)}>
+            <div class="q-scrollable-content" ref={this.setContentRef}>
               <slot></slot>
             </div>
           </div>

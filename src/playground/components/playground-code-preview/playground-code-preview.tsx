@@ -1,5 +1,5 @@
+import { h } from '../../dom-factory';
 import { activeComponent, componentRegistry, effect, serializeComponentCode, ComponentSpec } from '../../state';
-import html from './playground-code-preview.html';
 import css from './playground-code-preview.css';
 
 class PlaygroundCodePreview extends HTMLElement {
@@ -7,8 +7,12 @@ class PlaygroundCodePreview extends HTMLElement {
   private cleanupCodeEffect?: () => void;
 
   connectedCallback(): void {
-    // 1. Inject template HTML
-    this.innerHTML = html;
+    // 1. Render template via TSX
+    this.innerHTML = '';
+    this.appendChild(
+      <q-syntax-box variant="panel" heading="LIVE RENDER MARKUP" copyable="true" id="codeBlockBox">
+      </q-syntax-box>
+    );
 
     // 2. Inject CSS stylesheet (scoped style wrapper)
     const styleId = 'playground-code-preview-style';

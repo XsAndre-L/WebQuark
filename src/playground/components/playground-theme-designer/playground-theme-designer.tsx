@@ -1,5 +1,5 @@
+import { h } from '../../dom-factory';
 import { theme, effect } from '../../state';
-import html from './playground-theme-designer.html';
 import css from './playground-theme-designer.css';
 
 interface TokenItem {
@@ -77,8 +77,23 @@ class PlaygroundThemeDesigner extends HTMLElement {
   private cleanupThemeSync?: () => void;
 
   connectedCallback(): void {
-    // 1. Inject template HTML
-    this.innerHTML = html;
+    // 1. Render layout template via TSX
+    this.innerHTML = '';
+    this.appendChild(
+      <div class="theme-designer-container">
+        <div class="theme-designer-header">
+          <div style="flex: 1">
+            <h2 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--text-main)">Global Styling Designer</h2>
+            <p class="theme-designer-desc">Customize global brand tokens and spacing variables. Overrides apply instantly to all sandbox components.</p>
+          </div>
+          <button id="resetThemeBtn" class="reset-theme-btn" type="button" onClick={() => this.resetTheme()}>
+            <q-icon name="refresh-cw" lib="lucide" size="16"></q-icon>
+            <span>Reset to Default</span>
+          </button>
+        </div>
+        {this.renderGrid()}
+      </div>
+    );
 
     // 2. Inject CSS stylesheet (scoped style wrapper)
     const styleId = 'playground-theme-designer-style';
@@ -93,130 +108,126 @@ class PlaygroundThemeDesigner extends HTMLElement {
   }
 
   private init(): void {
-    const grid = this.querySelector('#themeSectionsGrid');
-    const resetThemeBtn = this.querySelector('#resetThemeBtn');
-    if (!grid) return;
-    this._tokenInputs = new Map();
-
-    grid.innerHTML = '';
-    const computedStyle = window.getComputedStyle(document.documentElement);
-
-    // 1. Build Token Groups
-    THEME_TOKENS.forEach(cat => {
-      const card = document.createElement('div');
-      card.className = 'theme-section-card';
-      
-      const h3 = document.createElement('h3');
-      h3.innerText = cat.category;
-      card.appendChild(h3);
-
-      cat.tokens.forEach(token => {
-        card.appendChild(this.buildTokenRow(token, computedStyle));
-      });
-
-      grid.appendChild(card);
-    });
-
-    // 2. Reset Theme Button Action
-    if (resetThemeBtn) {
-      resetThemeBtn.addEventListener('click', () => {
-        document.documentElement.style.cssText = '';
-        setTimeout(() => this.syncThemeInputs(), 50);
-      });
-    }
-
-    // 3. Sync theme inputs on global theme signal change (effect)
+    // Sync theme inputs on global theme signal change (effect)
     this.cleanupThemeSync = effect(() => {
-      // Consume theme signal
-      theme();
+      theme(); // Consume signal
       setTimeout(() => this.syncThemeInputs(), 50);
     });
   }
 
-  private buildTokenRow(token: TokenItem, computedStyle: CSSStyleDeclaration): HTMLElement {
+  private renderGrid(): HTMLElement {
+    this._tokenInputs = new Map();
+    const computedStyle = window.getComputedStyle(document.documentElement);
+
+    return (
+      <div class="theme-sections-grid" id="themeSectionsGrid">
+        {THEME_TOKENS.map(cat => (
+          <div class="theme-section-card">
+            <h3>{cat.category}</h3>
+            {cat.tokens.map(token => this.renderTokenRow(token, computedStyle))}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  private renderTokenRow(token: TokenItem, computedStyle: CSSStyleDeclaration): HTMLElement {
     const val = computedStyle.getPropertyValue(token.name).trim();
-    const row = document.createElement('div');
-    row.className = 'token-row';
-
-    const info = document.createElement('div');
-    info.className = 'token-info';
-    const label = document.createElement('span');
-    label.className = 'token-label';
-    label.innerText = token.label;
-    const desc = document.createElement('span');
-    desc.className = 'token-desc';
-    desc.innerText = token.desc;
-    info.appendChild(label);
-    info.appendChild(desc);
-    row.appendChild(info);
-
-    const controlWrapper = document.createElement('div');
-    controlWrapper.className = 'token-control-wrapper';
+    let control: HTMLElement;
 
     if (token.type === 'color') {
       const hexVal = convertToHex(val);
-      const colorContainer = document.createElement('div');
-      colorContainer.className = 'color-input-container';
-      const pickerWrapper = document.createElement('div');
-      pickerWrapper.className = 'color-picker-wrapper';
-      const picker = document.createElement('input');
-      picker.type = 'color';
-      picker.className = 'color-swatch-picker';
-      picker.dataset.token = token.name;
-      picker.value = hexVal;
-      pickerWrapper.appendChild(picker);
-      const textInput = document.createElement('input');
-      textInput.type = 'text';
-      textInput.className = 'color-text-input';
-      textInput.dataset.token = token.name;
-      textInput.value = hexVal;
-      colorContainer.appendChild(pickerWrapper);
-      colorContainer.appendChild(textInput);
-      controlWrapper.appendChild(colorContainer);
-      picker.addEventListener('input', (e: Event) => {
-        const target = e.target as HTMLInputElement;
-        const newColor = target.value;
-        textInput.value = newColor;
-        document.documentElement.style.setProperty(token.name, newColor);
-      });
-      textInput.addEventListener('input', (e: Event) => {
-        const target = e.target as HTMLInputElement;
-        const newColor = target.value;
-        if (/^#[0-9A-F]{6}$/i.test(newColor)) {
-          picker.value = newColor;
-          document.documentElement.style.setProperty(token.name, newColor);
-        }
-      });
+
+      const picker = (
+        <input
+          type="color"
+          class="color-swatch-picker"
+          data-token={token.name}
+          value={hexVal}
+          onInput={(e: Event) => {
+            const target = e.target as HTMLInputElement;
+            const textInput = this.querySelector(`input[type="text"][data-token="${token.name}"]`) as HTMLInputElement | null;
+            if (textInput) textInput.value = target.value;
+            document.documentElement.style.setProperty(token.name, target.value);
+          }}
+        />
+      ) as HTMLInputElement;
+
+      const textInput = (
+        <input
+          type="text"
+          class="color-text-input"
+          data-token={token.name}
+          value={hexVal}
+          onInput={(e: Event) => {
+            const target = e.target as HTMLInputElement;
+            const newColor = target.value;
+            if (/^#[0-9A-F]{6}$/i.test(newColor)) {
+              const pickerEl = this.querySelector(`input[type="color"][data-token="${token.name}"]`) as HTMLInputElement | null;
+              if (pickerEl) pickerEl.value = newColor;
+              document.documentElement.style.setProperty(token.name, newColor);
+            }
+          }}
+        />
+      ) as HTMLInputElement;
+
       this._tokenInputs.set(token.name, { type: 'color', picker, textInput });
-    } else if (token.type === 'radius') {
+
+      control = (
+        <div class="color-input-container">
+          <div class="color-picker-wrapper">{picker}</div>
+          {textInput}
+        </div>
+      );
+    } else {
       const numVal = parseInt(val, 10) || 0;
-      const rangeContainer = document.createElement('div');
-      rangeContainer.className = 'range-slider-container';
-      const slider = document.createElement('input');
-      slider.type = 'range';
-      slider.className = 'range-slider-input';
-      slider.min = String(token.min ?? 0);
-      slider.max = String(token.max ?? 40);
-      slider.value = String(numVal);
-      slider.dataset.token = token.name;
-      const valDisplay = document.createElement('span');
-      valDisplay.className = 'range-slider-value';
-      valDisplay.dataset.token = token.name;
-      valDisplay.innerText = `${numVal}px`;
-      rangeContainer.appendChild(slider);
-      rangeContainer.appendChild(valDisplay);
-      controlWrapper.appendChild(rangeContainer);
-      slider.addEventListener('input', (e: Event) => {
-        const target = e.target as HTMLInputElement;
-        const num = target.value;
-        valDisplay.innerText = `${num}px`;
-        document.documentElement.style.setProperty(token.name, `${num}px`);
-      });
+
+      const valDisplay = (
+        <span class="range-slider-value" data-token={token.name}>
+          {numVal}px
+        </span>
+      ) as HTMLElement;
+
+      const slider = (
+        <input
+          type="range"
+          class="range-slider-input"
+          min={String(token.min ?? 0)}
+          max={String(token.max ?? 40)}
+          value={String(numVal)}
+          data-token={token.name}
+          onInput={(e: Event) => {
+            const target = e.target as HTMLInputElement;
+            valDisplay.innerText = `${target.value}px`;
+            document.documentElement.style.setProperty(token.name, `${target.value}px`);
+          }}
+        />
+      ) as HTMLInputElement;
+
       this._tokenInputs.set(token.name, { type: 'radius', range: slider, valueDisplay: valDisplay });
+
+      control = (
+        <div class="range-slider-container">
+          {slider}
+          {valDisplay}
+        </div>
+      );
     }
 
-    row.appendChild(controlWrapper);
-    return row;
+    return (
+      <div class="token-row">
+        <div class="token-info">
+          <span class="token-label">{token.label}</span>
+          <span class="token-desc">{token.desc}</span>
+        </div>
+        <div class="token-control-wrapper">{control}</div>
+      </div>
+    );
+  }
+
+  private resetTheme(): void {
+    document.documentElement.style.cssText = '';
+    setTimeout(() => this.syncThemeInputs(), 50);
   }
 
   private syncThemeInputs(): void {

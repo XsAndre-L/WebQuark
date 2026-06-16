@@ -5,6 +5,13 @@
   position: relative;
 }
 
+::slotted(*) {
+  box-sizing: border-box;
+  flex: var(--q-carousel-item-flex, 0 0 auto);
+  width: var(--q-carousel-item-width, auto);
+  scroll-snap-align: var(--q-carousel-snap-align, none);
+}
+
 .carousel-wrapper {
   position: relative;
   width: 100%;

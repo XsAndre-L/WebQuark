@@ -8,6 +8,7 @@ export const config: Config = {
   minifyCss: true,
   minifyJs: true,
   sourceMap: false,
+  watchIgnoredRegex: [/src\/playground\/.*/],
   outputTargets: [
     {
       type: 'dist',
