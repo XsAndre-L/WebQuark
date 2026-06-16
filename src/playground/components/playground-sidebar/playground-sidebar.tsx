@@ -1,5 +1,5 @@
+import { h } from '../../dom-factory';
 import { activeComponent, activeTab, fetchComponentSpec, effect } from '../../state';
-import html from './playground-sidebar.html';
 import css from './playground-sidebar.css';
 
 interface ComponentManifestItem {
@@ -15,19 +15,7 @@ class PlaygroundSidebar extends HTMLElement {
   private cleanupActiveEffect?: () => void;
 
   async connectedCallback(): Promise<void> {
-    // 1. Inject template HTML
-    this.innerHTML = html;
-
-    // 2. Inject CSS stylesheet (scoped style wrapper)
-    const styleId = 'playground-sidebar-style';
-    if (!document.getElementById(styleId)) {
-      const style = document.createElement('style');
-      style.id = styleId;
-      style.textContent = css as any;
-      document.head.appendChild(style);
-    }
-
-    // Load manifest separately
+    // Load manifest
     try {
       const res = await fetch('/playground/components.manifest.json');
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -37,12 +25,39 @@ class PlaygroundSidebar extends HTMLElement {
       this.components = [];
     }
 
+    // Render template via TSX
+    this.innerHTML = '';
+    this.appendChild(
+      <q-sidepanel id="sidebarNav" variant="nav" mode="flat">
+        <div slot="footer">
+          <button
+            id="globalStylingBtn"
+            class="global-styling-btn"
+            type="button"
+            onClick={() => activeComponent.set('global-styling')}
+          >
+            <q-icon name="globe" lib="lucide" size="16"></q-icon>
+            <span>Global Styling</span>
+          </button>
+        </div>
+      </q-sidepanel>
+    );
+
+    // Inject CSS stylesheet (scoped style wrapper)
+    const styleId = 'playground-sidebar-style';
+    if (!document.getElementById(styleId)) {
+      const style = document.createElement('style');
+      style.id = styleId;
+      style.textContent = css as any;
+      document.head.appendChild(style);
+    }
+
     this.init();
   }
 
   private init(): void {
     this.navPanel = this.querySelector('#sidebarNav');
-    this.globalStylingBtn = this.querySelector('#globalStylingBtn') as HTMLElement | null;
+    this.globalStylingBtn = this.querySelector('#globalStylingBtn');
 
     if (!this.navPanel) return;
 
@@ -61,14 +76,7 @@ class PlaygroundSidebar extends HTMLElement {
     };
     this.navPanel.addEventListener('qSelect', this.handleNavSelect as EventListener);
 
-    // 3. Global Styling button
-    if (this.globalStylingBtn) {
-      this.globalStylingBtn.addEventListener('click', () => {
-        activeComponent.set('global-styling');
-      });
-    }
-
-    // 4. React to Active Component changes — sync q-sidepanel value prop + global btn
+    // 3. React to Active Component changes — sync q-sidepanel value prop + global btn
     this.cleanupActiveEffect = effect(() => {
       const active = activeComponent();
       if (this.navPanel) {

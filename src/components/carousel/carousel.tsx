@@ -42,25 +42,6 @@ export class QCarousel {
 
   // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
-  componentDidLoad() {
-    this.updateCachedChildren();
-    this.updateItemStyles();
-    this.calculateLimits();
-
-    // Set up ResizeObserver to recalculate slides if viewport bounds change
-    if (typeof ResizeObserver !== 'undefined' && this.scrollContainer) {
-      this.resizeObserver = new ResizeObserver(() => this.scheduleCalculateLimits());
-      this.resizeObserver.observe(this.scrollContainer);
-    }
-  }
-
-  connectedCallback() {
-    if (this.scrollContainer && !this.resizeObserver && typeof ResizeObserver !== 'undefined') {
-      this.resizeObserver = new ResizeObserver(() => this.scheduleCalculateLimits());
-      this.resizeObserver.observe(this.scrollContainer);
-    }
-  }
-
   disconnectedCallback() {
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
@@ -91,6 +72,26 @@ export class QCarousel {
 
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
+  private setScrollContainerRef = (el: HTMLDivElement | null) => {
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+      this.resizeObserver = undefined;
+    }
+
+    this.scrollContainer = el || undefined;
+
+    if (el) {
+      this.updateCachedChildren();
+      this.updateItemStyles();
+      this.calculateLimits();
+
+      if (typeof ResizeObserver !== 'undefined') {
+        this.resizeObserver = new ResizeObserver(() => this.scheduleCalculateLimits());
+        this.resizeObserver.observe(el);
+      }
+    }
+  };
+
   private handleSlotChange = () => {
     this.updateCachedChildren();
     this.updateItemStyles();
@@ -106,20 +107,19 @@ export class QCarousel {
   }
 
   private updateItemStyles() {
-    this.cachedChildren.forEach((child) => {
-      // Force custom item width if specified
-      if (this.itemWidth !== 'auto') {
-        child.style.width = this.itemWidth;
-        child.style.flex = `0 0 ${this.itemWidth}`;
-      } else {
-        child.style.flex = '0 0 auto';
-      }
+    if (this.itemWidth !== 'auto') {
+      this.el.style.setProperty('--q-carousel-item-width', this.itemWidth);
+      this.el.style.setProperty('--q-carousel-item-flex', `0 0 ${this.itemWidth}`);
+    } else {
+      this.el.style.removeProperty('--q-carousel-item-width');
+      this.el.style.removeProperty('--q-carousel-item-flex');
+    }
 
-      // Inject CSS scroll snap styling
-      if (this.snapAlignment !== 'none') {
-        child.style.scrollSnapAlign = this.snapAlignment;
-      }
-    });
+    if (this.snapAlignment !== 'none') {
+      this.el.style.setProperty('--q-carousel-snap-align', this.snapAlignment);
+    } else {
+      this.el.style.removeProperty('--q-carousel-snap-align');
+    }
   }
 
   private scheduleCalculateLimits = () => {
@@ -342,7 +342,7 @@ export class QCarousel {
           tabindex="0"
           aria-label="Carousel content"
           onScroll={this.handleScroll}
-          ref={(el) => (this.scrollContainer = el)}
+          ref={this.setScrollContainerRef}
         >
           <slot onSlotchange={this.handleSlotChange} />
         </div>

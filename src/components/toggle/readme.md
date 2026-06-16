@@ -30,27 +30,11 @@
 
 ## Methods
 
-### `setChecked(value: boolean) => Promise<void>`
+### `toggle() => Promise<void>`
 
 Programmatically set checked state without emitting qChange.
 Use this from external controllers (e.g. playground) to avoid
 the SYNCBACK_MAP → registry → effect → prop-set feedback loop.
-
-#### Parameters
-
-| Name    | Type      | Description |
-| ------- | --------- | ----------- |
-| `value` | `boolean` |             |
-
-#### Returns
-
-Type: `Promise<void>`
-
-
-
-### `toggle() => Promise<void>`
-
-
 
 #### Returns
 

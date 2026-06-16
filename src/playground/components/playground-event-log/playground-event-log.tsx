@@ -1,14 +1,26 @@
-import html from './playground-event-log.html';
+import { h } from '../../dom-factory';
+import { playgroundBus } from '../../events';
 import css from './playground-event-log.css';
 
 class PlaygroundEventLog extends HTMLElement {
   private logBody: HTMLElement | null = null;
   private syntaxBox: any = null;
-  private handleEventLog?: (e: CustomEvent) => void;
+  private unsubscribeBus?: () => void;
 
   connectedCallback(): void {
-    // 1. Inject template HTML
-    this.innerHTML = html;
+    // 1. Render template via TSX
+    this.innerHTML = '';
+    this.appendChild(
+      <q-syntax-box variant="panel" heading="Event Dispatches Log" id="eventLogBox">
+        <q-button slot="actions" variant="ghost" size="sm" id="clearLogBtn" onClick={() => this.clearLog()}>
+          <q-icon slot="icon-left" lib="local" name="trash-2" size="sm"></q-icon>
+          <q-tooltip slot="icon-left" position="bottom" content="Clear Log"></q-tooltip>
+        </q-button>
+        <div id="eventLogBody" class="event-log-body">
+          <span class="log-placeholder">Interactive events will appear here in real-time...</span>
+        </div>
+      </q-syntax-box>
+    );
 
     // 2. Inject CSS stylesheet (scoped style wrapper)
     const styleId = 'playground-event-log-style';
@@ -23,20 +35,13 @@ class PlaygroundEventLog extends HTMLElement {
   }
 
   private init(): void {
-    const clearBtn = this.querySelector('#clearLogBtn') as HTMLElement | null;
     this.logBody = this.querySelector('#eventLogBody');
     this.syntaxBox = this.querySelector('#eventLogBox');
 
-    if (clearBtn) {
-      clearBtn.addEventListener('click', () => this.clearLog());
-    }
-
-    // Bind log listener on window
-    this.handleEventLog = (e: CustomEvent) => {
-      this.logEvent(e.detail.name, e.detail.detail);
-    };
-
-    window.addEventListener('playground:event-dispatched', this.handleEventLog as EventListener);
+    // Bind log listener via typed event bus
+    this.unsubscribeBus = playgroundBus.on('event-dispatched', data => {
+      this.logEvent(data.name, data.detail);
+    });
   }
 
   private logEvent(name: string, detail: any): void {
@@ -71,8 +76,8 @@ class PlaygroundEventLog extends HTMLElement {
   }
 
   disconnectedCallback(): void {
-    if (this.handleEventLog) {
-      window.removeEventListener('playground:event-dispatched', this.handleEventLog as EventListener);
+    if (this.unsubscribeBus) {
+      this.unsubscribeBus();
     }
   }
 }

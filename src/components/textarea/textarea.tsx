@@ -131,7 +131,7 @@ export class QTextarea {
   // ===================== [6] RENDER (Visual Template Only) =====================
 
   render() {
-    const hasError = (this.error !== undefined && this.error.length > 0) || (this.errorMessage !== undefined && this.errorMessage.length > 0);
+    const hasError = !!(this.error || this.errorMessage);
     const displayError = this.error || this.errorMessage;
 
     return (

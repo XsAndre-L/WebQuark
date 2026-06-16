@@ -3,7 +3,7 @@
  * Pipes all output and handles clean process termination on Windows and Unix.
  */
 
-import { spawn } from "bun";
+import { spawn, spawnSync } from "bun";
 import * as path from "path";
 
 const isWindows = process.platform === "win32";
@@ -19,13 +19,30 @@ const bunCmd = [
   "bun", 
   "build", 
   "src/playground/playground.ts", 
-  "--outfile=src/playground/playground.bundled.js", 
+  "--outfile=dist/playground/playground.js", 
   "--watch", 
   "--loader", 
   ".html:text", 
   "--loader", 
   ".css:text"
 ];
+
+console.log("📦 Pre-building playground bundle...");
+const prebuild = spawnSync([
+  "bun",
+  "build",
+  "src/playground/playground.ts",
+  "--outfile=src/playground/playground.bundled.js",
+  "--loader",
+  ".html:text",
+  "--loader",
+  ".css:text"
+]);
+if (!prebuild.success) {
+  console.error("❌ Pre-build failed:", prebuild.stderr?.toString());
+} else {
+  console.log("✓ Pre-build completed successfully");
+}
 
 console.log("🚀 Starting Stencil watch/serve compiler...");
 const stencilProcess = Bun.spawn(stencilCmd, {

@@ -1,45 +1,49 @@
+import { h } from '../../dom-factory';
 import { activeComponent, activeTab, componentRegistry, updateKnobValue, effect, PropSpec, ComponentSpec } from '../../state';
-import html from './playground-knobs.html';
 import css from './playground-knobs.css';
 
 const CONTROL_FACTORY: Record<string, (propName: string, prop: PropSpec) => HTMLElement> = {
-  boolean: (propName, prop) => {
-    const toggle = document.createElement('q-toggle') as any;
-    toggle.type = 'switch';
-    toggle.dataset.prop = propName;
-    toggle.checked = prop.currentValue;
-    toggle.addEventListener('qChange', (e: CustomEvent) => updateKnobValue('prop', propName, e.detail));
-    return toggle;
-  },
+  boolean: (propName, prop) => (
+    <q-toggle
+      type="switch"
+      data-prop={propName}
+      checked={prop.currentValue}
+      onQChange={(e: CustomEvent) => updateKnobValue('prop', propName, e.detail)}
+    />
+  ),
   select: (propName, prop) => {
-    const dropdown = document.createElement('q-dropdown') as any;
-    dropdown.dataset.prop = propName;
-    dropdown.value = prop.currentValue;
-    if (prop.options) {
-      dropdown.options = prop.options.map(opt => ({ label: opt || '(none)', value: opt }));
-    }
-    dropdown.addEventListener('qChange', (e: CustomEvent) => updateKnobValue('prop', propName, e.detail));
+    const options = prop.options ? prop.options.map(opt => ({ label: opt || '(none)', value: opt })) : [];
+    const dropdown = (
+      <q-dropdown
+        data-prop={propName}
+        value={prop.currentValue}
+        onQChange={(e: CustomEvent) => updateKnobValue('prop', propName, e.detail)}
+      />
+    ) as any;
+    dropdown.options = options;
     return dropdown;
   },
-  number: (propName, prop) => {
-    const input = document.createElement('q-input') as any;
-    input.type = 'number';
-    input.dataset.prop = propName;
-    input.value = prop.currentValue;
-    input.addEventListener('qInput', (e: CustomEvent) => updateKnobValue('prop', propName, e.detail));
-    return input;
-  },
+  number: (propName, prop) => (
+    <q-input
+      type="number"
+      data-prop={propName}
+      value={prop.currentValue}
+      onQInput={(e: CustomEvent) => updateKnobValue('prop', propName, e.detail)}
+    />
+  ),
 };
 
 function createPropControl(propName: string, prop: PropSpec): HTMLElement {
   const factory = CONTROL_FACTORY[prop.type];
   if (factory) return factory(propName, prop);
-  const input = document.createElement('q-input') as any;
-  input.type = 'text';
-  input.dataset.prop = propName;
-  input.value = prop.currentValue;
-  input.addEventListener('qInput', (e: CustomEvent) => updateKnobValue('prop', propName, e.detail));
-  return input;
+  return (
+    <q-input
+      type="text"
+      data-prop={propName}
+      value={prop.currentValue}
+      onQInput={(e: CustomEvent) => updateKnobValue('prop', propName, e.detail)}
+    />
+  );
 }
 
 class PlaygroundKnobs extends HTMLElement {
@@ -50,8 +54,49 @@ class PlaygroundKnobs extends HTMLElement {
   private lastActiveComponent: string | null = null;
 
   connectedCallback(): void {
-    // 1. Inject template HTML
-    this.innerHTML = html;
+    // 1. Render template via TSX
+    this.innerHTML = '';
+    
+    const toggleBtn = (
+      <button class="knobs-toggle-btn" id="knobsToggleBtn" type="button" onClick={() => this.openKnobsPanel()}>
+        <span class="knobs-toggle-icon">⚙️</span>
+        <span>Controls</span>
+      </button>
+    );
+
+    const closeBtn = (
+      <button class="knobs-close-btn" id="knobsCloseBtn" type="button" onClick={() => this.closeKnobs()}>&times;</button>
+    );
+
+    this.panel = (
+      <aside class="knobs-panel" id="knobsPanel">
+        <q-scrollable height="100%">
+          <div class="knobs-scroll-content">
+            <div class="knobs-panel-header">
+              <span>Customizations</span>
+              {closeBtn}
+            </div>
+            
+            <div class="knobs-section">
+              <h3 class="knobs-section-title">Attributes (Properties)</h3>
+              <div id="attributeKnobs">
+                {/* Attributes list */}
+              </div>
+            </div>
+
+            <div class="knobs-section" style="margin-top: 10px;">
+              <h3 class="knobs-section-title">Slots (Content)</h3>
+              <div id="slotKnobs">
+                {/* Slots list */}
+              </div>
+            </div>
+          </div>
+        </q-scrollable>
+      </aside>
+    );
+
+    this.appendChild(toggleBtn);
+    this.appendChild(this.panel);
 
     // 2. Inject CSS stylesheet (scoped style wrapper)
     const styleId = 'playground-knobs-style';
@@ -62,27 +107,12 @@ class PlaygroundKnobs extends HTMLElement {
       document.head.appendChild(style);
     }
 
-    this.init();
+    this.init(toggleBtn);
   }
 
-  private init(): void {
-    const toggleBtn = this.querySelector('#knobsToggleBtn') as HTMLElement | null;
-    const closeBtn = this.querySelector('#knobsCloseBtn') as HTMLElement | null;
-    this.panel = this.querySelector('#knobsPanel');
+  private init(toggleBtn: HTMLElement): void {
     this.attrContainer = this.querySelector('#attributeKnobs');
     this.slotContainer = this.querySelector('#slotKnobs');
-
-    // Mobile drawer toggles
-    if (toggleBtn) {
-      toggleBtn.addEventListener('click', () => {
-        if (this.panel) this.panel.classList.add('open');
-      });
-    }
-    if (closeBtn) {
-      closeBtn.addEventListener('click', () => {
-        if (this.panel) this.panel.classList.remove('open');
-      });
-    }
 
     // React to Component state changes (Angular-style Signal Effect)
     this.cleanupKnobsEffect = effect(() => {
@@ -94,13 +124,13 @@ class PlaygroundKnobs extends HTMLElement {
       // 1. Manage visibility: only show Controls on Sandbox tab for normal components
       if (active === 'global-styling' || tab !== 'sandbox') {
         this.style.display = 'none';
-        if (toggleBtn) toggleBtn.style.display = 'none';
+        toggleBtn.style.display = 'none';
         if (this.panel) this.panel.classList.remove('open');
         return;
       }
 
       this.style.display = '';
-      if (toggleBtn) toggleBtn.style.display = '';
+      toggleBtn.style.display = '';
 
       // 2. Build customization panels if config is loaded
       if (config) {
@@ -119,27 +149,23 @@ class PlaygroundKnobs extends HTMLElement {
         Object.keys(config.props).forEach(propName => {
           if (config.props) {
             const prop = config.props[propName];
-            const row = document.createElement('div');
-            row.className = 'knob-row';
-
-            const meta = document.createElement('div');
-            meta.className = 'knob-meta';
-            meta.innerHTML = `
-              <span class="knob-label">${propName}</span>
-              <span class="knob-label-sub">${prop.description || ''}</span>
-            `;
-            row.appendChild(meta);
-
-            const inputWrapper = document.createElement('div');
-            inputWrapper.appendChild(createPropControl(propName, prop));
-            row.appendChild(inputWrapper);
-            if (this.attrContainer) {
-              this.attrContainer.appendChild(row);
-            }
+            this.attrContainer!.appendChild(
+              <div class="knob-row">
+                <div class="knob-meta">
+                  <span class="knob-label">{propName}</span>
+                  <span class="knob-label-sub">{prop.description || ''}</span>
+                </div>
+                <div>
+                  {createPropControl(propName, prop)}
+                </div>
+              </div>
+            );
           }
         });
       } else {
-        this.attrContainer.innerHTML = '<div class="knob-empty-state">No customizable attributes.</div>';
+        this.attrContainer.appendChild(
+          <div class="knob-empty-state">No customizable attributes.</div>
+        );
       }
     } else {
       // Just update existing controls' values!
@@ -170,44 +196,54 @@ class PlaygroundKnobs extends HTMLElement {
         Object.keys(config.slots).forEach(slotName => {
           if (config.slots) {
             const slot = config.slots[slotName];
-            const row = document.createElement('div');
-            row.className = 'knob-row vertical';
 
-            row.innerHTML = `
-              <div class="knob-meta">
-                <span class="knob-label">${slotName === 'default' ? 'default (Inner content)' : `slot="${slotName}"`}</span>
-                <span class="knob-label-sub">${slot.description || ''}</span>
-              </div>
-            `;
-
-            let input: any;
+            let input: HTMLElement;
             if (active === 'q-data-table' && slotName === 'footer') {
-              input = document.createElement('q-syntax-box');
-              input.editable = true;
-              input.language = 'html';
-              input.height = '110px';
+              input = (
+                <q-syntax-box
+                  editable={true}
+                  language="html"
+                  height="110px"
+                  data-slot={slotName}
+                  value={slot.currentValue}
+                  onQInput={(e: CustomEvent) => updateKnobValue('slot', slotName, e.detail)}
+                />
+              );
             } else if (slot.description && (slot.description.includes('textarea') || slot.description.includes('html'))) {
-              input = document.createElement('q-textarea');
-              input.rows = 4;
+              input = (
+                <q-textarea
+                  rows={4}
+                  data-slot={slotName}
+                  value={slot.currentValue}
+                  onQInput={(e: CustomEvent) => updateKnobValue('slot', slotName, e.detail)}
+                />
+              );
             } else {
-              input = document.createElement('q-input');
-              input.type = 'text';
+              input = (
+                <q-input
+                  type="text"
+                  data-slot={slotName}
+                  value={slot.currentValue}
+                  onQInput={(e: CustomEvent) => updateKnobValue('slot', slotName, e.detail)}
+                />
+              );
             }
 
-            input.dataset.slot = slotName;
-            input.value = slot.currentValue;
-            input.addEventListener('qInput', (e: CustomEvent) => {
-              updateKnobValue('slot', slotName, e.detail);
-            });
-
-            row.appendChild(input);
-            if (this.slotContainer) {
-              this.slotContainer.appendChild(row);
-            }
+            this.slotContainer!.appendChild(
+              <div class="knob-row vertical">
+                <div class="knob-meta">
+                  <span class="knob-label">{slotName === 'default' ? 'default (Inner content)' : `slot="${slotName}"`}</span>
+                  <span class="knob-label-sub">{slot.description || ''}</span>
+                </div>
+                {input}
+              </div>
+            );
           }
         });
       } else {
-        this.slotContainer.innerHTML = '<div class="knob-empty-state">No slot options configured.</div>';
+        this.slotContainer.appendChild(
+          <div class="knob-empty-state">No slot options configured.</div>
+        );
       }
     } else {
       // Just update existing controls' values!
@@ -225,6 +261,10 @@ class PlaygroundKnobs extends HTMLElement {
     }
 
     this.lastActiveComponent = active;
+  }
+
+  private openKnobsPanel(): void {
+    if (this.panel) this.panel.classList.add('open');
   }
 
   public closeKnobs(): void {

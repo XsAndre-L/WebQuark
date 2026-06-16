@@ -507,13 +507,12 @@ export namespace Components {
          */
         "required": boolean;
         /**
-          * Programmatically set checked state without emitting qChange. Use this from external controllers (e.g. playground) to avoid the SYNCBACK_MAP → registry → effect → prop-set feedback loop.
-         */
-        "setChecked": (value: boolean) => Promise<void>;
-        /**
           * @default 'md'
          */
         "size": 'sm' | 'md' | 'lg';
+        /**
+          * Programmatically set checked state without emitting qChange. Use this from external controllers (e.g. playground) to avoid the SYNCBACK_MAP → registry → effect → prop-set feedback loop.
+         */
         "toggle": () => Promise<void>;
         /**
           * @default 'switch'

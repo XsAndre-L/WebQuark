@@ -9,7 +9,7 @@ export class QStepDiagramItem {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Prop({ reflect: true }) status: 'pending' | 'active' | 'completed' | 'success' | 'warning' | 'danger' = 'completed';
   @Prop({ reflect: true }) lineStyle: 'solid' | 'dashed' | 'dotted' | 'none' = 'solid';
-  @Prop({ reflect: true }) layout: 'vertical' | 'horizontal' = 'vertical';
+  @Prop({ reflect: true, mutable: true }) layout: 'vertical' | 'horizontal' = 'vertical';
   @Element() el!: HTMLElement;
 
   @Event() qItemClick: EventEmitter<void>;
