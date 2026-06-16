@@ -408,7 +408,7 @@ class PlaygroundStage extends HTMLElement {
   }
 
   private bindEvents(activeEl: ElementWithHelpers, tag: string): void {
-    const eventsToLog = ['qChange', 'qSelect', 'qClose', 'qSlideChange', 'qLightboxOpen', 'qLightboxClose', 'qItemClick', 'qScroll'];
+    const eventsToLog = ['qChange', 'qSelect', 'qClose', 'qSlideChange', 'qLightboxOpen', 'qLightboxClose', 'qItemClick', 'qScroll', 'qClick', 'qFocus', 'qBlur'];
     eventsToLog.forEach(eventName => {
       activeEl.addEventListener(eventName, e => {
         const customEvent = e as CustomEvent;

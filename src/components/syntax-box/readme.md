@@ -11,10 +11,22 @@
 | ---------- | ---------- | ----------- | ------------------------------------------- | ----------- |
 | `code`     | `code`     |             | `string`                                    | `undefined` |
 | `copyable` | `copyable` |             | `boolean`                                   | `false`     |
+| `disabled` | `disabled` |             | `boolean`                                   | `false`     |
+| `editable` | `editable` |             | `boolean`                                   | `false`     |
 | `heading`  | `heading`  |             | `string`                                    | `undefined` |
 | `height`   | `height`   |             | `string`                                    | `undefined` |
 | `language` | `language` |             | `"css" \| "html" \| "javascript" \| "json"` | `'html'`    |
+| `required` | `required` |             | `boolean`                                   | `false`     |
+| `value`    | `value`    |             | `string`                                    | `undefined` |
 | `variant`  | `variant`  |             | `"panel" \| "plain"`                        | `'panel'`   |
+
+
+## Events
+
+| Event     | Description | Type                  |
+| --------- | ----------- | --------------------- |
+| `qChange` |             | `CustomEvent<string>` |
+| `qInput`  |             | `CustomEvent<string>` |
 
 
 ## Methods

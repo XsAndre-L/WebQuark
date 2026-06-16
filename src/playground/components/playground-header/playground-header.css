@@ -8,12 +8,14 @@
   border-bottom: 1px solid var(--border-color);
   flex-shrink: 0;
   box-sizing: border-box;
+  gap: 16px;
 }
 
 .header-logo {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 .logo-image {
@@ -35,6 +37,7 @@
   display: flex;
   align-items: center;
   gap: 20px;
+  flex-shrink: 0;
 }
 
 .action-btn {
