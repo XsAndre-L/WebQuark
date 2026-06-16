@@ -318,7 +318,7 @@ export class QSyntaxBox {
 
     if (this.variant === 'panel') {
       return (
-        <Host class={{ 'q-syntax-box-panel': true, 'is-editable': this.editable }}>
+        <Host class={{ 'q-syntax-box-panel': true, 'is-editable': this.editable, 'is-disabled': this.disabled }}>
           <div class="panel-container">
             <div class="panel-header">
               <span>{this.heading}</span>
@@ -345,7 +345,7 @@ export class QSyntaxBox {
     }
 
     return (
-      <Host class={{ 'q-syntax-box-plain': true, 'is-editable': this.editable }}>
+      <Host class={{ 'q-syntax-box-plain': true, 'is-editable': this.editable, 'is-disabled': this.disabled }}>
         <div class="plain-container">
           {bodyContent}
         </div>

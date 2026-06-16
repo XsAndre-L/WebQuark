@@ -134,9 +134,18 @@ export class QIcon {
     }
 
     try {
-      const response = await fetch(url);
+      let finalUrl = url;
+      if (typeof window !== 'undefined' && window.location && !/^https?:\/\//i.test(url) && !url.startsWith('data:')) {
+        try {
+          const base = window.location.origin && window.location.origin !== 'null' ? window.location.origin : 'http://localhost';
+          finalUrl = new URL(url, base).href;
+        } catch (_) {
+          // ignore
+        }
+      }
+      const response = await fetch(finalUrl);
       if (!response.ok) {
-        throw new Error(`Failed to load icon SVG from ${url} (status: ${response.status})`);
+        throw new Error(`Failed to load icon SVG from ${finalUrl} (status: ${response.status})`);
       }
       const text = await response.text();
 
