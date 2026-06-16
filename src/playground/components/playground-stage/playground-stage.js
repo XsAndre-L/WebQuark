@@ -3,8 +3,16 @@ import { activeComponent, activeTab, componentRegistry, effect, serializeCompone
 
 function setElementProperties(el, props) {
   if (!el || !props) return;
+  const tag = el.tagName?.toLowerCase();
   Object.keys(props).forEach(pName => {
     const val = props[pName];
+    // q-toggle.checked has a @Watch that emits qChange, which feeds back into the
+    // playground registry creating an infinite loop. Use the dedicated setChecked()
+    // method instead so the watcher suppresses the re-emit.
+    if (tag === 'q-toggle' && pName === 'checked' && typeof el.setChecked === 'function') {
+      el.setChecked(val);
+      return;
+    }
     if (typeof val === 'boolean') {
       el[pName] = val;
       if (val) el.setAttribute(pName, '');
@@ -53,6 +61,7 @@ class PlaygroundStage extends HTMLElement {
     this.edgecasesGrid = this.querySelector('#edgecasesGrid');
     this.activeModule = null;
     this.loadedTag = null;
+    this.syncedComponents = new Set();
 
     // 1. Tab switching buttons event listeners
     const tabBtns = this.querySelectorAll('.tab-btn');
@@ -169,10 +178,35 @@ class PlaygroundStage extends HTMLElement {
             }
           } else {
             console.log('[stage effect] component already loaded, updating props:', active);
-            // Component is already loaded, update its properties dynamically
             const activeEl = this.stageContainer.querySelector(active);
             if (activeEl) {
-              this.updateElementFromSpec(activeEl, spec);
+              // Structural props like 'type' change the shadow DOM layout of a Stencil
+              // component so drastically that patching the live element via setAttribute
+              // does not reliably trigger a re-render. Detect these changes and force a
+              // full element recreation (same code path as navigating away and back).
+              const STRUCTURAL_PROPS = ['type', 'variant'];
+              const hasStructuralChange = STRUCTURAL_PROPS.some(propName => {
+                if (!spec.props?.[propName]) return false;
+                const currentVal = activeEl.getAttribute(propName) ?? '';
+                const newVal = String(spec.props[propName].currentValue ?? '');
+                return currentVal !== newVal;
+              });
+
+              if (hasStructuralChange) {
+                // Reset so loadComponentSandboxView treats this as a fresh load
+                // but syncedComponents still contains the tag, so knob values are preserved.
+                this.loadedTag = null;
+                const CUSTOM_VIEW_TAGS = ['q-button', 'q-input'];
+                if (CUSTOM_VIEW_TAGS.includes(active)) {
+                  await this.loadComponentSandboxView(active, spec, registry);
+                } else {
+                  this.renderFallback(active, spec);
+                }
+                // Restore loadedTag so the next non-structural knob change doesn't re-fetch
+                this.loadedTag = active;
+              } else {
+                this.updateElementFromSpec(activeEl, spec);
+              }
             }
           }
         } else if (tab === 'variants') {
@@ -189,16 +223,9 @@ class PlaygroundStage extends HTMLElement {
   }
 
   async loadComponentSandboxView(tag, spec, registry) {
-    // 1. Reset values to spec defaults
-    if (spec.props) {
-      Object.keys(spec.props).forEach(p => {
-        spec.props[p].currentValue = spec.props[p].default;
-      });
-    }
-    if (spec.slots) {
-      Object.keys(spec.slots).forEach(s => {
-        spec.slots[s].currentValue = spec.slots[s].default || '';
-      });
+    const isFirstLoad = !this.syncedComponents.has(tag);
+    if (isFirstLoad) {
+      this.syncedComponents.add(tag);
     }
 
     // 2. Destroy previous active module
@@ -232,39 +259,44 @@ class PlaygroundStage extends HTMLElement {
         const el = this.stageContainer.querySelector(tag);
         if (el) {
           customHtmlLoaded = true;
-          // Sync spec properties and slots from HTML definitions
-          if (spec.props) {
-            Object.keys(spec.props).forEach(propName => {
-              const prop = spec.props[propName];
-              if (prop.type === 'boolean') {
-                prop.currentValue = el.hasAttribute(propName);
-              } else {
-                const attrVal = el.getAttribute(propName);
-                if (attrVal !== null) {
-                  prop.currentValue = attrVal;
+          // Sync spec properties and slots from HTML definitions only on first load
+          if (isFirstLoad) {
+            if (spec.props) {
+              Object.keys(spec.props).forEach(propName => {
+                const prop = spec.props[propName];
+                if (prop.type === 'boolean') {
+                  prop.currentValue = el.hasAttribute(propName);
+                } else {
+                  const attrVal = el.getAttribute(propName);
+                  if (attrVal !== null) {
+                    prop.currentValue = attrVal;
+                  }
                 }
-              }
-            });
-          }
-          if (spec.slots) {
-            Object.keys(spec.slots).forEach(slotName => {
-              const slot = spec.slots[slotName];
-              if (slotName === 'default') {
-                const clone = el.cloneNode(true);
-                Array.from(clone.children).forEach(child => {
-                  if (child.hasAttribute('slot')) child.remove();
-                });
-                slot.currentValue = clone.innerHTML.trim();
-              } else {
-                const slotEl = el.querySelector(`[slot="${slotName}"]`);
-                if (slotEl) {
-                  slot.currentValue = slotEl.innerHTML.trim();
+              });
+            }
+            if (spec.slots) {
+              Object.keys(spec.slots).forEach(slotName => {
+                const slot = spec.slots[slotName];
+                if (slotName === 'default') {
+                  const clone = el.cloneNode(true);
+                  Array.from(clone.children).forEach(child => {
+                    if (child.hasAttribute('slot')) child.remove();
+                  });
+                  slot.currentValue = clone.innerHTML.trim();
+                } else {
+                  const slotEl = el.querySelector(`[slot="${slotName}"]`);
+                  if (slotEl) {
+                    slot.currentValue = slotEl.innerHTML.trim();
+                  }
                 }
-              }
-            });
+              });
+            }
+            // Notify other components of synced spec values
+            componentRegistry.set({ ...registry });
+          } else {
+            // Apply existing spec properties to the newly loaded HTML element
+            this.updateElementFromSpec(el, spec);
           }
-          // Notify other components of synced spec values
-          componentRegistry.set({ ...registry });
         }
       }
     } catch (err) {

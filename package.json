@@ -26,6 +26,7 @@
       "import": "./dist/components/index.js",
       "types": "./dist/components/index.d.ts"
     },
+    "./dist/webquark/webquark.css": "./dist/webquark/webquark.css",
     "./dist/*": {
       "import": "./dist/*",
       "types": "./dist/*.d.ts"

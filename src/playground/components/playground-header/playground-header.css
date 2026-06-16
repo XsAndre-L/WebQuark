@@ -2,11 +2,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
-  height: 64px;
+  padding: 8px 16px;
+  min-height: 56px;
   background: var(--bg-sidebar);
   border-bottom: 1px solid var(--border-color);
   flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .header-logo {
@@ -15,17 +16,10 @@
   gap: 12px;
 }
 
-.logo-icon {
-  width: 28px;
+.logo-image {
   height: 28px;
-  background: linear-gradient(135deg, var(--primary) 0%, #10b981 100%);
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: bold;
-  font-size: 1rem;
+  width: auto;
+  display: block;
 }
 
 .logo-text {
@@ -115,7 +109,8 @@
   }
 
   .app-header {
-    padding: 0 16px;
+    padding: 8px 10px;
+    min-height: 52px;
     gap: 12px;
   }
 

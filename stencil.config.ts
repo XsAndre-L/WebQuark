@@ -12,6 +12,7 @@ export const config: Config = {
     },
     {
       type: 'dist-custom-elements',
+      dir: 'dist/components',
       customElementsExportBehavior: 'auto-define-custom-elements',
       externalRuntime: false,
     },
@@ -24,6 +25,7 @@ export const config: Config = {
       indexHtml: 'playground/index.html',
       copy: [
         { src: 'playground/index.html', dest: 'index.html' },
+        { src: 'playground/logo.svg', dest: 'logo.svg' },
         { src: 'playground/playground.css', dest: 'playground.css' },
         { src: 'playground/playground.js', dest: 'playground.js' },
         { src: 'playground/state.js', dest: 'state.js' },

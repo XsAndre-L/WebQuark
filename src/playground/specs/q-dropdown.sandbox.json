@@ -6,6 +6,7 @@
     "size": { "type": "select", "options": ["sm", "md", "lg"], "default": "md", "desc": "Dropdown and trigger font display sizing" },
     "placeholder": { "type": "string", "default": "Select profile...", "desc": "Text displayed when value is empty" },
     "value": { "type": "string", "default": "staging", "desc": "Active selected options key" },
+    "searchable": { "type": "boolean", "default": false, "desc": "Enables search filter bar inside dropdown popup menu" },
     "disabled": { "type": "boolean", "default": false, "desc": "Locks dropdown menu and styles disabled look" }
   },
   "slots": {},
@@ -17,6 +18,7 @@
   ],
   "variants": [
     { "name": "Standard Dropdown", "props": { "label": "Server Instance", "value": "staging", "size": "md" } },
+    { "name": "Searchable Dropdown", "props": { "label": "Searchable Options", "searchable": true, "value": "staging" } },
     { "name": "Small Dropdown", "props": { "label": "Small Server", "size": "sm", "value": "staging" } },
     { "name": "Large Dropdown", "props": { "label": "Large Server", "size": "lg", "value": "staging" } },
     { "name": "Without Title Label", "props": { "placeholder": "Select profile..." } },

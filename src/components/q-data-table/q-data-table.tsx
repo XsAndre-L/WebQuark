@@ -23,6 +23,7 @@ export class QDataTable {
 
   @Prop() columns: TableColumn[] | string = [];
   @Prop() items: any[] | string = [];
+  @Prop() loading: boolean = false;
   @Prop() selectable: boolean = false;
   @Prop({ mutable: true }) selectedKeys: any[] = [];
   @Prop() keyField: string = 'id';
@@ -141,9 +142,8 @@ export class QDataTable {
     });
   }
 
-  private handleSearchInput = (event: Event) => {
-    const input = event.target as HTMLInputElement;
-    this.searchValue = input.value;
+  private handleSearchInput = (event: CustomEvent<string>) => {
+    this.searchValue = event.detail;
     this.qSearch.emit(this.searchValue);
   };
 
@@ -215,19 +215,18 @@ export class QDataTable {
               {this.toolbarTitle && <span class="toolbar-title">{this.toolbarTitle}</span>}
               <slot name="toolbar-left" />
               {this.showSearch && (
-                <div class="search-box">
-                  <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <q-input
+                  class="search-input"
+                  placeholder={this.searchPlaceholder}
+                  value={this.searchValue}
+                  onQInput={this.handleSearchInput}
+                  size="sm"
+                >
+                  <svg slot="prefix" class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style={{ width: '14px', height: '14px' }}>
                     <circle cx="11" cy="11" r="8" />
                     <line x1="21" y1="21" x2="16.65" y2="16.65" />
                   </svg>
-                  <input
-                    type="text"
-                    class="search-input"
-                    placeholder={this.searchPlaceholder}
-                    value={this.searchValue}
-                    onInput={this.handleSearchInput}
-                  />
-                </div>
+                </q-input>
               )}
               <slot name="filters" />
             </div>
@@ -272,7 +271,15 @@ export class QDataTable {
             </tr>
           </thead>
           <tbody>
-            {items.length === 0 ? (
+            {this.loading ? (
+              <tr role="row">
+                <td
+                  colSpan={columns.length + (this.selectable ? 1 : 0)}
+                  class="loading-placeholder-cell"
+                  role="gridcell"
+                />
+              </tr>
+            ) : items.length === 0 ? (
               <tr role="row">
                 <td
                   colSpan={columns.length + (this.selectable ? 1 : 0)}
@@ -322,6 +329,11 @@ export class QDataTable {
             )}
           </tbody>
         </table>
+        {this.loading && (
+          <div class="table-loading-overlay">
+            <q-circular-progress indeterminate={true} size="sm" />
+          </div>
+        )}
        </div>
        <slot name="footer" />
       </div>

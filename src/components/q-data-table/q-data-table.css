@@ -50,7 +50,7 @@ th {
   font-size: var(--q-font-size-xs, 0.7rem);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  border-bottom: 2px solid var(--q-border-color, #374151);
+  border-bottom: 1px solid var(--q-border-color, #374151);
   user-select: none;
 }
 
@@ -87,38 +87,14 @@ th {
   color: var(--q-fg-base, #f9fafb);
 }
 
-.search-box {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
+.search-input {
+  width: 240px;
 }
 
-.search-icon {
-  position: absolute;
-  left: 10px;
+.search-icon-svg {
   width: 14px;
   height: 14px;
   color: var(--q-fg-muted, #9ca3af);
-  pointer-events: none;
-}
-
-.search-input {
-  height: 36px;
-  width: 240px;
-  border-radius: var(--q-radius-md, 6px);
-  border: var(--q-border, 1px solid var(--q-border-color, #374151));
-  background: var(--q-bg-surface-2, #374151);
-  padding: 0 12px 0 32px;
-  font-family: var(--q-font-family, inherit);
-  font-size: var(--q-font-size-sm, 0.85rem);
-  color: var(--q-fg-base, #f9fafb);
-  outline: none;
-  box-sizing: border-box;
-  transition: border-color var(--q-transition-fast, 150ms ease);
-}
-
-.search-input:focus {
-  border-color: var(--q-color-primary, #60a5fa);
 }
 
 .col-selection, .cell-selection {
@@ -180,6 +156,25 @@ th {
   padding: calc(var(--q-padding-lg, 16px) * 2) var(--q-padding-lg, 16px);
 }
 
+.loading-placeholder-cell {
+  height: 160px;
+  border: none !important;
+  background: transparent !important;
+}
+
+.table-loading-overlay {
+  position: absolute;
+  top: 44px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--q-bg-base, #111827);
+  z-index: 20;
+}
+
 ::slotted([slot="footer"]) {
   background: var(--q-bg-surface-1, #1f2937);
   border-top: var(--q-border, 1px solid var(--q-border-color, #374151));
@@ -189,4 +184,12 @@ th {
   align-items: center;
   justify-content: space-between;
   padding: 0 var(--q-padding-lg, 16px);
+}
+
+::slotted(q-dropdown) {
+  --q-dropdown-bg: var(--q-table-dropdown-bg, var(--q-dropdown-bg));
+  --q-dropdown-menu-bg: var(--q-table-dropdown-menu-bg, var(--q-dropdown-menu-bg));
+  --q-dropdown-border: var(--q-table-dropdown-border, var(--q-dropdown-border));
+  --q-color-primary: var(--q-table-dropdown-primary, var(--q-color-primary));
+  --q-fg-base: var(--q-table-dropdown-fg, var(--q-fg-base));
 }

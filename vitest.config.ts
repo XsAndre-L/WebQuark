@@ -4,12 +4,14 @@ import { playwright } from '@vitest/browser-playwright';
 export default defineVitestConfig({
   stencilConfig: './stencil.config.ts',
   test: {
+    oxc: false,
     projects: [
       // Unit tests - stencil environment for component logic
       {
         test: {
           name: 'unit',
-          include: ['src/**/*.unit.test.{ts,tsx}'],
+          oxc: false,
+          include: ['src/**/*.unit.test.{ts,tsx}', 'src/**/*.spec.{ts,tsx}'],
           environment: 'stencil',
         },
       },

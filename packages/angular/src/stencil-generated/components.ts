@@ -15,6 +15,7 @@ import { defineCustomElement as defineQDialog } from '@webquark/core/components/
 import { defineCustomElement as defineQDropdown } from '@webquark/core/components/q-dropdown.js';
 import { defineCustomElement as defineQIcon } from '@webquark/core/components/q-icon.js';
 import { defineCustomElement as defineQInput } from '@webquark/core/components/q-input.js';
+import { defineCustomElement as defineQQuantitySelector } from '@webquark/core/components/q-quantity-selector.js';
 import { defineCustomElement as defineQReel } from '@webquark/core/components/q-reel.js';
 import { defineCustomElement as defineQScrollable } from '@webquark/core/components/q-scrollable.js';
 import { defineCustomElement as defineQSidepanel } from '@webquark/core/components/q-sidepanel.js';
@@ -127,14 +128,14 @@ export declare interface QCircularProgress extends Components.QCircularProgress 
 
 @ProxyCmp({
   defineCustomElementFn: defineQDataTable,
-  inputs: ['columns', 'items', 'keyField', 'searchPlaceholder', 'searchValue', 'selectable', 'selectedKeys', 'showSearch', 'showToolbar', 'toolbarTitle']
+  inputs: ['columns', 'items', 'keyField', 'loading', 'searchPlaceholder', 'searchValue', 'selectable', 'selectedKeys', 'showSearch', 'showToolbar', 'toolbarTitle']
 })
 @Component({
   selector: 'q-data-table',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['columns', 'items', 'keyField', 'searchPlaceholder', 'searchValue', 'selectable', 'selectedKeys', 'showSearch', 'showToolbar', 'toolbarTitle'],
+  inputs: ['columns', 'items', 'keyField', 'loading', 'searchPlaceholder', 'searchValue', 'selectable', 'selectedKeys', 'showSearch', 'showToolbar', 'toolbarTitle'],
   outputs: ['qRowClick', 'qSelectionChange', 'qSearch'],
 })
 export class QDataTable {
@@ -257,7 +258,7 @@ export declare interface QIcon extends Components.QIcon {}
 
 @ProxyCmp({
   defineCustomElementFn: defineQInput,
-  inputs: ['clearable', 'disabled', 'error', 'errorMessage', 'label', 'placeholder', 'required', 'size', 'type', 'value'],
+  inputs: ['clearable', 'disabled', 'error', 'errorMessage', 'label', 'max', 'min', 'placeholder', 'required', 'size', 'step', 'type', 'value'],
   methods: ['focusElement', 'clearValue']
 })
 @Component({
@@ -265,7 +266,7 @@ export declare interface QIcon extends Components.QIcon {}
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['clearable', 'disabled', 'error', 'errorMessage', 'label', 'placeholder', 'required', 'size', 'type', 'value'],
+  inputs: ['clearable', 'disabled', 'error', 'errorMessage', 'label', 'max', 'min', 'placeholder', 'required', 'size', 'step', 'type', 'value'],
   outputs: ['qChange', 'qInput', 'qBlur', 'qFocus'],
 })
 export class QInput {
@@ -292,6 +293,38 @@ export declare interface QInput extends Components.QInput {
   qBlur: EventEmitter<QInputCustomEvent<FocusEvent>>;
 
   qFocus: EventEmitter<QInputCustomEvent<FocusEvent>>;
+}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineQQuantitySelector,
+  inputs: ['max', 'min', 'step', 'value', 'variant']
+})
+@Component({
+  selector: 'q-quantity-selector',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['max', 'min', 'step', 'value', 'variant'],
+  outputs: ['qChange'],
+})
+export class QQuantitySelector {
+  protected el: HTMLQQuantitySelectorElement;
+  @Output() qChange = new EventEmitter<QQuantitySelectorCustomEvent<number>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+import type { QQuantitySelectorCustomEvent } from '@webquark/core/components';
+
+export declare interface QQuantitySelector extends Components.QQuantitySelector {
+  /**
+   * Emitted when the quantity value changes.
+   */
+  qChange: EventEmitter<QQuantitySelectorCustomEvent<number>>;
 }
 
 
@@ -547,7 +580,7 @@ export declare interface QThumbnail extends Components.QThumbnail {
 @ProxyCmp({
   defineCustomElementFn: defineQToggle,
   inputs: ['checked', 'disabled', 'error', 'label', 'required', 'size', 'type'],
-  methods: ['toggle']
+  methods: ['toggle', 'setChecked']
 })
 @Component({
   selector: 'q-toggle',
