@@ -36,9 +36,13 @@ import { defineCustomElement as defineQTooltip } from '@webquark/core/components
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['disabled', 'download', 'expand', 'href', 'iconOnly', 'loading', 'size', 'target', 'type', 'variant'],
+  outputs: ['qClick', 'qFocus', 'qBlur'],
 })
 export class QButton {
   protected el: HTMLQButtonElement;
+  @Output() qClick = new EventEmitter<QButtonCustomEvent<MouseEvent>>();
+  @Output() qFocus = new EventEmitter<QButtonCustomEvent<FocusEvent>>();
+  @Output() qBlur = new EventEmitter<QButtonCustomEvent<FocusEvent>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -46,7 +50,16 @@ export class QButton {
 }
 
 
-export declare interface QButton extends Components.QButton {}
+import type { QButtonCustomEvent } from '@webquark/core/components';
+
+export declare interface QButton extends Components.QButton {
+
+  qClick: EventEmitter<QButtonCustomEvent<MouseEvent>>;
+
+  qFocus: EventEmitter<QButtonCustomEvent<FocusEvent>>;
+
+  qBlur: EventEmitter<QButtonCustomEvent<FocusEvent>>;
+}
 
 
 @ProxyCmp({
@@ -209,12 +222,15 @@ export declare interface QDialog extends Components.QDialog {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['disabled', 'label', 'options', 'placeholder', 'searchable', 'size', 'value'],
-  outputs: ['qChange', 'qSelect'],
+  outputs: ['qChange', 'qSelect', 'qFocus', 'qBlur', 'qClick'],
 })
 export class QDropdown {
   protected el: HTMLQDropdownElement;
   @Output() qChange = new EventEmitter<QDropdownCustomEvent<string>>();
   @Output() qSelect = new EventEmitter<QDropdownCustomEvent<IQDropdownOption>>();
+  @Output() qFocus = new EventEmitter<QDropdownCustomEvent<FocusEvent>>();
+  @Output() qBlur = new EventEmitter<QDropdownCustomEvent<FocusEvent>>();
+  @Output() qClick = new EventEmitter<QDropdownCustomEvent<MouseEvent>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -230,6 +246,12 @@ export declare interface QDropdown extends Components.QDropdown {
   qChange: EventEmitter<QDropdownCustomEvent<string>>;
 
   qSelect: EventEmitter<QDropdownCustomEvent<IQDropdownOption>>;
+
+  qFocus: EventEmitter<QDropdownCustomEvent<FocusEvent>>;
+
+  qBlur: EventEmitter<QDropdownCustomEvent<FocusEvent>>;
+
+  qClick: EventEmitter<QDropdownCustomEvent<MouseEvent>>;
 }
 
 
@@ -267,7 +289,7 @@ export declare interface QIcon extends Components.QIcon {}
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['clearable', 'disabled', 'error', 'errorMessage', 'label', 'max', 'min', 'placeholder', 'required', 'size', 'step', 'type', 'value'],
-  outputs: ['qChange', 'qInput', 'qBlur', 'qFocus'],
+  outputs: ['qChange', 'qInput', 'qBlur', 'qFocus', 'qClick'],
 })
 export class QInput {
   protected el: HTMLQInputElement;
@@ -275,6 +297,7 @@ export class QInput {
   @Output() qInput = new EventEmitter<QInputCustomEvent<string>>();
   @Output() qBlur = new EventEmitter<QInputCustomEvent<FocusEvent>>();
   @Output() qFocus = new EventEmitter<QInputCustomEvent<FocusEvent>>();
+  @Output() qClick = new EventEmitter<QInputCustomEvent<MouseEvent>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -293,6 +316,8 @@ export declare interface QInput extends Components.QInput {
   qBlur: EventEmitter<QInputCustomEvent<FocusEvent>>;
 
   qFocus: EventEmitter<QInputCustomEvent<FocusEvent>>;
+
+  qClick: EventEmitter<QInputCustomEvent<MouseEvent>>;
 }
 
 
@@ -306,11 +331,14 @@ export declare interface QInput extends Components.QInput {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['max', 'min', 'step', 'value', 'variant'],
-  outputs: ['qChange'],
+  outputs: ['qChange', 'qFocus', 'qBlur', 'qClick'],
 })
 export class QQuantitySelector {
   protected el: HTMLQQuantitySelectorElement;
   @Output() qChange = new EventEmitter<QQuantitySelectorCustomEvent<number>>();
+  @Output() qFocus = new EventEmitter<QQuantitySelectorCustomEvent<FocusEvent>>();
+  @Output() qBlur = new EventEmitter<QQuantitySelectorCustomEvent<FocusEvent>>();
+  @Output() qClick = new EventEmitter<QQuantitySelectorCustomEvent<MouseEvent>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -325,6 +353,12 @@ export declare interface QQuantitySelector extends Components.QQuantitySelector 
    * Emitted when the quantity value changes.
    */
   qChange: EventEmitter<QQuantitySelectorCustomEvent<number>>;
+
+  qFocus: EventEmitter<QQuantitySelectorCustomEvent<FocusEvent>>;
+
+  qBlur: EventEmitter<QQuantitySelectorCustomEvent<FocusEvent>>;
+
+  qClick: EventEmitter<QQuantitySelectorCustomEvent<MouseEvent>>;
 }
 
 
@@ -485,7 +519,7 @@ export declare interface QStepDiagramItem extends Components.QStepDiagramItem {
 
 @ProxyCmp({
   defineCustomElementFn: defineQSyntaxBox,
-  inputs: ['code', 'copyable', 'heading', 'height', 'language', 'variant'],
+  inputs: ['code', 'copyable', 'disabled', 'editable', 'heading', 'height', 'language', 'required', 'value', 'variant'],
   methods: ['scrollToBottom']
 })
 @Component({
@@ -493,10 +527,13 @@ export declare interface QStepDiagramItem extends Components.QStepDiagramItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['code', 'copyable', 'heading', 'height', 'language', 'variant'],
+  inputs: ['code', 'copyable', 'disabled', 'editable', 'heading', 'height', 'language', 'required', 'value', 'variant'],
+  outputs: ['qChange', 'qInput'],
 })
 export class QSyntaxBox {
   protected el: HTMLQSyntaxBoxElement;
+  @Output() qChange = new EventEmitter<QSyntaxBoxCustomEvent<string>>();
+  @Output() qInput = new EventEmitter<QSyntaxBoxCustomEvent<string>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -504,7 +541,14 @@ export class QSyntaxBox {
 }
 
 
-export declare interface QSyntaxBox extends Components.QSyntaxBox {}
+import type { QSyntaxBoxCustomEvent } from '@webquark/core/components';
+
+export declare interface QSyntaxBox extends Components.QSyntaxBox {
+
+  qChange: EventEmitter<QSyntaxBoxCustomEvent<string>>;
+
+  qInput: EventEmitter<QSyntaxBoxCustomEvent<string>>;
+}
 
 
 @ProxyCmp({
@@ -518,7 +562,7 @@ export declare interface QSyntaxBox extends Components.QSyntaxBox {}
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['autoGrow', 'disabled', 'error', 'errorMessage', 'label', 'placeholder', 'required', 'resizeMode', 'rows', 'value'],
-  outputs: ['qChange', 'qInput', 'qBlur', 'qFocus'],
+  outputs: ['qChange', 'qInput', 'qBlur', 'qFocus', 'qClick'],
 })
 export class QTextarea {
   protected el: HTMLQTextareaElement;
@@ -526,6 +570,7 @@ export class QTextarea {
   @Output() qInput = new EventEmitter<QTextareaCustomEvent<string>>();
   @Output() qBlur = new EventEmitter<QTextareaCustomEvent<FocusEvent>>();
   @Output() qFocus = new EventEmitter<QTextareaCustomEvent<FocusEvent>>();
+  @Output() qClick = new EventEmitter<QTextareaCustomEvent<MouseEvent>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -544,6 +589,8 @@ export declare interface QTextarea extends Components.QTextarea {
   qBlur: EventEmitter<QTextareaCustomEvent<FocusEvent>>;
 
   qFocus: EventEmitter<QTextareaCustomEvent<FocusEvent>>;
+
+  qClick: EventEmitter<QTextareaCustomEvent<MouseEvent>>;
 }
 
 
@@ -588,11 +635,14 @@ export declare interface QThumbnail extends Components.QThumbnail {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['checked', 'disabled', 'error', 'label', 'required', 'size', 'type'],
-  outputs: ['qChange'],
+  outputs: ['qChange', 'qFocus', 'qBlur', 'qClick'],
 })
 export class QToggle {
   protected el: HTMLQToggleElement;
   @Output() qChange = new EventEmitter<QToggleCustomEvent<boolean>>();
+  @Output() qFocus = new EventEmitter<QToggleCustomEvent<FocusEvent>>();
+  @Output() qBlur = new EventEmitter<QToggleCustomEvent<FocusEvent>>();
+  @Output() qClick = new EventEmitter<QToggleCustomEvent<MouseEvent>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -605,6 +655,12 @@ import type { QToggleCustomEvent } from '@webquark/core/components';
 export declare interface QToggle extends Components.QToggle {
 
   qChange: EventEmitter<QToggleCustomEvent<boolean>>;
+
+  qFocus: EventEmitter<QToggleCustomEvent<FocusEvent>>;
+
+  qBlur: EventEmitter<QToggleCustomEvent<FocusEvent>>;
+
+  qClick: EventEmitter<QToggleCustomEvent<MouseEvent>>;
 }
 
 
