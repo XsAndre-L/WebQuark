@@ -58,28 +58,63 @@ export class QTooltip {
 
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
+  private getContainingBlock = (el: HTMLElement): HTMLElement | null => {
+    let parent = el.parentElement;
+    while (parent) {
+      const style = window.getComputedStyle(parent);
+      if (
+        style.transform !== 'none' ||
+        style.perspective !== 'none' ||
+        style.filter !== 'none' ||
+        style.backdropFilter !== 'none' ||
+        (style as any).webkitBackdropFilter !== 'none' ||
+        style.willChange === 'transform' ||
+        style.willChange === 'perspective' ||
+        style.willChange === 'filter' ||
+        style.contain === 'paint' ||
+        style.contain === 'layout' ||
+        style.contain === 'content' ||
+        style.contain === 'strict'
+      ) {
+        return parent;
+      }
+      parent = parent.parentElement;
+    }
+    return null;
+  };
+
   private updatePosition = () => {
     if (!this.parentEl) return;
     const parentRect = this.parentEl.getBoundingClientRect();
+    
+    let offsetLeft = 0;
+    let offsetTop = 0;
+    const container = this.getContainingBlock(this.el);
+    if (container) {
+      const containerRect = container.getBoundingClientRect();
+      offsetLeft = containerRect.left;
+      offsetTop = containerRect.top;
+    }
+
     let top = 0;
     let left = 0;
 
     switch (this.position) {
       case 'top':
-        left = parentRect.left + parentRect.width / 2;
-        top = parentRect.top;
+        left = parentRect.left + parentRect.width / 2 - offsetLeft;
+        top = parentRect.top - offsetTop;
         break;
       case 'bottom':
-        left = parentRect.left + parentRect.width / 2;
-        top = parentRect.bottom;
+        left = parentRect.left + parentRect.width / 2 - offsetLeft;
+        top = parentRect.bottom - offsetTop;
         break;
       case 'left':
-        left = parentRect.left;
-        top = parentRect.top + parentRect.height / 2;
+        left = parentRect.left - offsetLeft;
+        top = parentRect.top + parentRect.height / 2 - offsetTop;
         break;
       case 'right':
-        left = parentRect.right;
-        top = parentRect.top + parentRect.height / 2;
+        left = parentRect.right - offsetLeft;
+        top = parentRect.top + parentRect.height / 2 - offsetTop;
         break;
     }
 
