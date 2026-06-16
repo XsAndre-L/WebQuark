@@ -5,6 +5,7 @@ const CONTROL_FACTORY: Record<string, (propName: string, prop: PropSpec) => HTML
   boolean: (propName, prop) => (
     <q-toggle
       type="switch"
+      size="sm"
       data-prop={propName}
       checked={prop.currentValue}
       onQChange={(e: CustomEvent) => updateKnobValue('prop', propName, e.detail)}
@@ -14,6 +15,7 @@ const CONTROL_FACTORY: Record<string, (propName: string, prop: PropSpec) => HTML
     const options = prop.options ? prop.options.map(opt => ({ label: opt || '(none)', value: opt })) : [];
     const dropdown = (
       <q-dropdown
+        size="sm"
         data-prop={propName}
         value={prop.currentValue}
         onQChange={(e: CustomEvent) => updateKnobValue('prop', propName, e.detail)}
@@ -25,6 +27,7 @@ const CONTROL_FACTORY: Record<string, (propName: string, prop: PropSpec) => HTML
   number: (propName, prop) => (
     <q-input
       type="number"
+      size="sm"
       data-prop={propName}
       value={prop.currentValue}
       onQInput={(e: CustomEvent) => updateKnobValue('prop', propName, e.detail)}
@@ -38,6 +41,7 @@ function createPropControl(propName: string, prop: PropSpec): HTMLElement {
   return (
     <q-input
       type="text"
+      size="sm"
       data-prop={propName}
       value={prop.currentValue}
       onQInput={(e: CustomEvent) => updateKnobValue('prop', propName, e.detail)}
