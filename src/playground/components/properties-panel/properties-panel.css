@@ -1,4 +1,4 @@
-.knobs-panel {
+.properties-panel {
   width: 340px;
   background: var(--bg-sidebar);
   border-left: 1px solid var(--border-color);
@@ -8,7 +8,7 @@
   height: 100%;
 }
 
-.knobs-scroll-content {
+.properties-scroll-content {
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -16,7 +16,7 @@
   box-sizing: border-box;
 }
 
-.knobs-section-title {
+.properties-section-title {
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -26,7 +26,7 @@
   margin: 0 0 12px 0;
 }
 
-.knob-row {
+.property-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -35,33 +35,33 @@
   border-bottom: 1px dashed rgba(255, 255, 255, 0.04);
 }
 
-.knob-row.vertical {
+.property-row.vertical {
   flex-direction: column;
   align-items: flex-start;
 }
 
-.knob-meta {
+.property-meta {
   flex: 1;
 }
 
-.knob-label {
+.property-label {
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--text-main);
 }
 
-.knob-label-sub {
+.property-label-sub {
   font-size: 0.725rem;
   color: var(--text-muted);
   display: block;
   margin-top: 2px;
 }
 
-.knobs-panel-header {
+.properties-panel-header {
   display: none;
 }
 
-.knobs-toggle-btn {
+.properties-toggle-btn {
   display: none;
   position: fixed;
   bottom: 24px;
@@ -83,29 +83,29 @@
     box-shadow 0.2s;
 }
 
-.knobs-toggle-btn:hover {
+.properties-toggle-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 24px rgba(37, 99, 235, 0.5);
 }
 
-.knobs-toggle-btn:active {
+.properties-toggle-btn:active {
   transform: translateY(0);
 }
 
-.knobs-toggle-icon {
+.properties-toggle-icon {
   font-size: 1rem;
 }
 
-/* Custom WebQuark Component Knobs Layout */
-.knobs-panel q-dropdown,
-.knobs-panel q-input {
+/* Custom WebQuark Component Properties Layout */
+.properties-panel q-dropdown,
+.properties-panel q-input {
   width: 160px;
   display: block;
 }
 
-.knob-row.vertical q-input,
-.knob-row.vertical q-textarea,
-.knob-row.vertical q-syntax-box {
+.property-row.vertical q-input,
+.property-row.vertical q-textarea,
+.property-row.vertical q-syntax-box {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
@@ -113,9 +113,9 @@
   display: block;
 }
 
-/* Mobile knobs overrides */
+/* Mobile properties panel overrides */
 @media (max-width: 900px) {
-  .knobs-panel {
+  .properties-panel {
     position: fixed;
     bottom: 0;
     left: 0;
@@ -134,15 +134,15 @@
     flex-direction: column;
   }
 
-  .knobs-panel.open {
+  .properties-panel.open {
     transform: translateY(0);
   }
 
-  .knobs-section {
+  .properties-section {
     flex: none;
   }
 
-  .knobs-panel-header {
+  .properties-panel-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -152,7 +152,7 @@
     gap: 16px;
   }
 
-  .knobs-panel-header span {
+  .properties-panel-header span {
     font-weight: 700;
     font-size: 1rem;
     color: var(--text-main);
@@ -163,7 +163,7 @@
     white-space: nowrap;
   }
 
-  .knobs-close-btn {
+  .properties-close-btn {
     background: transparent;
     border: none;
     color: var(--text-main);
@@ -177,12 +177,12 @@
     flex-shrink: 0;
   }
 
-  .knobs-toggle-btn {
+  .properties-toggle-btn {
     display: flex;
   }
 }
 
-.knob-empty-state {
+.property-empty-state {
   color: var(--text-muted);
   font-size: 0.85rem;
 }
