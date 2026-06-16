@@ -412,13 +412,26 @@ export namespace Components {
           * @default false
          */
         "copyable": boolean;
+        /**
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * @default false
+         */
+        "editable": boolean;
         "heading"?: string;
         "height"?: string;
         /**
           * @default 'html'
          */
         "language": 'html' | 'javascript' | 'css' | 'json';
+        /**
+          * @default false
+         */
+        "required": boolean;
         "scrollToBottom": () => Promise<void>;
+        "value"?: string;
         /**
           * @default 'panel'
          */
@@ -524,6 +537,10 @@ export namespace Components {
         "position": 'top' | 'bottom' | 'left' | 'right';
     }
 }
+export interface QButtonCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQButtonElement;
+}
 export interface QCarouselCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLQCarouselElement;
@@ -564,6 +581,10 @@ export interface QStepDiagramItemCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLQStepDiagramItemElement;
 }
+export interface QSyntaxBoxCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQSyntaxBoxElement;
+}
 export interface QTextareaCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLQTextareaElement;
@@ -577,7 +598,20 @@ export interface QToggleCustomEvent<T> extends CustomEvent<T> {
     target: HTMLQToggleElement;
 }
 declare global {
+    interface HTMLQButtonElementEventMap {
+        "qClick": MouseEvent;
+        "qFocus": FocusEvent;
+        "qBlur": FocusEvent;
+    }
     interface HTMLQButtonElement extends Components.QButton, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQButtonElementEventMap>(type: K, listener: (this: HTMLQButtonElement, ev: QButtonCustomEvent<HTMLQButtonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQButtonElementEventMap>(type: K, listener: (this: HTMLQButtonElement, ev: QButtonCustomEvent<HTMLQButtonElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLQButtonElement: {
         prototype: HTMLQButtonElement;
@@ -653,6 +687,9 @@ declare global {
     interface HTMLQDropdownElementEventMap {
         "qChange": string;
         "qSelect": Option;
+        "qFocus": FocusEvent;
+        "qBlur": FocusEvent;
+        "qClick": MouseEvent;
     }
     interface HTMLQDropdownElement extends Components.QDropdown, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQDropdownElementEventMap>(type: K, listener: (this: HTMLQDropdownElement, ev: QDropdownCustomEvent<HTMLQDropdownElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -679,6 +716,7 @@ declare global {
         "qInput": string;
         "qBlur": FocusEvent;
         "qFocus": FocusEvent;
+        "qClick": MouseEvent;
     }
     interface HTMLQInputElement extends Components.QInput, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQInputElementEventMap>(type: K, listener: (this: HTMLQInputElement, ev: QInputCustomEvent<HTMLQInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -696,6 +734,9 @@ declare global {
     };
     interface HTMLQQuantitySelectorElementEventMap {
         "qChange": number;
+        "qFocus": FocusEvent;
+        "qBlur": FocusEvent;
+        "qClick": MouseEvent;
     }
     interface HTMLQQuantitySelectorElement extends Components.QQuantitySelector, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQQuantitySelectorElementEventMap>(type: K, listener: (this: HTMLQQuantitySelectorElement, ev: QQuantitySelectorCustomEvent<HTMLQQuantitySelectorElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -787,7 +828,19 @@ declare global {
         prototype: HTMLQStepDiagramItemElement;
         new (): HTMLQStepDiagramItemElement;
     };
+    interface HTMLQSyntaxBoxElementEventMap {
+        "qChange": string;
+        "qInput": string;
+    }
     interface HTMLQSyntaxBoxElement extends Components.QSyntaxBox, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQSyntaxBoxElementEventMap>(type: K, listener: (this: HTMLQSyntaxBoxElement, ev: QSyntaxBoxCustomEvent<HTMLQSyntaxBoxElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQSyntaxBoxElementEventMap>(type: K, listener: (this: HTMLQSyntaxBoxElement, ev: QSyntaxBoxCustomEvent<HTMLQSyntaxBoxElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLQSyntaxBoxElement: {
         prototype: HTMLQSyntaxBoxElement;
@@ -798,6 +851,7 @@ declare global {
         "qInput": string;
         "qBlur": FocusEvent;
         "qFocus": FocusEvent;
+        "qClick": MouseEvent;
     }
     interface HTMLQTextareaElement extends Components.QTextarea, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQTextareaElementEventMap>(type: K, listener: (this: HTMLQTextareaElement, ev: QTextareaCustomEvent<HTMLQTextareaElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -832,6 +886,9 @@ declare global {
     };
     interface HTMLQToggleElementEventMap {
         "qChange": boolean;
+        "qFocus": FocusEvent;
+        "qBlur": FocusEvent;
+        "qClick": MouseEvent;
     }
     interface HTMLQToggleElement extends Components.QToggle, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQToggleElementEventMap>(type: K, listener: (this: HTMLQToggleElement, ev: QToggleCustomEvent<HTMLQToggleElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -893,6 +950,9 @@ declare namespace LocalJSX {
           * @default false
          */
         "loading"?: boolean;
+        "onQBlur"?: (event: QButtonCustomEvent<FocusEvent>) => void;
+        "onQClick"?: (event: QButtonCustomEvent<MouseEvent>) => void;
+        "onQFocus"?: (event: QButtonCustomEvent<FocusEvent>) => void;
         /**
           * @default 'md'
          */
@@ -1062,7 +1122,10 @@ declare namespace LocalJSX {
           * The name of the element, used when submitting an HTML form.
          */
         "name"?: string;
+        "onQBlur"?: (event: QDropdownCustomEvent<FocusEvent>) => void;
         "onQChange"?: (event: QDropdownCustomEvent<string>) => void;
+        "onQClick"?: (event: QDropdownCustomEvent<MouseEvent>) => void;
+        "onQFocus"?: (event: QDropdownCustomEvent<FocusEvent>) => void;
         "onQSelect"?: (event: QDropdownCustomEvent<Option>) => void;
         /**
           * @default []
@@ -1135,6 +1198,7 @@ declare namespace LocalJSX {
         "name"?: string;
         "onQBlur"?: (event: QInputCustomEvent<FocusEvent>) => void;
         "onQChange"?: (event: QInputCustomEvent<string>) => void;
+        "onQClick"?: (event: QInputCustomEvent<MouseEvent>) => void;
         "onQFocus"?: (event: QInputCustomEvent<FocusEvent>) => void;
         "onQInput"?: (event: QInputCustomEvent<string>) => void;
         /**
@@ -1171,10 +1235,13 @@ declare namespace LocalJSX {
           * Minimum allowed value limit (optional).
          */
         "min"?: number;
+        "onQBlur"?: (event: QQuantitySelectorCustomEvent<FocusEvent>) => void;
         /**
           * Emitted when the quantity value changes.
          */
         "onQChange"?: (event: QQuantitySelectorCustomEvent<number>) => void;
+        "onQClick"?: (event: QQuantitySelectorCustomEvent<MouseEvent>) => void;
+        "onQFocus"?: (event: QQuantitySelectorCustomEvent<FocusEvent>) => void;
         /**
           * The increment/decrement step amount.
           * @default 1
@@ -1312,12 +1379,35 @@ declare namespace LocalJSX {
           * @default false
          */
         "copyable"?: boolean;
+        /**
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * @default false
+         */
+        "editable"?: boolean;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
         "heading"?: string;
         "height"?: string;
         /**
           * @default 'html'
          */
         "language"?: 'html' | 'javascript' | 'css' | 'json';
+        /**
+          * The name of the element, used when submitting an HTML form.
+         */
+        "name"?: string;
+        "onQChange"?: (event: QSyntaxBoxCustomEvent<string>) => void;
+        "onQInput"?: (event: QSyntaxBoxCustomEvent<string>) => void;
+        /**
+          * @default false
+         */
+        "required"?: boolean;
+        "value"?: string;
         /**
           * @default 'panel'
          */
@@ -1345,6 +1435,7 @@ declare namespace LocalJSX {
         "name"?: string;
         "onQBlur"?: (event: QTextareaCustomEvent<FocusEvent>) => void;
         "onQChange"?: (event: QTextareaCustomEvent<string>) => void;
+        "onQClick"?: (event: QTextareaCustomEvent<MouseEvent>) => void;
         "onQFocus"?: (event: QTextareaCustomEvent<FocusEvent>) => void;
         "onQInput"?: (event: QTextareaCustomEvent<string>) => void;
         /**
@@ -1407,7 +1498,10 @@ declare namespace LocalJSX {
           * The name of the element, used when submitting an HTML form.
          */
         "name"?: string;
+        "onQBlur"?: (event: QToggleCustomEvent<FocusEvent>) => void;
         "onQChange"?: (event: QToggleCustomEvent<boolean>) => void;
+        "onQClick"?: (event: QToggleCustomEvent<MouseEvent>) => void;
+        "onQFocus"?: (event: QToggleCustomEvent<FocusEvent>) => void;
         /**
           * @default false
          */
@@ -1565,9 +1659,13 @@ declare namespace LocalJSX {
         "variant": 'panel' | 'plain';
         "language": 'html' | 'javascript' | 'css' | 'json';
         "code": string;
+        "value": string;
         "heading": string;
         "copyable": boolean;
         "height": string;
+        "editable": boolean;
+        "disabled": boolean;
+        "required": boolean;
     }
     interface QTextareaAttributes {
         "value": string;

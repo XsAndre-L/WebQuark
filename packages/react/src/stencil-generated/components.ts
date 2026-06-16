@@ -11,7 +11,7 @@ import type { EventName, StencilReactComponent } from '@stencil/react-output-tar
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
 
-import { type Option, type QCarouselCustomEvent, type QDataTableCustomEvent, type QDialogCustomEvent, type QDropdownCustomEvent, type QInputCustomEvent, type QQuantitySelectorCustomEvent, type QReelCustomEvent, type QScrollableCustomEvent, type QSidepanelCustomEvent, type QStepDiagramItemCustomEvent, type QTextareaCustomEvent, type QThumbnailCustomEvent, type QToggleCustomEvent, type SidepanelItem } from "@webquark/core";
+import { type Option, type QButtonCustomEvent, type QCarouselCustomEvent, type QDataTableCustomEvent, type QDialogCustomEvent, type QDropdownCustomEvent, type QInputCustomEvent, type QQuantitySelectorCustomEvent, type QReelCustomEvent, type QScrollableCustomEvent, type QSidepanelCustomEvent, type QStepDiagramItemCustomEvent, type QSyntaxBoxCustomEvent, type QTextareaCustomEvent, type QThumbnailCustomEvent, type QToggleCustomEvent, type SidepanelItem } from "@webquark/core";
 import type { Components } from "@webquark/core/dist/components";
 import { QButton as QButtonElement, defineCustomElement as defineQButton } from "@webquark/core/dist/components/q-button.js";
 import { QCard as QCardElement, defineCustomElement as defineQCard } from "@webquark/core/dist/components/q-card.js";
@@ -34,14 +34,22 @@ import { QThumbnail as QThumbnailElement, defineCustomElement as defineQThumbnai
 import { QToggle as QToggleElement, defineCustomElement as defineQToggle } from "@webquark/core/dist/components/q-toggle.js";
 import { QTooltip as QTooltipElement, defineCustomElement as defineQTooltip } from "@webquark/core/dist/components/q-tooltip.js";
 
-export type QButtonEvents = NonNullable<unknown>;
+export type QButtonEvents = {
+    onQClick: EventName<QButtonCustomEvent<MouseEvent>>,
+    onQFocus: EventName<QButtonCustomEvent<FocusEvent>>,
+    onQBlur: EventName<QButtonCustomEvent<FocusEvent>>
+};
 
 export const QButton: StencilReactComponent<QButtonElement, QButtonEvents, Components.QButton> = /*@__PURE__*/ createComponent<QButtonElement, QButtonEvents, Components.QButton>({
     tagName: 'q-button',
     elementClass: QButtonElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
-    events: {} as QButtonEvents,
+    events: {
+        onQClick: 'qClick',
+        onQFocus: 'qFocus',
+        onQBlur: 'qBlur'
+    } as QButtonEvents,
     defineCustomElement: defineQButton
 });
 
@@ -118,7 +126,10 @@ export const QDialog: StencilReactComponent<QDialogElement, QDialogEvents, Compo
 
 export type QDropdownEvents = {
     onQChange: EventName<QDropdownCustomEvent<string>>,
-    onQSelect: EventName<QDropdownCustomEvent<Option>>
+    onQSelect: EventName<QDropdownCustomEvent<Option>>,
+    onQFocus: EventName<QDropdownCustomEvent<FocusEvent>>,
+    onQBlur: EventName<QDropdownCustomEvent<FocusEvent>>,
+    onQClick: EventName<QDropdownCustomEvent<MouseEvent>>
 };
 
 export const QDropdown: StencilReactComponent<QDropdownElement, QDropdownEvents, Components.QDropdown> = /*@__PURE__*/ createComponent<QDropdownElement, QDropdownEvents, Components.QDropdown>({
@@ -128,7 +139,10 @@ export const QDropdown: StencilReactComponent<QDropdownElement, QDropdownEvents,
     react: React,
     events: {
         onQChange: 'qChange',
-        onQSelect: 'qSelect'
+        onQSelect: 'qSelect',
+        onQFocus: 'qFocus',
+        onQBlur: 'qBlur',
+        onQClick: 'qClick'
     } as QDropdownEvents,
     defineCustomElement: defineQDropdown
 });
@@ -148,7 +162,8 @@ export type QInputEvents = {
     onQChange: EventName<QInputCustomEvent<string>>,
     onQInput: EventName<QInputCustomEvent<string>>,
     onQBlur: EventName<QInputCustomEvent<FocusEvent>>,
-    onQFocus: EventName<QInputCustomEvent<FocusEvent>>
+    onQFocus: EventName<QInputCustomEvent<FocusEvent>>,
+    onQClick: EventName<QInputCustomEvent<MouseEvent>>
 };
 
 export const QInput: StencilReactComponent<QInputElement, QInputEvents, Components.QInput> = /*@__PURE__*/ createComponent<QInputElement, QInputEvents, Components.QInput>({
@@ -160,19 +175,30 @@ export const QInput: StencilReactComponent<QInputElement, QInputEvents, Componen
         onQChange: 'qChange',
         onQInput: 'qInput',
         onQBlur: 'qBlur',
-        onQFocus: 'qFocus'
+        onQFocus: 'qFocus',
+        onQClick: 'qClick'
     } as QInputEvents,
     defineCustomElement: defineQInput
 });
 
-export type QQuantitySelectorEvents = { onQChange: EventName<QQuantitySelectorCustomEvent<number>> };
+export type QQuantitySelectorEvents = {
+    onQChange: EventName<QQuantitySelectorCustomEvent<number>>,
+    onQFocus: EventName<QQuantitySelectorCustomEvent<FocusEvent>>,
+    onQBlur: EventName<QQuantitySelectorCustomEvent<FocusEvent>>,
+    onQClick: EventName<QQuantitySelectorCustomEvent<MouseEvent>>
+};
 
 export const QQuantitySelector: StencilReactComponent<QQuantitySelectorElement, QQuantitySelectorEvents, Components.QQuantitySelector> = /*@__PURE__*/ createComponent<QQuantitySelectorElement, QQuantitySelectorEvents, Components.QQuantitySelector>({
     tagName: 'q-quantity-selector',
     elementClass: QQuantitySelectorElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
-    events: { onQChange: 'qChange' } as QQuantitySelectorEvents,
+    events: {
+        onQChange: 'qChange',
+        onQFocus: 'qFocus',
+        onQBlur: 'qBlur',
+        onQClick: 'qClick'
+    } as QQuantitySelectorEvents,
     defineCustomElement: defineQQuantitySelector
 });
 
@@ -243,14 +269,20 @@ export const QStepDiagramItem: StencilReactComponent<QStepDiagramItemElement, QS
     defineCustomElement: defineQStepDiagramItem
 });
 
-export type QSyntaxBoxEvents = NonNullable<unknown>;
+export type QSyntaxBoxEvents = {
+    onQChange: EventName<QSyntaxBoxCustomEvent<string>>,
+    onQInput: EventName<QSyntaxBoxCustomEvent<string>>
+};
 
 export const QSyntaxBox: StencilReactComponent<QSyntaxBoxElement, QSyntaxBoxEvents, Components.QSyntaxBox> = /*@__PURE__*/ createComponent<QSyntaxBoxElement, QSyntaxBoxEvents, Components.QSyntaxBox>({
     tagName: 'q-syntax-box',
     elementClass: QSyntaxBoxElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
-    events: {} as QSyntaxBoxEvents,
+    events: {
+        onQChange: 'qChange',
+        onQInput: 'qInput'
+    } as QSyntaxBoxEvents,
     defineCustomElement: defineQSyntaxBox
 });
 
@@ -258,7 +290,8 @@ export type QTextareaEvents = {
     onQChange: EventName<QTextareaCustomEvent<string>>,
     onQInput: EventName<QTextareaCustomEvent<string>>,
     onQBlur: EventName<QTextareaCustomEvent<FocusEvent>>,
-    onQFocus: EventName<QTextareaCustomEvent<FocusEvent>>
+    onQFocus: EventName<QTextareaCustomEvent<FocusEvent>>,
+    onQClick: EventName<QTextareaCustomEvent<MouseEvent>>
 };
 
 export const QTextarea: StencilReactComponent<QTextareaElement, QTextareaEvents, Components.QTextarea> = /*@__PURE__*/ createComponent<QTextareaElement, QTextareaEvents, Components.QTextarea>({
@@ -270,7 +303,8 @@ export const QTextarea: StencilReactComponent<QTextareaElement, QTextareaEvents,
         onQChange: 'qChange',
         onQInput: 'qInput',
         onQBlur: 'qBlur',
-        onQFocus: 'qFocus'
+        onQFocus: 'qFocus',
+        onQClick: 'qClick'
     } as QTextareaEvents,
     defineCustomElement: defineQTextarea
 });
@@ -286,14 +320,24 @@ export const QThumbnail: StencilReactComponent<QThumbnailElement, QThumbnailEven
     defineCustomElement: defineQThumbnail
 });
 
-export type QToggleEvents = { onQChange: EventName<QToggleCustomEvent<boolean>> };
+export type QToggleEvents = {
+    onQChange: EventName<QToggleCustomEvent<boolean>>,
+    onQFocus: EventName<QToggleCustomEvent<FocusEvent>>,
+    onQBlur: EventName<QToggleCustomEvent<FocusEvent>>,
+    onQClick: EventName<QToggleCustomEvent<MouseEvent>>
+};
 
 export const QToggle: StencilReactComponent<QToggleElement, QToggleEvents, Components.QToggle> = /*@__PURE__*/ createComponent<QToggleElement, QToggleEvents, Components.QToggle>({
     tagName: 'q-toggle',
     elementClass: QToggleElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
-    events: { onQChange: 'qChange' } as QToggleEvents,
+    events: {
+        onQChange: 'qChange',
+        onQFocus: 'qFocus',
+        onQBlur: 'qBlur',
+        onQClick: 'qClick'
+    } as QToggleEvents,
     defineCustomElement: defineQToggle
 });
 
