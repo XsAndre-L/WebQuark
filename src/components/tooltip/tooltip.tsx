@@ -58,28 +58,95 @@ export class QTooltip {
 
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
+  private getContainingBlock = (el: HTMLElement): HTMLElement | null => {
+    let current: Node | null = el;
+    while (current) {
+      // 1. Cross shadow DOM boundary if parentElement is null but parentNode exists
+      let parent: any = current.parentElement;
+      if (!parent && current.parentNode) {
+        const node = current.parentNode;
+        if (node.nodeType === 11 && (node as any).host) { // DOCUMENT_FRAGMENT_NODE (ShadowRoot)
+          parent = (node as any).host;
+        } else {
+          parent = node;
+        }
+      }
+
+      // 2. Stop traversing if we reach the document root or an invalid node
+      if (!parent || parent.nodeType !== 1) { // ELEMENT_NODE
+        current = parent;
+        continue;
+      }
+
+      // 3. Inspect computed styles for elements that override position: fixed
+      const style = window.getComputedStyle(parent);
+      if (style) {
+        const transform = style.transform;
+        const perspective = style.perspective;
+        const filter = style.filter;
+        const backdropFilter = style.backdropFilter || (style as any).webkitBackdropFilter;
+        const willChange = style.willChange;
+        const contain = style.contain;
+
+        if (
+          (transform && transform !== 'none') ||
+          (perspective && perspective !== 'none') ||
+          (filter && filter !== 'none') ||
+          (backdropFilter && backdropFilter !== 'none') ||
+          (willChange && (
+            willChange.includes('transform') ||
+            willChange.includes('perspective') ||
+            willChange.includes('filter') ||
+            willChange.includes('backdrop-filter')
+          )) ||
+          (contain && (
+            contain.includes('paint') ||
+            contain.includes('contain') ||
+            contain.includes('layout') ||
+            contain.includes('content') ||
+            contain.includes('strict')
+          ))
+        ) {
+          return parent;
+        }
+      }
+      current = parent;
+    }
+    return null;
+  };
+
   private updatePosition = () => {
     if (!this.parentEl) return;
     const parentRect = this.parentEl.getBoundingClientRect();
+    
+    let offsetLeft = 0;
+    let offsetTop = 0;
+    const container = this.getContainingBlock(this.el);
+    if (container) {
+      const containerRect = container.getBoundingClientRect();
+      offsetLeft = containerRect.left;
+      offsetTop = containerRect.top;
+    }
+
     let top = 0;
     let left = 0;
 
     switch (this.position) {
       case 'top':
-        left = parentRect.left + parentRect.width / 2;
-        top = parentRect.top;
+        left = parentRect.left + parentRect.width / 2 - offsetLeft;
+        top = parentRect.top - offsetTop;
         break;
       case 'bottom':
-        left = parentRect.left + parentRect.width / 2;
-        top = parentRect.bottom;
+        left = parentRect.left + parentRect.width / 2 - offsetLeft;
+        top = parentRect.bottom - offsetTop;
         break;
       case 'left':
-        left = parentRect.left;
-        top = parentRect.top + parentRect.height / 2;
+        left = parentRect.left - offsetLeft;
+        top = parentRect.top + parentRect.height / 2 - offsetTop;
         break;
       case 'right':
-        left = parentRect.right;
-        top = parentRect.top + parentRect.height / 2;
+        left = parentRect.right - offsetLeft;
+        top = parentRect.top + parentRect.height / 2 - offsetTop;
         break;
     }
 
