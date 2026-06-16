@@ -40,13 +40,17 @@ export class QTextarea {
 
   @Watch('value')
   watchValue(newValue: string) {
-    this.internals.setFormValue(newValue);
+    if (this.internals && typeof this.internals.setFormValue === 'function') {
+      this.internals.setFormValue(newValue);
+    }
     requestAnimationFrame(() => this.adjustHeightInternal());
   }
 
   componentWillLoad() {
     this.initialValue = this.value || "";
-    this.internals.setFormValue(this.value);
+    if (this.internals && typeof this.internals.setFormValue === 'function') {
+      this.internals.setFormValue(this.value);
+    }
   }
 
   componentDidLoad() {
@@ -55,7 +59,9 @@ export class QTextarea {
 
   formResetCallback() {
     this.value = this.initialValue;
-    this.internals.setFormValue(this.value);
+    if (this.internals && typeof this.internals.setFormValue === 'function') {
+      this.internals.setFormValue(this.value);
+    }
     requestAnimationFrame(() => this.adjustHeightInternal());
   }
 

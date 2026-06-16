@@ -14,16 +14,18 @@ function setElementProperties(el: ElementWithHelpers, props: Record<string, any>
   const tag = el.tagName?.toLowerCase();
   Object.keys(props).forEach(pName => {
     const val = props[pName];
-    // q-toggle.checked has a @Watch that emits qChange, which feeds back into the
-    // playground registry creating an infinite loop. Use the dedicated setChecked()
-    // method instead so the watcher suppresses the re-emit.
-    if (tag === 'q-toggle' && pName === 'checked' && typeof el.setChecked === 'function') {
-      el.setChecked(val);
-      return;
-    }
-    if (typeof val === 'boolean') {
-      el[pName] = val;
-      if (val) el.setAttribute(pName, '');
+    
+    // Normalize stringified booleans ('true' / 'false') to avoid browser truthy attribute bugs
+    const isBoolean = typeof val === 'boolean' || val === 'true' || val === 'false';
+    
+    if (isBoolean) {
+      const boolVal = val === true || val === 'true';
+      if (tag === 'q-toggle' && pName === 'checked' && typeof el.setChecked === 'function') {
+        el.setChecked(boolVal);
+        return;
+      }
+      el[pName] = boolVal;
+      if (boolVal) el.setAttribute(pName, '');
       else el.removeAttribute(pName);
     } else {
       el[pName] = val;
@@ -210,29 +212,35 @@ class PlaygroundStage extends HTMLElement {
               this.renderFallback(active, spec);
             }
           } else {
-            console.log('[stage effect] component already loaded, updating props:', active);
             const activeEl = this.stageContainer.querySelector(active) as ElementWithHelpers | null;
+            console.log('[stage effect] component already loaded, updating props:', active, 'activeEl found:', !!activeEl);
             if (activeEl) {
               const STRUCTURAL_PROPS = ['type', 'variant'];
               const hasStructuralChange = STRUCTURAL_PROPS.some(propName => {
                 if (!spec.props?.[propName]) return false;
                 const currentVal = activeEl.getAttribute(propName) ?? '';
                 const newVal = String(spec.props[propName].currentValue ?? '');
+                console.log(`[stage structural check] prop: ${propName}, attrVal: "${activeEl.getAttribute(propName)}", currentVal: "${currentVal}", newVal: "${newVal}", changed: ${currentVal !== newVal}`);
                 return currentVal !== newVal;
               });
-
+              console.log('[stage effect] hasStructuralChange:', hasStructuralChange);
               if (hasStructuralChange) {
                 this.loadedTag = null;
                 const CUSTOM_VIEW_TAGS = ['q-button', 'q-input'];
                 if (CUSTOM_VIEW_TAGS.includes(active)) {
+                  console.log('[stage effect] reloading custom sandbox view for:', active);
                   await this.loadComponentSandboxView(active, spec, registry);
                 } else {
+                  console.log('[stage effect] rendering fallback for:', active);
                   this.renderFallback(active, spec);
                 }
                 this.loadedTag = active;
               } else {
+                console.log('[stage effect] applying simple property updates to existing element');
                 this.updateElementFromSpec(activeEl, spec);
               }
+              console.log('[stage effect] applying property updates to existing element');
+              this.updateElementFromSpec(activeEl, spec);
             }
           }
         } else if (tab === 'variants') {

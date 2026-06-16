@@ -24,7 +24,7 @@ export const config: Config = {
     },
     {
       type: 'www',
-      dir: 'dist/www',
+      dir: 'dist/playground',
       serviceWorker: null, // disable service workers
       indexHtml: 'playground/index.html',
       copy: [

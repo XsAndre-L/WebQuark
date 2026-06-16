@@ -41,20 +41,25 @@
     "packages/react",
     "packages/angular"
   ],
+  "bin": {
+    "webquark-sandbox": "./scripts/webquark-serve.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/stenciljs/component-starter.git"
   },
   "files": [
-    "dist/"
+    "dist/",
+    "scripts/webquark-serve.js"
   ],
   "scripts": {
-    "build": "stencil build",
+    "build": "bun build src/playground/playground.ts --outfile=src/playground/playground.bundled.js --loader .html:text --loader .css:text && bun build scripts/webquark-serve.ts --outfile=scripts/webquark-serve.js --target=node --format=cjs && stencil build",
     "start": "bun run scripts/start-playground.ts",
+    "dev": "bun run start",
     "test": "stencil-test --prod",
     "test:watch": "stencil-test --prod --watch",
     "generate": "stencil generate",
-    "publish": "node scripts/publish.js",
+    "publish": "bun run scripts/publish.ts",
     "align-headers": "bun run scripts/align-headers.ts"
   },
   "devDependencies": {

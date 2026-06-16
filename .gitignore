@@ -30,3 +30,5 @@ agents/
 # Compiled Playground Bundle
 src/playground/playground.bundled.js
 
+# Compiled CLI Sandbox Server
+scripts/webquark-serve.js

@@ -54,6 +54,11 @@
       "default": "No items found in this section.",
       "desc": "Custom component fallback layout when rows are empty"
     },
+    "footer": {
+      "type": "html",
+      "default": "<div style=\"padding: 0px 16px; font-size: 0.85rem; opacity: 0.7;\">Total entries: 3</div>",
+      "desc": "Custom footer content slot (appends to table bottom)"
+    },
     "toolbar-left": {
       "type": "text",
       "default": "",
