@@ -183,4 +183,13 @@
   border-radius: var(--q-radius-md, 8px);
 }
 
+/* Disabled State Visual Styling */
+:host([disabled]) {
+  opacity: 0.6;
+}
+
+:host([disabled]) .editor-textarea {
+  cursor: not-allowed;
+}
+
 
