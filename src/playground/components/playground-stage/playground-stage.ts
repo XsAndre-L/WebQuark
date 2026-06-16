@@ -1,7 +1,15 @@
-import { loadComponentResources } from '../loader-helper.js';
-import { activeComponent, activeTab, componentRegistry, effect, serializeComponentCode } from '../../state.js';
+import { activeComponent, activeTab, componentRegistry, effect, serializeComponentCode, ComponentSpec } from '../../state';
+import html from './playground-stage.html';
+import css from './playground-stage.css';
 
-function setElementProperties(el, props) {
+type ElementWithHelpers = HTMLElement & {
+  setChecked?: (v: any) => void;
+  options?: any;
+  _resizeObserver?: ResizeObserver;
+  [key: string]: any;
+};
+
+function setElementProperties(el: ElementWithHelpers, props: Record<string, any>): void {
   if (!el || !props) return;
   const tag = el.tagName?.toLowerCase();
   Object.keys(props).forEach(pName => {
@@ -28,32 +36,49 @@ function setElementProperties(el, props) {
   });
 }
 
-const SYNCBACK_MAP = {
-  'q-sidepanel': { qClose:  (cfg, _det) => { cfg.props.open.currentValue = false; } },
-  'q-dialog':    { qClose:  (cfg, _det) => { cfg.props.open.currentValue = false; } },
-  'q-dropdown':  { qChange: (cfg, det)  => { cfg.props.value.currentValue = det; } },
-  'q-input':     { qChange: (cfg, det)  => { cfg.props.value.currentValue = det; } },
-  'q-textarea':  { qChange: (cfg, det)  => { cfg.props.value.currentValue = det; } },
-  'q-toggle':    { qChange: (cfg, det)  => { cfg.props.checked.currentValue = det; } },
+const SYNCBACK_MAP: Record<string, Record<string, (cfg: ComponentSpec, det: any) => void>> = {
+  'q-sidepanel': { qClose:  (cfg, _det) => { if (cfg.props) cfg.props.open.currentValue = false; } },
+  'q-dialog':    { qClose:  (cfg, _det) => { if (cfg.props) cfg.props.open.currentValue = false; } },
+  'q-dropdown':  { qChange: (cfg, det)  => { if (cfg.props) cfg.props.value.currentValue = det; } },
+  'q-input':     { qChange: (cfg, det)  => { if (cfg.props) cfg.props.value.currentValue = det; } },
+  'q-textarea':  { qChange: (cfg, det)  => { if (cfg.props) cfg.props.value.currentValue = det; } },
+  'q-toggle':    { qChange: (cfg, det)  => { if (cfg.props) cfg.props.checked.currentValue = det; } },
 };
 
-function emptyState(msg) {
+function emptyState(msg: string): string {
   return `<div class="grid-empty-state">${msg}</div>`;
 }
 
-
 class PlaygroundStage extends HTMLElement {
-  async connectedCallback() {
-    try {
-      const html = await loadComponentResources('playground-stage');
-      this.innerHTML = html;
-      this.init();
-    } catch (err) {
-      console.error('Failed to load stage component:', err);
+  private tabsBar: HTMLElement | null = null;
+  private activeCompBadge: HTMLElement | null = null;
+  private stageContainer: HTMLElement | null = null;
+  private variantsGrid: HTMLElement | null = null;
+  private edgecasesGrid: HTMLElement | null = null;
+  private activeModule: any = null;
+  private loadedTag: string | null = null;
+  private syncedComponents = new Set<string>();
+  private handleStageClick?: (e: MouseEvent) => void;
+  private handleGlobalClick?: (e: MouseEvent) => void;
+  private cleanupStageEffect?: () => void;
+
+  connectedCallback(): void {
+    // 1. Inject template HTML
+    this.innerHTML = html;
+
+    // 2. Inject CSS stylesheet (scoped style wrapper)
+    const styleId = 'playground-stage-style';
+    if (!document.getElementById(styleId)) {
+      const style = document.createElement('style');
+      style.id = styleId;
+      style.textContent = css;
+      document.head.appendChild(style);
     }
+
+    this.init();
   }
 
-  init() {
+  private init(): void {
     this.tabsBar = this.querySelector('#tabsBar');
     this.activeCompBadge = this.querySelector('#activeCompBadge');
     this.stageContainer = this.querySelector('#stageContainer');
@@ -61,75 +86,83 @@ class PlaygroundStage extends HTMLElement {
     this.edgecasesGrid = this.querySelector('#edgecasesGrid');
     this.activeModule = null;
     this.loadedTag = null;
-    this.syncedComponents = new Set();
+    this.syncedComponents = new Set<string>();
+
+    if (!this.stageContainer) return;
 
     // 1. Tab switching buttons event listeners
     const tabBtns = this.querySelectorAll('.tab-btn');
     tabBtns.forEach(btn => {
       btn.addEventListener('click', () => {
-        const nextTab = btn.dataset.tab;
-        activeTab.set(nextTab);
+        const nextTab = (btn as HTMLElement).dataset.tab;
+        if (nextTab) {
+          activeTab.set(nextTab);
+        }
       });
     });
 
-    // 2. Intercept click actions inside interactive Sandbox stage (programmatic sidepanel helpers)
-    this.handleStageClick = (e) => {
-      if (e.target && e.target.id === 'closePanelBtn') {
-        const panel = this.stageContainer.querySelector('q-sidepanel');
+    // 2. Intercept click actions inside interactive Sandbox stage
+    this.handleStageClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (!this.stageContainer) return;
+      
+      if (target && target.id === 'closePanelBtn') {
+        const panel = this.stageContainer.querySelector('q-sidepanel') as ElementWithHelpers | null;
         if (panel) {
           panel.open = false;
           const registry = componentRegistry();
-          if (registry['q-sidepanel']) {
+          if (registry['q-sidepanel'] && registry['q-sidepanel'].props) {
             registry['q-sidepanel'].props.open.currentValue = false;
             componentRegistry.set({ ...registry });
           }
         }
       }
-      if (e.target && e.target.id === 'stageOpenPanelBtn') {
-        const panel = this.stageContainer.querySelector('q-sidepanel');
+      if (target && target.id === 'stageOpenPanelBtn') {
+        const panel = this.stageContainer.querySelector('q-sidepanel') as ElementWithHelpers | null;
         if (panel) {
           panel.open = true;
           const registry = componentRegistry();
-          if (registry['q-sidepanel']) {
+          if (registry['q-sidepanel'] && registry['q-sidepanel'].props) {
             registry['q-sidepanel'].props.open.currentValue = true;
             componentRegistry.set({ ...registry });
           }
         }
       }
-      if (e.target && e.target.id === 'stageOpenDialogBtn') {
-        const dialog = this.stageContainer.querySelector('q-dialog');
+      if (target && target.id === 'stageOpenDialogBtn') {
+        const dialog = this.stageContainer.querySelector('q-dialog') as ElementWithHelpers | null;
         if (dialog) {
           dialog.open = true;
           const registry = componentRegistry();
-          if (registry['q-dialog']) {
+          if (registry['q-dialog'] && registry['q-dialog'].props) {
             registry['q-dialog'].props.open.currentValue = true;
             componentRegistry.set({ ...registry });
           }
         }
       }
     };
-    this.stageContainer.addEventListener('click', this.handleStageClick);
+    this.stageContainer.addEventListener('click', this.handleStageClick as EventListener);
 
     // 3. Intercept click triggers for panels in Variants and Edge Cases grids
-    this.handleGlobalClick = (e) => {
-      if (e.target && e.target.classList.contains('var-open-panel-btn')) {
-        const card = e.target.closest('.variant-card');
+    this.handleGlobalClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target && target.classList.contains('var-open-panel-btn')) {
+        const card = target.closest('.variant-card');
         if (card) {
-          const panel = card.querySelector('q-sidepanel');
+          const panel = card.querySelector('q-sidepanel') as ElementWithHelpers | null;
           if (panel) panel.open = true;
         }
       }
-      if (e.target && e.target.classList.contains('var-open-dialog-btn')) {
-        const card = e.target.closest('.variant-card');
+      if (target && target.classList.contains('var-open-dialog-btn')) {
+        const card = target.closest('.variant-card');
         if (card) {
-          const dialog = card.querySelector('q-dialog');
+          const dialog = card.querySelector('q-dialog') as ElementWithHelpers | null;
           if (dialog) dialog.open = true;
         }
       }
     };
-    document.addEventListener('click', this.handleGlobalClick);
+    document.addEventListener('click', this.handleGlobalClick as EventListener);
 
-    // 4. React to Active Component, Tab, and Registry modifications (Angular-style Signal Effects)
+    // 4. React to Active Component, Tab, and Registry modifications
     this.cleanupStageEffect = effect(async () => {
       const active = activeComponent();
       const tab = activeTab();
@@ -138,22 +171,22 @@ class PlaygroundStage extends HTMLElement {
       console.log('[stage effect] active component:', active, 'has spec:', !!spec, 'tab:', tab);
 
       this.setAttribute('active-component', active);
- 
+
       // A. Update Active Component Badge
       if (this.activeCompBadge) {
         this.activeCompBadge.innerText = active === 'global-styling' ? 'Global Styling' : active;
       }
- 
+
       // B. Manage Header Tabs Bar visibility
       if (this.tabsBar) {
         this.tabsBar.style.display = active === 'global-styling' ? 'none' : '';
       }
- 
+
       // C. Highlight selected tab button
       tabBtns.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.tab === tab);
+        btn.classList.toggle('active', (btn as HTMLElement).dataset.tab === tab);
       });
- 
+
       // D. Toggle visibility of content wrappers
       this.querySelectorAll('.stage-content-wrapper > .tab-content').forEach(c => {
         if (active === 'global-styling') {
@@ -162,9 +195,9 @@ class PlaygroundStage extends HTMLElement {
           c.classList.toggle('active', c.id === `content-${tab}`);
         }
       });
- 
+
       // E. Render selected view content based on Tab choice
-      if (active !== 'global-styling' && spec) {
+      if (active !== 'global-styling' && spec && this.stageContainer) {
         if (tab === 'sandbox') {
           // If we haven't rendered this component or are switching back to sandbox, re-render
           if (this.loadedTag !== active) {
@@ -178,12 +211,8 @@ class PlaygroundStage extends HTMLElement {
             }
           } else {
             console.log('[stage effect] component already loaded, updating props:', active);
-            const activeEl = this.stageContainer.querySelector(active);
+            const activeEl = this.stageContainer.querySelector(active) as ElementWithHelpers | null;
             if (activeEl) {
-              // Structural props like 'type' change the shadow DOM layout of a Stencil
-              // component so drastically that patching the live element via setAttribute
-              // does not reliably trigger a re-render. Detect these changes and force a
-              // full element recreation (same code path as navigating away and back).
               const STRUCTURAL_PROPS = ['type', 'variant'];
               const hasStructuralChange = STRUCTURAL_PROPS.some(propName => {
                 if (!spec.props?.[propName]) return false;
@@ -193,8 +222,6 @@ class PlaygroundStage extends HTMLElement {
               });
 
               if (hasStructuralChange) {
-                // Reset so loadComponentSandboxView treats this as a fresh load
-                // but syncedComponents still contains the tag, so knob values are preserved.
                 this.loadedTag = null;
                 const CUSTOM_VIEW_TAGS = ['q-button', 'q-input'];
                 if (CUSTOM_VIEW_TAGS.includes(active)) {
@@ -202,7 +229,6 @@ class PlaygroundStage extends HTMLElement {
                 } else {
                   this.renderFallback(active, spec);
                 }
-                // Restore loadedTag so the next non-structural knob change doesn't re-fetch
                 this.loadedTag = active;
               } else {
                 this.updateElementFromSpec(activeEl, spec);
@@ -222,7 +248,8 @@ class PlaygroundStage extends HTMLElement {
     });
   }
 
-  async loadComponentSandboxView(tag, spec, registry) {
+  private async loadComponentSandboxView(tag: string, spec: ComponentSpec, registry: Record<string, ComponentSpec>): Promise<void> {
+    if (!this.stageContainer) return;
     const isFirstLoad = !this.syncedComponents.has(tag);
     if (isFirstLoad) {
       this.syncedComponents.add(tag);
@@ -256,37 +283,41 @@ class PlaygroundStage extends HTMLElement {
         }
         this.stageContainer.innerHTML = htmlText;
 
-        const el = this.stageContainer.querySelector(tag);
+        const el = this.stageContainer.querySelector(tag) as ElementWithHelpers | null;
         if (el) {
           customHtmlLoaded = true;
           // Sync spec properties and slots from HTML definitions only on first load
           if (isFirstLoad) {
             if (spec.props) {
               Object.keys(spec.props).forEach(propName => {
-                const prop = spec.props[propName];
-                if (prop.type === 'boolean') {
-                  prop.currentValue = el.hasAttribute(propName);
-                } else {
-                  const attrVal = el.getAttribute(propName);
-                  if (attrVal !== null) {
-                    prop.currentValue = attrVal;
+                if (spec.props) {
+                  const prop = spec.props[propName];
+                  if (prop.type === 'boolean') {
+                    prop.currentValue = el.hasAttribute(propName);
+                  } else {
+                    const attrVal = el.getAttribute(propName);
+                    if (attrVal !== null) {
+                      prop.currentValue = attrVal;
+                    }
                   }
                 }
               });
             }
             if (spec.slots) {
               Object.keys(spec.slots).forEach(slotName => {
-                const slot = spec.slots[slotName];
-                if (slotName === 'default') {
-                  const clone = el.cloneNode(true);
-                  Array.from(clone.children).forEach(child => {
-                    if (child.hasAttribute('slot')) child.remove();
-                  });
-                  slot.currentValue = clone.innerHTML.trim();
-                } else {
-                  const slotEl = el.querySelector(`[slot="${slotName}"]`);
-                  if (slotEl) {
-                    slot.currentValue = slotEl.innerHTML.trim();
+                if (spec.slots) {
+                  const slot = spec.slots[slotName];
+                  if (slotName === 'default') {
+                    const clone = el.cloneNode(true) as HTMLElement;
+                    Array.from(clone.children).forEach(child => {
+                      if (child.hasAttribute('slot')) child.remove();
+                    });
+                    slot.currentValue = clone.innerHTML.trim();
+                  } else {
+                    const slotEl = el.querySelector(`[slot="${slotName}"]`);
+                    if (slotEl) {
+                      slot.currentValue = slotEl.innerHTML.trim();
+                    }
                   }
                 }
               });
@@ -307,7 +338,7 @@ class PlaygroundStage extends HTMLElement {
       this.renderFallback(tag, spec);
     }
 
-    const activeEl = this.stageContainer.querySelector(tag);
+    const activeEl = this.stageContainer.querySelector(tag) as ElementWithHelpers | null;
 
     // 5. Bind events to log dispatches
     if (activeEl) {
@@ -318,12 +349,13 @@ class PlaygroundStage extends HTMLElement {
     if (spec.options && activeEl) {
       activeEl.options = spec.options;
     }
-    if (spec.stageHelper) {
+    if (spec.hasOwnProperty('stageHelper') && (spec as any).stageHelper && activeEl) {
+      const stageHelper = (spec as any).stageHelper;
       const helper = document.createElement('div');
       helper.className = 'stage-helper-bar';
       helper.innerHTML = `
-        <span class="stage-helper-text">${spec.stageHelper.label}</span>
-        <q-button variant="secondary" size="sm" id="${spec.stageHelper.buttonId}">${spec.stageHelper.buttonLabel}</q-button>
+        <span class="stage-helper-text">${stageHelper.label}</span>
+        <q-button variant="secondary" size="sm" id="${stageHelper.buttonId}">${stageHelper.buttonLabel}</q-button>
       `;
       this.stageContainer.appendChild(helper);
     }
@@ -359,20 +391,22 @@ class PlaygroundStage extends HTMLElement {
     }
   }
 
-  renderFallback(tag, spec) {
-    const el = document.createElement(tag);
+  private renderFallback(tag: string, spec: ComponentSpec): void {
+    if (!this.stageContainer) return;
+    const el = document.createElement(tag) as ElementWithHelpers;
     this.updateElementFromSpec(el, spec);
     this.stageContainer.innerHTML = '';
     this.stageContainer.appendChild(el);
   }
 
-  bindEvents(activeEl, tag) {
+  private bindEvents(activeEl: ElementWithHelpers, tag: string): void {
     const eventsToLog = ['qChange', 'qSelect', 'qClose', 'qSlideChange', 'qLightboxOpen', 'qLightboxClose', 'qItemClick', 'qScroll'];
     eventsToLog.forEach(eventName => {
       activeEl.addEventListener(eventName, e => {
+        const customEvent = e as CustomEvent;
         // Dispatch event logging window notification
         window.dispatchEvent(new CustomEvent('playground:event-dispatched', {
-          detail: { name: eventName, detail: e.detail }
+          detail: { name: eventName, detail: customEvent.detail }
         }));
 
         // Interactive states syncback
@@ -383,7 +417,7 @@ class PlaygroundStage extends HTMLElement {
 
         const handler = SYNCBACK_MAP[tag]?.[eventName];
         if (handler) {
-          handler(config, e.detail);
+          handler(config, customEvent.detail);
           changed = true;
         }
 
@@ -394,13 +428,15 @@ class PlaygroundStage extends HTMLElement {
     });
   }
 
-  updateElementFromSpec(el, spec) {
+  private updateElementFromSpec(el: ElementWithHelpers, spec: ComponentSpec): void {
     if (!el || !spec) return;
 
     if (spec.props) {
-      const flatProps = {};
+      const flatProps: Record<string, any> = {};
       Object.keys(spec.props).forEach(pName => {
-        flatProps[pName] = spec.props[pName].currentValue;
+        if (spec.props) {
+          flatProps[pName] = spec.props[pName].currentValue;
+        }
       });
       setElementProperties(el, flatProps);
     }
@@ -414,15 +450,15 @@ class PlaygroundStage extends HTMLElement {
     }
   }
 
-  updateElementSlots(el, config) {
+  private updateElementSlots(el: ElementWithHelpers, config: ComponentSpec): void {
     if (!config.slots) return;
 
     // Save named slots elements
-    const namedSlots = {};
+    const namedSlots: Record<string, HTMLElement> = {};
     Array.from(el.children).forEach(child => {
       const slotName = child.getAttribute('slot');
       if (slotName) {
-        namedSlots[slotName] = child;
+        namedSlots[slotName] = child as HTMLElement;
       }
     });
 
@@ -437,17 +473,19 @@ class PlaygroundStage extends HTMLElement {
     // Named slots
     Object.keys(config.slots).forEach(slotName => {
       if (slotName === 'default') return;
-      const slot = config.slots[slotName];
-      if (slot.currentValue) {
-        const wrapper = document.createElement('span');
-        wrapper.setAttribute('slot', slotName);
-        wrapper.innerHTML = slot.currentValue;
-        el.appendChild(wrapper);
+      if (config.slots) {
+        const slot = config.slots[slotName];
+        if (slot.currentValue) {
+          const wrapper = document.createElement('span');
+          wrapper.setAttribute('slot', slotName);
+          wrapper.innerHTML = slot.currentValue;
+          el.appendChild(wrapper);
+        }
       }
     });
   }
 
-  renderPlaygroundCard(tag, config, item) {
+  private renderPlaygroundCard(tag: string, config: ComponentSpec, item: any): HTMLElement {
     const card = document.createElement('div');
     card.className = 'variant-card';
 
@@ -459,7 +497,7 @@ class PlaygroundStage extends HTMLElement {
     const stage = document.createElement('div');
     stage.className = 'variant-card-stage';
 
-    const el = document.createElement(tag);
+    const el = document.createElement(tag) as ElementWithHelpers;
     setElementProperties(el, item.props);
 
     const defaultSlot = item.slot !== undefined ? item.slot : config.slots?.default?.default || '';
@@ -475,11 +513,13 @@ class PlaygroundStage extends HTMLElement {
       });
     } else if (config.slots) {
       Object.keys(config.slots).forEach(slotName => {
-        if (slotName !== 'default' && config.slots[slotName].default) {
-          const wrapper = document.createElement('span');
-          wrapper.setAttribute('slot', slotName);
-          wrapper.innerHTML = config.slots[slotName].default;
-          el.appendChild(wrapper);
+        if (config.slots) {
+          if (slotName !== 'default' && config.slots[slotName].default) {
+            const wrapper = document.createElement('span');
+            wrapper.setAttribute('slot', slotName);
+            wrapper.innerHTML = config.slots[slotName].default;
+            el.appendChild(wrapper);
+          }
         }
       });
     }
@@ -510,7 +550,7 @@ class PlaygroundStage extends HTMLElement {
     }
 
     if (tag === 'q-sidepanel') {
-      const btn = document.createElement('q-button');
+      const btn = document.createElement('q-button') as any;
       btn.variant = 'secondary';
       btn.size = 'sm';
       btn.className = 'var-open-panel-btn';
@@ -518,7 +558,7 @@ class PlaygroundStage extends HTMLElement {
       card.appendChild(btn);
     }
     if (tag === 'q-dialog') {
-      const btn = document.createElement('q-button');
+      const btn = document.createElement('q-button') as any;
       btn.variant = 'secondary';
       btn.size = 'sm';
       btn.className = 'var-open-dialog-btn';
@@ -526,7 +566,7 @@ class PlaygroundStage extends HTMLElement {
       card.appendChild(btn);
     }
 
-    const slots = { default: defaultSlot };
+    const slots: Record<string, string> = { default: defaultSlot };
     if (item.slots) {
       Object.assign(slots, item.slots);
     }
@@ -535,7 +575,7 @@ class PlaygroundStage extends HTMLElement {
       ? `\n\n<!-- Programmatic dropdown options population script -->\n<script>\n  const dropdown = document.querySelector('q-dropdown');\n  dropdown.options = ${JSON.stringify(config.options, null, 2).replace(/\n/g, '\n  ')};\n</script>`
       : null;
     const codeText = serializeComponentCode(tag, item.props, slots, appendScript);
-    const syntaxBox = document.createElement('q-syntax-box');
+    const syntaxBox = document.createElement('q-syntax-box') as any;
     syntaxBox.variant = 'plain';
     syntaxBox.code = codeText;
     syntaxBox.className = 'variant-card-code';
@@ -544,39 +584,45 @@ class PlaygroundStage extends HTMLElement {
     return card;
   }
 
-  renderVariantsMatrix(tag, config) {
+  private renderVariantsMatrix(tag: string, config: ComponentSpec): void {
     if (!this.variantsGrid) return;
     this.variantsGrid.innerHTML = '';
 
-    if (!config.variants || config.variants.length === 0) {
+    const variants = (config as any).variants;
+    if (!variants || variants.length === 0) {
       this.variantsGrid.innerHTML = emptyState('No variant matrix defined for this component.');
       return;
     }
 
-    config.variants.forEach(variant => {
+    variants.forEach((variant: any) => {
       const card = this.renderPlaygroundCard(tag, config, variant);
       this.variantsGrid.appendChild(card);
     });
   }
 
-  renderEdgeCases(tag, config) {
+  private renderEdgeCases(tag: string, config: ComponentSpec): void {
     if (!this.edgecasesGrid) return;
     this.edgecasesGrid.innerHTML = '';
 
-    if (!config.edgeCases || config.edgeCases.length === 0) {
+    const edgeCases = (config as any).edgeCases;
+    if (!edgeCases || edgeCases.length === 0) {
       this.edgecasesGrid.innerHTML = emptyState('No stress-test layout edge cases defined for this component.');
       return;
     }
 
-    config.edgeCases.forEach(edge => {
+    edgeCases.forEach((edge: any) => {
       const card = this.renderPlaygroundCard(tag, config, edge);
       this.edgecasesGrid.appendChild(card);
     });
   }
 
-  disconnectedCallback() {
-    this.stageContainer.removeEventListener('click', this.handleStageClick);
-    document.removeEventListener('click', this.handleGlobalClick);
+  disconnectedCallback(): void {
+    if (this.stageContainer && this.handleStageClick) {
+      this.stageContainer.removeEventListener('click', this.handleStageClick as EventListener);
+    }
+    if (this.handleGlobalClick) {
+      document.removeEventListener('click', this.handleGlobalClick as EventListener);
+    }
 
     if (this.cleanupStageEffect) {
       this.cleanupStageEffect();

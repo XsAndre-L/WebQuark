@@ -1,18 +1,29 @@
-import { loadComponentResources } from '../loader-helper.js';
+import html from './playground-event-log.html';
+import css from './playground-event-log.css';
 
 class PlaygroundEventLog extends HTMLElement {
-  async connectedCallback() {
-    try {
-      const html = await loadComponentResources('playground-event-log');
-      this.innerHTML = html;
-      this.init();
-    } catch (err) {
-      console.error('Failed to load event log component:', err);
+  private logBody: HTMLElement | null = null;
+  private syntaxBox: any = null;
+  private handleEventLog?: (e: CustomEvent) => void;
+
+  connectedCallback(): void {
+    // 1. Inject template HTML
+    this.innerHTML = html;
+
+    // 2. Inject CSS stylesheet (scoped style wrapper)
+    const styleId = 'playground-event-log-style';
+    if (!document.getElementById(styleId)) {
+      const style = document.createElement('style');
+      style.id = styleId;
+      style.textContent = css;
+      document.head.appendChild(style);
     }
+
+    this.init();
   }
 
-  init() {
-    const clearBtn = this.querySelector('#clearLogBtn');
+  private init(): void {
+    const clearBtn = this.querySelector('#clearLogBtn') as HTMLElement | null;
     this.logBody = this.querySelector('#eventLogBody');
     this.syntaxBox = this.querySelector('#eventLogBox');
 
@@ -21,14 +32,14 @@ class PlaygroundEventLog extends HTMLElement {
     }
 
     // Bind log listener on window
-    this.handleEventLog = (e) => {
+    this.handleEventLog = (e: CustomEvent) => {
       this.logEvent(e.detail.name, e.detail.detail);
     };
 
-    window.addEventListener('playground:event-dispatched', this.handleEventLog);
+    window.addEventListener('playground:event-dispatched', this.handleEventLog as EventListener);
   }
 
-  logEvent(name, detail) {
+  private logEvent(name: string, detail: any): void {
     if (!this.logBody) return;
 
     const placeholder = this.logBody.querySelector('.log-placeholder');
@@ -53,14 +64,16 @@ class PlaygroundEventLog extends HTMLElement {
     }
   }
 
-  clearLog() {
+  private clearLog(): void {
     if (this.logBody) {
       this.logBody.innerHTML = '<span class="log-placeholder">Interactive events will appear here in real-time...</span>';
     }
   }
 
-  disconnectedCallback() {
-    window.removeEventListener('playground:event-dispatched', this.handleEventLog);
+  disconnectedCallback(): void {
+    if (this.handleEventLog) {
+      window.removeEventListener('playground:event-dispatched', this.handleEventLog as EventListener);
+    }
   }
 }
 
