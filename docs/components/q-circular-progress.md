@@ -6,15 +6,28 @@ The `<q-circular-progress>` is an SVG-driven, reactive circular progress indicat
 
 ## 1. Component API (Properties & Attributes)
 
-| Property | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `value` | `number` | `0` | The progress percentage from `0` to `100`. |
-| `label` | `string` | `undefined` | Optional centered text label. If not provided, it falls back to displaying `${value}%`. |
-| `indeterminate` | `boolean` | `false` | When `true`, the progress ring spins continuously (infinite spinner state) and ignores the `value` property. |
+| Property | Attribute | Type | Default | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| `value` | `value` | `number` | `0` | The progress percentage from `0` to `100`. |
+| `label` | `label` | `string` | `undefined` | Optional centered text label. If not provided, it falls back to displaying `${value}%`. |
+| `indeterminate` | `indeterminate` | `boolean` | `false` | When `true`, the progress ring spins continuously (infinite spinner state) and ignores the `value` property. |
+| `size` | `size` | `"lg" \| "md" \| "sm"` | `'md'` | Selects predefined dimensions and stroke weights for the progress ring. |
 
 ---
 
-## 2. Visual Variants
+## 2. Slots
+
+None.
+
+---
+
+## 3. Events
+
+None.
+
+---
+
+## 4. Visual Variants
 
 The component adapts its styling and behavior dynamically to cover four distinct display variants:
 
@@ -24,49 +37,50 @@ The component adapts its styling and behavior dynamically to cover four distinct
 
 ### Variant B: Custom Text Label
 *   **Behavior**: Replaces the percentage with custom short phrases (e.g., `"Done"`, `"LOCKED"`, `"Active"`).
-*   **Styling**: Automatically scales the typography inside the ring to ensure the text remains centered and does not overflow the circular boundaries.
+*   **Styling**: Automatically calculates dynamic font sizing inside the ring (`calculateDynamicFontSize`) to ensure the text remains centered and does not overflow the circular boundaries.
 
 ### Variant C: Indeterminate Spinner
 *   **Behavior**: Used for loading indicators. The progress ring fills to exactly 25% and performs an infinite rotation animation.
-*   **Styling**: Utilizes `--q-transition-normal` duration timings for smooth, hardware-friendly 2D spin transforms (safe for Unreal OSR).
+*   **Styling**: Utilizes standard 2D keyframe rotation transforms (safe for Unreal OSR).
 
-### Variant D: Semantic Status Rings
-*   **Behavior**: Color shifts to represent positive, warning, or error states.
-*   **Styling**: The progress fill color is mapped to standard semantic tokens (`--q-color-success`, `--q-color-warning`, `--q-color-danger`) by passing a class or overriding `--q-progress-fill-color`.
+### Variant D: Sizing Configurations (`size`)
+*   **Small (`size="sm"`)**: Size is locked to `64px`, stroke width to `6px`, and center font to `0.75rem`.
+*   **Medium (`size="md"`)**: Default size of `120px`, stroke width `8px`, and center font `1.125rem`.
+*   **Large (`size="lg"`)**: Size is scaled to `180px`, stroke width `10px`, and center font `1.5rem`.
 
 ---
 
-## 3. Typography & Font Styles
+## 5. Typography & Font Styles
 
-*   **Global Font Stack**: Inherits `--q-font-family`.
+*   **Global Font Stack**: Inherits `--q-font-family` (e.g., system font).
 *   **Center Label Text**:
-    *   Font size: `--q-progress-font-size` (defaults to `--q-font-size-lg`, e.g., `1.125rem` / `18px`).
-    *   Font weight: `--q-progress-font-weight` (defaults to `--q-font-weight-bold`, e.g., `600`).
+    *   Font size: `--q-progress-font-size` (defaults based on `size` property, e.g., `1.125rem` for medium).
+    *   Font weight: `--q-progress-font-weight` (defaults to `--q-font-weight-bold`, e.g., `700`).
     *   Text Anchor: `middle` (SVG property to force perfect horizontal centering).
     *   Dominant Baseline: `central` (SVG property to force perfect vertical centering).
     *   Fill Color: Inherits `--q-fg-base` (adapts to light/dark themes).
 
 ---
 
-## 4. CSS Variable Mapping
+## 6. CSS Variable Mapping
 
 Below is the complete list of styling tokens mapped to the component's internal CSS:
 
 | Variable Name | Default Value | Purpose |
 | :--- | :--- | :--- |
-| `--q-progress-size` | `120px` | Outer width and height of the circular container. |
-| `--q-progress-stroke-width` | `8px` | Thickness of the background track and active fill rings. |
+| `--q-progress-size` | `120px` (overridden by size attribute) | Outer width and height of the circular container. |
+| `--q-progress-stroke-width` | `8px` (overridden by size attribute) | Thickness of the background track and active fill rings. |
 | `--q-progress-linecap` | `round` | Line ending style (`round` for modern rounded endpoints, `butt` for sharp borders). |
-| `--q-progress-track-color` | `var(--q-border-color)` | Background inactive track circle color. |
-| `--q-progress-fill-color` | `var(--q-color-primary)` | Active progress percentage ring color. |
-| `--q-progress-font-size` | `var(--q-font-size-lg)` | Font size of the central label. |
-| `--q-progress-font-weight`| `var(--q-font-weight-bold)` | Font weight of the central label. |
+| `--q-progress-track-color` | `var(--q-border-color, #374151)` | Background inactive track circle color. |
+| `--q-progress-fill-color` | `var(--q-color-primary, #60a5fa)` | Active progress percentage ring color. |
+| `--q-progress-font-size` | `var(--q-font-size-lg, 1.125rem)` | Font size of the central label. |
+| `--q-progress-font-weight`| `var(--q-font-weight-bold, 700)` | Font weight of the central label. |
 | `--q-progress-animation-duration`| `1s` | Timeline duration for the fill animation. |
-| `--q-transition-normal` | `250ms cubic-bezier(...)` | Normal transition speed for text modifications. |
+| `--q-transition-normal` | `250ms ease` | Normal transition speed for text modifications. |
 
 ---
 
-## 5. HTML/TSX Structure (Shadow DOM Layout)
+## 7. HTML/TSX Structure (Shadow DOM Layout)
 
 The component utilizes math to calculate the circumference of the circle (`2 * Math.PI * radius`) and applies `stroke-dashoffset` dynamically to draw the percentage ring:
 
@@ -80,6 +94,7 @@ export class QCircularProgress {
   @Prop() value: number = 0;
   @Prop() label?: string;
   @Prop() indeterminate: boolean = false;
+  @Prop({ reflect: true }) size: 'sm' | 'md' | 'lg' = 'md';
 
   render() {
     const size = 120; // Internal SVG viewBox size coordinate
@@ -93,6 +108,10 @@ export class QCircularProgress {
       : circumference - (clampedValue / 100) * circumference;
 
     const displayLabel = this.label !== undefined ? this.label : `${clampedValue}%`;
+
+    // Dynamic Font Styling
+    const baseFontSize = 'var(--q-progress-font-size, var(--q-font-size-lg, 1.125rem))';
+    const textStyle = calculateDynamicFontSize(displayLabel, baseFontSize, 5);
 
     return (
       <div 
@@ -132,7 +151,7 @@ export class QCircularProgress {
               class="progress-text"
               x="50%"
               y="50%"
-              style={displayLabel.length > 5 ? { fontSize: `calc(var(--q-progress-font-size, var(--q-font-size-lg, 1.125rem)) * ${5 / displayLabel.length})` } : {}}
+              style={textStyle}
             >
               {displayLabel}
             </text>
@@ -146,74 +165,41 @@ export class QCircularProgress {
 
 ---
 
-## 6. Component Styling (`q-circular-progress.css`)
+## 8. Unreal Engine / Webview Compatibility Notes
 
-```css
-:host {
-  display: inline-block;
-  width: var(--q-progress-size, 120px);
-  height: var(--q-progress-size, 120px);
-  box-sizing: border-box;
-}
+*   **No Text Rotation**: In CEF OSR, rotating SVG groups that contain both paths and text elements often causes the text label to flicker, render rotated, or disappear. The `<q-circular-progress>` resolves this by isolating the rotation filter exclusively on the SVG paths group (`.progress-ring-circles`) while keeping the central text element completely unrotated.
+*   **OSR Safe Spinner**: The loader spinner executes a clean 2D rotation animation on the paths layer (`@keyframes q-spin { 0% { transform: rotate(-90deg); } 100% { transform: rotate(270deg); } }`). It runs entirely on the browser's compositor thread and does not rely on canvas contexts that could conflict with Unreal's render loop.
+*   **Simple Transition Physics**: Uses a simple transition style on the active progress ring (`stroke-dashoffset`), which is perfectly safe and hardware-accelerated.
 
-.progress-container {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
+---
 
-.progress-svg {
-  width: 100%;
-  height: 100%;
-}
+## 9. Developer Guidelines & Examples
 
-/* Rotates only the circle layers to 12 o'clock (prevents text rendering glitches in OSR) */
-.progress-ring-circles {
-  transform: rotate(-90deg);
-  transform-origin: center;
-}
+### Standard Percentage Progress
+```html
+<q-circular-progress value="60" size="md"></q-circular-progress>
+```
 
-/* Inactive circle track */
-.progress-track {
-  fill: none;
-  stroke: var(--q-progress-track-color, var(--q-border-color, #374151));
-  stroke-width: var(--q-progress-stroke-width, 8px);
-}
+### Small Indeterminate Spinner
+```html
+<q-circular-progress indeterminate="true" size="sm"></q-circular-progress>
+```
 
-/* Active progress circle */
-.progress-fill {
-  fill: none;
-  stroke: var(--q-progress-fill-color, var(--q-color-primary, #60a5fa));
-  stroke-width: var(--q-progress-stroke-width, 8px);
-  stroke-linecap: var(--q-progress-linecap, round);
-  
-  /* Unreal Engine OSR safe animation: simple CSS transition property */
-  transition: stroke-dashoffset var(--q-progress-animation-duration, 1s) cubic-bezier(0.4, 0, 0.2, 1);
-}
+### Custom Labels & Dynamic Recalculation
+```html
+<q-circular-progress id="progress-indicator" value="0" size="lg" label="CONNECTING"></q-circular-progress>
 
-/* Central Text Label (unrotated and sharp) */
-.progress-text {
-  fill: var(--q-fg-base, #f9fafb);
-  font-family: var(--q-font-family, inherit);
-  font-size: var(--q-progress-font-size, var(--q-font-size-lg, 1.125rem));
-  font-weight: var(--q-progress-font-weight, var(--q-font-weight-bold, 700));
-  text-anchor: middle;
-  dominant-baseline: central;
-  
-  transition: fill var(--q-transition-normal, 250ms ease);
-}
-
-/* Indeterminate infinite loading spinner (OSR safe 2D rotation of circles only) */
-.is-indeterminate .progress-ring-circles {
-  animation: q-spin 1.4s linear infinite;
-}
-
-@keyframes q-spin {
-  0% {
-    transform: rotate(-90deg);
-  }
-  100% {
-    transform: rotate(270deg);
-  }
-}
+<script>
+  const progress = document.getElementById('progress-indicator');
+  let pct = 0;
+  const interval = setInterval(() => {
+    pct += 10;
+    if (pct > 100) {
+      progress.label = "SUCCESS";
+      clearInterval(interval);
+    } else {
+      progress.value = pct;
+    }
+  }, 500);
+</script>
 ```

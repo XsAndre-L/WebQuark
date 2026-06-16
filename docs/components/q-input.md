@@ -1,98 +1,97 @@
 # 🧩 Component Specification: `q-input`
 
-The `<q-input>` is a custom single-line text input component designed to match our design system. It supports floating header labels, leading prefix icons, trailing suffix controls (e.g. password visibility toggles), clear buttons, validation error messages, and keyboard focus routing.
+The `<q-input>` is a custom single-line input control component supporting label headers, clear button overlays, numerical spin counters, prefix/suffix slot elements, error states, and keyboard focus routing. It is fully accessible (form-associated) and optimized for high-performance Off-Screen Rendering (OSR) in game engine webviews.
 
 ---
 
 ## 1. Component API (Properties & Attributes)
 
-| Property | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `value` | `string` | `""` | The current text value inside the input field. |
-| `type` | `'text' \| 'password' \| 'email' \| 'number' \| 'url' \| 'search'` | `'text'` | The HTML input type (defaults to `'text'`). |
-| `placeholder` | `string` | `""` | Placeholder helper text, visible only when the input is empty. |
-| `label` | `string` | `undefined` | Header label text displayed above the input field. |
-| `disabled` | `boolean` | `false` | Disables user typing and applies a muted visual style. |
-| `error` | `string` | `undefined` | Error feedback message. If populated, it overrides borders to red and displays helper text below the input. |
-| `clearable` | `boolean` | `false` | When `true`, displays a small clear (X) icon on the right side if the input has text. |
+| Property | Attribute | Type | Default | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| `value` | `value` | `string` | `""` | The current value of the input field. Mutable. |
+| `type` | `type` | `"color" \| "email" \| "number" \| "password" \| "search" \| "text" \| "url"` | `'text'` | The native input field type. |
+| `placeholder` | `placeholder` | `string` | `""` | Helper text to display when the input is empty. |
+| `label` | `label` | `string` | `undefined` | Optional header label text displayed above the control. |
+| `disabled` | `disabled` | `boolean` | `false` | Reflects disabled state. Disables interaction and user input. |
+| `required` | `required` | `boolean` | `false` | Reflects required state for form validation. |
+| `error` | `error` | `string` | `undefined` | Reflects custom validation error string. Overrides standard layout borders to warning colors. |
+| `errorMessage` | `error-message` | `string` | `undefined` | Error feedback message displayed below the input. |
+| `size` | `size` | `"lg" \| "md" \| "sm"` | `'md'` | The size of the input layout box. |
+| `clearable` | `clearable` | `boolean` | `false` | Shows a clear button on the right side if input is not empty. |
+| `min` | `min` | `number` | `undefined` | Minimum allowed value, relevant for number type. |
+| `max` | `max` | `number` | `undefined` | Maximum allowed value, relevant for number type. |
+| `step` | `step` | `number` | `1` | Increment/decrement step amount for number type. |
 
 ---
 
-## 2. Events
+## 2. Slots
 
-*   `qChange`: Emitted when the user commits text (on blur or pressing Enter).
-*   `qInput`: Emitted on every keypress.
+*   `prefix`: Slots an icon, currency symbol, or prefix text inside the input box on the left.
+*   `suffix`: Slots an interactive button, validation indicator, or icon inside the input box on the right.
 
 ---
 
-## 3. Slots
+## 3. Events
 
-*   `prefix`: Renders elements (like icons, flags, or currency symbols) inside the input box on the left.
-*   `suffix`: Renders elements (like verification badges or custom buttons) inside the input box on the right.
+*   `qChange`: Emitted when the user commits value change (on change event, spinner click, or clear click). Payload: `string`
+*   `qInput`: Emitted on every user keystroke/input. Payload: `string`
+*   `qBlur`: Emitted when the input loses keyboard focus. Payload: `FocusEvent`
+*   `qFocus`: Emitted when the input gains keyboard focus. Payload: `FocusEvent`
 
 ---
 
 ## 4. Visual Variants
 
-The component adapts its styling to support six visual variants:
-
-### Variant A: Standard Input (Text & Password types)
-*   **Behavior**: A clean, single-line text container. If `type="password"`, it obscures text characters natively.
-*   **Styling**: Employs `--q-input-bg` for background and `--q-input-border` for border outlines.
-
-### Variant B: Floating / Focus State
-*   **Behavior**: When focused, the input border shifts to the primary brand color, and the label highlights.
-*   **Styling**: Transitions borders to `--q-input-border-focus` and highlights label color via `--q-color-primary`.
-
-### Variant C: Validation Error State (`error="..."`)
-*   **Behavior**: Highlights the border in red and renders a small error feedback line directly below the input box.
-*   **Styling**: Forces border and label colors to `--q-color-danger`.
-
-### Variant D: Clearable Action Input (`clearable="true"`)
-*   **Behavior**: Automatically renders a small click-to-clear close icon on the right of the text when the field contains characters. Clicking it empties the field and refocuses the input.
-*   **OSR Compatibility**: The close icon is built as a standard, styled `<button>` element inside the Shadow DOM to ensure CEF mouse clicks register instantly.
-
-### Variant E: Slotted Content Layout (Prefix / Suffix)
-*   **Behavior**: If the `prefix` or `suffix` slots are populated, the component automatically adds extra internal padding to the text area to prevent the user's typed text from overlapping the icons.
-*   **Styling**: Inside the TSX code, we check if slots are active and dynamically apply padding classes (`has-prefix`, `has-suffix`).
-
-### Variant F: Disabled State (`disabled="true"`)
-*   **Behavior**: Prevents user interactions (clicks, keyboard inputs, tabs).
-*   **Styling**: Drops overall opacity to `0.6` and applies a `not-allowed` cursor style.
+*   **Size Variants**: Supports three sizes: `sm` (small, compact padding and fonts), `md` (medium/standard layout), and `lg` (large layout with elevated visibility).
+*   **Interactive State**: Default focus-within triggers transition highlight on border and header label with `--q-color-primary`.
+*   **Validation Error State**: Highlighting label and border using `--q-color-danger` when `error` or `errorMessage` properties are present. Displays error text under the input field.
+*   **Clearable Variant**: Shows standard trailing clear action button inside the suffix container when `clearable="true"` and text is present. Clicking it empties the field and refocusses it.
+*   **Spinners (Number Mode)**: For `type="number"`, renders custom CSS stacked spinner buttons on the right edge of the input. Increments or decrements with the specified `step`, clamped within `min`/`max`.
+*   **Disabled State**: Drops opacity to `0.6` and sets cursor to `not-allowed` on the control container. Disables pointer events.
 
 ---
 
 ## 5. Typography & Font Styles
 
-*   **Global Font Stack**: Inherits `--q-font-family`.
+*   **Global Font Stack**: Inherits `--q-font-family, inherit`.
 *   **Header Label**:
-    *   Font size: `--q-font-size-sm` (e.g., `0.875rem` / `14px`).
-    *   Font weight: `--q-font-weight-bold` (e.g., `600`).
-    *   Color: Muted text color.
+    *   Font size: `var(--q-font-size-sm, 0.7rem)` (Varies: `var(--q-font-size-xs, 0.75rem)` in `sm` and `var(--q-font-size-base, 1rem)` in `lg`).
+    *   Font weight: `var(--q-font-weight-bold, 700)`.
+    *   Color: `var(--q-fg-muted, #9ca3af)`. Transitioned to `--q-color-primary` on focus and `--q-color-danger` on error.
 *   **Input Box Typed Text**:
-    *   Font size: `--q-font-size-base` (e.g., `1rem` / `16px`).
-    *   Font weight: `--q-font-weight-normal` (e.g., `400`).
-    *   Line-height: `1.2` (restricted to single-line vertical alignment).
+    *   Font size: `var(--q-font-size-base, 1rem)` (Varies: `var(--q-font-size-sm, 0.7rem)` in `sm` and `var(--q-font-size-lg, 1.125rem)` in `lg`).
+    *   Font weight: `var(--q-font-weight-normal, 400)`.
+    *   Color: `var(--q-fg-base, #f9fafb)`.
+    *   Line-height: `1.2`.
 *   **Error Subtext Helper**:
-    *   Font size: `--q-font-size-sm` (e.g., `0.875rem` / `14px`).
-    *   Font weight: `--q-font-weight-normal` (e.g., `400`).
-    *   Color: `--q-color-danger` (red).
+    *   Font size: `var(--q-font-size-sm, 0.7rem)`.
+    *   Font weight: `var(--q-font-weight-normal, 400)`.
+    *   Color: `var(--q-color-danger, #ef4444)`.
 
 ---
 
 ## 6. CSS Variable Mapping
 
-Below is the complete list of styling tokens mapped to the component's internal CSS:
-
 | Variable Name | Default Value | Purpose |
 | :--- | :--- | :--- |
-| `--q-input-bg` | `var(--q-bg-surface-2)` | Input text container background color. |
-| `--q-input-border` | `var(--q-border)` | Standby border outline styles. |
-| `--q-input-border-focus`| `1px solid var(--q-color-primary)`| Highlight border style when active. |
-| `--q-input-radius` | `var(--q-radius-md)` (8px) | Corner rounding radius of the input container. |
-| `--q-input-padding` | `10px 14px` | Internal vertical and horizontal text padding. |
-| `--q-color-danger` | `#ef4444` | Highlight color for validation warnings. |
-| `--q-transition-fast` | `150ms ease` | Timing function for border changes. |
+| `--q-font-family` | `inherit` | Main font family used in label, input box, and validation messages. |
+| `--q-font-size-xs` | `0.75rem` | Font size used for label in `sm` variant. |
+| `--q-font-size-sm` | `0.7rem` | Font size used for label and errors in `md` variant, and input text in `sm` variant. |
+| `--q-font-size-base` | `1rem` | Font size used for input text in `md` variant and label in `lg` variant. |
+| `--q-font-size-lg` | `1.125rem` | Font size used for input text in `lg` variant. |
+| `--q-font-weight-bold` | `700` | Font weight used for labels. |
+| `--q-font-weight-normal` | `400` | Font weight used for input text and error messages. |
+| `--q-fg-muted` | `#9ca3af` | Colors labels, suffix/prefix content, clear icons, and spin buttons. |
+| `--q-fg-base` | `#f9fafb` | Main color of user typed input text. |
+| `--q-input-bg` | `var(--q-bg-surface-2, #374151)` | Input control container background color. |
+| `--q-input-border` | `var(--q-border, 1px solid var(--q-border-color, #4b5563))` | Border styling for input in standby state. |
+| `--q-input-radius` | `var(--q-radius-md, 8px)` | Rounded corner radius of input box container. |
+| `--q-input-padding` | `10px 14px` | Text padding spacing inside the field. Varies by size layout. |
+| `--q-color-primary` | `#60a5fa` | Border highlight color on focus-within and label highlight. |
+| `--q-color-danger` | `#ef4444` | Highlight color for error state border and label, and error message text. |
+| `--q-transition-fast` | `150ms ease` | Animation duration for focus and hover states. |
+| `--q-btn-hover-overlay`| `color-mix(in srgb, var(--q-fg-base, #f9fafb) 8%, transparent)` | Hover background overlay color for clear button. |
+| `--q-bg-surface-3` | `#4b5563` | Hover background color for number spin buttons. |
 
 ---
 
@@ -105,141 +104,125 @@ Below is the complete list of styling tokens mapped to the component's internal 
   shadow: {
     delegatesFocus: true
   },
+  formAssociated: true
 })
 export class QInput {
   @Prop({ mutable: true }) value: string = "";
-  @Prop() type: 'text' | 'password' | 'email' | 'number' | 'url' | 'search' = 'text';
+  @Prop() type: 'text' | 'password' | 'email' | 'number' | 'url' | 'search' | 'color' = 'text';
   @Prop() placeholder: string = "";
   @Prop() label?: string;
   @Prop({ reflect: true }) disabled: boolean = false;
+  @Prop({ reflect: true }) required: boolean = false;
   @Prop({ reflect: true }) error?: string;
+  @Prop() errorMessage?: string;
+  @Prop() size: 'sm' | 'md' | 'lg' = 'md';
   @Prop() clearable: boolean = false;
+  @Prop() min?: number;
+  @Prop() max?: number;
+  @Prop() step?: number = 1;
 
-  @Element() el!: HTMLElement;
-
-  @Event() qChange: EventEmitter<string>;
-  @Event() qInput: EventEmitter<string>;
-
-  private inputEl?: HTMLInputElement;
-  private static idCounter = 0;
-  private inputId: string;
-
-  componentWillLoad() {
-    if (!this.inputId) {
-      QInput.idCounter++;
-      this.inputId = `q-input-${QInput.idCounter}`;
-    }
-  }
-
-  @Method()
-  async focusElement() {
-    this.inputEl?.focus();
-  }
-
-  @Method()
-  async clearValue() {
-    this.handleClear();
-  }
-
-  private handleInput = (ev: Event) => {
-    const target = ev.target as HTMLInputElement;
-    this.value = target.value;
-    this.qInput.emit(this.value);
-  };
-
-  private handleChange = (ev: Event) => {
-    const target = ev.target as HTMLInputElement;
-    this.value = target.value;
-    this.qChange.emit(this.value);
-  };
-
-  private handleClear = () => {
-    this.value = "";
-    this.qInput.emit(this.value);
-    this.qChange.emit(this.value);
-    if (this.inputEl) {
-      this.inputEl.focus();
-    }
-  };
+  @State() hasPrefix: boolean = false;
+  @State() hasSuffix: boolean = false;
 
   render() {
-    const hasError = this.error !== undefined && this.error.length > 0;
+    const hasError = (this.error !== undefined && this.error.length > 0) || (this.errorMessage !== undefined && this.errorMessage.length > 0);
+    const displayError = this.error || this.errorMessage;
     const showClearBtn = this.clearable && !this.disabled && this.value.length > 0;
-    
-    // Check if slots are populated to prevent empty margin boxes
-    const hasPrefix = !!this.el.querySelector('[slot="prefix"]');
-    const hasSuffix = !!this.el.querySelector('[slot="suffix"]') || showClearBtn;
+    const showSuffixContainer = this.hasSuffix || showClearBtn;
 
     return (
       <div 
         class={{
           'input-wrapper': true,
           'is-disabled': this.disabled,
-          'has-error': hasError
+          'has-error': hasError,
+          [`size-${this.size}`]: true
         }}
       >
-        {/* Optional Header Label linked via htmlFor */}
         {this.label && (
-          <label class="input-label" htmlFor={this.inputId} part="label">
+          <label class="input-label" htmlFor="q-field" part="label">
             {this.label}
           </label>
         )}
 
-        {/* Input Box Wrapper */}
         <div class="input-control" part="control">
           
-          {/* Prefix Slot Container rendered conditionally */}
-          {hasPrefix && (
-            <span class="prefix-container" part="prefix">
-              <slot name="prefix" />
-            </span>
-          )}
+          <span 
+            class="prefix-container" 
+            style={{ display: this.hasPrefix ? 'flex' : 'none' }}
+            part="prefix"
+          >
+            <slot name="prefix" onSlotchange={this.handlePrefixSlotChange} />
+          </span>
 
-          {/* Native HTML Input */}
           <input
-            ref={(el) => (this.inputEl = el as HTMLInputElement)}
-            id={this.inputId}
+            id="q-field"
             class={{
               'input-box': true,
-              'has-prefix-padding': hasPrefix,
-              'has-suffix-padding': hasSuffix
+              'has-prefix-padding': this.hasPrefix,
+              'has-suffix-padding': showSuffixContainer
             }}
             type={this.type}
             value={this.value}
             placeholder={this.placeholder}
             disabled={this.disabled}
+            required={this.required}
+            min={this.min}
+            max={this.max}
+            step={this.step}
             onInput={this.handleInput}
             onChange={this.handleChange}
+            onBlur={this.handleBlur}
+            onFocus={this.handleFocus}
             aria-invalid={hasError ? 'true' : 'false'}
-            aria-describedby={hasError ? `${this.inputId}-error` : undefined}
+            aria-describedby={hasError ? 'q-field-error' : undefined}
           />
 
-          {/* Suffix / Clear Button Container rendered conditionally */}
-          {hasSuffix && (
-            <span class="suffix-container" part="suffix">
-              {showClearBtn ? (
-                <button 
-                  class="clear-btn" 
-                  type="button" 
-                  onClick={this.handleClear}
-                  aria-label="Clear input"
-                >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M18 6L6 18M6 6l12 12" />
-                  </svg>
-                </button>
-              ) : (
-                <slot name="suffix" />
-              )}
-            </span>
+          {this.type === 'number' && !this.disabled && (
+            <div class="input-spinners" part="spinners">
+              <button class="spinner-btn spinner-up" type="button" onClick={this.handleIncrement} tabindex="-1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 15l-6-6-6 6" />
+                </svg>
+              </button>
+              <button class="spinner-btn spinner-down" type="button" onClick={this.handleDecrement} tabindex="-1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </button>
+            </div>
           )}
+
+          <span 
+            class="suffix-container" 
+            style={{ display: showSuffixContainer ? 'flex' : 'none' }}
+            part="suffix"
+          >
+            {showClearBtn && (
+              <button 
+                class="clear-btn" 
+                type="button" 
+                onClick={this.handleClear}
+                aria-label="Clear input"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+            <span style={{ display: showClearBtn ? 'none' : 'block' }}>
+              <slot 
+                name="suffix" 
+                onSlotchange={this.handleSuffixSlotChange} 
+              />
+            </span>
+          </span>
 
         </div>
 
-        {/* Validation Helper Message */}
         {hasError && (
-          <span id={`${this.inputId}-error`} class="error-msg" part="error-msg">
-            {this.error}
+          <span id="q-field-error" class="error-msg" part="error-msg">
+            {displayError}
           </span>
         )}
       </div>
@@ -250,142 +233,54 @@ export class QInput {
 
 ---
 
-## 8. Component Styling (`q-input.css`)
+## 8. Unreal Engine / Webview Compatibility Notes
 
-```css
-:host {
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-}
+*   **Keyboard Focus Capture Bridge**: Content-editable `<div>` elements are intentionally avoided. Wrapping a native `<input>` element within the shadow DOM guarantees keyboard event bridging between Unreal Engine's input handlers and the Chromium Embedded Framework (CEF) webview context.
+*   **Backdrop-Filter Warnings**: The component does not use `backdrop-filter` for transparency or blur inside the input control container. To avoid rendering glitches or memory texture crashes in OSR mode, solid or high-opacity fallback overlays are utilized.
+*   **3D Transform Rendering**: Standard 2D translations (`transform: translate()`) are implemented rather than 3D transitions. This prevents clipping inside bounding containers or text blurring in Unreal's OSR rendering queue.
+*   **Drop-Shadow Processing Constraint**: The CSS property `box-shadow` is used exclusively for outlines. Expensive `filter: drop-shadow()` styles are prohibited to maintain steady frame rates on offscreen canvas passes.
 
-.input-wrapper {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  box-sizing: border-box;
-}
+---
 
-/* Header Label Typography */
-.input-label {
-  font-family: var(--q-font-family, inherit);
-  font-size: var(--q-font-size-sm, 0.875rem);
-  font-weight: var(--q-font-weight-bold, 700);
-  color: var(--q-color-secondary, #9ca3af);
-  margin-bottom: 6px;
-  
-  transition: color var(--q-transition-fast, 150ms ease);
-}
+## 9. Developer Guidelines & Examples
 
-/* Input Control Flex Box */
-.input-control {
-  display: flex;
-  align-items: center;
-  position: relative;
-  width: 100%;
-  background: var(--q-input-bg, var(--q-bg-surface-2, #374151));
-  /* Standard static border limits size shifts on focus overlays */
-  border: var(--q-input-border, var(--q-border, 1px solid var(--q-border-color, #4b5563)));
-  border-radius: var(--q-input-radius, var(--q-radius-md, 8px));
-  box-sizing: border-box;
-  
-  transition: border-color var(--q-transition-fast, 150ms ease), 
-              box-shadow var(--q-transition-fast, 150ms ease);
-}
+### Example 1: Standard Text Input
+```html
+<q-input 
+  label="Username" 
+  placeholder="Enter your username..." 
+  size="md">
+</q-input>
+```
 
-/* Native Input Box */
-.input-box {
-  width: 100%;
-  background: transparent;
-  border: none;
-  padding: var(--q-input-padding, 10px 14px);
-  
-  font-family: var(--q-font-family, inherit);
-  font-size: var(--q-font-size-base, 1rem);
-  font-weight: var(--q-font-weight-normal, 400);
-  color: var(--q-fg-base, #f9fafb);
-  
-  outline: none;
-  box-sizing: border-box;
-}
+### Example 2: Clearable Search Field with Prefix Icon
+```html
+<q-input 
+  type="search" 
+  placeholder="Search database..." 
+  clearable="true">
+  <span slot="prefix">🔍</span>
+</q-input>
+```
 
-/* Slot & Button Positioning inside the Flex Control */
-.prefix-container,
-.suffix-container {
-  display: flex;
-  align-items: center;
-  padding: 0 12px;
-  color: var(--q-color-secondary, #9ca3af);
-}
+### Example 3: Numerical Value Input with Bounds
+```html
+<q-input 
+  type="number" 
+  label="Age Limit" 
+  value="18" 
+  min="0" 
+  max="120" 
+  step="1">
+</q-input>
+```
 
-.prefix-container {
-  padding-right: 0;
-}
-
-.suffix-container {
-  padding-left: 0;
-}
-
-/* Focused State triggers color update, keeping width constant */
-.input-control:focus-within {
-  border-color: var(--q-color-primary, #60a5fa);
-  box-shadow: 0 0 0 1px var(--q-color-primary, #60a5fa);
-}
-
-.input-wrapper:focus-within .input-label {
-  color: var(--q-color-primary, #60a5fa);
-}
-
-/* Validation Error State Specificity Overrides */
-.has-error .input-control {
-  border-color: var(--q-color-danger, #ef4444) !important;
-  box-shadow: none;
-}
-
-.has-error.input-wrapper:focus-within .input-label,
-.has-error .input-label {
-  color: var(--q-color-danger, #ef4444) !important;
-}
-
-.error-msg {
-  font-family: var(--q-font-family, inherit);
-  font-size: var(--q-font-size-sm, 0.875rem);
-  font-weight: var(--q-font-weight-normal, 400);
-  color: var(--q-color-danger, #ef4444);
-  margin-top: 6px;
-}
-
-/* Clear Button Sizing */
-.clear-btn {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--q-color-secondary, #9ca3af);
-  border-radius: 50%;
-  outline: none;
-  transition: background var(--q-transition-fast, 150ms ease), color var(--q-transition-fast, 150ms ease);
-}
-
-.clear-btn:hover {
-  background: var(--q-btn-hover-overlay, color-mix(in srgb, var(--q-fg-base, #f9fafb) 8%, transparent));
-  color: var(--q-fg-base, #f9fafb);
-}
-
-.clear-btn svg {
-  width: 14px;
-  height: 14px;
-}
-
-/* Disabled State Visual Styling */
-.is-disabled {
-  opacity: 0.6;
-}
-.is-disabled .input-control {
-  cursor: not-allowed;
-  pointer-events: none;
-}
+### Example 4: Validation Error Handling
+```html
+<q-input 
+  label="Email Address" 
+  value="invalid-email" 
+  error="Invalid email structure." 
+  error-message="Please ensure email contains @ and domain.">
+</q-input>
 ```

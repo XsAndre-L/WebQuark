@@ -6,6 +6,7 @@ import { Component, Prop, h, Element, Event, EventEmitter } from '@stencil/core'
   shadow: true,
 })
 export class QStepDiagramItem {
+  // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Prop({ reflect: true }) status: 'pending' | 'active' | 'completed' | 'success' | 'warning' | 'danger' = 'completed';
   @Prop({ reflect: true }) lineStyle: 'solid' | 'dashed' | 'dotted' | 'none' = 'solid';
   @Prop({ reflect: true }) layout: 'vertical' | 'horizontal' = 'vertical';
@@ -20,6 +21,8 @@ export class QStepDiagramItem {
     }
   }
 
+  // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
+
   private handleTrigger = (e: Event) => {
     e.stopPropagation();
     this.qItemClick.emit();
@@ -32,6 +35,8 @@ export class QStepDiagramItem {
       this.qItemClick.emit();
     }
   };
+
+  // ===================== [6] RENDER (Visual Template Only) =====================
 
   render() {
     return (

@@ -6,6 +6,7 @@ import { Component, Prop, Element, Event, EventEmitter, State, Watch, Method, Ho
   shadow: true,
 })
 export class QScrollable {
+  // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Element() el!: HTMLElement;
 
   @Prop({ reflect: true }) height: string = '100%';
@@ -21,6 +22,9 @@ export class QScrollable {
   @State() isDragging: boolean = false;
 
   private viewportEl?: HTMLDivElement;
+
+  // ========================= [2] INTERNAL STATE & REFS =========================
+
   private contentEl?: HTMLDivElement;
   private trackEl?: HTMLDivElement;
   private thumbEl?: HTMLDivElement;
@@ -34,6 +38,8 @@ export class QScrollable {
 
   private nativeStyleEl?: HTMLStyleElement;
   private activeTargetEl?: Element;
+
+  // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
   componentDidLoad() {
     this.applyNativeStyles();
@@ -61,20 +67,6 @@ export class QScrollable {
     }
   }
 
-  @Method()
-  async scrollToBottom() {
-    if (this.viewportEl) {
-      this.viewportEl.scrollTop = this.viewportEl.scrollHeight;
-    }
-  }
-
-  @Method()
-  async scrollToPosition(top: number) {
-    if (this.viewportEl) {
-      this.viewportEl.scrollTop = top;
-    }
-  }
-
   @Watch('mode')
   @Watch('target')
   handleModeOrTargetChange() {
@@ -89,6 +81,24 @@ export class QScrollable {
       this.setupCustomScroll();
     }
   }
+
+  // ============================ [4] EXPOSED METHODS ============================
+
+  @Method()
+  async scrollToBottom() {
+    if (this.viewportEl) {
+      this.viewportEl.scrollTop = this.viewportEl.scrollHeight;
+    }
+  }
+
+  @Method()
+  async scrollToPosition(top: number) {
+    if (this.viewportEl) {
+      this.viewportEl.scrollTop = top;
+    }
+  }
+
+  // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
   private setupCustomScroll() {
     if (this.mode !== 'custom') {
@@ -323,6 +333,8 @@ export class QScrollable {
       this.thumbEl.removeEventListener('pointercancel', this.handlePointerUp);
     }
   };
+
+  // ===================== [6] RENDER (Visual Template Only) =====================
 
   render() {
     const hostStyle = {

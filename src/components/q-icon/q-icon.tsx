@@ -6,6 +6,7 @@ import { Component, Prop, State, Watch, h, Host } from '@stencil/core';
   shadow: true,
 })
 export class QIcon {
+  // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   /**
    * The name of the icon (e.g., 'settings', 'heart', or a filename like 'logo.png').
    */
@@ -39,6 +40,8 @@ export class QIcon {
 
   private fetchId = 0;
 
+  // ========================= [3] LIFECYCLE & WATCHERS ==========================
+
   @Watch('name')
   @Watch('lib')
   @Watch('localPath')
@@ -49,6 +52,8 @@ export class QIcon {
   async componentWillLoad() {
     await this.loadIcon();
   }
+
+  // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
   private getSizeStyle(): string {
     const s = this.size ? String(this.size).trim() : 'md';
@@ -146,6 +151,8 @@ export class QIcon {
       }
     }
   }
+
+  // ===================== [6] RENDER (Visual Template Only) =====================
 
   render() {
     const sizeStyle = this.getSizeStyle();

@@ -6,6 +6,7 @@ import { Component, Prop, h, Element, Event, EventEmitter } from '@stencil/core'
   shadow: true,
 })
 export class QThumbnail {
+  // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Prop() src: string = "";
   @Prop({ reflect: true }) video: boolean = false;
   @Prop() label?: string;
@@ -27,6 +28,8 @@ export class QThumbnail {
     });
   };
 
+  // ===================== [6] RENDER (Visual Template Only) =====================
+
   render() {
     return (
       <div 
@@ -43,7 +46,7 @@ export class QThumbnail {
       >
         <div class="thumb-media-container">
           <img class="thumb-image" src={this.src} alt={this.alt} loading="lazy" />
-          
+
           {this.video && (
             <div class="video-play-indicator">
               <svg viewBox="0 0 24 24" fill="currentColor">

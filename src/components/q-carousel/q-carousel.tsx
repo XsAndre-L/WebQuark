@@ -7,6 +7,7 @@ import { getSlottedElements } from '../../utils/dom';
   shadow: true,
 })
 export class QCarousel {
+  // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Prop({ reflect: true }) snapAlignment: 'start' | 'center' | 'end' | 'none' = 'start';
   @Prop({ reflect: true }) showArrows: boolean = false;
   @Prop({ reflect: true }) showIndicators: boolean = false;
@@ -24,6 +25,9 @@ export class QCarousel {
   @Element() el!: HTMLElement;
 
   private scrollContainer?: HTMLDivElement;
+
+  // ========================= [2] INTERNAL STATE & REFS =========================
+
   private resizeObserver?: ResizeObserver;
   private itemOffsets: number[] = [];
   private itemWidths: number[] = [];
@@ -35,6 +39,8 @@ export class QCarousel {
 
   private isProgrammaticScroll: boolean = false;
   private programmaticScrollTimer?: any;
+
+  // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
   componentDidLoad() {
     this.updateCachedChildren();
@@ -71,6 +77,8 @@ export class QCarousel {
     }
   }
 
+  // ============================ [4] EXPOSED METHODS ============================
+
   @Method()
   async slideTo(index: number) {
     this.scrollToIndex(index);
@@ -81,12 +89,13 @@ export class QCarousel {
     this.calculateLimits();
   }
 
+  // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
+
   private handleSlotChange = () => {
     this.updateCachedChildren();
     this.updateItemStyles();
     this.scheduleCalculateLimits();
   };
-
 
   private updateCachedChildren() {
     if (!this.scrollContainer) {
@@ -105,7 +114,7 @@ export class QCarousel {
       } else {
         child.style.flex = '0 0 auto';
       }
-      
+
       // Inject CSS scroll snap styling
       if (this.snapAlignment !== 'none') {
         child.style.scrollSnapAlign = this.snapAlignment;
@@ -125,7 +134,7 @@ export class QCarousel {
 
   private calculateLimits = () => {
     if (!this.scrollContainer) return;
-    
+
     // Cache element offsets and sizes to prevent high-frequency layout reflows (OSR safe)
     this.itemOffsets = this.cachedChildren.map(child => child.offsetLeft - this.scrollContainer!.offsetLeft);
     this.itemWidths = this.cachedChildren.map(child => child.clientWidth);
@@ -136,11 +145,11 @@ export class QCarousel {
 
     this.isScrollable = scrollWidth > this.containerWidth;
     this.maxIndex = Math.max(0, this.cachedChildren.length - 1);
-    
+
     // Initialize start/end states on load
     const scrollLeft = this.scrollContainer.scrollLeft;
     const startOffset = this.itemOffsets[0] || 0;
-    
+
     const nextAtStart = scrollLeft <= startOffset + 5;
     const nextAtEnd = scrollLeft >= this.maxScrollLeft - 5;
     if (this.isAtStart !== nextAtStart) {
@@ -149,7 +158,7 @@ export class QCarousel {
     if (this.isAtEnd !== nextAtEnd) {
       this.isAtEnd = nextAtEnd;
     }
-    
+
     this.handleScroll();
   };
 
@@ -165,7 +174,7 @@ export class QCarousel {
 
       const scrollLeft = this.scrollContainer.scrollLeft;
       const startOffset = this.itemOffsets[0] || 0;
-      
+
       const nextAtStart = scrollLeft <= startOffset + 5;
       const nextAtEnd = scrollLeft >= this.maxScrollLeft - 5;
       if (this.isAtStart !== nextAtStart) {
@@ -218,7 +227,7 @@ export class QCarousel {
 
   private scrollToIndex(index: number) {
     if (!this.scrollContainer || this.itemOffsets.length === 0 || this.maxIndex <= 0) return;
-    
+
     let targetIndex = index;
     if (this.repeat) {
       if (targetIndex < 0) {
@@ -231,10 +240,10 @@ export class QCarousel {
     }
 
     if (this.itemOffsets[targetIndex] === undefined) return;
-    
+
     this.isProgrammaticScroll = true;
     clearTimeout(this.programmaticScrollTimer);
-    
+
     this.activeIndex = targetIndex;
     const children = this.cachedChildren;
     if (children[this.activeIndex]) {
@@ -281,7 +290,7 @@ export class QCarousel {
   private handleIndicatorKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
       e.preventDefault();
-      
+
       const dots = Array.from(this.el.shadowRoot?.querySelectorAll('.indicator-dot') || []) as HTMLButtonElement[];
       if (dots.length === 0) return;
 
@@ -300,13 +309,15 @@ export class QCarousel {
     }
   };
 
+  // ===================== [6] RENDER (Visual Template Only) =====================
+
   render() {
     const isFirst = this.repeat ? (!this.isScrollable || this.maxIndex <= 0) : (this.isAtStart || !this.isScrollable);
     const isLast = this.repeat ? (!this.isScrollable || this.maxIndex <= 0) : (this.isAtEnd || !this.isScrollable);
 
     return (
       <div class="carousel-wrapper">
-        
+
         {/* Navigation Arrow Controls with active disabled tabIndex */}
         {this.showArrows && (
           <button 

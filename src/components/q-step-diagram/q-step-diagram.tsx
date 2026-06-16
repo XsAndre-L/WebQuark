@@ -7,6 +7,7 @@ import { syncPropertyToSlottedChildren } from '../../utils/dom';
   shadow: true,
 })
 export class QStepDiagram {
+  // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Prop() layout: 'vertical' | 'horizontal' = 'vertical';
   @Element() el!: HTMLElement;
 
@@ -14,6 +15,8 @@ export class QStepDiagram {
   handleLayoutChange(newLayout: 'vertical' | 'horizontal') {
     this.propagateLayout(newLayout);
   }
+
+  // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
   componentDidLoad() {
     this.propagateLayout(this.layout);
@@ -23,6 +26,8 @@ export class QStepDiagram {
     this.propagateLayout(this.layout);
   }
 
+  // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
+
   private handleSlotChange = () => {
     this.propagateLayout(this.layout);
   };
@@ -30,6 +35,8 @@ export class QStepDiagram {
   private propagateLayout(layoutVal: 'vertical' | 'horizontal') {
     syncPropertyToSlottedChildren(this.el, 'q-step-diagram-item', 'layout', layoutVal);
   }
+
+  // ===================== [6] RENDER (Visual Template Only) =====================
 
   render() {
     return (

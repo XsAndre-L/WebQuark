@@ -7,6 +7,7 @@ import { getSlottedElements } from '../../utils/dom';
   shadow: true,
 })
 export class QCard {
+  // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Element() el!: HTMLElement;
 
   @Prop({ reflect: true }) elevation: 'low' | 'medium' | 'high' | 1 | 2 | 3 = 'medium';
@@ -26,9 +27,13 @@ export class QCard {
     }
   };
 
+  // ========================= [3] LIFECYCLE & WATCHERS ==========================
+
   componentDidLoad() {
     this.checkHeaderSlot();
   }
+
+  // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
   private handleKeyDown = (e: KeyboardEvent) => {
     if (this.interactive && (e.key === 'Enter' || e.key === ' ')) {
@@ -36,6 +41,8 @@ export class QCard {
       (e.currentTarget as HTMLElement).click();
     }
   };
+
+  // ===================== [6] RENDER (Visual Template Only) =====================
 
   render() {
     return (

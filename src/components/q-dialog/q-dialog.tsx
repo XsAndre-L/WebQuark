@@ -1,5 +1,5 @@
 import { Component, Prop, Element, Event, EventEmitter, Watch, Listen, State, Method, h } from '@stencil/core';
-import { handleTabTrap, getFocusableElements, waitForTransitionEnd } from '../../utils/dom';
+import { handleTabTrap, waitForTransitionEnd, focusFirstElement, safeFocus } from '../../utils/dom';
 
 @Component({
   tag: 'q-dialog',
@@ -7,6 +7,7 @@ import { handleTabTrap, getFocusableElements, waitForTransitionEnd } from '../..
   shadow: true,
 })
 export class QDialog {
+  // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Element() el!: HTMLElement;
 
   @Prop({ reflect: true, mutable: true }) open: boolean = false;
@@ -28,7 +29,12 @@ export class QDialog {
   @State() isAnimatedOpen: boolean = false;
 
   private dialogEl?: HTMLDivElement;
+
+  // ========================= [2] INTERNAL STATE & REFS =========================
+
   private previousActiveElement: HTMLElement | null = null;
+
+  // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
   componentWillLoad() {
     this.isVisible = this.open;
@@ -36,13 +42,8 @@ export class QDialog {
   }
 
   componentDidLoad() {
-    if (this.open && this.dialogEl) {
-      const focusables = getFocusableElements(this.dialogEl);
-      if (focusables.length > 0) {
-        focusables[0].focus();
-      } else {
-        this.dialogEl.focus();
-      }
+    if (this.open) {
+      focusFirstElement(this.dialogEl);
     }
   }
 
@@ -55,12 +56,7 @@ export class QDialog {
         this.isAnimatedOpen = true;
         if (this.dialogEl) {
           waitForTransitionEnd(this.dialogEl, () => {
-            const focusables = getFocusableElements(this.dialogEl);
-            if (focusables.length > 0) {
-              focusables[0].focus();
-            } else {
-              this.dialogEl?.focus();
-            }
+            focusFirstElement(this.dialogEl);
           });
         }
       }, 50);
@@ -69,16 +65,41 @@ export class QDialog {
       if (this.dialogEl) {
         waitForTransitionEnd(this.dialogEl, () => {
           this.isVisible = false;
-          if (this.previousActiveElement && typeof this.previousActiveElement.focus === 'function') {
-            this.previousActiveElement.focus();
-            this.previousActiveElement = null;
-          }
+          safeFocus(this.previousActiveElement);
+          this.previousActiveElement = null;
         });
       } else {
         this.isVisible = false;
       }
     }
   }
+
+  // ============================ [4] EXPOSED METHODS ============================
+
+  @Method()
+  async show() {
+    this.open = true;
+  }
+
+  @Method()
+  async close() {
+    this.open = false;
+    this.qClose.emit();
+  }
+
+  @Method()
+  async confirm() {
+    if (this.loading) return;
+    this.handleConfirm();
+  }
+
+  @Method()
+  async cancel() {
+    if (this.loading) return;
+    this.handleCancel();
+  }
+
+  // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
   @Listen('keydown', { target: 'window' })
   handleGlobalKeyDown(event: KeyboardEvent) {
@@ -119,28 +140,7 @@ export class QDialog {
     this.qClose.emit();
   };
 
-  @Method()
-  async show() {
-    this.open = true;
-  }
-
-  @Method()
-  async close() {
-    this.open = false;
-    this.qClose.emit();
-  }
-
-  @Method()
-  async confirm() {
-    if (this.loading) return;
-    this.handleConfirm();
-  }
-
-  @Method()
-  async cancel() {
-    if (this.loading) return;
-    this.handleCancel();
-  }
+  // ===================== [6] RENDER (Visual Template Only) =====================
 
   render() {
     const titleText = this.dialogTitle;

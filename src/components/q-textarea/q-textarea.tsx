@@ -9,6 +9,7 @@ import { Component, Prop, Event, EventEmitter, Element, Method, AttachInternals,
   formAssociated: true
 })
 export class QTextarea {
+  // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Element() el!: HTMLElement;
 
   @Prop({ mutable: true }) value: string = "";
@@ -30,7 +31,12 @@ export class QTextarea {
   @Event() qFocus!: EventEmitter<FocusEvent>;
 
   private textareaEl?: HTMLTextAreaElement;
+
+  // ========================= [2] INTERNAL STATE & REFS =========================
+
   private initialValue: string = "";
+
+  // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
   @Watch('value')
   watchValue(newValue: string) {
@@ -53,6 +59,8 @@ export class QTextarea {
     requestAnimationFrame(() => this.adjustHeightInternal());
   }
 
+  // ============================ [4] EXPOSED METHODS ============================
+
   @Method()
   async focusElement() {
     this.textareaEl?.focus();
@@ -62,6 +70,8 @@ export class QTextarea {
   async adjustHeight() {
     this.adjustHeightInternal();
   }
+
+  // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
   private handleInput = (ev: Event) => {
     const target = ev.target as HTMLTextAreaElement;
@@ -93,10 +103,10 @@ export class QTextarea {
 
   private adjustHeightInternal() {
     if (this.activeResizeMode !== 'auto' || !this.textareaEl) return;
-    
+
     // OSR Safe calculation: reset height to recalculate scrollHeight
     this.textareaEl.style.height = 'auto';
-    
+
     const scrollHeight = this.textareaEl.scrollHeight;
     if (scrollHeight > 0) {
       this.textareaEl.style.height = `${scrollHeight}px`;
@@ -106,10 +116,12 @@ export class QTextarea {
     }
   }
 
+  // ===================== [6] RENDER (Visual Template Only) =====================
+
   render() {
     const hasError = (this.error !== undefined && this.error.length > 0) || (this.errorMessage !== undefined && this.errorMessage.length > 0);
     const displayError = this.error || this.errorMessage;
-    
+
     return (
       <div 
         class={{
@@ -124,7 +136,7 @@ export class QTextarea {
             {this.label}
           </label>
         )}
-        
+
         {/* Core Textarea Box */}
         <textarea
           ref={(el) => (this.textareaEl = el as HTMLTextAreaElement)}
@@ -144,7 +156,7 @@ export class QTextarea {
           aria-invalid={hasError ? 'true' : 'false'}
           aria-describedby={hasError ? 'q-field-error' : undefined}
         />
-        
+
         {/* Validation Helper Message */}
         {hasError && (
           <span id="q-field-error" class="error-msg" part="error-msg">

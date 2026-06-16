@@ -6,6 +6,7 @@ import { Component, Prop, State, Event, EventEmitter, h, Watch } from '@stencil/
   shadow: true
 })
 export class QQuantitySelector {
+  // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   /** The current quantity value. */
   @Prop({ mutable: true }) value: number = 0;
 
@@ -33,9 +34,13 @@ export class QQuantitySelector {
     }
   }
 
+  // ========================= [3] LIFECYCLE & WATCHERS ==========================
+
   componentWillLoad() {
     this.inputValue = this.value !== undefined && this.value !== null ? String(this.value) : '0';
   }
+
+  // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
   private getCalculatedWidth(): string {
     const minSet = this.min !== undefined && this.min !== null;
@@ -157,6 +162,8 @@ export class QQuantitySelector {
       this.qChange.emit(this.value);
     }
   }
+
+  // ===================== [6] RENDER (Visual Template Only) =====================
 
   render() {
     const isMinDisabled = this.min !== undefined && this.min !== null && this.value <= this.min;

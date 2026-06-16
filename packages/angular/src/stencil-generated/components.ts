@@ -580,7 +580,7 @@ export declare interface QThumbnail extends Components.QThumbnail {
 @ProxyCmp({
   defineCustomElementFn: defineQToggle,
   inputs: ['checked', 'disabled', 'error', 'label', 'required', 'size', 'type'],
-  methods: ['toggle', 'setChecked']
+  methods: ['setChecked', 'toggle']
 })
 @Component({
   selector: 'q-toggle',

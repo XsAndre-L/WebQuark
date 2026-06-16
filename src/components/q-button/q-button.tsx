@@ -8,6 +8,7 @@ import { Component, Prop, Element, State, h } from '@stencil/core';
   },
 })
 export class QButton {
+  // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Element() el!: HTMLElement;
 
   @Prop() variant: 'primary' | 'secondary' | 'success' | 'danger' | 'ghost' | 'text' = 'primary';
@@ -27,9 +28,13 @@ export class QButton {
     this.checkIconOnly();
   }
 
+  // ========================= [3] LIFECYCLE & WATCHERS ==========================
+
   componentWillUpdate() {
     this.checkIconOnly();
   }
+
+  // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
   private checkIconOnly = () => {
     if (!this.el) return;
@@ -51,11 +56,13 @@ export class QButton {
     }
   };
 
+  // ===================== [6] RENDER (Visual Template Only) =====================
+
   render() {
-    const isLink = this.href !== undefined;
+    const isLink = this.href !== undefined && this.href !== null && this.href !== '';
     const isBtnDisabled = this.disabled || this.loading;
     const isIcon = this.iconOnly !== undefined ? this.iconOnly : this.autoIconOnly;
-    
+
     const classes = {
       'btn': true,
       [`variant-${this.variant}`]: true,
