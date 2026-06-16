@@ -2,29 +2,115 @@
   "name": "Dropdown",
   "tag": "q-dropdown",
   "props": {
-    "label": { "type": "string", "default": "Environment Server", "desc": "Floating form label caption" },
-    "size": { "type": "select", "options": ["sm", "md", "lg"], "default": "md", "desc": "Dropdown and trigger font display sizing" },
-    "placeholder": { "type": "string", "default": "Select profile...", "desc": "Text displayed when value is empty" },
-    "value": { "type": "string", "default": "staging", "desc": "Active selected options key" },
-    "searchable": { "type": "boolean", "default": false, "desc": "Enables search filter bar inside dropdown popup menu" },
-    "disabled": { "type": "boolean", "default": false, "desc": "Locks dropdown menu and styles disabled look" }
+    "size": {
+      "type": "select",
+      "options": [
+        "sm",
+        "md",
+        "lg"
+      ],
+      "default": "md",
+      "desc": "Dropdown and trigger font display sizing"
+    },
+    "searchable": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Enables search filter bar inside dropdown popup menu"
+    },
+    "label": {
+      "type": "string",
+      "default": "Environment Server",
+      "desc": "Floating form label caption"
+    },
+    "placeholder": {
+      "type": "string",
+      "default": "Select profile...",
+      "desc": "Text displayed when value is empty"
+    },
+    "value": {
+      "type": "string",
+      "default": "staging",
+      "desc": "Active selected options key"
+    },
+    "disabled": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Locks dropdown menu and styles disabled look"
+    }
   },
   "slots": {},
   "options": [
-    { "label": "Production Server Host", "value": "prod" },
-    { "label": "Staging Sandbox Gateway", "value": "staging" },
-    { "label": "Local Development Server", "value": "dev" },
-    { "label": "Disaster Recovery Vault", "value": "dr" }
+    {
+      "label": "Production Server Host",
+      "value": "prod"
+    },
+    {
+      "label": "Staging Sandbox Gateway",
+      "value": "staging"
+    },
+    {
+      "label": "Local Development Server",
+      "value": "dev"
+    },
+    {
+      "label": "Disaster Recovery Vault",
+      "value": "dr"
+    }
   ],
   "variants": [
-    { "name": "Standard Dropdown", "props": { "label": "Server Instance", "value": "staging", "size": "md" } },
-    { "name": "Searchable Dropdown", "props": { "label": "Searchable Options", "searchable": true, "value": "staging" } },
-    { "name": "Small Dropdown", "props": { "label": "Small Server", "size": "sm", "value": "staging" } },
-    { "name": "Large Dropdown", "props": { "label": "Large Server", "size": "lg", "value": "staging" } },
-    { "name": "Without Title Label", "props": { "placeholder": "Select profile..." } },
-    { "name": "Disabled Selection state", "props": { "label": "Immutable Setting", "disabled": true, "value": "prod" } }
+    {
+      "name": "Standard Dropdown",
+      "props": {
+        "label": "Server Instance",
+        "value": "staging",
+        "size": "md"
+      }
+    },
+    {
+      "name": "Searchable Dropdown",
+      "props": {
+        "label": "Searchable Options",
+        "searchable": true,
+        "value": "staging"
+      }
+    },
+    {
+      "name": "Small Dropdown",
+      "props": {
+        "label": "Small Server",
+        "size": "sm",
+        "value": "staging"
+      }
+    },
+    {
+      "name": "Large Dropdown",
+      "props": {
+        "label": "Large Server",
+        "size": "lg",
+        "value": "staging"
+      }
+    },
+    {
+      "name": "Without Title Label",
+      "props": {
+        "placeholder": "Select profile..."
+      }
+    },
+    {
+      "name": "Disabled Selection state",
+      "props": {
+        "label": "Immutable Setting",
+        "disabled": true,
+        "value": "prod"
+      }
+    }
   ],
   "edgeCases": [
-    { "name": "Super Long Title label test", "props": { "label": "This is a super long label caption designed to test form field text overflow boundaries" } }
+    {
+      "name": "Super Long Title label test",
+      "props": {
+        "label": "This is a super long label caption designed to test form field text overflow boundaries"
+      }
+    }
   ]
 }

@@ -350,7 +350,7 @@ export class QDropdown {
           'is-disabled': this.disabled,
           [`size-${this.size}`]: true
         }}
-        style={dynamicWidth ? { width: dynamicWidth } : undefined}
+        style={dynamicWidth ? { width: dynamicWidth, 'max-width': '100%' } : undefined}
         onKeyDown={this.handleKeyDown}
       >
         {/* Optional Header Label */}

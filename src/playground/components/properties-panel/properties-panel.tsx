@@ -57,12 +57,13 @@ export class PropertiesPanel extends HTMLElement {
 
     // Inject CSS stylesheet (scoped style wrapper)
     const styleId = 'properties-panel-style';
-    if (!document.getElementById(styleId)) {
-      const style = document.createElement('style');
+    let style = document.getElementById(styleId) as HTMLStyleElement;
+    if (!style) {
+      style = document.createElement('style');
       style.id = styleId;
-      style.textContent = css as any;
       document.head.appendChild(style);
     }
+    style.textContent = css as any;
 
     this.init(toggleBtn);
   }

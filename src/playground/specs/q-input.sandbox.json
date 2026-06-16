@@ -2,43 +2,175 @@
   "name": "Input Field",
   "tag": "q-input",
   "props": {
-    "value": { "type": "string", "default": "", "desc": "Active text content value" },
-    "type": { "type": "select", "options": ["text", "password", "email", "number", "url", "search", "color"], "default": "text", "desc": "Browser native input element type" },
-    "placeholder": { "type": "string", "default": "Enter text here...", "desc": "Native placeholder text" },
-    "label": { "type": "string", "default": "Credential Login", "desc": "Floating input title label" },
-    "size": { "type": "select", "options": ["sm", "md", "lg"], "default": "md", "desc": "Input box and font display size" },
-    "disabled": { "type": "boolean", "default": false, "desc": "Disables typing and styles greyed state" },
-    "required": { "type": "boolean", "default": false, "desc": "Aria-required validation identifier" },
-    "clearable": { "type": "boolean", "default": true, "desc": "Displays clean icon button when value is populated" },
-    "error": { "type": "string", "default": "", "desc": "Swaps borders to red alert styles and shows text" }
+    "type": {
+      "type": "select",
+      "options": [
+        "text",
+        "password",
+        "email",
+        "number",
+        "url",
+        "search",
+        "color"
+      ],
+      "default": "text",
+      "desc": "Browser native input element type"
+    },
+    "size": {
+      "type": "select",
+      "options": [
+        "sm",
+        "md",
+        "lg"
+      ],
+      "default": "md",
+      "desc": "Input box and font display size"
+    },
+    "clearable": {
+      "type": "boolean",
+      "default": true,
+      "desc": "Displays clean icon button when value is populated"
+    },
+    "label": {
+      "type": "string",
+      "default": "Credential Login",
+      "desc": "Floating input title label"
+    },
+    "placeholder": {
+      "type": "string",
+      "default": "Enter text here...",
+      "desc": "Native placeholder text"
+    },
+    "value": {
+      "type": "string",
+      "default": "",
+      "desc": "Active text content value"
+    },
+    "required": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Aria-required validation identifier"
+    },
+    "disabled": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Disables typing and styles greyed state"
+    },
+    "error": {
+      "type": "string",
+      "default": "",
+      "desc": "Swaps borders to red alert styles and shows text"
+    }
   },
   "slots": {
-    "prefix": { "type": "html", "default": "", "desc": "Left element prefix content slot" },
-    "suffix": { "type": "html", "default": "", "desc": "Right element suffix content slot" }
+    "prefix": {
+      "type": "html",
+      "default": "",
+      "desc": "Left element prefix content slot"
+    },
+    "suffix": {
+      "type": "html",
+      "default": "",
+      "desc": "Right element suffix content slot"
+    }
   },
   "variants": [
-    { "name": "Standard Input Box", "props": { "label": "Full Name", "placeholder": "John Doe" } },
-    { "name": "Small Input Box", "props": { "label": "Small Username", "placeholder": "sm-user", "size": "sm" } },
-    { "name": "Large Input Box", "props": { "label": "Large Username", "placeholder": "lg-user", "size": "lg" } },
-    { "name": "Color Picker Input", "props": { "label": "Accent Color Theme", "type": "color", "value": "#60a5fa" } },
-    { "name": "Password type input", "props": { "label": "Security Password", "type": "password", "placeholder": "Enter code..." } },
-    { "name": "Numeric Input", "props": { "label": "Quantity Bound", "type": "number", "value": "42", "placeholder": "Enter number..." } },
-    { "name": "Email with Error validation", "props": { "label": "Email Address", "type": "email", "value": "bad-email-format", "error": "Please enter a valid email address" } },
-    { "name": "Disabled State lock", "props": { "label": "Hardware Address", "value": "00:1A:2B:3C:4D:5E", "disabled": true } },
+    {
+      "name": "Standard Input Box",
+      "props": {
+        "label": "Full Name",
+        "placeholder": "John Doe"
+      }
+    },
+    {
+      "name": "Small Input Box",
+      "props": {
+        "label": "Small Username",
+        "placeholder": "sm-user",
+        "size": "sm"
+      }
+    },
+    {
+      "name": "Large Input Box",
+      "props": {
+        "label": "Large Username",
+        "placeholder": "lg-user",
+        "size": "lg"
+      }
+    },
+    {
+      "name": "Color Picker Input",
+      "props": {
+        "label": "Accent Color Theme",
+        "type": "color",
+        "value": "#60a5fa"
+      }
+    },
+    {
+      "name": "Password type input",
+      "props": {
+        "label": "Security Password",
+        "type": "password",
+        "placeholder": "Enter code..."
+      }
+    },
+    {
+      "name": "Numeric Input",
+      "props": {
+        "label": "Quantity Bound",
+        "type": "number",
+        "value": "42",
+        "placeholder": "Enter number..."
+      }
+    },
+    {
+      "name": "Email with Error validation",
+      "props": {
+        "label": "Email Address",
+        "type": "email",
+        "value": "bad-email-format",
+        "error": "Please enter a valid email address"
+      }
+    },
+    {
+      "name": "Disabled State lock",
+      "props": {
+        "label": "Hardware Address",
+        "value": "00:1A:2B:3C:4D:5E",
+        "disabled": true
+      }
+    },
     {
       "name": "Prefix Icon inline",
-      "props": { "label": "Search query", "placeholder": "Type keywords..." },
-      "slots": { "prefix": "<span style=\"padding:0 8px;opacity:0.6\">🔍</span>" }
+      "props": {
+        "label": "Search query",
+        "placeholder": "Type keywords..."
+      },
+      "slots": {
+        "prefix": "<span style=\"padding:0 8px;opacity:0.6\">🔍</span>"
+      }
     },
     {
       "name": "Suffix Label inline",
-      "props": { "label": "Weight bounds", "placeholder": "0.00" },
-      "slots": { "suffix": "<span style=\"padding:0 8px;opacity:0.6;font-size:0.8rem;font-weight:700\">kg</span>" }
+      "props": {
+        "label": "Weight bounds",
+        "placeholder": "0.00"
+      },
+      "slots": {
+        "suffix": "<span style=\"padding:0 8px;opacity:0.6;font-size:0.8rem;font-weight:700\">kg</span>"
+      }
     },
     {
       "name": "Prefix & Suffix & Clearable",
-      "props": { "label": "Price (USD)", "clearable": true, "value": "99.95" },
-      "slots": { "prefix": "<span style=\"padding:0 8px;opacity:0.6\">$</span>", "suffix": "<span style=\"padding:0 8px;opacity:0.6;font-size:0.8rem\">USD</span>" }
+      "props": {
+        "label": "Price (USD)",
+        "clearable": true,
+        "value": "99.95"
+      },
+      "slots": {
+        "prefix": "<span style=\"padding:0 8px;opacity:0.6\">$</span>",
+        "suffix": "<span style=\"padding:0 8px;opacity:0.6;font-size:0.8rem\">USD</span>"
+      }
     }
   ],
   "edgeCases": [
@@ -49,6 +181,12 @@
         "value": "This input has a super long value designed to verify horizontal scrolling inside the input field rather than breaking layout constraints."
       }
     },
-    { "name": "Empty Placeholder & Label", "props": { "label": "", "placeholder": "" } }
+    {
+      "name": "Empty Placeholder & Label",
+      "props": {
+        "label": "",
+        "placeholder": ""
+      }
+    }
   ]
 }

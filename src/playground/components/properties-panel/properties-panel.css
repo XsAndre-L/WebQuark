@@ -42,16 +42,24 @@
 
 .property-meta {
   flex: 1;
+  min-width: 0;
+}
+
+.property-control-container {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  min-width: 0;
 }
 
 .property-label {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 500;
   color: var(--text-main);
 }
 
 .property-label-sub {
-  font-size: 0.725rem;
+  font-size: 0.7rem;
   color: var(--text-muted);
   display: block;
   margin-top: 2px;
@@ -97,10 +105,11 @@
 }
 
 /* Custom WebQuark Component Properties Layout */
-.properties-panel q-dropdown,
-.properties-panel q-input {
-  width: 160px;
-  display: block;
+.property-row:not(.vertical) q-dropdown,
+.property-row:not(.vertical) q-input {
+  width: 100% !important;
+  display: block !important;
+  min-width: 0 !important;
 }
 
 .property-row.vertical q-input,

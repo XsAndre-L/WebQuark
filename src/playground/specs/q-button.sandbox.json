@@ -4,25 +4,26 @@
   "props": {
     "variant": {
       "type": "select",
-      "options": ["primary", "secondary", "success", "danger", "ghost", "text"],
+      "options": [
+        "primary",
+        "secondary",
+        "success",
+        "danger",
+        "ghost",
+        "text"
+      ],
       "default": "primary",
       "desc": "Shorthand button background styling variant"
     },
     "size": {
       "type": "select",
-      "options": ["sm", "md", "lg"],
+      "options": [
+        "sm",
+        "md",
+        "lg"
+      ],
       "default": "md",
       "desc": "Vertical padding & font size modifier"
-    },
-    "disabled": {
-      "type": "boolean",
-      "default": false,
-      "desc": "Locks click events and styles disabled state"
-    },
-    "loading": {
-      "type": "boolean",
-      "default": false,
-      "desc": "Swaps label with spinner icon while blocking events"
     },
     "expand": {
       "type": "boolean",
@@ -36,9 +37,25 @@
     },
     "target": {
       "type": "select",
-      "options": ["", "_blank", "_self", "_parent", "_top"],
+      "options": [
+        "",
+        "_blank",
+        "_self",
+        "_parent",
+        "_top"
+      ],
       "default": "",
       "desc": "Target link viewport target context (when href is set)"
+    },
+    "disabled": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Locks click events and styles disabled state"
+    },
+    "loading": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Swaps label with spinner icon while blocking events"
     }
   },
   "slots": {
@@ -59,31 +76,123 @@
     }
   },
   "variants": [
-    { "name": "Primary MD", "props": { "variant": "primary", "size": "md" }, "slots": { "default": "Primary Button" } },
-    { "name": "Secondary MD", "props": { "variant": "secondary", "size": "md" }, "slots": { "default": "Secondary Button" } },
-    { "name": "Success LG", "props": { "variant": "success", "size": "lg" }, "slots": { "default": "Success Action" } },
-    { "name": "Danger SM", "props": { "variant": "danger", "size": "sm" }, "slots": { "default": "Danger Trigger" } },
-    { "name": "Ghost Styling", "props": { "variant": "ghost" }, "slots": { "default": "Ghost Button" } },
-    { "name": "Text Only link style", "props": { "variant": "text" }, "slots": { "default": "Text Button" } },
-    { "name": "Disabled State", "props": { "variant": "primary", "disabled": true }, "slots": { "default": "Disabled Button" } },
-    { "name": "Loading State spinner", "props": { "variant": "primary", "loading": true }, "slots": { "default": "Loading Button" } },
-    { "name": "Expanded full width", "props": { "variant": "primary", "expand": true }, "slots": { "default": "Expanded Block Button" } }
+    {
+      "name": "Primary MD",
+      "props": {
+        "variant": "primary",
+        "size": "md"
+      },
+      "slots": {
+        "default": "Primary Button"
+      }
+    },
+    {
+      "name": "Secondary MD",
+      "props": {
+        "variant": "secondary",
+        "size": "md"
+      },
+      "slots": {
+        "default": "Secondary Button"
+      }
+    },
+    {
+      "name": "Success LG",
+      "props": {
+        "variant": "success",
+        "size": "lg"
+      },
+      "slots": {
+        "default": "Success Action"
+      }
+    },
+    {
+      "name": "Danger SM",
+      "props": {
+        "variant": "danger",
+        "size": "sm"
+      },
+      "slots": {
+        "default": "Danger Trigger"
+      }
+    },
+    {
+      "name": "Ghost Styling",
+      "props": {
+        "variant": "ghost"
+      },
+      "slots": {
+        "default": "Ghost Button"
+      }
+    },
+    {
+      "name": "Text Only link style",
+      "props": {
+        "variant": "text"
+      },
+      "slots": {
+        "default": "Text Button"
+      }
+    },
+    {
+      "name": "Disabled State",
+      "props": {
+        "variant": "primary",
+        "disabled": true
+      },
+      "slots": {
+        "default": "Disabled Button"
+      }
+    },
+    {
+      "name": "Loading State spinner",
+      "props": {
+        "variant": "primary",
+        "loading": true
+      },
+      "slots": {
+        "default": "Loading Button"
+      }
+    },
+    {
+      "name": "Expanded full width",
+      "props": {
+        "variant": "primary",
+        "expand": true
+      },
+      "slots": {
+        "default": "Expanded Block Button"
+      }
+    }
   ],
   "edgeCases": [
     {
       "name": "Super Long Text Wrapping",
-      "props": { "variant": "primary" },
-      "slots": { "default": "This is a button containing a ridiculously long text content that will test wrapping dynamics and grid boundaries" }
+      "props": {
+        "variant": "primary"
+      },
+      "slots": {
+        "default": "This is a button containing a ridiculously long text content that will test wrapping dynamics and grid boundaries"
+      }
     },
     {
       "name": "HTML Injection Safe Verification",
-      "props": { "variant": "primary" },
-      "slots": { "default": "<b>Formatted HTML</b> <script>console.log(\"XSS block test\")<\/script>" }
+      "props": {
+        "variant": "primary"
+      },
+      "slots": {
+        "default": "<b>Formatted HTML</b> <script>console.log(\"XSS block test\")</script>"
+      }
     },
     {
       "name": "Icon-only Button",
-      "props": { "variant": "primary" },
-      "slots": { "default": "", "icon-left": "<span style=\"font-size:16px\">🔥</span>" }
+      "props": {
+        "variant": "primary"
+      },
+      "slots": {
+        "default": "",
+        "icon-left": "<span style=\"font-size:16px\">🔥</span>"
+      }
     }
   ]
 }
