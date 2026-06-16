@@ -47,6 +47,7 @@ class PlaygroundKnobs extends HTMLElement {
   private attrContainer: HTMLElement | null = null;
   private slotContainer: HTMLElement | null = null;
   private cleanupKnobsEffect?: () => void;
+  private lastActiveComponent: string | null = null;
 
   connectedCallback(): void {
     // 1. Inject template HTML
@@ -103,83 +104,122 @@ class PlaygroundKnobs extends HTMLElement {
 
       // 2. Build customization panels if config is loaded
       if (config) {
-        this.buildKnobs(config);
+        this.buildKnobs(config, active);
       }
     });
   }
 
-  private buildKnobs(config: ComponentSpec): void {
+  private buildKnobs(config: ComponentSpec, active: string): void {
     if (!this.attrContainer || !this.slotContainer) return;
 
     // A. Build Attribute Knobs
-    this.attrContainer.innerHTML = '';
-    if (config.props && Object.keys(config.props).length > 0) {
-      Object.keys(config.props).forEach(propName => {
-        if (config.props) {
-          const prop = config.props[propName];
-          const row = document.createElement('div');
-          row.className = 'knob-row';
+    if (this.lastActiveComponent !== active) {
+      this.attrContainer.innerHTML = '';
+      if (config.props && Object.keys(config.props).length > 0) {
+        Object.keys(config.props).forEach(propName => {
+          if (config.props) {
+            const prop = config.props[propName];
+            const row = document.createElement('div');
+            row.className = 'knob-row';
 
-          const meta = document.createElement('div');
-          meta.className = 'knob-meta';
-          meta.innerHTML = `
-            <span class="knob-label">${propName}</span>
-            <span class="knob-label-sub">${prop.description || ''}</span>
-          `;
-          row.appendChild(meta);
+            const meta = document.createElement('div');
+            meta.className = 'knob-meta';
+            meta.innerHTML = `
+              <span class="knob-label">${propName}</span>
+              <span class="knob-label-sub">${prop.description || ''}</span>
+            `;
+            row.appendChild(meta);
 
-          const inputWrapper = document.createElement('div');
-          inputWrapper.appendChild(createPropControl(propName, prop));
-          row.appendChild(inputWrapper);
-          if (this.attrContainer) {
-            this.attrContainer.appendChild(row);
+            const inputWrapper = document.createElement('div');
+            inputWrapper.appendChild(createPropControl(propName, prop));
+            row.appendChild(inputWrapper);
+            if (this.attrContainer) {
+              this.attrContainer.appendChild(row);
+            }
           }
-        }
-      });
+        });
+      } else {
+        this.attrContainer.innerHTML = '<div class="knob-empty-state">No customizable attributes.</div>';
+      }
     } else {
-      this.attrContainer.innerHTML = '<div class="knob-empty-state">No customizable attributes.</div>';
+      // Just update existing controls' values!
+      if (config.props) {
+        Object.keys(config.props).forEach(propName => {
+          const prop = config.props![propName];
+          const control = this.attrContainer!.querySelector(`[data-prop="${propName}"]`) as any;
+          if (control) {
+            if (prop.type === 'boolean') {
+              if (control.checked !== prop.currentValue) {
+                control.checked = prop.currentValue;
+              }
+            } else {
+              // Only update value if different and the element is not currently focused by the user
+              if (control.value !== prop.currentValue && document.activeElement !== control) {
+                control.value = prop.currentValue;
+              }
+            }
+          }
+        });
+      }
     }
 
     // B. Build Slot Knobs
-    this.slotContainer.innerHTML = '';
-    if (config.slots && Object.keys(config.slots).length > 0) {
-      Object.keys(config.slots).forEach(slotName => {
-        if (config.slots) {
-          const slot = config.slots[slotName];
-          const row = document.createElement('div');
-          row.className = 'knob-row vertical';
+    if (this.lastActiveComponent !== active) {
+      this.slotContainer.innerHTML = '';
+      if (config.slots && Object.keys(config.slots).length > 0) {
+        Object.keys(config.slots).forEach(slotName => {
+          if (config.slots) {
+            const slot = config.slots[slotName];
+            const row = document.createElement('div');
+            row.className = 'knob-row vertical';
 
-          row.innerHTML = `
-            <div class="knob-meta">
-              <span class="knob-label">${slotName === 'default' ? 'default (Inner content)' : `slot="${slotName}"`}</span>
-              <span class="knob-label-sub">${slot.description || ''}</span>
-            </div>
-          `;
+            row.innerHTML = `
+              <div class="knob-meta">
+                <span class="knob-label">${slotName === 'default' ? 'default (Inner content)' : `slot="${slotName}"`}</span>
+                <span class="knob-label-sub">${slot.description || ''}</span>
+              </div>
+            `;
 
-          let input: any;
-          if (slot.description && (slot.description.includes('textarea') || slot.description.includes('html'))) {
-            input = document.createElement('q-textarea');
-            input.rows = 4;
-          } else {
-            input = document.createElement('q-input');
-            input.type = 'text';
+            let input: any;
+            if (slot.description && (slot.description.includes('textarea') || slot.description.includes('html'))) {
+              input = document.createElement('q-textarea');
+              input.rows = 4;
+            } else {
+              input = document.createElement('q-input');
+              input.type = 'text';
+            }
+
+            input.dataset.slot = slotName;
+            input.value = slot.currentValue;
+            input.addEventListener('qInput', (e: CustomEvent) => {
+              updateKnobValue('slot', slotName, e.detail);
+            });
+
+            row.appendChild(input);
+            if (this.slotContainer) {
+              this.slotContainer.appendChild(row);
+            }
           }
-
-          input.dataset.slot = slotName;
-          input.value = slot.currentValue;
-          input.addEventListener('qInput', (e: CustomEvent) => {
-            updateKnobValue('slot', slotName, e.detail);
-          });
-
-          row.appendChild(input);
-          if (this.slotContainer) {
-            this.slotContainer.appendChild(row);
-          }
-        }
-      });
+        });
+      } else {
+        this.slotContainer.innerHTML = '<div class="knob-empty-state">No slot options configured.</div>';
+      }
     } else {
-      this.slotContainer.innerHTML = '<div class="knob-empty-state">No slot options configured.</div>';
+      // Just update existing controls' values!
+      if (config.slots) {
+        Object.keys(config.slots).forEach(slotName => {
+          const slot = config.slots![slotName];
+          const control = this.slotContainer!.querySelector(`[data-slot="${slotName}"]`) as any;
+          if (control) {
+            if (control.value !== slot.currentValue && document.activeElement !== control) {
+              control.value = slot.currentValue;
+            }
+          }
+        });
+      }
     }
+
+    this.lastActiveComponent = active;
   }
 
   public closeKnobs(): void {

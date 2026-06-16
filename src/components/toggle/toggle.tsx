@@ -37,7 +37,9 @@ export class QToggle {
 
   @Watch('checked')
   watchChecked(newValue: boolean) {
-    this.internals.setFormValue(newValue ? 'true' : null);
+    if (this.internals && typeof this.internals.setFormValue === 'function') {
+      this.internals.setFormValue(newValue ? 'true' : null);
+    }
     if (!this._suppressChange) {
       this.qChange.emit(newValue);
     }
@@ -46,13 +48,17 @@ export class QToggle {
 
   componentWillLoad() {
     this.initialValue = this.checked;
-    this.internals.setFormValue(this.checked ? 'true' : null);
+    if (this.internals && typeof this.internals.setFormValue === 'function') {
+      this.internals.setFormValue(this.checked ? 'true' : null);
+    }
     this.checkSlots();
   }
 
   formResetCallback() {
     this.checked = this.initialValue;
-    this.internals.setFormValue(this.checked ? 'true' : null);
+    if (this.internals && typeof this.internals.setFormValue === 'function') {
+      this.internals.setFormValue(this.checked ? 'true' : null);
+    }
   }
 
   /**

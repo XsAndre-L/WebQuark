@@ -55,12 +55,16 @@ export class QDropdown {
 
   @Watch('value')
   watchValue(newValue: string) {
-    this.internals.setFormValue(newValue);
+    if (this.internals && typeof this.internals.setFormValue === 'function') {
+      this.internals.setFormValue(newValue);
+    }
   }
 
   componentWillLoad() {
     this.initialValue = this.value || "";
-    this.internals.setFormValue(this.value);
+    if (this.internals && typeof this.internals.setFormValue === 'function') {
+      this.internals.setFormValue(this.value);
+    }
     if (!this.searchTerm) {
       this.searchTerm = "";
     }
@@ -68,7 +72,9 @@ export class QDropdown {
 
   formResetCallback() {
     this.value = this.initialValue;
-    this.internals.setFormValue(this.value);
+    if (this.internals && typeof this.internals.setFormValue === 'function') {
+      this.internals.setFormValue(this.value);
+    }
   }
 
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================

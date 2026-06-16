@@ -179,11 +179,12 @@ th {
   background: var(--q-bg-surface-1, #1f2937);
   border-top: var(--q-border, 1px solid var(--q-border-color, #374151));
   box-sizing: border-box;
-  height: 44px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 var(--q-padding-lg, 16px);
+  padding-bottom: 1px;
 }
 
 ::slotted(q-dropdown) {
