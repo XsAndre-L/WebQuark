@@ -5,12 +5,12 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { TableColumn } from "./components/q-data-table/q-data-table";
-import { Option } from "./components/q-dropdown/q-dropdown";
-import { SidepanelItem } from "./components/q-sidepanel/q-sidepanel";
-export { TableColumn } from "./components/q-data-table/q-data-table";
-export { Option } from "./components/q-dropdown/q-dropdown";
-export { SidepanelItem } from "./components/q-sidepanel/q-sidepanel";
+import { TableColumn } from "./components/data-table/data-table";
+import { Option } from "./components/dropdown/dropdown";
+import { SidepanelItem } from "./components/sidepanel/sidepanel";
+export { TableColumn } from "./components/data-table/data-table";
+export { Option } from "./components/dropdown/dropdown";
+export { SidepanelItem } from "./components/sidepanel/sidepanel";
 export namespace Components {
     interface QButton {
         /**
