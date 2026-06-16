@@ -1,4 +1,5 @@
 import { Component, Prop, Element, Event, EventEmitter, h } from '@stencil/core';
+import { safeParseJson } from '../../utils/utils';
 
 export interface TableColumn {
   key: string;
@@ -19,6 +20,7 @@ function getNestedValue(obj: any, path: string): any {
   shadow: true,
 })
 export class QDataTable {
+  // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Element() el!: HTMLElement;
 
   @Prop() columns: TableColumn[] | string = [];
@@ -38,27 +40,13 @@ export class QDataTable {
   @Event() qSearch!: EventEmitter<string>;
 
   private getParsedColumns(): TableColumn[] {
-    if (typeof this.columns === 'string') {
-      try {
-        return JSON.parse(this.columns);
-      } catch (e) {
-        console.error('QDataTable: Failed to parse columns prop', e);
-        return [];
-      }
-    }
-    return this.columns || [];
+    return safeParseJson<TableColumn[]>(this.columns, [], 'QDataTable');
   }
 
+  // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
+
   private getParsedItems(): any[] {
-    if (typeof this.items === 'string') {
-      try {
-        return JSON.parse(this.items);
-      } catch (e) {
-        console.error('QDataTable: Failed to parse items prop', e);
-        return [];
-      }
-    }
-    return this.items || [];
+    return safeParseJson<any[]>(this.items, [], 'QDataTable');
   }
 
   private getItemKey(item: any, index: number): any {
@@ -181,6 +169,8 @@ export class QDataTable {
     if (!key) return '';
     return key.charAt(0).toUpperCase() + key.slice(1).replace(/[._]/g, ' ');
   }
+
+  // ===================== [6] RENDER (Visual Template Only) =====================
 
   private renderCell(item: any, column: TableColumn) {
     if (typeof column.render === 'function') {

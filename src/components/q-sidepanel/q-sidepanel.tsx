@@ -1,5 +1,5 @@
 import { Component, Prop, Element, Event, EventEmitter, Watch, Listen, State, h } from '@stencil/core';
-import { handleTabTrap, getFocusableElements, waitForTransitionEnd } from '../../utils/dom';
+import { handleTabTrap, waitForTransitionEnd, focusFirstElement, safeFocus } from '../../utils/dom';
 
 export interface SidepanelItem {
   label: string;
@@ -14,6 +14,7 @@ export interface SidepanelItem {
   shadow: true,
 })
 export class QSidepanel {
+  // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Element() el!: HTMLElement;
 
   // ── Shared ────────────────────────────────────────────────────────────────
@@ -55,7 +56,12 @@ export class QSidepanel {
   @State() expandedGroups: Set<string> = new Set();
 
   private drawerEl?: HTMLDivElement;
+
+  // ========================= [2] INTERNAL STATE & REFS =========================
+
   private previousActiveElement: HTMLElement | null = null;
+
+  // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
   // ── Lifecycle ─────────────────────────────────────────────────────────────
 
@@ -71,10 +77,8 @@ export class QSidepanel {
   }
 
   componentDidLoad() {
-    if (this.variant === 'drawer' && this.open && this.drawerEl) {
-      const focusables = getFocusableElements(this.drawerEl);
-      if (focusables.length > 0) focusables[0].focus();
-      else this.drawerEl.focus();
+    if (this.variant === 'drawer' && this.open) {
+      focusFirstElement(this.drawerEl);
     }
   }
 
@@ -90,9 +94,7 @@ export class QSidepanel {
         this.isAnimatedOpen = true;
         if (this.drawerEl) {
           waitForTransitionEnd(this.drawerEl, () => {
-            const focusables = getFocusableElements(this.drawerEl);
-            if (focusables.length > 0) focusables[0].focus();
-            else this.drawerEl?.focus();
+            focusFirstElement(this.drawerEl);
           });
         }
       }, 50);
@@ -101,7 +103,7 @@ export class QSidepanel {
       if (this.drawerEl) {
         waitForTransitionEnd(this.drawerEl, () => {
           this.isVisible = false;
-          if (this.previousActiveElement) this.previousActiveElement.focus();
+          safeFocus(this.previousActiveElement);
         });
       } else {
         this.isVisible = false;
@@ -117,6 +119,8 @@ export class QSidepanel {
       this.expandedGroups = newSet;
     }
   }
+
+  // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
   // ── Keyboard ──────────────────────────────────────────────────────────────
 
@@ -240,6 +244,8 @@ export class QSidepanel {
       );
     });
   }
+
+  // ===================== [6] RENDER (Visual Template Only) =====================
 
   // ── Render ────────────────────────────────────────────────────────────────
 

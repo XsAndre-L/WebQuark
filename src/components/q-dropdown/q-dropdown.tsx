@@ -1,4 +1,6 @@
 import { Component, Prop, State, Event, EventEmitter, Element, AttachInternals, Watch, Listen, h } from '@stencil/core';
+import { safeParseJson } from '../../utils/utils';
+import { safeFocus } from '../../utils/dom';
 
 export interface Option {
   label: string;
@@ -14,6 +16,7 @@ export interface Option {
   formAssociated: true
 })
 export class QDropdown {
+  // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Prop({ mutable: true }) value: string = "";
   @Prop() label?: string;
   @Prop() placeholder: string = "Select an option...";
@@ -30,18 +33,6 @@ export class QDropdown {
 
   private scrollTimeout: any = null;
 
-  private clearScrollLoading() {
-    this.isScrollingLoading = false;
-    if (this.scrollTimeout) {
-      clearTimeout(this.scrollTimeout);
-      this.scrollTimeout = null;
-    }
-  }
-
-  disconnectedCallback() {
-    this.clearScrollLoading();
-  }
-
   @Element() el!: HTMLElement;
 
   @AttachInternals() internals!: ElementInternals;
@@ -50,31 +41,16 @@ export class QDropdown {
   @Event() qSelect!: EventEmitter<Option>;
 
   private triggerEl?: HTMLButtonElement;
+
+  // ========================= [2] INTERNAL STATE & REFS =========================
+
   private searchInputEl?: HTMLInputElement;
   private initialValue: string = "";
 
-  private getFilteredOptions(): Option[] {
-    let list: Option[] = [];
-    if (typeof this.options === 'string') {
-      try {
-        list = JSON.parse(this.options);
-      } catch (e) {
-        console.error('Failed to parse options JSON string:', e);
-        return [];
-      }
-    } else {
-      list = this.options || [];
-    }
+  // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
-    if (this.searchable && this.searchTerm && this.searchTerm.trim() !== "") {
-      const term = this.searchTerm.toLowerCase();
-      return list.filter(opt => opt.label.toLowerCase().includes(term));
-    }
-    return list;
-  }
-
-  private get parsedOptions(): Option[] {
-    return this.getFilteredOptions().slice(0, this.visibleCount);
+  disconnectedCallback() {
+    this.clearScrollLoading();
   }
 
   @Watch('value')
@@ -95,6 +71,30 @@ export class QDropdown {
     this.internals.setFormValue(this.value);
   }
 
+  // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
+
+  private clearScrollLoading() {
+    this.isScrollingLoading = false;
+    if (this.scrollTimeout) {
+      clearTimeout(this.scrollTimeout);
+      this.scrollTimeout = null;
+    }
+  }
+
+  private getFilteredOptions(): Option[] {
+    const list = safeParseJson(this.options, [], 'QDropdown');
+
+    if (this.searchable && this.searchTerm && this.searchTerm.trim() !== "") {
+      const term = this.searchTerm.toLowerCase();
+      return list.filter(opt => opt.label.toLowerCase().includes(term));
+    }
+    return list;
+  }
+
+  private get parsedOptions(): Option[] {
+    return this.getFilteredOptions().slice(0, this.visibleCount);
+  }
+
   private toggleMenu = () => {
     if (this.disabled) return;
     this.isOpen = !this.isOpen;
@@ -104,7 +104,7 @@ export class QDropdown {
       this.visibleCount = 20;
       if (this.searchable) {
         this.focusedIndex = -1;
-        requestAnimationFrame(() => this.searchInputEl?.focus());
+        requestAnimationFrame(() => safeFocus(this.searchInputEl));
       } else {
         const activeIdx = this.parsedOptions.findIndex(opt => opt.value === this.value);
         const nextIdx = activeIdx >= 0 ? activeIdx : 0;
@@ -114,7 +114,7 @@ export class QDropdown {
       this.focusedIndex = -1;
       this.searchTerm = "";
       this.visibleCount = 20;
-      requestAnimationFrame(() => this.triggerEl?.focus());
+      requestAnimationFrame(() => safeFocus(this.triggerEl));
     }
   };
 
@@ -213,7 +213,7 @@ export class QDropdown {
         } else {
           if (this.focusedIndex === 0 && this.searchable) {
             this.focusedIndex = -1;
-            requestAnimationFrame(() => this.searchInputEl?.focus());
+            requestAnimationFrame(() => safeFocus(this.searchInputEl));
           } else if (this.focusedIndex > 0) {
             const nextIdx = this.focusedIndex - 1;
             this.updateFocusedIndex(nextIdx);
@@ -264,7 +264,7 @@ export class QDropdown {
           this.focusedIndex = -1;
           this.searchTerm = "";
           this.clearScrollLoading();
-          requestAnimationFrame(() => this.triggerEl?.focus());
+          requestAnimationFrame(() => safeFocus(this.triggerEl));
         }
         break;
       case 'Tab':
@@ -291,6 +291,8 @@ export class QDropdown {
     }
   }
 
+  // ===================== [6] RENDER (Visual Template Only) =====================
+
   render() {
     const opts = this.parsedOptions;
     const selectedOption = this.parsedOptions.find(opt => opt.value === this.value) 
@@ -306,14 +308,7 @@ export class QDropdown {
         const calculatedWidth = labelLength * 7.2 + 38;
         dynamicWidth = `${Math.ceil(Math.max(160, calculatedWidth))}px`;
       } else {
-        let allOptions: Option[] = [];
-        if (typeof this.options === 'string') {
-          try {
-            allOptions = JSON.parse(this.options);
-          } catch (e) {}
-        } else {
-          allOptions = this.options || [];
-        }
+        const allOptions = safeParseJson<Option[]>(this.options, []);
         const lengths = allOptions.map(o => o.label ? o.label.length : 0);
         if (this.placeholder) {
           lengths.push(this.placeholder.length);

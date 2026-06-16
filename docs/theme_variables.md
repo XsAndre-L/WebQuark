@@ -35,6 +35,26 @@ Used for text highlights, progress bars, active statuses, timeline event markers
 ## 2. Surfaces & Backgrounds
 Defines the canvas background, card faces, and hierarchical container backdrops (designed for complex multi-layered interfaces like Blender or Figma).
 
+### 🗺️ Visual Stacking Layers
+
+```
+  ┌─────────────────────────────────────────────────────────┐
+  │  viewport base / main canvas ( --q-bg-base )            │
+  │                                                         │
+  │  ┌───────────────────────────────────────────────────┐  │
+  │  │  sidebars / shelves / panel workspace ( surface-1 )│  │
+  │  │                                                   │  │
+  │  │  ┌─────────────────────────────────────────────┐  │  │
+  │  │  │  nested cards / properties grid ( surface-2 )│  │  │
+  │  │  │                                             │  │  │
+  │  │  │  ┌───────────────────────────────────────┐  │  │  │
+  │  │  │  │ dropdowns / popovers / tips (surface-3)│  │  │  │
+  │  │  │  └───────────────────────────────────────┘  │  │  │
+  │  │  └─────────────────────────────────────────────┘  │  │
+  │  └───────────────────────────────────────────────────┘  │
+  └─────────────────────────────────────────────────────────┘
+```
+
 | Variable Name | Default Value (Light) | Default Value (Dark) | Description |
 | :--- | :--- | :--- | :--- |
 | `--q-bg-base` | `#ffffff` | `#111827` | Lowest canvas / viewport background (e.g., Blender grid/3D viewport). |

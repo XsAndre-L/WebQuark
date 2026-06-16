@@ -6,6 +6,7 @@ import { Component, Prop, State, Element, h, Host } from '@stencil/core';
   shadow: true,
 })
 export class QTooltip {
+  // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Element() el: HTMLElement;
 
   /**
@@ -27,7 +28,12 @@ export class QTooltip {
   @State() visible: boolean = false;
 
   private showTimer: any;
+
+  // ========================= [2] INTERNAL STATE & REFS =========================
+
   private parentEl: HTMLElement | null = null;
+
+  // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
   connectedCallback() {
     this.parentEl = this.el.parentElement;
@@ -49,6 +55,8 @@ export class QTooltip {
     this.removeScrollListeners();
     clearTimeout(this.showTimer);
   }
+
+  // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
   private updatePosition = () => {
     if (!this.parentEl) return;
@@ -119,6 +127,8 @@ export class QTooltip {
       parent = parent.parentElement;
     }
   }
+
+  // ===================== [6] RENDER (Visual Template Only) =====================
 
   render() {
     return (

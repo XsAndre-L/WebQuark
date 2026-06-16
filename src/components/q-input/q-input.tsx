@@ -9,6 +9,7 @@ import { Component, Prop, State, Event, EventEmitter, Element, Method, AttachInt
   formAssociated: true
 })
 export class QInput {
+  // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Prop({ mutable: true }) value: string = "";
   @Prop() type: 'text' | 'password' | 'email' | 'number' | 'url' | 'search' | 'color' = 'text';
   @Prop() placeholder: string = "";
@@ -36,17 +37,12 @@ export class QInput {
   @Event() qFocus!: EventEmitter<FocusEvent>;
 
   private inputEl?: HTMLInputElement;
+
+  // ========================= [2] INTERNAL STATE & REFS =========================
+
   private initialValue: string = "";
 
-  private handlePrefixSlotChange = (ev: Event) => {
-    const slot = ev.target as HTMLSlotElement;
-    this.hasPrefix = slot.assignedNodes({ flatten: true }).length > 0;
-  };
-
-  private handleSuffixSlotChange = (ev: Event) => {
-    const slot = ev.target as HTMLSlotElement;
-    this.hasSuffix = slot.assignedNodes({ flatten: true }).length > 0;
-  };
+  // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
   @Watch('value')
   watchValue(newValue: string) {
@@ -69,6 +65,8 @@ export class QInput {
     }
   }
 
+  // ============================ [4] EXPOSED METHODS ============================
+
   @Method()
   async focusElement() {
     this.inputEl?.focus();
@@ -78,6 +76,18 @@ export class QInput {
   async clearValue() {
     this.handleClear();
   }
+
+  // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
+
+  private handlePrefixSlotChange = (ev: Event) => {
+    const slot = ev.target as HTMLSlotElement;
+    this.hasPrefix = slot.assignedNodes({ flatten: true }).length > 0;
+  };
+
+  private handleSuffixSlotChange = (ev: Event) => {
+    const slot = ev.target as HTMLSlotElement;
+    this.hasSuffix = slot.assignedNodes({ flatten: true }).length > 0;
+  };
 
   private handleInput = (ev: Event) => {
     const target = ev.target as HTMLInputElement;
@@ -183,11 +193,13 @@ export class QInput {
     }
   };
 
+  // ===================== [6] RENDER (Visual Template Only) =====================
+
   render() {
     const hasError = (this.error !== undefined && this.error.length > 0) || (this.errorMessage !== undefined && this.errorMessage.length > 0);
     const displayError = this.error || this.errorMessage;
     const showClearBtn = this.clearable && !this.disabled && this.value.length > 0;
-    
+
     const showSuffixContainer = this.hasSuffix || showClearBtn;
 
     return (
@@ -208,7 +220,7 @@ export class QInput {
 
         {/* Input Box Wrapper */}
         <div class="input-control" part="control">
-          
+
           {/* Prefix Slot Container */}
           <span 
             class="prefix-container" 

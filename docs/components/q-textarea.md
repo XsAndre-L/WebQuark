@@ -1,92 +1,93 @@
 # 🧩 Component Specification: `q-textarea`
 
-The `<q-textarea>` is a custom multi-line text input field designed to match our design system. It handles floating/static header labels, semantic validation error states, keyboard focus, and optional automatic height growth (auto-grow) as the user types.
+The `<q-textarea>` is a custom multi-line text input field supporting header labels, form association, custom resize modes, semantic validation error states, and high-performance auto-growing height options. It is optimized for seamless keyboard integration and rendering inside Unreal Engine's Webview context.
 
 ---
 
 ## 1. Component API (Properties & Attributes)
 
-| Property | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `value` | `string` | `""` | The current text value inside the text area. |
-| `placeholder` | `string` | `""` | Helper placeholder text displayed when the field is empty. |
-| `label` | `string` | `undefined` | The header label text displayed above the text area. |
-| `rows` | `number` | `3` | The initial visible height, measured in text rows. |
-| `autoGrow` | `boolean` | `true` | Automatically expands the text area height to fit input text dynamically. |
-| `disabled` | `boolean` | `false` | Disables text entry and applies a grayed-out layout. |
-| `error` | `string` | `undefined` | Error feedback message. If populated, it overrides the border to red and displays helper text below the textarea. |
+| Property | Attribute | Type | Default | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| `value` | `value` | `string` | `""` | The current text value inside the text area. Mutable. |
+| `placeholder` | `placeholder` | `string` | `""` | Helper placeholder text displayed when the field is empty. |
+| `label` | `label` | `string` | `undefined` | The header label text displayed above the text area. |
+| `rows` | `rows` | `number` | `3` | The initial visible height, measured in text rows. |
+| `autoGrow` | `auto-grow` | `boolean` | `true` | Automatically expands the text area height to fit input text dynamically. |
+| `resizeMode` | `resize-mode` | `"auto" \| "fixed" \| "manual"` | `'auto'` | Resizing mode constraint. `'manual'` enables vertical grab resizing. |
+| `disabled` | `disabled` | `boolean` | `false` | Reflects disabled state. Locks interactions and gray-out layouts. |
+| `required` | `required` | `boolean` | `false` | Reflects required state for native validation. |
+| `error` | `error` | `string` | `undefined` | Reflects error string. Overrides standard borders to red theme colors. |
+| `errorMessage` | `error-message` | `string` | `undefined` | Error feedback message displayed below the field. |
 
 ---
 
-## 2. Events
+## 2. Slots
 
-*   `qChange`: Emitted when the user commits text changes (on blur or Enter).
-*   `qInput`: Emitted on every single keystroke.
-
----
-
-## 3. Visual Variants
-
-The component dynamically adjusts its layout to support five visual states:
-
-### Variant A: Default (Standby)
-*   **Behavior**: Displays the textarea container with standard matte styling and subtle boundaries.
-*   **Styling**: Uses `--q-input-bg` for background and `--q-input-border` for outlines.
-
-### Variant B: Active Focus State
-*   **Behavior**: When a user clicks or tabs into the textarea, the border transforms.
-*   **Styling**: Smoothly transitions the border style to `--q-input-border-focus` (using the primary brand color) and scales shadow elevation.
-
-### Variant C: Validation Error State (`error="..."`)
-*   **Behavior**: Overrides standby styles with warning highlights and displays a small helper message block directly below the field.
-*   **Styling**: Forces border color to `--q-color-danger` (red) and renders the subtext in the same color.
-
-### Variant D: Disabled State (`disabled="true"`)
-*   **Behavior**: Prevents user clicks, typing, and tab-focus.
-*   **Styling**: Decreases opacity to `0.6` and applies a `not-allowed` mouse cursor.
-
-### Variant E: Auto-Grow Height (`autoGrow="true"`)
-*   **Behavior**: Expands vertically as typing wraps lines, avoiding vertical scrollbars inside the component.
-*   **OSR Safe Implementation**: Utilizes a lightweight Javascript event handler on the `input` event that sets `height = 'auto'` and then applies `height = scrollHeight + 'px'`. This avoids heavy ResizeObservers which can lag CEF thread passes.
+None
 
 ---
 
-## 4. Typography & Font Styles
+## 3. Events
 
-*   **Global Font Stack**: Inherits `--q-font-family`.
+*   `qChange`: Emitted when the user commits text changes (on blur). Payload: `string`
+*   `qInput`: Emitted on every single keystroke. Payload: `string`
+*   `qBlur`: Emitted when the textarea loses keyboard focus. Payload: `FocusEvent`
+*   `qFocus`: Emitted when the textarea gains keyboard focus. Payload: `FocusEvent`
+
+---
+
+## 4. Visual Variants
+
+*   **Auto-Growing Height**: In `'auto'` resize mode and with `autoGrow` set to `true`, the textarea height is automatically updated on input.
+*   **Manual Resize**: In `'manual'` resize mode, shows a native vertical grab handle to allow manual resizing by users.
+*   **Fixed Height**: In `'fixed'` resize mode, locks the vertical size of the textarea container to its initial row capacity.
+*   **Focus State**: Animates border and label highlights to primary brand colors via `--q-color-primary` on active focus.
+*   **Validation Error State**: Highlighting label and border using `--q-color-danger` when `error` or `errorMessage` properties are present. Displays error text under the input field.
+*   **Disabled State**: Lowers overall layout opacity to `0.6` and overrides cursor styling to `not-allowed`.
+
+---
+
+## 5. Typography & Font Styles
+
+*   **Global Font Stack**: Inherits `--q-font-family, inherit`.
 *   **Header Label**:
-    *   Font size: `--q-font-size-sm` (e.g., `0.875rem` / `14px`).
-    *   Font weight: `--q-font-weight-bold` (e.g., `600`).
-    *   Color: Muted text color.
+    *   Font size: `var(--q-font-size-sm, 0.7rem)`.
+    *   Font weight: `var(--q-font-weight-bold, 700)`.
+    *   Color: `var(--q-fg-muted, #9ca3af)`. Transitioned to `--q-color-primary` on focus and `--q-color-danger` on error.
 *   **TextArea Input Value**:
-    *   Font size: `--q-font-size-base` (e.g., `1rem` / `16px`).
-    *   Font weight: `--q-font-weight-normal` (e.g., `400`).
+    *   Font size: `var(--q-font-size-base, 1rem)`.
+    *   Font weight: `var(--q-font-weight-normal, 400)`.
+    *   Color: `var(--q-fg-base, #f9fafb)`.
     *   Line-height: `1.5`.
 *   **Error Helper Text**:
-    *   Font size: `--q-font-size-sm` (e.g., `0.875rem` / `14px`).
-    *   Font weight: `--q-font-weight-normal` (e.g., `400`).
-    *   Color: `--q-color-danger` (red).
+    *   Font size: `var(--q-font-size-sm, 0.7rem)`.
+    *   Font weight: `var(--q-font-weight-normal, 400)`.
+    *   Color: `var(--q-color-danger, #ef4444)`.
 
 ---
 
-## 5. CSS Variable Mapping
-
-Below is the complete list of styling tokens mapped to the component's internal CSS:
+## 6. CSS Variable Mapping
 
 | Variable Name | Default Value | Purpose |
 | :--- | :--- | :--- |
-| `--q-input-bg` | `var(--q-bg-surface-2)` | Main text box background color. |
-| `--q-input-border` | `var(--q-border)` | Standby border outline details. |
-| `--q-input-border-focus`| `1px solid var(--q-color-primary)`| Highlight border style when active. |
-| `--q-input-radius` | `var(--q-radius-md)` (8px) | Corner rounding of the text area box. |
+| `--q-font-family` | `inherit` | Main font family used in label, textarea box, and validation messages. |
+| `--q-font-size-sm` | `0.7rem` | Font size used for label and error helper messages. |
+| `--q-font-size-base` | `1rem` | Font size used for textarea text value. |
+| `--q-font-weight-bold` | `700` | Font weight used for labels. |
+| `--q-font-weight-normal` | `400` | Font weight used for text values and validation helpers. |
+| `--q-fg-muted` | `#9ca3af` | Colors standby header labels. |
+| `--q-fg-base` | `#f9fafb` | User entered text color. |
+| `--q-input-bg` | `var(--q-bg-surface-2, #374151)` | Textarea control container background color. |
+| `--q-input-border` | `var(--q-border, 1px solid var(--q-border-color, #4b5563))` | Border outline styles in standby state. |
+| `--q-input-radius` | `var(--q-radius-md, 8px)` | Rounded corner radius of textarea. |
 | `--q-input-padding` | `10px 14px` | Internal text padding margins. |
-| `--q-color-danger` | `#ef4444` | Highlight color for error states. |
-| `--q-transition-fast` | `150ms ease` | Border transition speed. |
-| `--q-font-family` | `system-ui, sans-serif` | Core font typography family. |
+| `--q-color-primary` | `#60a5fa` | Highlight primary border on active focus and label highlight. |
+| `--q-color-danger` | `#ef4444` | Highlight color for error state border, label, and validation text. |
+| `--q-transition-fast` | `150ms ease` | Animation transition duration for focus highlights. |
 
 ---
 
-## 6. HTML/TSX Structure (Shadow DOM Layout)
+## 7. HTML/TSX Structure (Shadow DOM Layout)
 
 ```tsx
 @Component({
@@ -95,6 +96,7 @@ Below is the complete list of styling tokens mapped to the component's internal 
   shadow: {
     delegatesFocus: true
   },
+  formAssociated: true
 })
 export class QTextarea {
   @Element() el!: HTMLElement;
@@ -104,64 +106,19 @@ export class QTextarea {
   @Prop() label?: string;
   @Prop() rows: number = 3;
   @Prop() autoGrow: boolean = true;
+  @Prop() resizeMode: 'auto' | 'manual' | 'fixed' = 'auto';
   @Prop({ reflect: true }) disabled: boolean = false;
+  @Prop({ reflect: true }) required: boolean = false;
   @Prop({ reflect: true }) error?: string;
+  @Prop() errorMessage?: string;
 
-  @Event() qChange: EventEmitter<string>;
-  @Event() qInput: EventEmitter<string>;
+  @AttachInternals() internals!: ElementInternals;
 
   private textareaEl?: HTMLTextAreaElement;
-  private static idCounter = 0;
-  private inputId: string;
-
-  componentWillLoad() {
-    if (!this.inputId) {
-      QTextarea.idCounter++;
-      this.inputId = `q-textarea-${QTextarea.idCounter}`;
-    }
-    this.adjustHeightInternal();
-  }
-
-  @Method()
-  async focusElement() {
-    this.textareaEl?.focus();
-  }
-
-  @Method()
-  async adjustHeight() {
-    this.adjustHeightInternal();
-  }
-
-  private handleInput = (ev: Event) => {
-    const target = ev.target as HTMLTextAreaElement;
-    this.value = target.value;
-    this.qInput.emit(this.value);
-    this.adjustHeightInternal();
-  };
-
-  private handleChange = (ev: Event) => {
-    const target = ev.target as HTMLTextAreaElement;
-    this.value = target.value;
-    this.qChange.emit(this.value);
-  };
-
-  private adjustHeightInternal() {
-    if (!this.autoGrow || !this.textareaEl) return;
-    
-    // OSR Safe calculation: reset height to recalculate scrollHeight
-    this.textareaEl.style.height = 'auto';
-    
-    const scrollHeight = this.textareaEl.scrollHeight;
-    if (scrollHeight > 0) {
-      this.textareaEl.style.height = `${scrollHeight}px`;
-    } else {
-      // Fallback if textarea is initialized inside a hidden container (zero-height bug)
-      this.textareaEl.style.height = '';
-    }
-  }
 
   render() {
-    const hasError = this.error !== undefined && this.error.length > 0;
+    const hasError = (this.error !== undefined && this.error.length > 0) || (this.errorMessage !== undefined && this.errorMessage.length > 0);
+    const displayError = this.error || this.errorMessage;
     
     return (
       <div 
@@ -171,33 +128,34 @@ export class QTextarea {
           'has-error': hasError
         }}
       >
-        {/* Optional Header Label linked via htmlFor */}
         {this.label && (
-          <label class="textarea-label" htmlFor={this.inputId} part="label">
+          <label class="textarea-label" htmlFor="q-field" part="label">
             {this.label}
           </label>
         )}
         
-        {/* Core Textarea Box */}
         <textarea
           ref={(el) => (this.textareaEl = el as HTMLTextAreaElement)}
-          id={this.inputId}
+          id="q-field"
           class="textarea-box"
+          style={{ resize: this.activeResizeMode === 'manual' ? 'vertical' : 'none' }}
           part="textarea"
           value={this.value}
           placeholder={this.placeholder}
           rows={this.rows}
           disabled={this.disabled}
+          required={this.required}
           onInput={this.handleInput}
           onChange={this.handleChange}
+          onBlur={this.handleBlur}
+          onFocus={this.handleFocus}
           aria-invalid={hasError ? 'true' : 'false'}
-          aria-describedby={hasError ? `${this.inputId}-error` : undefined}
+          aria-describedby={hasError ? 'q-field-error' : undefined}
         />
         
-        {/* Validation Helper Message */}
         {hasError && (
-          <span id={`${this.inputId}-error`} class="error-msg" part="error-msg">
-            {this.error}
+          <span id="q-field-error" class="error-msg" part="error-msg">
+            {displayError}
           </span>
         )}
       </div>
@@ -208,90 +166,52 @@ export class QTextarea {
 
 ---
 
-## 7. Component Styling (`q-textarea.css`)
+## 8. Unreal Engine / Webview Compatibility Notes
 
-```css
-:host {
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-}
+*   **Keyboard Bridge Focus Tunnels**: CEF instances inside Unreal Engine require native form elements to route keystroke bridges. Native `<textarea>` controls are nested within the shadow DOM to allow target focus registration. Content-editable elements are strictly forbidden.
+*   **RequestAnimationFrame Auto-Grow**: Automatic height calculation triggers a height layout reset (`height = 'auto'`) followed by `height = scrollHeight`. Updates are wrapped in `requestAnimationFrame` blocks to prevent OSR repaint crashes.
+*   **Backdrop-Filter Warnings**: No `backdrop-filter` rules are applied to the textarea or its wrapping controls. Using fallback solid or high-opacity backgrounds prevents black rendering overlays or texture crashes.
+*   **GPU Box-Shadow Approximations**: GPU-intensive pixel pass shaders like `filter: drop-shadow()` are avoided in favor of browser-optimized `box-shadow` rules, keeping performance consistent during heavy text entries.
 
-.textarea-wrapper {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  box-sizing: border-box;
-}
+---
 
-/* Header Label Typography */
-.textarea-label {
-  font-family: var(--q-font-family, inherit);
-  font-size: var(--q-font-size-sm, 0.875rem);
-  font-weight: var(--q-font-weight-bold, 700);
-  color: var(--q-color-secondary, #9ca3af);
-  margin-bottom: 6px;
-  
-  transition: color var(--q-transition-fast, 150ms ease);
-}
+## 9. Developer Guidelines & Examples
 
-/* Core Input Area */
-.textarea-box {
-  width: 100%;
-  box-sizing: border-box;
-  background: var(--q-input-bg, var(--q-bg-surface-2, #374151));
-  border: var(--q-input-border, var(--q-border, 1px solid var(--q-border-color, #4b5563)));
-  border-radius: var(--q-input-radius, var(--q-radius-md, 8px));
-  padding: var(--q-input-padding, 10px 14px);
-  
-  font-family: var(--q-font-family, inherit);
-  font-size: var(--q-font-size-base, 1rem);
-  font-weight: var(--q-font-weight-normal, 400);
-  line-height: 1.5;
-  color: var(--q-fg-base, #f9fafb);
-  
-  resize: none; /* Disables manual sizing grab handle */
-  outline: none;
-  transition: border-color var(--q-transition-fast, 150ms ease), 
-              box-shadow var(--q-transition-fast, 150ms ease);
-}
+### Example 1: Standard Auto-Growing Textarea
+```html
+<q-textarea 
+  label="Comments" 
+  placeholder="Type your feedback here..." 
+  rows="4">
+</q-textarea>
+```
 
-/* Focused State maps color only to prevent border jumps */
-.textarea-box:focus {
-  border-color: var(--q-color-primary, #60a5fa);
-  box-shadow: 0 0 0 1px var(--q-color-primary, #60a5fa);
-}
+### Example 2: Fixed Height Textarea (No Resizing)
+```html
+<q-textarea 
+  label="Logs" 
+  resize-mode="fixed" 
+  auto-grow="false" 
+  rows="6" 
+  value="[13:22:40] System initialization complete.">
+</q-textarea>
+```
 
-.textarea-wrapper:focus-within .textarea-label {
-  color: var(--q-color-primary, #60a5fa);
-}
+### Example 3: Manual Resizable Textarea
+```html
+<q-textarea 
+  label="Code Paste" 
+  resize-mode="manual" 
+  rows="5">
+</q-textarea>
+```
 
-/* Validation Error State Overrides */
-.has-error .textarea-box {
-  border-color: var(--q-color-danger, #ef4444) !important;
-  box-shadow: none;
-}
-
-.has-error.textarea-wrapper:focus-within .textarea-label,
-.has-error .textarea-label {
-  color: var(--q-color-danger, #ef4444) !important;
-}
-
-/* Error message text below textarea */
-.error-msg {
-  font-family: var(--q-font-family, inherit);
-  font-size: var(--q-font-size-sm, 0.875rem);
-  font-weight: var(--q-font-weight-normal, 400);
-  color: var(--q-color-danger, #ef4444);
-  margin-top: 6px;
-}
-
-/* Disabled State Visual styling */
-.is-disabled {
-  opacity: 0.6;
-}
-.is-disabled .textarea-box {
-  cursor: not-allowed;
-  pointer-events: none;
-}
+### Example 4: Form Field with Error Messaging
+```html
+<q-textarea 
+  label="Description" 
+  required="true"
+  error="Invalid input content detected." 
+  error-message="Description must be at least 10 characters long.">
+</q-textarea>
 ```

@@ -1,84 +1,95 @@
 # 🧩 Component Specification: `q-dropdown`
 
-The `<q-dropdown>` is a custom select dropdown menu. It allows selecting from a list of option objects. To render correctly in Unreal Engine's Off-Screen Rendering (OSR) environment, it avoids native HTML select overlays, drawing the menu layout directly inside the Webview canvas using custom HTML elements.
+The `<q-dropdown>` is a custom select dropdown menu. It allows selecting from a structured list of option objects. To render correctly in Unreal Engine's Off-Screen Rendering (OSR) environment, it avoids native HTML select overlays, drawing the menu layout directly inside the Webview canvas using custom Shadow DOM elements. It supports keyboard navigation, search filtering, dynamic sizing, and infinite scroll pagination.
 
 ---
 
 ## 1. Component API (Properties & Attributes)
 
-| Property | Type | Default | Description |
-| :--- | :--- | :--- | :--- |
-| `value` | `string` | `""` | The value of the currently selected option. |
-| `label` | `string` | `undefined` | Header label text displayed above the dropdown container. |
-| `placeholder` | `string` | `"Select an option..."` | Helper text displayed in the trigger box when no option is selected. |
-| `options` | `Option[]` | `[]` | Array of selectable options: `Option { label: string; value: string; }`. |
-| `disabled` | `boolean` | `false` | Disables dropdown toggle and locks interactions. |
+| Property | Attribute | Type | Default | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| `value` | `value` | `string` | `""` | The value of the currently selected option. Mutable. |
+| `label` | `label` | `string` | `undefined` | Header label text displayed above the dropdown container. |
+| `placeholder` | `placeholder` | `string` | `"Select an option..."` | Helper text displayed in the trigger box when no option is selected. |
+| `options` | `options` | `Option[] \| string` | `[]` | Array of selectable options: `Option { label: string; value: string; }` or a JSON string. |
+| `disabled` | `disabled` | `boolean` | `false` | Reflects disabled state. Locks interactions and dropdown toggle. |
+| `size` | `size` | `"lg" \| "md" \| "sm"` | `'md'` | Reflects the component layout size variant. |
+| `searchable` | `searchable` | `boolean` | `false` | Enables an input search box inside the dropdown menu to filter options. |
 
 ---
 
-## 2. Events
+## 2. Slots
 
-*   `qChange`: Emitted when the user selects a new option. Passes the selected `value` (`string`) as the event payload (essential for Angular forms integration).
-*   `wqSelect`: Emitted simultaneously. Passes the full selected `Option` object (`{ label, value }`) for applications requiring metadata.
-
----
-
-## 3. Visual Variants
-
-The dropdown relies on stateful rendering inside the Shadow DOM to support four visual states:
-
-### Variant A: Standby (Closed)
-*   **Behavior**: Renders the toggle trigger box showing the active option label (or the placeholder if empty).
-*   **Styling**: Uses `--q-dropdown-bg` for background and `--q-dropdown-border` for borders. Features a trailing chevron icon.
-
-### Variant B: Open (Active Dropdown)
-*   **Behavior**: Spawns an absolute-positioned options panel (`<ul>` element) directly below the trigger box. The chevron rotates 180 degrees.
-*   **Styling**: The options list container is styled using `--q-dropdown-menu-bg` (maps to Surface-3 so it floats layered on top of other elements) and overlays a shadow (`--q-shadow-medium`).
-
-### Variant C: Active Selection Highlight
-*   **Behavior**: When hovering list items, they highlight. The currently active selected item displays with an active checkmark or color shift.
-*   **Styling**: Hovering items shifts their background color to `--q-color-primary` (Electric Blue) and text to `--q-bg-base` (dark base).
-
-### Variant D: Disabled State (`disabled="true"`)
-*   **Behavior**: Trigger box is grayed out, cursor is blocked, and clicks will not open the options menu.
-*   **Styling**: Drops overall opacity to `0.6` and sets cursor to `not-allowed`.
+None
 
 ---
 
-## 4. Typography & Font Styles
+## 3. Events
 
-*   **Global Font Stack**: Inherits `--q-font-family`.
+*   `qChange`: Emitted when selection changes. Passes the selected `value` (`string`).
+*   `qSelect`: Emitted simultaneously. Passes the full selected `Option` object (`{ label: string; value: string; }`).
+
+---
+
+## 4. Visual Variants
+
+*   **Size Layouts**: Supports `sm` (small, dynamic width calculated inline to prevent layout shift), `md` (standard full-width), and `lg` (large, prominent layout).
+*   **Standby state (Closed)**: Displays the clickable trigger box showing the active choice (or placeholder) and a trailing chevron icon.
+*   **Open state**: Displays the dropdown menu as an absolute overlay directly below the trigger, rotating the chevron 180 degrees.
+*   **Searchable Mode**: Displays an inline input field at the top of the menu, allowing users to type and filter options in real time.
+*   **Item Selection & Focus**: Selected items show a colored left border and bold text. Active focused item (keyboard hover) changes its background to `--q-color-primary`.
+*   **Infinite Scroll Pagination**: The options list features a scroll container that loads items in batches of 20. Reaching the bottom triggers a loading spinner and appends next batch of items.
+*   **Disabled State**: Trigger box drops to `0.6` opacity, pointer events are blocked, and click menu toggling is locked.
+
+---
+
+## 5. Typography & Font Styles
+
+*   **Global Font Stack**: Inherits `--q-font-family, inherit`.
 *   **Header Label**:
-    *   Font size: `--q-font-size-sm` (e.g., `0.875rem` / `14px`).
-    *   Font weight: `--q-font-weight-bold` (e.g., `600`).
-    *   Color: `--q-color-secondary` (Slate Gray).
-*   **Active Trigger Text & Option Labels**:
-    *   Font size: `--q-font-size-base` (e.g., `1rem` / `16px`).
-    *   Font weight: `--q-font-weight-normal` (e.g., `400`).
-    *   Line-height: `1.2` (centered vertically).
+    *   Font size: `var(--q-font-size-sm, 0.7rem)` (Varies: `var(--q-font-size-xs, 0.75rem)` in `sm` and `var(--q-font-size-base, 1rem)` in `lg`).
+    *   Font weight: `var(--q-font-weight-bold, 700)`.
+    *   Color: `var(--q-fg-muted, #9ca3af)`.
+*   **Active Trigger & Option Items**:
+    *   Font size: `var(--q-font-size-base, 1rem)` (Varies: `var(--q-font-size-sm, 0.7rem)` in `sm` and `var(--q-font-size-lg, 1.125rem)` in `lg`).
+    *   Font weight: `var(--q-font-weight-normal, 400)`.
+    *   Color: `var(--q-fg-base, #f9fafb)`.
+    *   Line-height: `1.2`.
+*   **Selected Option Text**:
+    *   Font weight: `var(--q-font-weight-bold, 700)`.
 *   **Muted Placeholder**:
-    *   Font weight: `--q-font-weight-normal` (`400`).
-    *   Color: `--q-color-secondary` (opacity lowered).
+    *   Color: `var(--q-fg-muted, #9ca3af)` with lower opacity.
 
 ---
 
-## 5. CSS Variable Mapping
-
-Below is the complete list of styling tokens mapped to the component's internal CSS:
+## 6. CSS Variable Mapping
 
 | Variable Name | Default Value | Purpose |
 | :--- | :--- | :--- |
-| `--q-dropdown-bg` | `var(--q-bg-surface-2)` | Trigger box background color. |
-| `--q-dropdown-menu-bg` | `var(--q-bg-surface-3)` | Absolute popover options menu background. |
-| `--q-dropdown-border` | `var(--q-border)` | Standby border outline definitions. |
-| `--q-dropdown-radius` | `var(--q-radius-md)` (8px) | Corner rounding radius for both trigger and list. |
-| `--q-color-primary` | `#60a5fa` | Highlight accent color for selected/hovered options. |
-| `--q-shadow-medium` | `0 8px 16px rgba(0,0,0,0.3)` | Shadow depth under the opened select menu. |
-| `--q-transition-fast` | `150ms ease` | Animation speed for chevron rotation and hover states. |
+| `--q-font-family` | `inherit` | Main font family used in label, trigger text, and menu item texts. |
+| `--q-font-size-xs` | `0.75rem` | Font size used for label in `sm` variant. |
+| `--q-font-size-sm` | `0.7rem` | Font size used for label in `md` variant, and item text in `sm` variant. |
+| `--q-font-size-base` | `1rem` | Font size used for item text in `md` variant and label in `lg` variant. |
+| `--q-font-size-lg` | `1.125rem` | Font size used for item text in `lg` variant. |
+| `--q-font-weight-bold` | `700` | Font weight used for labels and selected option items. |
+| `--q-font-weight-normal` | `400` | Font weight used for option item text. |
+| `--q-fg-muted` | `#9ca3af` | Colors labels, chevrons, placeholders, loading text, and search borders. |
+| `--q-fg-base` | `#f9fafb` | Color of active trigger text, search input text, and menu item text. |
+| `--q-dropdown-bg` | `var(--q-bg-surface-2, #374151)` | Trigger box background color. |
+| `--q-dropdown-border` | `var(--q-border, 1px solid var(--q-border-color, #4b5563))` | Border outline styles for trigger box and dropdown menu. |
+| `--q-dropdown-radius` | `var(--q-radius-md, 8px)` | Rounded corner radius for trigger box and dropdown menu. |
+| `--q-dropdown-padding` | `var(--q-field-padding, 10px 14px)` | Inside padding for trigger box and menu options. |
+| `--q-dropdown-menu-bg` | `var(--q-bg-surface-3, #4b5563)` | Background color for overlay option menu. |
+| `--q-dropdown-border-color` | `var(--q-border-color, #4b5563)` | Border color dividing search section and options. |
+| `--q-color-primary` | `#60a5fa` | Accent color for selected option highlights and keyboard hover. |
+| `--q-shadow-medium` | `0 8px 16px rgba(0,0,0,0.3)` | Shadow overlay under the absolute dropdown menu. |
+| `--q-transition-fast` | `150ms ease` | Animation transition duration for chevron rotation and hover effects. |
+| `--q-bg-surface-2` | `#374151` | Background color for the search input box. |
+| `--q-radius-sm` | `4px` | Border radius for search input box. |
 
 ---
 
-## 6. HTML/TSX Structure (Shadow DOM Layout)
+## 7. HTML/TSX Structure (Shadow DOM Layout)
 
 ```tsx
 export interface Option {
@@ -92,110 +103,31 @@ export interface Option {
   shadow: {
     delegatesFocus: true
   },
+  formAssociated: true
 })
 export class QDropdown {
   @Prop({ mutable: true }) value: string = "";
   @Prop() label?: string;
   @Prop() placeholder: string = "Select an option...";
-  @Prop() options: Option[] = [];
+  @Prop() options: Option[] | string = [];
   @Prop({ reflect: true }) disabled: boolean = false;
+  @Prop({ reflect: true }) size: 'sm' | 'md' | 'lg' = 'md';
+  @Prop() searchable: boolean = false;
 
   @State() isOpen: boolean = false;
   @State() focusedIndex: number = -1;
+  @State() searchTerm: string = "";
+  @State() visibleCount: number = 20;
+  @State() isScrollingLoading: boolean = false;
 
-  @Event() qChange: EventEmitter<string>;
-  @Event() wqSelect: EventEmitter<Option>;
+  @AttachInternals() internals!: ElementInternals;
 
-  private elRef?: HTMLElement;
   private triggerEl?: HTMLButtonElement;
-  private static idCounter = 0;
-  private inputId: string;
-
-  componentWillLoad() {
-    if (!this.inputId) {
-      QDropdown.idCounter++;
-      this.inputId = `q-dropdown-${QDropdown.idCounter}`;
-    }
-  }
-
-  private toggleMenu = () => {
-    if (this.disabled) return;
-    this.isOpen = !this.isOpen;
-    if (this.isOpen) {
-      // Focus on active element if it exists, otherwise first element
-      const activeIdx = this.options.findIndex(opt => opt.value === this.value);
-      this.focusedIndex = activeIdx >= 0 ? activeIdx : 0;
-    } else {
-      this.focusedIndex = -1;
-    }
-  };
-
-  private handleSelect = (option: Option) => {
-    this.value = option.value;
-    this.isOpen = false;
-    this.focusedIndex = -1;
-    this.qChange.emit(option.value);
-    this.wqSelect.emit(option);
-    setTimeout(() => this.triggerEl?.focus(), 50);
-  };
-
-  private handleKeyDown = (ev: KeyboardEvent) => {
-    if (this.disabled) return;
-
-    switch (ev.key) {
-      case 'ArrowDown':
-        ev.preventDefault();
-        if (!this.isOpen) {
-          this.isOpen = true;
-          this.focusedIndex = 0;
-        } else {
-          this.focusedIndex = Math.min(this.focusedIndex + 1, this.options.length - 1);
-        }
-        break;
-      case 'ArrowUp':
-        ev.preventDefault();
-        if (!this.isOpen) {
-          this.isOpen = true;
-          this.focusedIndex = this.options.length - 1;
-        } else {
-          this.focusedIndex = Math.max(this.focusedIndex - 1, 0);
-        }
-        break;
-      case 'Enter':
-      case ' ':
-        ev.preventDefault();
-        if (this.isOpen && this.focusedIndex >= 0) {
-          this.handleSelect(this.options[this.focusedIndex]);
-        } else {
-          this.toggleMenu();
-        }
-        break;
-      case 'Escape':
-      case 'Tab':
-        if (this.isOpen) {
-          this.isOpen = false;
-          this.focusedIndex = -1;
-          if (ev.key === 'Escape') {
-            ev.preventDefault();
-            this.triggerEl?.focus();
-          }
-        }
-        break;
-    }
-  };
-
-  // Close dropdown if user clicks outside of the element
-  @Listen('click', { target: 'window' })
-  handleClickOutside(ev: MouseEvent) {
-    const path = ev.composedPath();
-    if (this.elRef && !path.includes(this.elRef)) {
-      this.isOpen = false;
-      this.focusedIndex = -1;
-    }
-  }
+  private searchInputEl?: HTMLInputElement;
 
   render() {
-    const selectedOption = this.options.find(opt => opt.value === this.value);
+    const opts = this.parsedOptions;
+    const selectedOption = this.parsedOptions.find(opt => opt.value === this.value);
     const displayLabel = selectedOption ? selectedOption.label : this.placeholder;
     const hasSelection = selectedOption !== undefined;
 
@@ -204,31 +136,29 @@ export class QDropdown {
         class={{
           'dropdown-wrapper': true,
           'is-open': this.isOpen,
-          'is-disabled': this.disabled
+          'is-disabled': this.disabled,
+          [`size-${this.size}`]: true
         }}
-        ref={(el) => (this.elRef = el)}
+        onKeyDown={this.handleKeyDown}
       >
-        {/* Optional Header Label */}
         {this.label && (
-          <label class="dropdown-label" htmlFor={`${this.inputId}-trigger`} part="label">
+          <label class="dropdown-label" htmlFor="q-field" part="label">
             {this.label}
           </label>
         )}
 
-        {/* Custom Trigger Box (Renders as standard button for click stability) */}
         <button
           ref={(el) => (this.triggerEl = el)}
-          id={`${this.inputId}-trigger`}
+          id="q-field"
           class="dropdown-trigger"
           part="trigger"
           type="button"
           disabled={this.disabled}
           onClick={this.toggleMenu}
-          onKeyDown={this.handleKeyDown}
           aria-haspopup="listbox"
           aria-expanded={this.isOpen ? 'true' : 'false'}
-          aria-controls={this.isOpen ? `${this.inputId}-menu` : undefined}
-          aria-activedescendant={this.isOpen && this.focusedIndex >= 0 ? `${this.inputId}-item-${this.focusedIndex}` : undefined}
+          aria-controls={this.isOpen ? 'q-field-menu' : undefined}
+          aria-activedescendant={this.isOpen && this.focusedIndex >= 0 ? `q-field-item-${this.focusedIndex}` : undefined}
         >
           <span class={{ 'trigger-text': true, 'is-placeholder': !hasSelection }}>
             {displayLabel}
@@ -238,32 +168,56 @@ export class QDropdown {
           </svg>
         </button>
 
-        {/* Options List Menu (Absolute Overlay inside Webview Canvas) */}
         {this.isOpen && (
-          <ul 
-            id={`${this.inputId}-menu`}
+          <div 
+            id="q-field-menu"
             class="dropdown-menu" 
             part="menu" 
             role="listbox"
             aria-label={this.label || 'Options'}
           >
-            {this.options.map((option, index) => (
-              <li
-                id={`${this.inputId}-item-${index}`}
-                class={{
-                  'menu-item': true,
-                  'is-selected': option.value === this.value,
-                  'is-focused': index === this.focusedIndex
-                }}
-                part={`item ${option.value === this.value ? 'selected-item' : ''} ${index === this.focusedIndex ? 'focused-item' : ''}`}
-                role="option"
-                aria-selected={option.value === this.value ? 'true' : 'false'}
-                onClick={() => this.handleSelect(option)}
-              >
-                {option.label}
-              </li>
-            ))}
-          </ul>
+            {this.searchable && (
+              <div class="dropdown-search-container">
+                <input
+                  ref={(el) => (this.searchInputEl = el)}
+                  type="text"
+                  class="dropdown-search-input"
+                  placeholder="Search..."
+                  value={this.searchTerm}
+                  onInput={this.handleSearchInput}
+                />
+              </div>
+            )}
+            <ul class="dropdown-items-list" onScroll={this.handleScroll}>
+              {opts.length === 0 ? (
+                <li class="menu-item is-empty">No matches found</li>
+              ) : (
+                opts.map((option, index) => (
+                  <li
+                    id={`q-field-item-${index}`}
+                    class={{
+                      'menu-item': true,
+                      'is-selected': option.value === this.value,
+                      'is-focused': index === this.focusedIndex
+                    }}
+                    tabindex={index === this.focusedIndex ? 0 : -1}
+                    part={`item ${option.value === this.value ? 'selected-item' : ''} ${index === this.focusedIndex ? 'focused-item' : ''}`}
+                    role="option"
+                    aria-selected={option.value === this.value ? 'true' : 'false'}
+                    onClick={() => this.handleSelect(option)}
+                  >
+                    {option.label}
+                  </li>
+                ))
+              )}
+              {this.isScrollingLoading && (
+                <li class="menu-item is-loading-more">
+                  <span class="spinner-circle"></span>
+                  <span>Loading...</span>
+                </li>
+              )}
+            </ul>
+          </div>
         )}
       </div>
     );
@@ -273,137 +227,53 @@ export class QDropdown {
 
 ---
 
-## 7. Component Styling (`q-dropdown.css`)
+## 8. Unreal Engine / Webview Compatibility Notes
 
-```css
-:host {
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-}
+*   **No Native HTML `<select>` elements**: Native select elements attempt to open OS-level popover containers which fail to render or detach in Off-Screen Rendering (OSR) modes. Custom buttons and overlay `<ul>` lists are drawn directly into the DOM to fix compatibility.
+*   **Search Box Focus Capturing**: When `searchable="true"` is set, focus is dynamically routed to the nested `<input>` using `requestAnimationFrame`. This guarantees that keystrokes bridge properly from Unreal Engine's input handlers.
+*   **Backdrop-Filter Warnings**: The popup menu does not apply `backdrop-filter` or blur styles. Falling back to solid backgrounds (`--q-dropdown-menu-bg` Surface-3) prevents OSR rendering thread crashes or black blocks.
+*   **Keyboard Handling Support**: The component implements a custom WAI-ARIA compliant listbox key down handler (supporting `ArrowDown`, `ArrowUp`, `Enter`, `Space`, `Escape`, `Home`, `End`, and `Tab`) ensuring accessibility and gamepad routing.
 
-.dropdown-wrapper {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  width: 100%;
-  box-sizing: border-box;
-}
+---
 
-/* Header Label Typography */
-.dropdown-label {
-  font-family: var(--q-font-family, inherit);
-  font-size: var(--q-font-size-sm, 0.875rem);
-  font-weight: var(--q-font-weight-bold, 700);
-  color: var(--q-color-secondary, #9ca3af);
-  margin-bottom: 6px;
-}
+## 9. Developer Guidelines & Examples
 
-/* Clickable Trigger Box */
-.dropdown-trigger {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  background: var(--q-dropdown-bg, var(--q-bg-surface-2, #374151));
-  border: var(--q-dropdown-border, var(--q-border, 1px solid var(--q-border-color, #4b5563)));
-  border-radius: var(--q-dropdown-radius, var(--q-radius-md, 8px));
-  padding: var(--q-dropdown-padding, var(--q-field-padding, 10px 14px));
-  box-sizing: border-box;
-  outline: none;
-  cursor: pointer;
+### Example 1: Standard Dropdown using JavaScript Options Array
+```html
+<q-dropdown id="dropdown-country" label="Select Country" placeholder="Select destination..."></q-dropdown>
+
+<script>
+  const dropdown = document.getElementById('dropdown-country');
+  dropdown.options = [
+    { label: 'United States', value: 'US' },
+    { label: 'Germany', value: 'DE' },
+    { label: 'South Africa', value: 'ZA' }
+  ];
   
-  color: var(--q-fg-base, #f9fafb);
-  font-family: var(--q-font-family, inherit);
-  font-size: var(--q-font-size-base, 1rem);
-  font-weight: var(--q-font-weight-normal, 400);
-  
-  transition: border-color var(--q-transition-fast, 150ms ease), 
-              box-shadow var(--q-transition-fast, 150ms ease);
-}
+  dropdown.addEventListener('qChange', (e) => {
+    console.log('Selected country code:', e.detail);
+  });
+</script>
+```
 
-.dropdown-trigger:focus-visible {
-  border-color: var(--q-color-primary, #60a5fa);
-  box-shadow: 0 0 0 1px var(--q-color-primary, #60a5fa);
-}
+### Example 2: Searchable Dropdown with inline JSON string options
+```html
+<q-dropdown 
+  label="Select Language" 
+  searchable="true" 
+  options='[{"label":"English","value":"EN"},{"label":"Spanish","value":"ES"},{"label":"French","value":"FR"},{"label":"Japanese","value":"JA"}]'
+  value="EN">
+</q-dropdown>
+```
 
-.trigger-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.trigger-text.is-placeholder {
-  color: var(--q-color-secondary, #9ca3af);
-  opacity: 0.8;
-}
-
-/* Chevron Icon */
-.chevron-icon {
-  width: 16px;
-  height: 16px;
-  color: var(--q-color-secondary, #9ca3af);
-  transition: transform var(--q-transition-fast, 150ms ease);
-}
-
-.is-open .chevron-icon {
-  transform: rotate(180deg);
-}
-
-/* Options Dropdown Menu (Overlay List) */
-.dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  margin: 4px 0 0 0;
-  padding: 4px 0;
-  list-style: none;
-  z-index: 1000;
-  
-  background: var(--q-dropdown-menu-bg, var(--q-bg-surface-3, #4b5563));
-  border: var(--q-dropdown-border, var(--q-border, 1px solid var(--q-border-color, #4b5563)));
-  border-radius: var(--q-dropdown-radius, var(--q-radius-md, 8px));
-  box-shadow: var(--q-shadow-medium, 0 8px 16px rgba(0,0,0,0.3));
-  box-sizing: border-box;
-}
-
-/* Options Items */
-.menu-item {
-  padding: 10px 14px;
-  cursor: pointer;
-  box-sizing: border-box;
-  
-  font-family: var(--q-font-family, inherit);
-  font-size: var(--q-font-size-base, 1rem);
-  font-weight: var(--q-font-weight-normal, 400);
-  color: var(--q-fg-base, #f9fafb);
-  
-  transition: background var(--q-transition-fast, 150ms ease), 
-              color var(--q-transition-fast, 150ms ease);
-}
-
-/* Hover & Selected states mapping */
-.menu-item:hover,
-.menu-item.is-focused {
-  background: var(--q-color-primary, #60a5fa);
-  color: var(--q-bg-base, #111827); /* Contrast text color */
-  outline: none;
-}
-
-.menu-item.is-selected {
-  background: color-mix(in srgb, var(--q-color-primary, #60a5fa) 15%, transparent);
-  font-weight: var(--q-font-weight-bold, 700);
-  border-left: 3px solid var(--q-color-primary, #60a5fa);
-  padding-left: 11px; /* Align matching offset padding */
-}
-
-/* Disabled State Visuals */
-.is-disabled {
-  opacity: 0.6;
-}
-.is-disabled .dropdown-trigger {
-  cursor: not-allowed;
-  pointer-events: none;
-}
+### Example 3: Small Inline Dropdown
+```html
+<div style="display: flex; align-items: center; gap: 8px;">
+  <span>Filter by:</span>
+  <q-dropdown 
+    size="sm" 
+    placeholder="Priority" 
+    options='[{"label":"High","value":"H"},{"label":"Medium","value":"M"},{"label":"Low","value":"L"}]'>
+  </q-dropdown>
+</div>
 ```

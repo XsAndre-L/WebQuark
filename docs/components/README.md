@@ -16,3 +16,11 @@ This folder contains the detailed design specifications, property definitions, a
 8.  **q-dropdown** — Custom Select dropdown.
 9.  **q-sidepanel** — Sliding container drawer.
 10. **q-carousel** — Generic Horizontal Scroll Slider.
+11. **q-data-table** — Standard Data Grid with search, sorting, and pagination.
+12. **q-dialog** — Dialog overlays and confirmation modals.
+13. **q-icon** — Dynamic icon element supporting Lucide and FontAwesome libraries.
+14. **q-quantity-selector** — Numeric step input field.
+15. **q-scrollable** — Drag-to-scroll custom container wrapper.
+16. **q-syntax-box** — Read-only code layout display with highlighting and copy buttons.
+17. **q-toggle** — Two-way reactive binary state switches.
+18. **q-tooltip** — Fixed position context description bubbles.

@@ -226,3 +226,29 @@ export function waitForTransitionEnd(element: HTMLElement, callback: () => void,
   element.addEventListener('transitionend', done);
   const timer = setTimeout(done, fallbackTimeout);
 }
+
+/**
+ * 7. Safely focuses an HTML element if it exists and supports the focus method.
+ * Useful for offscreen renderers or server-side pre-rendering checks.
+ * @param element The element to focus.
+ */
+export function safeFocus(element: HTMLElement | null | undefined): void {
+  if (element && typeof element.focus === 'function') {
+    element.focus();
+  }
+}
+
+/**
+ * 8. Focuses the first focusable/interactive descendant inside a container.
+ * If no focusable descendants are found, falls back to focusing the container itself.
+ * @param container The container element to search.
+ */
+export function focusFirstElement(container: HTMLElement | null | undefined): void {
+  if (!container) return;
+  const focusables = getFocusableElements(container);
+  if (focusables.length > 0) {
+    focusables[0].focus();
+  } else {
+    safeFocus(container);
+  }
+}

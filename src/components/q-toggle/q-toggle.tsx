@@ -7,6 +7,7 @@ import { Component, Prop, State, Event, EventEmitter, Element, Method, AttachInt
   formAssociated: true
 })
 export class QToggle {
+  // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Element() el!: HTMLElement;
 
   @AttachInternals() internals!: ElementInternals;
@@ -26,8 +27,13 @@ export class QToggle {
   @Event() qChange!: EventEmitter<boolean>;
 
   private initialValue: boolean = false;
+
+  // ========================= [2] INTERNAL STATE & REFS =========================
+
   /** Prevents qChange from re-firing when checked is set programmatically from outside */
   private _suppressChange: boolean = false;
+
+  // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
   @Watch('checked')
   watchChecked(newValue: boolean) {
@@ -49,14 +55,6 @@ export class QToggle {
     this.internals.setFormValue(this.checked ? 'true' : null);
   }
 
-  @Method()
-  async toggle() {
-    if (!this.disabled) {
-      // User-initiated: allow qChange to emit normally
-      this.checked = !this.checked;
-    }
-  }
-
   /**
    * Programmatically set checked state without emitting qChange.
    * Use this from external controllers (e.g. playground) to avoid
@@ -71,6 +69,18 @@ export class QToggle {
     // to avoid silencing the next genuine user interaction.
     this._suppressChange = false;
   }
+
+  // ============================ [4] EXPOSED METHODS ============================
+
+  @Method()
+  async toggle() {
+    if (!this.disabled) {
+      // User-initiated: allow qChange to emit normally
+      this.checked = !this.checked;
+    }
+  }
+
+  // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
   private handleSlotChange = () => {
     this.checkSlots();
@@ -109,6 +119,8 @@ export class QToggle {
       this.checked = !this.checked;
     }
   };
+
+  // ===================== [6] RENDER (Visual Template Only) =====================
 
   render() {
     const hasLabel = this.label !== undefined && this.label !== '';

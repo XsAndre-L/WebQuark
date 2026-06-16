@@ -6,6 +6,23 @@ Below is the complete list of elements and properties to avoid to prevent render
 
 ---
 
+## ⚡ Safe / Unsafe Quick-Reference
+
+| Feature / Property | Status | Alternative / Safe Approach |
+| :--- | :--- | :--- |
+| **`backdrop-filter: blur()`** | `❌ Avoid` | Use high-opacity background colors (`rgba(..., 0.85)`). |
+| **`mix-blend-mode`** | `❌ Avoid` | Use pre-blended colors or alpha opacity (`rgba` / `hsla`). |
+| **`filter: drop-shadow()`** | `❌ Avoid` | Use standard **`box-shadow`** (much faster rendering). |
+| **3D Transforms (`translate3d`)**| `❌ Avoid` | Use standard 2D transforms (**`transform: translate()`**). |
+| **Container Queries (`@container`)**| `❌ Avoid` | Use standard Media Queries (**`@media`**). |
+| **Native `<dialog>` element** | `❌ Avoid` | Build custom absolute `div` overlays. |
+| **Native `<select>` dropdowns** | `❌ Avoid` | Build custom dropdown markup (trigger button + absolute list). |
+| **Custom editable `<div>` fields**| `❌ Avoid` | Wrap native `<input>` or `<textarea>` in component. |
+| **DRM/H.264 video streams** | `❌ Avoid` | Use open WebM/VP8 codecs or unencrypted streams. |
+| **Heavy WebGL `<canvas>`** | `❌ Avoid` | Use standard 2D rendering contexts (`canvas.getContext('2d')`). |
+
+---
+
 ## 1. CSS Properties to Avoid
 
 ### ❌ `backdrop-filter`

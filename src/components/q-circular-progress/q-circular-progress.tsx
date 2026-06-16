@@ -7,6 +7,7 @@ import { calculateDynamicFontSize } from '../../utils/dom';
   shadow: true,
 })
 export class QCircularProgress {
+  // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Prop() value: number = 0;
   @Prop() label?: string;
   @Prop() indeterminate: boolean = false;
@@ -16,7 +17,7 @@ export class QCircularProgress {
     const size = 120; // Internal SVG viewBox size coordinate
     const radius = 52; // Center radius (leaving safety margin for stroke width)
     const circumference = 2 * Math.PI * radius;
-    
+
     // Clamp progress value between 0 and 100
     const clampedValue = Math.min(Math.max(this.value, 0), 100);
     const strokeDashoffset = this.indeterminate 

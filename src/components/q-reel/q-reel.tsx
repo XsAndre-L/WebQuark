@@ -1,5 +1,5 @@
 import { Component, Prop, State, Element, Listen, Event, EventEmitter, h } from '@stencil/core';
-import { getSlottedElements, handleTabTrap } from '../../utils/dom';
+import { getSlottedElements, handleTabTrap, safeFocus } from '../../utils/dom';
 
 @Component({
   tag: 'q-reel',
@@ -7,6 +7,7 @@ import { getSlottedElements, handleTabTrap } from '../../utils/dom';
   shadow: true,
 })
 export class QReel {
+  // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Prop() layout: 'grid' | 'carousel' = 'grid';
   @Prop() lightbox: boolean = true;
 
@@ -18,6 +19,8 @@ export class QReel {
 
   private closeButtonRef?: HTMLButtonElement;
 
+  // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
+
   private getThumbnails(): HTMLElement[] {
     return getSlottedElements(this.el, 'q-thumbnail');
   }
@@ -27,10 +30,10 @@ export class QReel {
     if (!this.lightbox) return;
     this.activeMedia = event.detail;
     this.qLightboxOpen.emit();
-    
+
     // Defer focus shift to overlay close button
     setTimeout(() => {
-      this.closeButtonRef?.focus();
+      safeFocus(this.closeButtonRef);
     }, 50);
   }
 
@@ -45,11 +48,9 @@ export class QReel {
     const originalTrigger = this.activeMedia?.triggerEl;
     this.activeMedia = null;
     this.qLightboxClose.emit();
-    
+
     // Restore focus to thumbnail
-    if (originalTrigger) {
-      setTimeout(() => originalTrigger.focus(), 50);
-    }
+    setTimeout(() => safeFocus(originalTrigger), 50);
   };
 
   private handleKeyDown = (e: KeyboardEvent) => {
@@ -58,7 +59,7 @@ export class QReel {
       e.preventDefault();
       return;
     }
-    
+
     if (e.key === 'Tab') {
       const overlay = this.el.shadowRoot?.querySelector('.lightbox-overlay') as HTMLElement;
       if (overlay) {
@@ -106,10 +107,12 @@ export class QReel {
 
       // Keep focus on close button or media when navigating
       setTimeout(() => {
-        this.closeButtonRef?.focus();
+        safeFocus(this.closeButtonRef);
       }, 50);
     }
   }
+
+  // ===================== [6] RENDER (Visual Template Only) =====================
 
   render() {
     const thumbnails = this.getThumbnails();
@@ -181,7 +184,7 @@ export class QReel {
               ) : (
                 <img class="lightbox-media" src={this.activeMedia.src} alt={this.activeMedia.alt} />
               )}
-              
+
               {this.activeMedia.label && (
                 <div class="lightbox-caption">
                   {this.activeMedia.label}
