@@ -85,7 +85,7 @@ class PlaygroundThemeDesigner extends HTMLElement {
     if (!document.getElementById(styleId)) {
       const style = document.createElement('style');
       style.id = styleId;
-      style.textContent = css;
+      style.textContent = css as any;
       document.head.appendChild(style);
     }
 
