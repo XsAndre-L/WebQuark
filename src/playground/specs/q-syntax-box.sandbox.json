@@ -33,6 +33,21 @@
       "type": "string",
       "default": "",
       "desc": "The source code string to highlight (takes precedence over slot content)"
+    },
+    "editable": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Enables interactive code editing inside the syntax box"
+    },
+    "disabled": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Disables interaction in editable mode"
+    },
+    "required": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Marks the input as required in editable mode"
     }
   },
   "slots": {
@@ -67,6 +82,14 @@
       "name": "JSON Highlight",
       "props": { "variant": "plain", "language": "json", "height": "auto" },
       "slots": { "default": "{\n  \"name\": \"q-syntax-box\",\n  \"version\": \"1.0.0\",\n  \"private\": true\n}" }
+    },
+    {
+      "name": "Editable Panel (JS)",
+      "props": { "variant": "panel", "language": "javascript", "heading": "EDITABLE JS", "editable": true, "code": "const value = 'You can edit this!';\nconsole.log(value);", "height": "110px" }
+    },
+    {
+      "name": "Editable Plain (HTML)",
+      "props": { "variant": "plain", "language": "html", "editable": true, "code": "<div class=\"wrapper\">\n  <span>Edit me!</span>\n</div>", "height": "auto" }
     }
   ],
   "edgeCases": [

@@ -181,7 +181,12 @@ class PlaygroundKnobs extends HTMLElement {
             `;
 
             let input: any;
-            if (slot.description && (slot.description.includes('textarea') || slot.description.includes('html'))) {
+            if (active === 'q-data-table' && slotName === 'footer') {
+              input = document.createElement('q-syntax-box');
+              input.editable = true;
+              input.language = 'html';
+              input.height = '110px';
+            } else if (slot.description && (slot.description.includes('textarea') || slot.description.includes('html'))) {
               input = document.createElement('q-textarea');
               input.rows = 4;
             } else {

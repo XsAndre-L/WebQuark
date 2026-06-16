@@ -1,19 +1,91 @@
-import { Component, Prop, Element, State, Method, Host, h } from '@stencil/core';
+import { Component, Prop, Element, State, Method, Host, Event, EventEmitter, Watch, AttachInternals, h } from '@stencil/core';
+import { formatCode } from '../../utils/formatter';
 
 @Component({
   tag: 'q-syntax-box',
   styleUrl: 'syntax-box.css',
-  shadow: true,
+  shadow: {
+    delegatesFocus: true
+  },
+  formAssociated: true,
 })
 export class QSyntaxBox {
   @Element() el!: HTMLElement;
 
   @Prop() variant: 'panel' | 'plain' = 'panel';
   @Prop() language: 'html' | 'javascript' | 'css' | 'json' = 'html';
-  @Prop() code?: string;
+  @Prop({ mutable: true }) code?: string;
+  @Prop({ mutable: true }) value?: string;
   @Prop() heading?: string;
   @Prop() copyable: boolean = false;
   @Prop() height?: string;
+  @Prop() editable: boolean = false;
+  @Prop({ reflect: true }) disabled: boolean = false;
+  @Prop({ reflect: true }) required: boolean = false;
+
+  @AttachInternals() internals!: ElementInternals;
+
+  @Event() qChange!: EventEmitter<string>;
+  @Event() qInput!: EventEmitter<string>;
+
+  @Watch('code')
+  watchCode(newCode: string) {
+    let finalCode = newCode;
+    const textarea = this.el.shadowRoot?.querySelector('textarea');
+    const isFocused = textarea && this.el.shadowRoot?.activeElement === textarea;
+
+    if (this.editable && newCode && !isFocused) {
+      const formatted = formatCode(newCode, this.language);
+      if (formatted !== newCode) {
+        finalCode = formatted;
+        this.code = formatted;
+      }
+    }
+
+    if (this.value !== finalCode) {
+      this.value = finalCode;
+    }
+    if (this.internals && typeof this.internals.setFormValue === 'function') {
+      this.internals.setFormValue(finalCode || '');
+    }
+  }
+
+  @Watch('value')
+  watchValue(newValue: string) {
+    let finalVal = newValue;
+    const textarea = this.el.shadowRoot?.querySelector('textarea');
+    const isFocused = textarea && this.el.shadowRoot?.activeElement === textarea;
+
+    if (this.editable && newValue && !isFocused) {
+      const formatted = formatCode(newValue, this.language);
+      if (formatted !== newValue) {
+        finalVal = formatted;
+        this.value = formatted;
+      }
+    }
+
+    if (this.code !== finalVal) {
+      this.code = finalVal;
+    }
+  }
+
+  componentWillLoad() {
+    if (this.value !== undefined && this.code === undefined) {
+      this.code = this.value;
+    } else if (this.code !== undefined && this.value === undefined) {
+      this.value = this.code;
+    }
+
+    if (this.editable && this.code) {
+      const formatted = formatCode(this.code, this.language);
+      this.code = formatted;
+      this.value = formatted;
+    }
+
+    if (this.internals && typeof this.internals.setFormValue === 'function') {
+      this.internals.setFormValue(this.code || '');
+    }
+  }
 
   @State() copied: boolean = false;
 
@@ -134,6 +206,60 @@ export class QSyntaxBox {
     });
   }
 
+  private preEl?: HTMLPreElement;
+
+  private handleScroll = (e: Event) => {
+    const textarea = e.target as HTMLTextAreaElement;
+    if (this.preEl) {
+      this.preEl.scrollLeft = textarea.scrollLeft;
+      this.preEl.scrollTop = textarea.scrollTop;
+    }
+  };
+
+  private handleInput = (ev: Event) => {
+    const target = ev.target as HTMLTextAreaElement;
+    this.code = target.value;
+    this.value = target.value;
+    this.qInput.emit(this.code);
+  };
+
+  private handleChange = (ev: Event) => {
+    const target = ev.target as HTMLTextAreaElement;
+    this.code = target.value;
+    this.value = target.value;
+    this.qChange.emit(this.code);
+  };
+
+  private handleKeyDown = (ev: KeyboardEvent) => {
+    if (ev.key === 'Tab') {
+      ev.preventDefault();
+      const textarea = ev.target as HTMLTextAreaElement;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const val = textarea.value;
+
+      const spaces = '  ';
+      const newValue = val.substring(0, start) + spaces + val.substring(end);
+      this.code = newValue;
+      this.value = newValue;
+      this.qInput.emit(this.code);
+
+      requestAnimationFrame(() => {
+        textarea.selectionStart = textarea.selectionEnd = start + spaces.length;
+      });
+    }
+  };
+
+  private handleFormat = () => {
+    if (this.code) {
+      const formatted = formatCode(this.code, this.language);
+      this.code = formatted;
+      this.value = formatted;
+      this.qInput.emit(formatted);
+      this.qChange.emit(formatted);
+    }
+  };
+
   private highlight(text: string, language: 'html' | 'javascript' | 'css' | 'json'): string {
     if (!text) return '';
     switch (language) {
@@ -155,14 +281,32 @@ export class QSyntaxBox {
     const isScrollable = resolvedHeight !== 'auto' && resolvedHeight !== '';
 
     const content = this.code !== undefined ? (
-      <pre class="code-body">
-        <code innerHTML={this.highlight(this.code, this.language)}></code>
-      </pre>
+      this.editable ? (
+        <div class="editor-area" style={{ height: resolvedHeight }}>
+          <textarea
+            class="editor-textarea"
+            value={this.code}
+            disabled={this.disabled}
+            required={this.required}
+            onInput={this.handleInput}
+            onChange={this.handleChange}
+            onScroll={this.handleScroll}
+            onKeyDown={this.handleKeyDown}
+          />
+          <pre class="code-body" ref={(el) => (this.preEl = el as HTMLPreElement)}>
+            <code innerHTML={this.highlight(this.code, this.language)}></code>
+          </pre>
+        </div>
+      ) : (
+        <pre class="code-body">
+          <code innerHTML={this.highlight(this.code, this.language)}></code>
+        </pre>
+      )
     ) : (
       <slot></slot>
     );
 
-    const bodyContent = isScrollable ? (
+    const bodyContent = (isScrollable && !this.editable) ? (
       <q-scrollable height={resolvedHeight} ref={(el) => (this.scrollableEl = el)}>
         {content}
       </q-scrollable>
@@ -172,16 +316,22 @@ export class QSyntaxBox {
 
     if (this.variant === 'panel') {
       return (
-        <Host class="q-syntax-box-panel">
+        <Host class={{ 'q-syntax-box-panel': true, 'is-editable': this.editable }}>
           <div class="panel-container">
             <div class="panel-header">
               <span>{this.heading}</span>
               <div class="panel-actions">
                 <slot name="actions"></slot>
+                {this.editable && (
+                  <q-button class="format-btn" variant="ghost" size="sm" onClick={this.handleFormat}>
+                    <q-icon slot="icon-left" lib="local" name="sparkles" size="sm"></q-icon>
+                    <q-tooltip slot="icon-left" content="Format Code"></q-tooltip>
+                  </q-button>
+                )}
                 {this.copyable && (
                   <q-button variant="ghost" size="sm" onClick={this.copyCode}>
-                    <q-icon name={this.copied ? "check" : "copy"} size="sm"></q-icon>
-                    <q-tooltip content={this.copied ? "Copied!" : "Copy"}></q-tooltip>
+                    <q-icon slot="icon-left" lib="local" name={this.copied ? "check" : "copy"} size="sm"></q-icon>
+                    <q-tooltip slot="icon-left" content={this.copied ? "Copied!" : "Copy"}></q-tooltip>
                   </q-button>
                 )}
               </div>
@@ -193,7 +343,7 @@ export class QSyntaxBox {
     }
 
     return (
-      <Host class="q-syntax-box-plain">
+      <Host class={{ 'q-syntax-box-plain': true, 'is-editable': this.editable }}>
         <div class="plain-container">
           {bodyContent}
         </div>

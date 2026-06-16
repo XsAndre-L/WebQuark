@@ -30,7 +30,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 16px;
+  gap: 16px;
+  padding: 4px 16px;
   background: var(--q-syntax-header-bg);
   border-bottom: 1px solid var(--q-syntax-border);
   font-size: 0.8rem;
@@ -39,10 +40,19 @@
   flex-shrink: 0;
 }
 
+.panel-header > span {
+  flex-shrink: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .panel-actions {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 
@@ -57,7 +67,8 @@
 .code-body {
   margin: 0;
   padding: 16px;
-  overflow-x: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   font-family:
     ui-monospace,
     SFMono-Regular,
@@ -69,7 +80,8 @@
   font-size: 0.85rem;
   line-height: 1.5;
   color: var(--q-syntax-text);
-  white-space: pre;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 /* For plain variant custom classes if needed */
@@ -102,6 +114,73 @@
 
 .code-number {
   color: var(--q-syntax-number);
+}
+
+/* Editor Layer Layout */
+.editor-area {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.editor-textarea {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 16px;
+  box-sizing: border-box;
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    SF Mono,
+    Menlo,
+    Consolas,
+    Liberation Mono,
+    monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: transparent;
+  color: transparent;
+  caret-color: var(--q-color-primary, #60a5fa);
+  border: none;
+  outline: none;
+  resize: none;
+  z-index: 1;
+}
+
+.editor-textarea::selection {
+  background: rgba(96, 165, 250, 0.3);
+  color: transparent;
+}
+
+.editor-area .code-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 16px;
+  box-sizing: border-box;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Panel focus and active state styling */
+.panel-container:focus-within {
+  outline: var(--q-focus-ring, 2px solid var(--q-color-primary, #60a5fa));
+  outline-offset: -1px;
+}
+
+/* Plain variant editor styles */
+:host(.is-editable) .plain-container:focus-within {
+  outline: var(--q-focus-ring, 2px solid var(--q-color-primary, #60a5fa));
+  border-radius: var(--q-radius-md, 8px);
 }
 
 
