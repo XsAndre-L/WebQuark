@@ -64,7 +64,7 @@ sandbox-viewport {
   min-height: 0;
 }
 
-playground-knobs {
+properties-panel {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -78,14 +78,14 @@ playground-knobs {
 .action-btn,
 .clear-log-btn,
 .copy-btn,
-.knobs-section-title,
-.event-log-header,
-.code-preview-header,
-.variant-card-title,
-.active-component-badge,
-.hamburger-menu,
-.knobs-toggle-btn,
-.knobs-close-btn,
+  .properties-section-title,
+  .event-log-header,
+  .code-preview-header,
+  .variant-card-title,
+  .active-component-badge,
+  .hamburger-menu,
+  .properties-toggle-btn,
+  .properties-close-btn,
 .sidebar-item {
   user-select: none;
   -webkit-user-select: none;

@@ -42,7 +42,7 @@ class SandboxViewport extends HTMLElement {
         {/* 4. Global Styling Designer */}
         <div class="tab-content" id="content-global-styling">
           <q-scrollable height="100%">
-            <playground-theme-designer></playground-theme-designer>
+            <theme-designer></theme-designer>
           </q-scrollable>
         </div>
       </div>
