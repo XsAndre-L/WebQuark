@@ -327,13 +327,13 @@ export class QSyntaxBox {
                 {this.editable && (
                   <q-button class="format-btn" variant="ghost" size="sm" onClick={this.handleFormat} disabled={this.disabled}>
                     <q-icon slot="icon-left" lib="local" name="braces" size="sm"></q-icon>
-                    <q-tooltip slot="icon-left" content="Format Code"></q-tooltip>
+                    <q-tooltip slot="icon-left" position="bottom" content="Format Code"></q-tooltip>
                   </q-button>
                 )}
                 {this.copyable && (
                   <q-button variant="ghost" size="sm" onClick={this.copyCode} disabled={this.disabled}>
                     <q-icon slot="icon-left" lib="local" name={this.copied ? "check" : "copy"} size="sm"></q-icon>
-                    <q-tooltip slot="icon-left" content={this.copied ? "Copied!" : "Copy"}></q-tooltip>
+                    <q-tooltip slot="icon-left" position="bottom" content={this.copied ? "Copied!" : "Copy"}></q-tooltip>
                   </q-button>
                 )}
               </div>
