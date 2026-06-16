@@ -18,9 +18,12 @@
 
 ## Events
 
-| Event     | Description                              | Type                  |
-| --------- | ---------------------------------------- | --------------------- |
-| `qChange` | Emitted when the quantity value changes. | `CustomEvent<number>` |
+| Event     | Description                              | Type                      |
+| --------- | ---------------------------------------- | ------------------------- |
+| `qBlur`   |                                          | `CustomEvent<FocusEvent>` |
+| `qChange` | Emitted when the quantity value changes. | `CustomEvent<number>`     |
+| `qClick`  |                                          | `CustomEvent<MouseEvent>` |
+| `qFocus`  |                                          | `CustomEvent<FocusEvent>` |
 
 
 ## Shadow Parts

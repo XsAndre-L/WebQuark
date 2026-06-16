@@ -25,6 +25,9 @@ export class QToggle {
   @State() hasDefaultSlot: boolean = false;
 
   @Event() qChange!: EventEmitter<boolean>;
+  @Event() qFocus!: EventEmitter<FocusEvent>;
+  @Event() qBlur!: EventEmitter<FocusEvent>;
+  @Event() qClick!: EventEmitter<MouseEvent>;
 
   private initialValue: boolean = false;
 
@@ -113,6 +116,7 @@ export class QToggle {
       e.stopPropagation();
       return;
     }
+    this.qClick.emit(e);
     // User-initiated toggle: emit qChange normally
     this.checked = !this.checked;
   };
@@ -121,9 +125,24 @@ export class QToggle {
     if (this.disabled) return;
     if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
+      // Dispatch qClick programmatically for keyboard activation
+      const clickEvent = new MouseEvent('click', {
+        bubbles: true,
+        cancelable: true,
+        view: window
+      });
+      this.qClick.emit(clickEvent);
       // User-initiated toggle: emit qChange normally
       this.checked = !this.checked;
     }
+  };
+
+  private handleFocus = (ev: FocusEvent) => {
+    this.qFocus.emit(ev);
+  };
+
+  private handleBlur = (ev: FocusEvent) => {
+    this.qBlur.emit(ev);
   };
 
   // ===================== [6] RENDER (Visual Template Only) =====================
@@ -154,6 +173,8 @@ export class QToggle {
           tabindex={this.disabled ? -1 : 0}
           onClick={this.handleClick}
           onKeyDown={this.handleKeyDown}
+          onFocus={this.handleFocus}
+          onBlur={this.handleBlur}
         >
           {/* Toggle control */}
           <div class="toggle-control" part="control">

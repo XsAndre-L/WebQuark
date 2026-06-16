@@ -20,9 +20,12 @@
 
 ## Events
 
-| Event     | Description | Type                   |
-| --------- | ----------- | ---------------------- |
-| `qChange` |             | `CustomEvent<boolean>` |
+| Event     | Description | Type                      |
+| --------- | ----------- | ------------------------- |
+| `qBlur`   |             | `CustomEvent<FocusEvent>` |
+| `qChange` |             | `CustomEvent<boolean>`    |
+| `qClick`  |             | `CustomEvent<MouseEvent>` |
+| `qFocus`  |             | `CustomEvent<FocusEvent>` |
 
 
 ## Methods

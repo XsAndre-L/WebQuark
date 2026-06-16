@@ -25,6 +25,10 @@ export class QQuantitySelector {
   /** Emitted when the quantity value changes. */
   @Event() qChange: EventEmitter<number>;
 
+  @Event() qFocus: EventEmitter<FocusEvent>;
+  @Event() qBlur: EventEmitter<FocusEvent>;
+  @Event() qClick: EventEmitter<MouseEvent>;
+
   @State() inputValue: string = '0';
 
   @Watch('value')
@@ -128,8 +132,17 @@ export class QQuantitySelector {
     }
   };
 
-  private handleBlur = () => {
+  private handleBlur = (ev: FocusEvent) => {
     this.reconcileValue();
+    this.qBlur.emit(ev);
+  };
+
+  private handleFocus = (ev: FocusEvent) => {
+    this.qFocus.emit(ev);
+  };
+
+  private handleClick = (ev: MouseEvent) => {
+    this.qClick.emit(ev);
   };
 
   private handleChange = () => {
@@ -206,6 +219,7 @@ export class QQuantitySelector {
           'quantity-selector': true,
           [`variant-${this.variant}`]: true
         }}
+        onClick={this.handleClick}
       >
         {this.variant === 'vertical' ? incBtn : decBtn}
         <input
@@ -214,6 +228,7 @@ export class QQuantitySelector {
           value={this.inputValue}
           onInput={this.handleInput}
           onBlur={this.handleBlur}
+          onFocus={this.handleFocus}
           onChange={this.handleChange}
           style={{ width: calculatedWidth }}
           part="input"

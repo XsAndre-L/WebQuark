@@ -20,10 +20,13 @@
 
 ## Events
 
-| Event     | Description | Type                  |
-| --------- | ----------- | --------------------- |
-| `qChange` |             | `CustomEvent<string>` |
-| `qSelect` |             | `CustomEvent<Option>` |
+| Event     | Description | Type                      |
+| --------- | ----------- | ------------------------- |
+| `qBlur`   |             | `CustomEvent<FocusEvent>` |
+| `qChange` |             | `CustomEvent<string>`     |
+| `qClick`  |             | `CustomEvent<MouseEvent>` |
+| `qFocus`  |             | `CustomEvent<FocusEvent>` |
+| `qSelect` |             | `CustomEvent<Option>`     |
 
 
 ## Shadow Parts

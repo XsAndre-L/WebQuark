@@ -21,6 +21,15 @@
 | `variant`  | `variant`   |             | `"danger" \| "ghost" \| "primary" \| "secondary" \| "success" \| "text"` | `'primary'` |
 
 
+## Events
+
+| Event    | Description | Type                      |
+| -------- | ----------- | ------------------------- |
+| `qBlur`  |             | `CustomEvent<FocusEvent>` |
+| `qClick` |             | `CustomEvent<MouseEvent>` |
+| `qFocus` |             | `CustomEvent<FocusEvent>` |
+
+
 ## Shadow Parts
 
 | Part        | Description |

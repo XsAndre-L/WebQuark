@@ -27,6 +27,7 @@
 | --------- | ----------- | ------------------------- |
 | `qBlur`   |             | `CustomEvent<FocusEvent>` |
 | `qChange` |             | `CustomEvent<string>`     |
+| `qClick`  |             | `CustomEvent<MouseEvent>` |
 | `qFocus`  |             | `CustomEvent<FocusEvent>` |
 | `qInput`  |             | `CustomEvent<string>`     |
 
