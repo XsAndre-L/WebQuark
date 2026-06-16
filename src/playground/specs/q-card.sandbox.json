@@ -2,10 +2,31 @@
   "name": "Card",
   "tag": "q-card",
   "props": {
-    "elevation": { "type": "select", "options": ["low", "medium", "high"], "default": "medium", "desc": "Box-shadow elevation strength index" },
-    "interactive": { "type": "boolean", "default": false, "desc": "Enables tab focus, Enter/Space click bindings, and transforms" },
-    "glass": { "type": "boolean", "default": false, "desc": "Swaps solid backgrounds with highly visible translucent blurs" },
-    "lift": { "type": "boolean", "default": false, "desc": "Combines with interactive to translate card upward on hover/focus" }
+    "elevation": {
+      "type": "select",
+      "options": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "default": "medium",
+      "desc": "Box-shadow elevation strength index"
+    },
+    "glass": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Swaps solid backgrounds with highly visible translucent blurs"
+    },
+    "interactive": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Enables tab focus, Enter/Space click bindings, and transforms"
+    },
+    "lift": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Combines with interactive to translate card upward on hover/focus"
+    }
   },
   "slots": {
     "default": {
@@ -13,24 +34,111 @@
       "default": "This is the main card container body content. Write anything you want inside this area to represent card details.",
       "desc": "Main inner body slot element"
     },
-    "header": { "type": "text", "default": "Card Panel Header", "desc": "Slotted card header caption" }
+    "header": {
+      "type": "text",
+      "default": "Card Panel Header",
+      "desc": "Slotted card header caption"
+    }
   },
   "variants": [
-    { "name": "Low Elevation shadow", "props": { "elevation": "low" }, "slots": { "default": "Low elevation card body text." } },
-    { "name": "Medium Elevation (Default)", "props": { "elevation": "medium" }, "slots": { "default": "Medium elevation card body." } },
-    { "name": "High Elevation shadow", "props": { "elevation": "high" }, "slots": { "default": "High elevation card body." } },
-    { "name": "Interactive Card", "props": { "elevation": "medium", "interactive": true }, "slots": { "default": "Hover over this card or focus and press space/enter." } },
-    { "name": "OSR-Safe Glass Card", "props": { "elevation": "medium", "glass": true }, "slots": { "default": "Glass frosted translucent visual style." } },
-    { "name": "Hover Lift Effect", "props": { "elevation": "medium", "lift": true }, "slots": { "default": "Lifts up vertically when hover triggers." } },
-    { "name": "Premium Hover Glass Deck", "props": { "elevation": "high", "glass": true, "interactive": true, "lift": true }, "slots": { "default": "High shadow glass interactive card deck item." } }
+    {
+      "name": "Low Elevation shadow",
+      "props": {
+        "elevation": "low"
+      },
+      "slots": {
+        "default": "Low elevation card body text."
+      }
+    },
+    {
+      "name": "Medium Elevation (Default)",
+      "props": {
+        "elevation": "medium"
+      },
+      "slots": {
+        "default": "Medium elevation card body."
+      }
+    },
+    {
+      "name": "High Elevation shadow",
+      "props": {
+        "elevation": "high"
+      },
+      "slots": {
+        "default": "High elevation card body."
+      }
+    },
+    {
+      "name": "Interactive Card",
+      "props": {
+        "elevation": "medium",
+        "interactive": true
+      },
+      "slots": {
+        "default": "Hover over this card or focus and press space/enter."
+      }
+    },
+    {
+      "name": "OSR-Safe Glass Card",
+      "props": {
+        "elevation": "medium",
+        "glass": true
+      },
+      "slots": {
+        "default": "Glass frosted translucent visual style."
+      }
+    },
+    {
+      "name": "Hover Lift Effect",
+      "props": {
+        "elevation": "medium",
+        "lift": true
+      },
+      "slots": {
+        "default": "Lifts up vertically when hover triggers."
+      }
+    },
+    {
+      "name": "Premium Hover Glass Deck",
+      "props": {
+        "elevation": "high",
+        "glass": true,
+        "interactive": true,
+        "lift": true
+      },
+      "slots": {
+        "default": "High shadow glass interactive card deck item."
+      }
+    }
   ],
   "edgeCases": [
-    { "name": "Extremely Long Container Text", "props": { "elevation": "medium" }, "slots": { "default": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit." } },
-    { "name": "Header Only (Empty Body)", "props": { "elevation": "medium" }, "slots": { "default": "", "header": "Card header only, no body text" } },
+    {
+      "name": "Extremely Long Container Text",
+      "props": {
+        "elevation": "medium"
+      },
+      "slots": {
+        "default": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+      }
+    },
+    {
+      "name": "Header Only (Empty Body)",
+      "props": {
+        "elevation": "medium"
+      },
+      "slots": {
+        "default": "",
+        "header": "Card header only, no body text"
+      }
+    },
     {
       "name": "No Header Content",
-      "props": { "elevation": "medium" },
-      "slots": { "default": "This card is initialized with a body but lacks any content in the header slot, verifying automatic element collapse." }
+      "props": {
+        "elevation": "medium"
+      },
+      "slots": {
+        "default": "This card is initialized with a body but lacks any content in the header slot, verifying automatic element collapse."
+      }
     }
   ]
 }

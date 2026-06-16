@@ -2,12 +2,40 @@
   "name": "Scrollable Container",
   "tag": "q-scrollable",
   "props": {
-    "height": { "type": "string", "default": "250px", "desc": "The vertical height of the scroll container" },
-    "maxHeight": { "type": "string", "default": "", "desc": "Optional maximum height constraint" },
-    "autoHide": { "type": "boolean", "default": true, "desc": "Fades out custom scrollbar thumb when idle" },
-    "nativeOnMobile": { "type": "boolean", "default": true, "desc": "Enforces native OS scrollbars on touch devices" },
-    "mode": { "type": "select", "options": ["custom", "native"], "default": "custom", "desc": "Use premium overlay or native styling engine" },
-    "target": { "type": "string", "default": "", "desc": "Optional CSS selector to target for native scrollbar style injection" }
+    "mode": {
+      "type": "select",
+      "options": [
+        "custom",
+        "native"
+      ],
+      "default": "custom",
+      "desc": "Use premium overlay or native styling engine"
+    },
+    "height": {
+      "type": "string",
+      "default": "250px",
+      "desc": "The vertical height of the scroll container"
+    },
+    "maxHeight": {
+      "type": "string",
+      "default": "",
+      "desc": "Optional maximum height constraint"
+    },
+    "autoHide": {
+      "type": "boolean",
+      "default": true,
+      "desc": "Fades out custom scrollbar thumb when idle"
+    },
+    "nativeOnMobile": {
+      "type": "boolean",
+      "default": true,
+      "desc": "Enforces native OS scrollbars on touch devices"
+    },
+    "target": {
+      "type": "string",
+      "default": "",
+      "desc": "Optional CSS selector to target for native scrollbar style injection"
+    }
   },
   "slots": {
     "default": {
@@ -17,21 +45,58 @@
     }
   },
   "variants": [
-    { "name": "Custom Mode (Height 200px)", "props": { "mode": "custom", "height": "200px", "autoHide": true } },
-    { "name": "Custom Mode (No Auto-Hide)", "props": { "mode": "custom", "height": "200px", "autoHide": false } },
-    { "name": "Native Mode Styled", "props": { "mode": "native", "height": "200px" } },
-    { "name": "Max Height Constraint (150px)", "props": { "mode": "custom", "height": "auto", "maxHeight": "150px" } }
+    {
+      "name": "Custom Mode (Height 200px)",
+      "props": {
+        "mode": "custom",
+        "height": "200px",
+        "autoHide": true
+      }
+    },
+    {
+      "name": "Custom Mode (No Auto-Hide)",
+      "props": {
+        "mode": "custom",
+        "height": "200px",
+        "autoHide": false
+      }
+    },
+    {
+      "name": "Native Mode Styled",
+      "props": {
+        "mode": "native",
+        "height": "200px"
+      }
+    },
+    {
+      "name": "Max Height Constraint (150px)",
+      "props": {
+        "mode": "custom",
+        "height": "auto",
+        "maxHeight": "150px"
+      }
+    }
   ],
   "edgeCases": [
     {
       "name": "Short Content (No Scrollbar)",
-      "props": { "height": "250px", "mode": "custom" },
-      "slots": { "default": "<div style=\"padding:15px;color:var(--text-muted);\">This content is too short to trigger scrollbars, verify scrollbar hidden.</div>" }
+      "props": {
+        "height": "250px",
+        "mode": "custom"
+      },
+      "slots": {
+        "default": "<div style=\"padding:15px;color:var(--text-muted);\">This content is too short to trigger scrollbars, verify scrollbar hidden.</div>"
+      }
     },
     {
       "name": "Extremely Long Scroll Content",
-      "props": { "height": "200px", "mode": "custom" },
-      "slots": { "default": "<p style=\"padding: 5px 15px; margin: 0; background: rgba(255,255,255,0.02)\">Paragraph line entry index #1</p>\n<p style=\"padding: 5px 15px; margin: 0; background: transparent\">Paragraph line entry index #2</p>\n<p style=\"padding: 5px 15px; margin: 0; background: rgba(255,255,255,0.02)\">Paragraph line entry index #3</p>\n<p style=\"padding: 5px 15px; margin: 0; background: transparent\">Paragraph line entry index #4</p>\n<p style=\"padding: 5px 15px; margin: 0; background: rgba(255,255,255,0.02)\">Paragraph line entry index #5</p>\n<p style=\"padding: 5px 15px; margin: 0; background: transparent\">Paragraph line entry index #6</p>\n<p style=\"padding: 5px 15px; margin: 0; background: rgba(255,255,255,0.02)\">Paragraph line entry index #7</p>\n<p style=\"padding: 5px 15px; margin: 0; background: transparent\">Paragraph line entry index #8</p>\n<p style=\"padding: 5px 15px; margin: 0; background: rgba(255,255,255,0.02)\">Paragraph line entry index #9</p>\n<p style=\"padding: 5px 15px; margin: 0; background: transparent\">Paragraph line entry index #10</p>" }
+      "props": {
+        "height": "200px",
+        "mode": "custom"
+      },
+      "slots": {
+        "default": "<p style=\"padding: 5px 15px; margin: 0; background: rgba(255,255,255,0.02)\">Paragraph line entry index #1</p>\n<p style=\"padding: 5px 15px; margin: 0; background: transparent\">Paragraph line entry index #2</p>\n<p style=\"padding: 5px 15px; margin: 0; background: rgba(255,255,255,0.02)\">Paragraph line entry index #3</p>\n<p style=\"padding: 5px 15px; margin: 0; background: transparent\">Paragraph line entry index #4</p>\n<p style=\"padding: 5px 15px; margin: 0; background: rgba(255,255,255,0.02)\">Paragraph line entry index #5</p>\n<p style=\"padding: 5px 15px; margin: 0; background: transparent\">Paragraph line entry index #6</p>\n<p style=\"padding: 5px 15px; margin: 0; background: rgba(255,255,255,0.02)\">Paragraph line entry index #7</p>\n<p style=\"padding: 5px 15px; margin: 0; background: transparent\">Paragraph line entry index #8</p>\n<p style=\"padding: 5px 15px; margin: 0; background: rgba(255,255,255,0.02)\">Paragraph line entry index #9</p>\n<p style=\"padding: 5px 15px; margin: 0; background: transparent\">Paragraph line entry index #10</p>"
+      }
     }
   ]
 }

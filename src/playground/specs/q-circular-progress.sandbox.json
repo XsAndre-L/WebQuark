@@ -2,22 +2,90 @@
   "name": "Circular Progress",
   "tag": "q-circular-progress",
   "props": {
-    "value": { "type": "number", "min": 0, "max": 100, "default": 35, "desc": "Progress value index (0-100)" },
-    "size": { "type": "select", "options": ["sm", "md", "lg"], "default": "md", "desc": "Circular ring and text layout size" },
-    "label": { "type": "string", "default": "", "desc": "Overrides label text inside ring center" },
-    "indeterminate": { "type": "boolean", "default": false, "desc": "Swaps gauge with rotating infinite loader animation" }
+    "size": {
+      "type": "select",
+      "options": [
+        "sm",
+        "md",
+        "lg"
+      ],
+      "default": "md",
+      "desc": "Circular ring and text layout size"
+    },
+    "label": {
+      "type": "string",
+      "default": "",
+      "desc": "Overrides label text inside ring center"
+    },
+    "value": {
+      "type": "number",
+      "min": 0,
+      "max": 100,
+      "default": 35,
+      "desc": "Progress value index (0-100)"
+    },
+    "indeterminate": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Swaps gauge with rotating infinite loader animation"
+    }
   },
   "slots": {},
   "variants": [
-    { "name": "35% Progress (Medium)", "props": { "value": 35, "size": "md" } },
-    { "name": "35% Progress (Small)", "props": { "value": 35, "size": "sm" } },
-    { "name": "75% Custom Text (Large)", "props": { "value": 75, "label": "Running", "size": "lg" } },
-    { "name": "100% Done Complete", "props": { "value": 100 } },
-    { "name": "Indeterminate Spinner Mode", "props": { "indeterminate": true } }
+    {
+      "name": "35% Progress (Medium)",
+      "props": {
+        "value": 35,
+        "size": "md"
+      }
+    },
+    {
+      "name": "35% Progress (Small)",
+      "props": {
+        "value": 35,
+        "size": "sm"
+      }
+    },
+    {
+      "name": "75% Custom Text (Large)",
+      "props": {
+        "value": 75,
+        "label": "Running",
+        "size": "lg"
+      }
+    },
+    {
+      "name": "100% Done Complete",
+      "props": {
+        "value": 100
+      }
+    },
+    {
+      "name": "Indeterminate Spinner Mode",
+      "props": {
+        "indeterminate": true
+      }
+    }
   ],
   "edgeCases": [
-    { "name": "Negative Value Clamp Check", "props": { "value": -40 } },
-    { "name": "Overflow Value Clamp Check", "props": { "value": 160 } },
-    { "name": "Very Long Label Text Scale", "props": { "value": 50, "label": "UPLOADING_SYSTEM_ASSETS_NOW" } }
+    {
+      "name": "Negative Value Clamp Check",
+      "props": {
+        "value": -40
+      }
+    },
+    {
+      "name": "Overflow Value Clamp Check",
+      "props": {
+        "value": 160
+      }
+    },
+    {
+      "name": "Very Long Label Text Scale",
+      "props": {
+        "value": 50,
+        "label": "UPLOADING_SYSTEM_ASSETS_NOW"
+      }
+    }
   ]
 }

@@ -8,6 +8,7 @@
   display: inline-block;
   vertical-align: middle;
   width: auto;
+  max-width: 100%;
 }
 
 .dropdown-wrapper {
@@ -15,6 +16,7 @@
   flex-direction: column;
   position: relative;
   width: 100%;
+  max-width: 100%;
   box-sizing: border-box;
 }
 

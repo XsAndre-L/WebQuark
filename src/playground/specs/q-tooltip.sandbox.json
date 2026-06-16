@@ -3,14 +3,14 @@
   "name": "Tooltip",
   "description": "Custom CSS-styled hover and focus tooltip component.",
   "props": {
-    "content": {
-      "type": "string",
-      "default": "This is a premium tooltip",
-      "desc": "The text content inside the tooltip bubble"
-    },
     "position": {
       "type": "select",
-      "options": ["top", "bottom", "left", "right"],
+      "options": [
+        "top",
+        "bottom",
+        "left",
+        "right"
+      ],
       "default": "top",
       "desc": "The positioning alignment relative to the trigger element"
     },
@@ -20,6 +20,11 @@
       "max": 2000,
       "default": 200,
       "desc": "The delay in milliseconds before the tooltip fades in"
+    },
+    "content": {
+      "type": "string",
+      "default": "This is a premium tooltip",
+      "desc": "The text content inside the tooltip bubble"
     }
   },
   "variants": [

@@ -2,6 +2,36 @@
   "name": "Data Table",
   "tag": "q-data-table",
   "props": {
+    "selectable": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Enables row checkboxes and master selection header toggle"
+    },
+    "showToolbar": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Enables top toolbar layout with search, filters, and actions"
+    },
+    "showSearch": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Enables search text input in the toolbar"
+    },
+    "keyField": {
+      "type": "string",
+      "default": "id",
+      "desc": "Unique field key representing each row identity"
+    },
+    "toolbarTitle": {
+      "type": "string",
+      "default": "",
+      "desc": "Title text displayed in the top-left section of the toolbar"
+    },
+    "searchPlaceholder": {
+      "type": "string",
+      "default": "Search...",
+      "desc": "Placeholder text for the search input"
+    },
     "columns": {
       "type": "textarea",
       "default": "[\n  { \"key\": \"id\", \"header\": \"ID\", \"width\": \"60px\" },\n  { \"key\": \"name\", \"header\": \"Name\", \"width\": \"1.5fr\" },\n  { \"key\": \"role\", \"header\": \"Role\" },\n  { \"key\": \"status\", \"header\": \"Status\" }\n]",
@@ -11,36 +41,6 @@
       "type": "textarea",
       "default": "[\n  { \"id\": \"1\", \"name\": \"Administrator Account\", \"role\": \"Admin\", \"status\": \"Active\" },\n  { \"id\": \"2\", \"name\": \"Content Editor Manager\", \"role\": \"Editor\", \"status\": \"Inactive\" },\n  { \"id\": \"3\", \"name\": \"Viewer Guest\", \"role\": \"Viewer\", \"status\": \"Active\" }\n]",
       "desc": "JSON array of data row items"
-    },
-    "selectable": {
-      "type": "boolean",
-      "default": false,
-      "desc": "Enables row checkboxes and master selection header toggle"
-    },
-    "keyField": {
-      "type": "string",
-      "default": "id",
-      "desc": "Unique field key representing each row identity"
-    },
-    "showToolbar": {
-      "type": "boolean",
-      "default": false,
-      "desc": "Enables top toolbar layout with search, filters, and actions"
-    },
-    "toolbarTitle": {
-      "type": "string",
-      "default": "",
-      "desc": "Title text displayed in the top-left section of the toolbar"
-    },
-    "showSearch": {
-      "type": "boolean",
-      "default": false,
-      "desc": "Enables search text input in the toolbar"
-    },
-    "searchPlaceholder": {
-      "type": "string",
-      "default": "Search...",
-      "desc": "Placeholder text for the search input"
     },
     "searchValue": {
       "type": "string",

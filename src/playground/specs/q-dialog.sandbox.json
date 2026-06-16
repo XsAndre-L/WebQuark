@@ -7,10 +7,25 @@
     "buttonLabel": "Trigger Dialog Overlay"
   },
   "props": {
-    "open": {
+    "closeOnEsc": {
       "type": "boolean",
       "default": true,
-      "desc": "Controls visibility of the dialog overlay"
+      "desc": "Enables Escape key trigger close"
+    },
+    "closeOnOverlayClick": {
+      "type": "boolean",
+      "default": true,
+      "desc": "Enables backdrop clicks to trigger cancel"
+    },
+    "showConfirm": {
+      "type": "boolean",
+      "default": true,
+      "desc": "Whether to render the confirmation action button"
+    },
+    "showCancel": {
+      "type": "boolean",
+      "default": true,
+      "desc": "Whether to render the cancellation action button"
     },
     "dialogTitle": {
       "type": "string",
@@ -22,21 +37,6 @@
       "default": "Are you sure you want to proceed with this configuration update? This action is permanent.",
       "desc": "Short descriptive text inside the body"
     },
-    "closeOnEsc": {
-      "type": "boolean",
-      "default": true,
-      "desc": "Enables Escape key trigger close"
-    },
-    "closeOnOverlayClick": {
-      "type": "boolean",
-      "default": true,
-      "desc": "Enables backdrop clicks to trigger cancel"
-    },
-    "loading": {
-      "type": "boolean",
-      "default": false,
-      "desc": "Shows busy spinner and disables all button interactions"
-    },
     "confirmLabel": {
       "type": "string",
       "default": "Confirm Action",
@@ -47,15 +47,15 @@
       "default": "Dismiss",
       "desc": "Label text for cancellation button"
     },
-    "showCancel": {
+    "open": {
       "type": "boolean",
       "default": true,
-      "desc": "Whether to render the cancellation action button"
+      "desc": "Controls visibility of the dialog overlay"
     },
-    "showConfirm": {
+    "loading": {
       "type": "boolean",
-      "default": true,
-      "desc": "Whether to render the confirmation action button"
+      "default": false,
+      "desc": "Shows busy spinner and disables all button interactions"
     }
   },
   "slots": {

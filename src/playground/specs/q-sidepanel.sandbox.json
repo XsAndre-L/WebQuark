@@ -7,13 +7,56 @@
     "buttonLabel": "Open Drawer Panel"
   },
   "props": {
-    "variant": { "type": "select", "options": ["drawer", "nav"], "default": "drawer", "desc": "Behavior mode: drawer = slide-in overlay, nav = fixed navigation sidebar" },
-    "open": { "type": "boolean", "default": true, "desc": "Controls drawer open/close state (drawer mode only)" },
-    "side": { "type": "select", "options": ["left", "right", "top", "bottom"], "default": "right", "desc": "Screen edge slide positioning (drawer mode only)" },
-    "panelSize": { "type": "string", "default": "320px", "desc": "Panel dimension — width or height depending on side (drawer mode only)" },
-    "mode": { "type": "select", "options": ["flat", "grouped", "tree"], "default": "flat", "desc": "Item display mode: flat list, collapsible groups, or deep tree (nav mode only)" },
-    "expanded": { "type": "boolean", "default": true, "desc": "Whether all parent groups start expanded (nav mode only)" },
-    "accordion": { "type": "boolean", "default": false, "desc": "If true, opening one group auto-collapses sibling groups (nav mode only)" }
+    "variant": {
+      "type": "select",
+      "options": [
+        "drawer",
+        "nav"
+      ],
+      "default": "drawer",
+      "desc": "Behavior mode: drawer = slide-in overlay, nav = fixed navigation sidebar"
+    },
+    "side": {
+      "type": "select",
+      "options": [
+        "left",
+        "right",
+        "top",
+        "bottom"
+      ],
+      "default": "right",
+      "desc": "Screen edge slide positioning (drawer mode only)"
+    },
+    "mode": {
+      "type": "select",
+      "options": [
+        "flat",
+        "grouped",
+        "tree"
+      ],
+      "default": "flat",
+      "desc": "Item display mode: flat list, collapsible groups, or deep tree (nav mode only)"
+    },
+    "panelSize": {
+      "type": "string",
+      "default": "320px",
+      "desc": "Panel dimension — width or height depending on side (drawer mode only)"
+    },
+    "accordion": {
+      "type": "boolean",
+      "default": false,
+      "desc": "If true, opening one group auto-collapses sibling groups (nav mode only)"
+    },
+    "expanded": {
+      "type": "boolean",
+      "default": true,
+      "desc": "Whether all parent groups start expanded (nav mode only)"
+    },
+    "open": {
+      "type": "boolean",
+      "default": true,
+      "desc": "Controls drawer open/close state (drawer mode only)"
+    }
   },
   "slots": {
     "default": {
@@ -21,22 +64,84 @@
       "default": "<div style=\"display: flex; flex-direction: column; gap: 16px;\">\n  <p style=\"margin:0;font-size:0.9rem;color:var(--text-muted)\">Configure and customize dashboard system profile attributes.</p>\n  <q-input label=\"Profile Alias\" placeholder=\"e.g. My Workspace Profile\"></q-input>\n  <q-button id=\"closePanelBtn\" variant=\"primary\">Save Configuration</q-button>\n</div>",
       "desc": "Inner drawer content block (drawer mode)"
     },
-    "header": { "type": "text", "default": "Drawer Settings Menu", "desc": "Title displayed inside sidepanel header (drawer mode) or nav sidebar header zone (nav mode)" },
-    "footer": { "type": "html", "default": "", "desc": "Pinned bottom zone for settings or action buttons (nav mode only)" }
+    "header": {
+      "type": "text",
+      "default": "Drawer Settings Menu",
+      "desc": "Title displayed inside sidepanel header (drawer mode) or nav sidebar header zone (nav mode)"
+    },
+    "footer": {
+      "type": "html",
+      "default": "",
+      "desc": "Pinned bottom zone for settings or action buttons (nav mode only)"
+    }
   },
   "variants": [
-    { "name": "Right Side Panel (320px)", "props": { "variant": "drawer", "open": false, "side": "right", "panelSize": "320px" } },
-    { "name": "Left Side Panel (320px)", "props": { "variant": "drawer", "open": false, "side": "left", "panelSize": "320px" } },
-    { "name": "Top Drawer Sheet (200px)", "props": { "variant": "drawer", "open": false, "side": "top", "panelSize": "200px" } },
-    { "name": "Bottom Drawer Sheet (250px)", "props": { "variant": "drawer", "open": false, "side": "bottom", "panelSize": "250px" } },
-    { "name": "Wide Sheet (550px)", "props": { "variant": "drawer", "open": false, "side": "right", "panelSize": "550px" } }
+    {
+      "name": "Right Side Panel (320px)",
+      "props": {
+        "variant": "drawer",
+        "open": false,
+        "side": "right",
+        "panelSize": "320px"
+      }
+    },
+    {
+      "name": "Left Side Panel (320px)",
+      "props": {
+        "variant": "drawer",
+        "open": false,
+        "side": "left",
+        "panelSize": "320px"
+      }
+    },
+    {
+      "name": "Top Drawer Sheet (200px)",
+      "props": {
+        "variant": "drawer",
+        "open": false,
+        "side": "top",
+        "panelSize": "200px"
+      }
+    },
+    {
+      "name": "Bottom Drawer Sheet (250px)",
+      "props": {
+        "variant": "drawer",
+        "open": false,
+        "side": "bottom",
+        "panelSize": "250px"
+      }
+    },
+    {
+      "name": "Wide Sheet (550px)",
+      "props": {
+        "variant": "drawer",
+        "open": false,
+        "side": "right",
+        "panelSize": "550px"
+      }
+    }
   ],
   "edgeCases": [
-    { "name": "Without Header Slot content", "props": { "variant": "drawer", "open": false }, "slots": { "header": "" } },
+    {
+      "name": "Without Header Slot content",
+      "props": {
+        "variant": "drawer",
+        "open": false
+      },
+      "slots": {
+        "header": ""
+      }
+    },
     {
       "name": "Overflow Long Content Scroll",
-      "props": { "variant": "drawer", "open": false },
-      "slots": { "default": "<div style=\"height:1200px;background:linear-gradient(to bottom, var(--primary) 0%, var(--q-color-success) 100%);padding:20px;border-radius:8px;color:#fff;font-weight:bold\">\n  Scrollable Panel Height Content\n</div>" }
+      "props": {
+        "variant": "drawer",
+        "open": false
+      },
+      "slots": {
+        "default": "<div style=\"height:1200px;background:linear-gradient(to bottom, var(--primary) 0%, var(--q-color-success) 100%);padding:20px;border-radius:8px;color:#fff;font-weight:bold\">\n  Scrollable Panel Height Content\n</div>"
+      }
     }
   ]
 }
