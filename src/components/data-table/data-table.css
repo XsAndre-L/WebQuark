@@ -23,6 +23,29 @@
   min-height: 0;
   max-height: var(--q-table-max-height, 100%);
   position: relative;
+
+  /* Firefox compatibility */
+  scrollbar-width: var(--q-scrollbar-width-thin, thin);
+  scrollbar-color: var(--q-scrollbar-thumb-color, var(--q-border-color, #374151)) var(--q-scrollbar-track-color, transparent);
+}
+
+/* Webkit scrollbar support */
+.table-scroll-area::-webkit-scrollbar {
+  width: var(--q-scrollbar-width, 6px);
+  height: var(--q-scrollbar-width, 6px);
+}
+
+.table-scroll-area::-webkit-scrollbar-track {
+  background: var(--q-scrollbar-track-color, transparent);
+}
+
+.table-scroll-area::-webkit-scrollbar-thumb {
+  background: var(--q-scrollbar-thumb-color, var(--q-border-color, #374151));
+  border-radius: var(--q-scrollbar-radius, var(--q-radius-sm, 4px));
+}
+
+.table-scroll-area::-webkit-scrollbar-thumb:hover {
+  background: var(--q-scrollbar-thumb-color-hover, var(--q-color-primary, #60a5fa));
 }
 
 .table-el {

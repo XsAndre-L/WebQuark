@@ -24,7 +24,7 @@ class PlaygroundHeader extends HTMLElement {
         </button>
         <div class="header-logo">
           <img src="/logo.svg" class="logo-image" alt="WebQuark Logo" />
-          <div class="logo-text">WebQuark Sandbox</div>
+          <div class="logo-text">WebQuark</div>
         </div>
         <div class="header-actions">
           <q-button id="themeToggle" variant="ghost" onClick={() => this.toggleTheme()}>

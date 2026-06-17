@@ -144,6 +144,14 @@
   --q-panel-bg: var(--q-bg-surface-1);
   --q-panel-border: var(--q-border);
   --q-panel-shadow: var(--q-shadow-high);
+
+  /* Scrollbars */
+  --q-scrollbar-width: 6px;
+  --q-scrollbar-width-thin: thin;
+  --q-scrollbar-track-color: transparent;
+  --q-scrollbar-thumb-color: var(--q-border-color, #374151);
+  --q-scrollbar-thumb-color-hover: var(--q-color-primary, #60a5fa);
+  --q-scrollbar-radius: var(--q-radius-sm, 4px);
 }
 
 /* ==========================================================================

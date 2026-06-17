@@ -1,6 +1,6 @@
 {
   "name": "@webquark/core",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "description": "WebQuark Core Web Components",
   "main": "dist/index.cjs.js",
   "module": "dist/index.js",
@@ -16,19 +16,23 @@
     },
     "./components": {
       "import": "./dist/components/index.js",
-      "types": "./dist/components/index.d.ts"
+      "types": "./dist/components/index.d.ts",
+      "default": "./dist/components/index.js"
     },
     "./components/*": {
       "import": "./dist/components/*",
-      "types": "./dist/components/*.d.ts"
+      "types": "./dist/components/*.d.ts",
+      "default": "./dist/components/*"
     },
     "./dist/components": {
       "import": "./dist/components/index.js",
-      "types": "./dist/components/index.d.ts"
+      "types": "./dist/components/index.d.ts",
+      "default": "./dist/components/index.js"
     },
     "./dist/components/*.js": {
       "import": "./dist/components/*.js",
-      "types": "./dist/components/*.d.ts"
+      "types": "./dist/components/*.d.ts",
+      "default": "./dist/components/*.js"
     },
     "./dist/webquark/webquark.css": "./dist/webquark/webquark.css",
     "./dist/*": {
@@ -63,7 +67,7 @@
     "test": "stencil-test --prod",
     "test:watch": "stencil-test --prod --watch",
     "generate": "stencil generate",
-    "publish": "bun run scripts/publish.ts",
+    "publish-all": "bun run scripts/publish.ts",
     "align-headers": "bun run scripts/align-headers.ts"
   },
   "devDependencies": {
