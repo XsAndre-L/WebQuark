@@ -273,3 +273,20 @@
   100% { transform: rotate(360deg); }
 }
 
+/* Custom scrollbar styling inside dropdown menu options list */
+.dropdown-items-list::-webkit-scrollbar {
+  width: var(--q-scrollbar-width, 6px);
+  height: var(--q-scrollbar-width, 6px);
+}
+.dropdown-items-list::-webkit-scrollbar-track {
+  background: var(--q-scrollbar-track-color, transparent);
+}
+.dropdown-items-list::-webkit-scrollbar-thumb {
+  background: var(--q-scrollbar-thumb-color, var(--q-border-color, #4b5563));
+  border-radius: var(--q-scrollbar-radius, var(--q-radius-sm, 4px));
+}
+.dropdown-items-list::-webkit-scrollbar-thumb:hover {
+  background: var(--q-scrollbar-thumb-color-hover, var(--q-color-primary, #60a5fa));
+}
+
+

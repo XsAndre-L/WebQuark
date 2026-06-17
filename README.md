@@ -9,7 +9,7 @@ A premium, glassmorphic Web Component library compiled with **StencilJS**. Desig
 
 ### 1. Install Library
 ```bash
-npm install @webquark/core
+bun add @webquark/core
 ```
 
 ### 2. Import Styles & Bootloader
@@ -56,19 +56,38 @@ webquark/ (Root)
 
 ---
 
+## 🧪 WebQuark Component Sandbox
+
+WebQuark includes a built-in interactive sandbox playground where you can preview components, inspect their layout behaviors, and test theme design variables in real-time.
+
+To launch the sandbox:
+1. Navigate to the WebQuark root directory.
+2. Start the playground server:
+   ```bash
+   bun start
+   ```
+3. Open your web browser and navigate to: [http://localhost:3333](http://localhost:3333)
+
+Inside the sandbox:
+* **Interactive Previews:** Adjust component attributes, slots, and events on the fly.
+* **Theme Designer:** Tweak global CSS design tokens (colors, border-radius, font sizes) and see the visual changes reflect instantly.
+* **Event Log:** Inspect custom event payloads dispatched by components as you interact with them.
+
+---
+
 ## 🛠️ Development Commands
 
 Before running commands, install package dependencies:
 ```bash
-npm install
+bun install
 ```
 
 | Command | Action | Description |
 | :--- | :--- | :--- |
-| **`npm start`** | **Run Playground** | Starts a local hot-reloading component sandbox at `http://localhost:3333`. |
-| **`npm run build`** | **Build Library** | Runs Stencil compiler to output production bundles inside `dist/`. |
-| **`npm test`** | **Run Test Suites** | Runs unit test suites using Vitest. |
-| **`npm run test.watch`**| **Watch Tests** | Runs tests in interactive watcher mode. |
+| **`bun start`** | **Run Playground** | Starts a local hot-reloading component sandbox at `http://localhost:3333`. |
+| **`bun run build`** | **Build Library** | Runs Stencil compiler to output production bundles inside `dist/`. |
+| **`bun test`** | **Run Test Suites** | Runs unit test suites using Vitest. |
+| **`bun run test:watch`**| **Watch Tests** | Runs tests in interactive watcher mode. |
 
 ---
 
