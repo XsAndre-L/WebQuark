@@ -19,9 +19,9 @@
 
 ## Events
 
-| Event     | Description | Type                                                                              |
-| --------- | ----------- | --------------------------------------------------------------------------------- |
-| `qScroll` |             | `CustomEvent<{ scrollTop: number; scrollHeight: number; clientHeight: number; }>` |
+| Event     | Description | Type                                  |
+| --------- | ----------- | ------------------------------------- |
+| `qScroll` |             | `CustomEvent<QScrollableEventDetail>` |
 
 
 ## Methods

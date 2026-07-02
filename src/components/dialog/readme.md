@@ -7,18 +7,19 @@
 
 ## Properties
 
-| Property              | Attribute                | Description | Type      | Default     |
-| --------------------- | ------------------------ | ----------- | --------- | ----------- |
-| `cancelLabel`         | `cancel-label`           |             | `string`  | `'Cancel'`  |
-| `closeOnEsc`          | `close-on-esc`           |             | `boolean` | `true`      |
-| `closeOnOverlayClick` | `close-on-overlay-click` |             | `boolean` | `true`      |
-| `confirmLabel`        | `confirm-label`          |             | `string`  | `'Confirm'` |
-| `dialogTitle`         | `dialog-title`           |             | `string`  | `undefined` |
-| `loading`             | `loading`                |             | `boolean` | `false`     |
-| `message`             | `message`                |             | `string`  | `undefined` |
-| `open`                | `open`                   |             | `boolean` | `false`     |
-| `showCancel`          | `show-cancel`            |             | `boolean` | `true`      |
-| `showConfirm`         | `show-confirm`           |             | `boolean` | `true`      |
+| Property              | Attribute                | Description | Type                          | Default     |
+| --------------------- | ------------------------ | ----------- | ----------------------------- | ----------- |
+| `backdropEffect`      | `backdrop-effect`        |             | `"blur" \| "none" \| "solid"` | `'blur'`    |
+| `cancelLabel`         | `cancel-label`           |             | `string`                      | `'Cancel'`  |
+| `closeOnEsc`          | `close-on-esc`           |             | `boolean`                     | `true`      |
+| `closeOnOverlayClick` | `close-on-overlay-click` |             | `boolean`                     | `true`      |
+| `confirmLabel`        | `confirm-label`          |             | `string`                      | `'Confirm'` |
+| `dialogTitle`         | `dialog-title`           |             | `string`                      | `undefined` |
+| `loading`             | `loading`                |             | `boolean`                     | `false`     |
+| `message`             | `message`                |             | `string`                      | `undefined` |
+| `open`                | `open`                   |             | `boolean`                     | `false`     |
+| `showCancel`          | `show-cancel`            |             | `boolean`                     | `true`      |
+| `showConfirm`         | `show-confirm`           |             | `boolean`                     | `true`      |
 
 
 ## Events

@@ -40,9 +40,9 @@
       "types": "./dist/*.d.ts"
     },
     "./loader": {
+      "types": "./dist/loader/index.d.ts",
       "import": "./dist/loader/index.js",
-      "require": "./dist/loader/index.cjs",
-      "types": "./dist/loader/index.d.ts"
+      "require": "./dist/loader/index.cjs"
     }
   },
   "workspaces": [

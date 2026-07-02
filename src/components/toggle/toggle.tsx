@@ -1,4 +1,6 @@
-import { Component, Prop, State, Event, EventEmitter, Element, Method, AttachInternals, Watch, h } from '@stencil/core';
+﻿import { Component, Prop, State, Event, EventEmitter, Element, Method, AttachInternals, Watch, h } from '@stencil/core';
+
+import type { QToggleSize, QToggleType } from './toggle.types';
 
 @Component({
   tag: 'q-toggle',
@@ -13,8 +15,9 @@ export class QToggle {
   @AttachInternals() internals!: ElementInternals;
 
   @Prop({ mutable: true, reflect: true }) checked: boolean = false;
-  @Prop() size: 'sm' | 'md' | 'lg' = 'md';
-  @Prop() type: 'switch' | 'checkbox' = 'switch';
+  @Prop({ reflect: true }) name?: string;
+  @Prop() size: QToggleSize = 'md';
+  @Prop() type: QToggleType = 'switch';
   @Prop() label?: string;
   @Prop({ reflect: true }) disabled: boolean = false;
   @Prop({ reflect: true }) required: boolean = false;
@@ -60,7 +63,7 @@ export class QToggle {
   /**
    * Programmatically set checked state without emitting qChange.
    * Use this from external controllers (e.g. playground) to avoid
-   * the SYNCBACK_MAP → registry → effect → prop-set feedback loop.
+   * the SYNCBACK_MAP â†’ registry â†’ effect â†’ prop-set feedback loop.
    */
   // ============================ [4] EXPOSED METHODS ============================
 

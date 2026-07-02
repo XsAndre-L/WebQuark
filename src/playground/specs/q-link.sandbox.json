@@ -1,0 +1,27 @@
+﻿{
+  "name": "Link",
+  "tag": "q-link",
+  "props": {
+    "href": { "type": "string", "default": "/docs", "desc": "Direct link target" },
+    "mailto": { "type": "string", "default": "", "desc": "Email address converted to a mailto target" },
+    "tel": { "type": "string", "default": "", "desc": "Phone number converted to a tel target" },
+    "target": { "type": "select", "options": ["", "_self", "_blank", "_parent", "_top"], "default": "", "desc": "Anchor target" },
+    "variant": { "type": "select", "options": ["default", "muted", "accent", "danger"], "default": "default", "desc": "Text color variant" },
+    "underline": { "type": "select", "options": ["hover", "always", "none"], "default": "hover", "desc": "Underline behavior" },
+    "external": { "type": "boolean", "default": false, "desc": "Shows the external-link indicator" },
+    "disabled": { "type": "boolean", "default": false, "desc": "Disables navigation and click events" }
+  },
+  "slots": {
+    "default": { "type": "text", "default": "Open documentation", "desc": "Link label" }
+  },
+  "variants": [
+    { "name": "Default Link", "props": { "href": "/docs" }, "slots": { "default": "Documentation" } },
+    { "name": "Muted Link", "props": { "href": "/profile", "variant": "muted" }, "slots": { "default": "Profile" } },
+    { "name": "External Link", "props": { "href": "https://example.com", "target": "_blank" }, "slots": { "default": "External resource" } },
+    { "name": "Danger Link", "props": { "href": "/delete", "variant": "danger", "underline": "always" }, "slots": { "default": "Delete item" } }
+  ],
+  "edgeCases": [
+    { "name": "Disabled Link", "props": { "href": "/disabled", "disabled": true }, "slots": { "default": "Disabled link" } },
+    { "name": "Long Link Text", "props": { "href": "/long" }, "slots": { "default": "A very long link label that should still wrap naturally within its parent container" } }
+  ]
+}

@@ -1,0 +1,26 @@
+﻿{
+  "name": "Navbar",
+  "tag": "q-navbar",
+  "props": {
+    "brand": { "type": "string", "default": "WebQuark", "desc": "Brand text" },
+    "brandHref": { "type": "string", "default": "/", "desc": "Brand link target" },
+    "activeValue": { "type": "string", "default": "docs", "desc": "Active item value or href" },
+    "sticky": { "type": "boolean", "default": false, "desc": "Pins the navbar to the top" },
+    "compact": { "type": "boolean", "default": false, "desc": "Reduces navbar height" },
+    "transparent": { "type": "boolean", "default": false, "desc": "Removes the default background" },
+    "bordered": { "type": "boolean", "default": true, "desc": "Shows a bottom border" },
+    "items": { "type": "json", "default": "[{\"label\":\"Docs\",\"value\":\"docs\",\"href\":\"/docs\"},{\"label\":\"Components\",\"value\":\"components\",\"href\":\"/components\"},{\"label\":\"Blog\",\"value\":\"blog\",\"href\":\"/blog\"}]", "desc": "Navigation item array" }
+  },
+  "slots": {
+    "actions": { "type": "html", "default": "<q-button size=\"sm\" variant=\"primary\">Sign in</q-button>", "desc": "Desktop action slot" },
+    "mobile-actions": { "type": "html", "default": "<q-button size=\"sm\" variant=\"primary\" expand>Sign in</q-button>", "desc": "Mobile action slot" }
+  },
+  "variants": [
+    { "name": "Default Navbar", "props": { "brand": "WebQuark" } },
+    { "name": "Compact Sticky", "props": { "brand": "Docs", "compact": true, "sticky": true } },
+    { "name": "Transparent", "props": { "brand": "Landing", "transparent": true, "bordered": false } }
+  ],
+  "edgeCases": [
+    { "name": "Long Brand", "props": { "brand": "Very Long Product Name That Needs Ellipsis" } }
+  ]
+}

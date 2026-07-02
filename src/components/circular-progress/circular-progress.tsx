@@ -1,5 +1,6 @@
 import { Component, Prop, h } from '@stencil/core';
 import { calculateDynamicFontSize } from '../../utils/dom';
+import type { QCircularProgressSize } from './circular-progress.types';
 
 @Component({
   tag: 'q-circular-progress',
@@ -11,7 +12,7 @@ export class QCircularProgress {
   @Prop() value: number = 0;
   @Prop() label?: string;
   @Prop() indeterminate: boolean = false;
-  @Prop({ reflect: true }) size: 'sm' | 'md' | 'lg' = 'md';
+  @Prop({ reflect: true }) size: QCircularProgressSize = 'md';
 
   render() {
     const size = 120; // Internal SVG viewBox size coordinate

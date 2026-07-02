@@ -13,6 +13,7 @@ The `<q-dialog>` is a customizable modal dialog component. It handles overlays, 
 | `message` | `message` | `string` | `undefined` | Body message string displayed in the default body slot. |
 | `closeOnEsc` | `close-on-esc` | `boolean` | `true` | When `true`, pressing the `Escape` key automatically cancels and closes the dialog. |
 | `closeOnOverlayClick`| `close-on-overlay-click` | `boolean` | `true` | When `true`, clicking the backdrop overlay cancels and closes the dialog. |
+| `backdropEffect` | `backdrop-effect` | `'blur' \| 'solid' \| 'none'` | `'blur'` | Controls the backdrop rendering mode. Use `solid` for Unreal/CEF-safe overlays. |
 | `loading` | `loading` | `boolean` | `false` | When `true`, disables buttons and overlays a loading spinner on the confirm button. |
 | `confirmLabel` | `confirm-label` | `string` | `'Confirm'` | Text label for the confirmation button. |
 | `cancelLabel` | `cancel-label` | `string` | `'Cancel'` | Text label for the cancellation button. |
@@ -196,7 +197,7 @@ export class QDialog {
 ## 8. Unreal Engine / Webview Compatibility Notes
 
 *   **No Native `<dialog>` Element**: Standard HTML `<dialog>` elements suffer from centering overlays, bounds calculations, and click handling glitches in OSR, frequently causing rendering lockups or black screens. `<q-dialog>` constructs a custom Shadow DOM overlay with standard absolute `div` layers.
-*   **Backdrop Blur Filter Warning**: The backdrop incorporates `backdrop-filter: blur(12px)` on the `.dialog-backdrop` wrapper. In Off-Screen Rendering (OSR) interfaces, browser composites fail to apply post-processing blurs over underlying game renders, creating either completely transparent/invisible masks or solid black panels. It is highly recommended to override `--q-glass-blur: 0px` for Unreal WebUI plugins to ensure reliable visual rendering.
+*   **Backdrop Effect Control**: `backdrop-effect="blur"` is the default for standard browser UI. In Unreal/CEF Off-Screen Rendering, use `backdrop-effect="solid"` so the overlay uses a high-opacity color without `backdrop-filter`. `backdrop-effect="none"` keeps the invisible click layer but removes visual dimming.
 *   **WAI-ARIA Focus Loop Bridge**: Employs built-in tab trapping that handles focus restrictions inside the active modal container. This ensures key inputs correct register on CEF interfaces without keyboard bridge focus failures.
 
 ---
@@ -227,6 +228,14 @@ export class QDialog {
 </script>
 ```
 
+### Unreal/CEF Safe Modal
+```html
+<q-dialog
+  backdrop-effect="solid"
+  dialog-title="Confirm Action"
+  message="This modal uses a solid overlay instead of backdrop blur."
+></q-dialog>
+```
 ### Async Confirm Action Modal (Loader Integration)
 ```html
 <q-dialog 
@@ -248,3 +257,4 @@ export class QDialog {
   });
 </script>
 ```
+

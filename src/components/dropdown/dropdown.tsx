@@ -1,11 +1,7 @@
 import { Component, Prop, State, Event, EventEmitter, Element, AttachInternals, Watch, Listen, h } from '@stencil/core';
 import { safeParseJson } from '../../utils/utils';
 import { safeFocus } from '../../utils/dom';
-
-export interface Option {
-  label: string;
-  value: string;
-}
+import type { Option, QDropdownSize } from './dropdown.types';
 
 @Component({
   tag: 'q-dropdown',
@@ -18,11 +14,12 @@ export interface Option {
 export class QDropdown {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Prop({ mutable: true }) value: string = "";
+  @Prop({ reflect: true }) name?: string;
   @Prop() label?: string;
   @Prop() placeholder: string = "Select an option...";
   @Prop() options: Option[] | string = [];
   @Prop({ reflect: true }) disabled: boolean = false;
-  @Prop({ reflect: true }) size: 'sm' | 'md' | 'lg' = 'md';
+  @Prop({ reflect: true }) size: QDropdownSize = 'md';
   @Prop() searchable: boolean = false;
 
   @State() isOpen: boolean = false;

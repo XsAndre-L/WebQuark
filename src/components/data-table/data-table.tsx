@@ -1,13 +1,6 @@
 import { Component, Prop, Element, Event, EventEmitter, h } from '@stencil/core';
 import { safeParseJson } from '../../utils/utils';
-
-export interface TableColumn {
-  key: string;
-  header?: string;
-  width?: string;
-  className?: string;
-  render?: (item: any, column: TableColumn) => any;
-}
+import type { QDataTableRowClickDetail, QDataTableSelectionChangeDetail, TableColumn } from './data-table.types';
 
 function getNestedValue(obj: any, path: string): any {
   if (!obj || !path) return undefined;
@@ -35,8 +28,8 @@ export class QDataTable {
   @Prop() searchPlaceholder: string = 'Search...';
   @Prop({ mutable: true }) searchValue: string = '';
 
-  @Event() qRowClick!: EventEmitter<{ item: any; index: number; originalEvent: MouseEvent | KeyboardEvent }>;
-  @Event() qSelectionChange!: EventEmitter<{ selectedKeys: any[]; selectedItems: any[] }>;
+  @Event() qRowClick!: EventEmitter<QDataTableRowClickDetail>;
+  @Event() qSelectionChange!: EventEmitter<QDataTableSelectionChangeDetail>;
   @Event() qSearch!: EventEmitter<string>;
 
   private getParsedColumns(): TableColumn[] {
@@ -56,25 +49,27 @@ export class QDataTable {
     return index;
   }
 
+  private getSelectedKeySet(): Set<any> {
+    return new Set(this.selectedKeys || []);
+  }
+
+  private getSelectedItems(items = this.getParsedItems(), selectedKeys = this.getSelectedKeySet()): any[] {
+    return items.filter((item, index) => selectedKeys.has(this.getItemKey(item, index)));
+  }
+
   private getSelectionState() {
     const items = this.getParsedItems();
     if (items.length === 0) {
       return { checked: false, indeterminate: false };
     }
-    const currentKeys = this.selectedKeys || [];
-    const selectedCount = items.filter((item, index) => {
-      const key = this.getItemKey(item, index);
-      return currentKeys.includes(key);
-    }).length;
 
+    const selectedCount = this.getSelectedItems(items).length;
     const checked = selectedCount === items.length;
     const indeterminate = selectedCount > 0 && selectedCount < items.length;
     return { checked, indeterminate };
   }
 
-  private toggleRowSelection(item: any, index: number, event: Event) {
-    event.stopPropagation();
-    const key = this.getItemKey(item, index);
+  private toggleKeyInSelection(key: any) {
     const currentKeys = [...(this.selectedKeys || [])];
     const keyIndex = currentKeys.indexOf(key);
 
@@ -86,6 +81,11 @@ export class QDataTable {
 
     this.selectedKeys = currentKeys;
     this.emitSelectionChange();
+  }
+
+  private toggleRowSelection(item: any, index: number, event: Event) {
+    event.stopPropagation();
+    this.toggleKeyInSelection(this.getItemKey(item, index));
   }
 
   private toggleAllSelection(event: Event) {
@@ -102,15 +102,10 @@ export class QDataTable {
   }
 
   private emitSelectionChange() {
-    const items = this.getParsedItems();
     const currentKeys = this.selectedKeys || [];
-    const selectedItems = items.filter((item, index) => {
-      const key = this.getItemKey(item, index);
-      return currentKeys.includes(key);
-    });
     this.qSelectionChange.emit({
       selectedKeys: [...currentKeys],
-      selectedItems,
+      selectedItems: this.getSelectedItems(this.getParsedItems(), new Set(currentKeys)),
     });
   }
 
@@ -145,18 +140,7 @@ export class QDataTable {
       });
 
       if (this.selectable) {
-        const key = this.getItemKey(item, index);
-        const currentKeys = [...(this.selectedKeys || [])];
-        const keyIndex = currentKeys.indexOf(key);
-
-        if (keyIndex > -1) {
-          currentKeys.splice(keyIndex, 1);
-        } else {
-          currentKeys.push(key);
-        }
-
-        this.selectedKeys = currentKeys;
-        this.emitSelectionChange();
+        this.toggleKeyInSelection(this.getItemKey(item, index));
       }
     }
   }
@@ -195,7 +179,7 @@ export class QDataTable {
     const columns = this.getParsedColumns();
     const items = this.getParsedItems();
     const { checked, indeterminate } = this.getSelectionState();
-    const currentKeys = this.selectedKeys || [];
+    const selectedKeySet = this.getSelectedKeySet();
 
     return (
       <div class="table-container" role="grid">
@@ -282,7 +266,7 @@ export class QDataTable {
             ) : (
               items.map((item, index) => {
                 const key = this.getItemKey(item, index);
-                const isSelected = currentKeys.includes(key);
+                const isSelected = selectedKeySet.has(key);
 
                 return (
                   <tr

@@ -24,11 +24,11 @@
 
 ## Events
 
-| Event              | Description | Type                                                                                     |
-| ------------------ | ----------- | ---------------------------------------------------------------------------------------- |
-| `qRowClick`        |             | `CustomEvent<{ item: any; index: number; originalEvent: KeyboardEvent \| MouseEvent; }>` |
-| `qSearch`          |             | `CustomEvent<string>`                                                                    |
-| `qSelectionChange` |             | `CustomEvent<{ selectedKeys: any[]; selectedItems: any[]; }>`                            |
+| Event              | Description | Type                                           |
+| ------------------ | ----------- | ---------------------------------------------- |
+| `qRowClick`        |             | `CustomEvent<QDataTableRowClickDetail>`        |
+| `qSearch`          |             | `CustomEvent<string>`                          |
+| `qSelectionChange` |             | `CustomEvent<QDataTableSelectionChangeDetail>` |
 
 
 ## Dependencies

@@ -22,10 +22,10 @@
 
 ## Events
 
-| Event     | Description                                             | Type                                                                  |
-| --------- | ------------------------------------------------------- | --------------------------------------------------------------------- |
-| `qClose`  | Fires when the drawer is closed (drawer mode)           | `CustomEvent<void>`                                                   |
-| `qSelect` | Fires when a leaf navigation item is clicked (nav mode) | `CustomEvent<{ value: string; label: string; item: SidepanelItem; }>` |
+| Event     | Description                                             | Type                                  |
+| --------- | ------------------------------------------------------- | ------------------------------------- |
+| `qClose`  | Fires when the drawer is closed (drawer mode)           | `CustomEvent<void>`                   |
+| `qSelect` | Fires when a leaf navigation item is clicked (nav mode) | `CustomEvent<QSidepanelSelectDetail>` |
 
 
 ## Shadow Parts

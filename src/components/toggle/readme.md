@@ -13,6 +13,7 @@
 | `disabled` | `disabled` |             | `boolean`                | `false`     |
 | `error`    | `error`    |             | `string`                 | `undefined` |
 | `label`    | `label`    |             | `string`                 | `undefined` |
+| `name`     | `name`     |             | `string`                 | `undefined` |
 | `required` | `required` |             | `boolean`                | `false`     |
 | `size`     | `size`     |             | `"lg" \| "md" \| "sm"`   | `'md'`      |
 | `type`     | `type`     |             | `"checkbox" \| "switch"` | `'switch'`  |
@@ -34,7 +35,7 @@
 
 Programmatically set checked state without emitting qChange.
 Use this from external controllers (e.g. playground) to avoid
-the SYNCBACK_MAP → registry → effect → prop-set feedback loop.
+the SYNCBACK_MAP â†’ registry â†’ effect â†’ prop-set feedback loop.
 
 #### Returns
 

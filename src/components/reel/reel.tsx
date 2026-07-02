@@ -1,6 +1,8 @@
 import { Component, Prop, State, Element, Listen, Event, EventEmitter, h } from '@stencil/core';
 import { getSlottedElements, handleTabTrap, safeFocus } from '../../utils/dom';
 
+import type { QReelLayout, QReelMedia } from './reel.types';
+
 @Component({
   tag: 'q-reel',
   styleUrl: 'reel.css',
@@ -8,10 +10,10 @@ import { getSlottedElements, handleTabTrap, safeFocus } from '../../utils/dom';
 })
 export class QReel {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
-  @Prop() layout: 'grid' | 'carousel' = 'grid';
+  @Prop() layout: QReelLayout = 'grid';
   @Prop() lightbox: boolean = true;
 
-  @State() activeMedia: { src: string; label?: string; video: boolean; alt: string; triggerEl?: HTMLElement } | null = null;
+  @State() activeMedia: QReelMedia | null = null;
 
   @Event() qLightboxOpen: EventEmitter<void>;
   @Event() qLightboxClose: EventEmitter<void>;
@@ -26,7 +28,7 @@ export class QReel {
   }
 
   @Listen('qMaximize')
-  handleThumbnailMaximize(event: CustomEvent) {
+  handleThumbnailMaximize(event: CustomEvent<QReelMedia>) {
     if (!this.lightbox) return;
     this.activeMedia = event.detail;
     this.qLightboxOpen.emit();

@@ -1,5 +1,6 @@
 import { Component, Prop, Element, State, h } from '@stencil/core';
 import { getSlottedElements } from '../../utils/dom';
+import type { QCardElevation } from './card.types';
 
 @Component({
   tag: 'q-card',
@@ -10,7 +11,7 @@ export class QCard {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Element() el!: HTMLElement;
 
-  @Prop({ reflect: true }) elevation: 'low' | 'medium' | 'high' | 1 | 2 | 3 = 'medium';
+  @Prop({ reflect: true }) elevation: QCardElevation = 'medium';
   @Prop({ reflect: true }) interactive: boolean = false;
   @Prop({ reflect: true }) glass: boolean = false;
   @Prop({ reflect: true }) lift: boolean = false;

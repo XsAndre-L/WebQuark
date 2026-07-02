@@ -1,4 +1,5 @@
 import { Component, Prop, State, Watch, h, Host } from '@stencil/core';
+import type { QIconColor, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from './icon.types';
 
 @Component({
   tag: 'q-icon',
@@ -10,28 +11,28 @@ export class QIcon {
   /**
    * The name of the icon (e.g., 'settings', 'heart', or a filename like 'logo.png').
    */
-  @Prop() name: string;
+  @Prop() name: QIconName;
 
   /**
    * The library to load the icon from.
    * Options: 'lucide', 'font-awesome', 'local', or a custom base URL / template URL.
    */
-  @Prop() lib: string = 'lucide';
+  @Prop() lib: QIconLibrary = 'lucide';
 
   /**
    * The size of the icon. Can be a preset alias ('sm', 'md', 'lg'), a number (pixels), or any valid CSS size string (e.g., '1.5rem').
    */
-  @Prop() size: string = 'md';
+  @Prop() size: QIconSize = 'md';
 
   /**
    * The color of the icon. Defaults to 'currentColor'.
    */
-  @Prop() color: string = 'currentColor';
+  @Prop() color: QIconColor = 'currentColor';
 
   /**
    * The default path for local assets when `lib` is set to 'local'.
    */
-  @Prop() localPath: string = '/assets/icons/';
+  @Prop() localPath: QIconLocalPath = '/assets/icons/';
 
   @State() svgContent: string = '';
   @State() isBinary: boolean = false;

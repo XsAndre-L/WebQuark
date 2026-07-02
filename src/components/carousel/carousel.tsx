@@ -1,5 +1,6 @@
 import { Component, Prop, Element, Event, EventEmitter, State, Method, h } from '@stencil/core';
 import { getSlottedElements } from '../../utils/dom';
+import type { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from './carousel.types';
 
 @Component({
   tag: 'q-carousel',
@@ -8,7 +9,7 @@ import { getSlottedElements } from '../../utils/dom';
 })
 export class QCarousel {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
-  @Prop({ reflect: true }) snapAlignment: 'start' | 'center' | 'end' | 'none' = 'start';
+  @Prop({ reflect: true }) snapAlignment: QCarouselSnapAlignment = 'start';
   @Prop({ reflect: true }) showArrows: boolean = false;
   @Prop({ reflect: true }) showIndicators: boolean = false;
   @Prop({ reflect: true }) repeat: boolean = false;
@@ -20,7 +21,7 @@ export class QCarousel {
   @State() isAtStart: boolean = true;
   @State() isAtEnd: boolean = true;
 
-  @Event() qSlideChange!: EventEmitter<{ index: number; element: HTMLElement }>;
+  @Event() qSlideChange!: EventEmitter<QCarouselSlideChangeDetail>;
 
   @Element() el!: HTMLElement;
 

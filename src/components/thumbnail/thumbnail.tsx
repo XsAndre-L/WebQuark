@@ -1,5 +1,7 @@
 import { Component, Prop, h, Element, Event, EventEmitter } from '@stencil/core';
 
+import type { QThumbnailMaximizeDetail } from './thumbnail.types';
+
 @Component({
   tag: 'q-thumbnail',
   styleUrl: 'thumbnail.css',
@@ -15,7 +17,7 @@ export class QThumbnail {
 
   @Element() el!: HTMLElement;
 
-  @Event() qMaximize: EventEmitter<{ src: string; label?: string; video: boolean; alt: string; triggerEl: HTMLElement }>;
+  @Event() qMaximize: EventEmitter<QThumbnailMaximizeDetail>;
 
   private handleTrigger = (e: Event) => {
     e.stopPropagation();

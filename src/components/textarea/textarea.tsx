@@ -1,4 +1,6 @@
-import { Component, Prop, Event, EventEmitter, Element, Method, AttachInternals, Watch, h } from '@stencil/core';
+﻿import { Component, Prop, Event, EventEmitter, Element, Method, AttachInternals, Watch, h } from '@stencil/core';
+
+import type { QTextareaResizeMode } from './textarea.types';
 
 @Component({
   tag: 'q-textarea',
@@ -13,11 +15,12 @@ export class QTextarea {
   @Element() el!: HTMLElement;
 
   @Prop({ mutable: true }) value: string = "";
+  @Prop({ reflect: true }) name?: string;
   @Prop() placeholder: string = "";
   @Prop() label?: string;
   @Prop() rows: number = 3;
   @Prop() autoGrow: boolean = true;
-  @Prop() resizeMode: 'auto' | 'manual' | 'fixed' = 'auto';
+  @Prop() resizeMode: QTextareaResizeMode = 'auto';
   @Prop({ reflect: true }) disabled: boolean = false;
   @Prop({ reflect: true }) required: boolean = false;
   @Prop({ reflect: true }) error?: string;
@@ -106,7 +109,7 @@ export class QTextarea {
     this.qClick.emit(ev);
   };
 
-  private get activeResizeMode(): 'auto' | 'manual' | 'fixed' {
+  private get activeResizeMode(): QTextareaResizeMode {
     if (!this.autoGrow && this.resizeMode === 'auto') {
       return 'fixed';
     }
@@ -157,6 +160,7 @@ export class QTextarea {
           style={{ resize: this.activeResizeMode === 'manual' ? 'vertical' : 'none' }}
           part="textarea"
           value={this.value}
+          name={this.name}
           placeholder={this.placeholder}
           rows={this.rows}
           disabled={this.disabled}

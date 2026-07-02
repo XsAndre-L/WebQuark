@@ -16,6 +16,7 @@
 | `label`        | `label`         |             | `string`                                                                      | `undefined` |
 | `max`          | `max`           |             | `number`                                                                      | `undefined` |
 | `min`          | `min`           |             | `number`                                                                      | `undefined` |
+| `name`         | `name`          |             | `string`                                                                      | `undefined` |
 | `placeholder`  | `placeholder`   |             | `string`                                                                      | `""`        |
 | `required`     | `required`      |             | `boolean`                                                                     | `false`     |
 | `size`         | `size`          |             | `"lg" \| "md" \| "sm"`                                                        | `'md'`      |

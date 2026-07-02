@@ -1,0 +1,20 @@
+﻿{
+  "name": "Form",
+  "tag": "q-form",
+  "props": {
+    "label": { "type": "string", "default": "Profile", "desc": "Optional title rendered above the form" },
+    "preventDefault": { "type": "boolean", "default": true, "desc": "Prevents the browser submit navigation" },
+    "noValidate": { "type": "boolean", "default": false, "desc": "Skips native validity checks" },
+    "autocomplete": { "type": "select", "options": ["on", "off"], "default": "on", "desc": "Native autocomplete behavior" }
+  },
+  "slots": {
+    "default": { "type": "html", "default": "<q-input name=\"name\" label=\"Name\" value=\"Ada\"></q-input><q-textarea name=\"bio\" label=\"Bio\" value=\"Builder\"></q-textarea>", "desc": "Form fields" },
+    "actions": { "type": "html", "default": "<q-button type=\"submit\">Save</q-button>", "desc": "Action controls" }
+  },
+  "variants": [
+    { "name": "Profile Form", "props": { "label": "Profile" }, "slots": { "default": "<q-input name=\"name\" label=\"Name\" value=\"Ada\"></q-input><q-dropdown name=\"role\" label=\"Role\" value=\"admin\" options='[{\"label\":\"Admin\",\"value\":\"admin\"},{\"label\":\"Editor\",\"value\":\"editor\"}]'></q-dropdown>", "actions": "<q-button type=\"submit\">Save</q-button>" } }
+  ],
+  "edgeCases": [
+    { "name": "Native Inputs", "props": { "label": "Native Form" }, "slots": { "default": "<input name=\"plain\" value=\"native\" />", "actions": "<q-button type=\"submit\">Submit</q-button>" } }
+  ]
+}

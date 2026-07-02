@@ -18,9 +18,9 @@
 
 ## Events
 
-| Event       | Description | Type                                                                                                 |
-| ----------- | ----------- | ---------------------------------------------------------------------------------------------------- |
-| `qMaximize` |             | `CustomEvent<{ src: string; label?: string; video: boolean; alt: string; triggerEl: HTMLElement; }>` |
+| Event       | Description | Type                                    |
+| ----------- | ----------- | --------------------------------------- |
+| `qMaximize` |             | `CustomEvent<QThumbnailMaximizeDetail>` |
 
 
 ----------------------------------------------

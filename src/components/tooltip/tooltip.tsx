@@ -1,5 +1,7 @@
 import { Component, Prop, State, Element, h, Host } from '@stencil/core';
 
+import type { QTooltipPosition } from './tooltip.types';
+
 @Component({
   tag: 'q-tooltip',
   styleUrl: 'tooltip.css',
@@ -18,7 +20,7 @@ export class QTooltip {
    * The placement position of the tooltip relative to its trigger parent.
    * Options: 'top', 'bottom', 'left', 'right'
    */
-  @Prop() position: 'top' | 'bottom' | 'left' | 'right' = 'top';
+  @Prop() position: QTooltipPosition = 'top';
 
   /**
    * The delay in milliseconds before the tooltip shows up.

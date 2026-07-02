@@ -1,4 +1,5 @@
 import { Component, Prop, Element, State, Event, EventEmitter, h } from '@stencil/core';
+import type { QButtonSize, QButtonType, QButtonVariant } from './button.types';
 
 @Component({
   tag: 'q-button',
@@ -11,14 +12,15 @@ export class QButton {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Element() el!: HTMLElement;
 
-  @Prop() variant: 'primary' | 'secondary' | 'success' | 'danger' | 'ghost' | 'text' = 'primary';
-  @Prop() size: 'sm' | 'md' | 'lg' = 'md';
+  @Prop() variant: QButtonVariant = 'primary';
+  @Prop() size: QButtonSize = 'md';
   @Prop({ reflect: true }) disabled: boolean = false;
   @Prop({ reflect: true }) loading: boolean = false;
-  @Prop() type: 'button' | 'submit' | 'reset' = 'button';
+  @Prop() type: QButtonType = 'button';
   @Prop({ reflect: true }) expand: boolean = false;
   @Prop() href?: string;
   @Prop() target?: string;
+  @Prop() rel?: string;
   @Prop() download?: string;
   @Prop({ reflect: true }) iconOnly?: boolean;
 
@@ -70,6 +72,11 @@ export class QButton {
     this.qBlur.emit(ev);
   };
 
+  private getResolvedRel(): string | undefined {
+    if (this.rel) return this.rel;
+    return this.target === '_blank' ? 'noopener noreferrer' : undefined;
+  }
+
   // ===================== [6] RENDER (Visual Template Only) =====================
 
   render() {
@@ -102,6 +109,7 @@ export class QButton {
           class={classes}
           href={this.href}
           target={this.target}
+          rel={this.getResolvedRel()}
           download={this.download}
           tabindex={isBtnDisabled ? -1 : undefined}
           aria-disabled={isBtnDisabled ? 'true' : 'false'}
@@ -129,3 +137,4 @@ export class QButton {
     );
   }
 }
+

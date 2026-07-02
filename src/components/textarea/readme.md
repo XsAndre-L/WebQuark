@@ -14,6 +14,7 @@
 | `error`        | `error`         |             | `string`                        | `undefined` |
 | `errorMessage` | `error-message` |             | `string`                        | `undefined` |
 | `label`        | `label`         |             | `string`                        | `undefined` |
+| `name`         | `name`          |             | `string`                        | `undefined` |
 | `placeholder`  | `placeholder`   |             | `string`                        | `""`        |
 | `required`     | `required`      |             | `boolean`                       | `false`     |
 | `resizeMode`   | `resize-mode`   |             | `"auto" \| "fixed" \| "manual"` | `'auto'`    |
