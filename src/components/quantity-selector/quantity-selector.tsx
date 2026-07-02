@@ -1,9 +1,11 @@
 import { Component, Prop, State, Event, EventEmitter, h, Watch } from '@stencil/core';
 
+import type { QQuantitySelectorVariant } from './quantity-selector.types';
+
 @Component({
   tag: 'q-quantity-selector',
   styleUrl: 'quantity-selector.css',
-  shadow: true
+  shadow: true,
 })
 export class QQuantitySelector {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
@@ -20,7 +22,7 @@ export class QQuantitySelector {
   @Prop() max?: number;
 
   /** Layout alignment variants: 'horizontal' or 'vertical'. */
-  @Prop({ reflect: true }) variant: 'horizontal' | 'vertical' = 'horizontal';
+  @Prop({ reflect: true }) variant: QQuantitySelectorVariant = 'horizontal';
 
   /** Emitted when the quantity value changes. */
   @Event() qChange: EventEmitter<number>;
@@ -47,27 +49,23 @@ export class QQuantitySelector {
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
   private getCalculatedWidth(): string {
-    const minSet = this.min !== undefined && this.min !== null;
-    const maxSet = this.max !== undefined && this.max !== null;
+  const hasMin = this.min !== undefined && this.min !== null;
+  const hasMax = this.max !== undefined && this.max !== null;
 
-    let charCount = 3;
-    if (minSet || maxSet) {
-      const lengths = [3];
-      if (minSet) {
-        lengths.push(this.min.toString().length);
-      }
-      if (maxSet) {
-        lengths.push(this.max.toString().length);
-      }
-      charCount = Math.max(...lengths);
-    } else {
-      const currentLength = (this.value !== undefined && this.value !== null) ? this.value.toString().length : 0;
-      charCount = Math.max(3, currentLength);
-    }
+  let charCount = 3;
 
-    return `calc(${charCount} * var(--q-quantity-selector-char-width, 1ch) + var(--q-quantity-selector-input-padding, 16px))`;
+  if (hasMin || hasMax) {
+    charCount = Math.max(
+      3,
+      this.min?.toString().length ?? 0,
+      this.max?.toString().length ?? 0
+    );
+  } else {
+    charCount = Math.max(3, this.value?.toString().length ?? 0);
   }
 
+  return `calc(${charCount} * var(--q-quantity-selector-char-width, 1ch) + var(--q-quantity-selector-input-padding, 16px))`;
+}
   private increment = () => {
     const current = this.value !== undefined && this.value !== null ? this.value : 0;
     let next = current + this.step;
@@ -183,13 +181,7 @@ export class QQuantitySelector {
     const isMaxDisabled = this.max !== undefined && this.max !== null && this.value >= this.max;
 
     const decBtn = (
-      <button
-        type="button"
-        class="quantity-btn quantity-btn-decrement"
-        onClick={this.decrement}
-        disabled={isMinDisabled}
-        aria-label="Decrement quantity"
-      >
+      <button type="button" class="quantity-btn quantity-btn-decrement" onClick={this.decrement} disabled={isMinDisabled} aria-label="Decrement quantity">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon">
           <line x1="5" y1="12" x2="19" y2="12"></line>
         </svg>
@@ -197,13 +189,7 @@ export class QQuantitySelector {
     );
 
     const incBtn = (
-      <button
-        type="button"
-        class="quantity-btn quantity-btn-increment"
-        onClick={this.increment}
-        disabled={isMaxDisabled}
-        aria-label="Increment quantity"
-      >
+      <button type="button" class="quantity-btn quantity-btn-increment" onClick={this.increment} disabled={isMaxDisabled} aria-label="Increment quantity">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon">
           <line x1="12" y1="5" x2="12" y2="19"></line>
           <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -217,7 +203,7 @@ export class QQuantitySelector {
       <div
         class={{
           'quantity-selector': true,
-          [`variant-${this.variant}`]: true
+          [`variant-${this.variant}`]: true,
         }}
         onClick={this.handleClick}
       >

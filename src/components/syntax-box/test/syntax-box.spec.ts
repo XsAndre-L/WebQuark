@@ -54,6 +54,18 @@ describe('q-syntax-box', () => {
     el.remove();
   });
 
+  it('resets editable code to the initial value', async () => {
+    const el = await createComponent({ code: 'const a = 1;', editable: true });
+    el.code = 'const b = 2;';
+    el.value = 'const b = 2;';
+
+    el.formResetCallback();
+
+    expect(el.code).toBe('const a = 1;');
+    expect(el.value).toBe('const a = 1;');
+    el.remove();
+  });
+
   it('formats code when clicking format button', async () => {
     const el = await createComponent({ code: '{"a":1}', editable: true, language: 'json' });
     const formatBtn = el.shadowRoot.querySelector('.format-btn') as HTMLElement;
@@ -70,3 +82,4 @@ describe('q-syntax-box', () => {
     el.remove();
   });
 });
+

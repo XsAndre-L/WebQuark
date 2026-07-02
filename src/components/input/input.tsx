@@ -1,5 +1,7 @@
 import { Component, Prop, State, Event, EventEmitter, Element, Method, AttachInternals, Watch, h } from '@stencil/core';
 
+import type { QInputSize, QInputType } from './input.types';
+
 @Component({
   tag: 'q-input',
   styleUrl: 'input.css',
@@ -11,14 +13,15 @@ import { Component, Prop, State, Event, EventEmitter, Element, Method, AttachInt
 export class QInput {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Prop({ mutable: true }) value: string = "";
-  @Prop() type: 'text' | 'password' | 'email' | 'number' | 'url' | 'search' | 'color' = 'text';
+  @Prop({ reflect: true }) name?: string;
+  @Prop() type: QInputType = 'text';
   @Prop() placeholder: string = "";
   @Prop() label?: string;
   @Prop({ reflect: true }) disabled: boolean = false;
   @Prop({ reflect: true }) required: boolean = false;
   @Prop({ reflect: true }) error?: string;
   @Prop() errorMessage?: string;
-  @Prop() size: 'sm' | 'md' | 'lg' = 'md';
+  @Prop() size: QInputSize = 'md';
   @Prop() clearable: boolean = false;
   @Prop() min?: number;
   @Prop() max?: number;
@@ -152,7 +155,7 @@ export class QInput {
       newValue = Math.min(this.max, newValue);
     }
     this.value = String(newValue);
-    // Same imperative update as handleIncrement — see comment there.
+    // Same imperative update as handleIncrement â€” see comment there.
     if (this.inputEl) this.inputEl.value = this.value;
     this.qInput.emit(this.value);
     this.qChange.emit(this.value);
@@ -247,6 +250,7 @@ export class QInput {
               'has-suffix-padding': showSuffixContainer
             }}
             type={this.type}
+            name={this.name}
             value={this.value}
             placeholder={this.placeholder}
             disabled={this.disabled}

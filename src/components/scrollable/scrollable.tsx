@@ -1,5 +1,7 @@
 import { Component, Prop, Element, Event, EventEmitter, State, Watch, Method, Host, h } from '@stencil/core';
 
+import type { QScrollableEventDetail, QScrollableMode } from './scrollable.types';
+
 @Component({
   tag: 'q-scrollable',
   styleUrl: 'scrollable.css',
@@ -13,10 +15,10 @@ export class QScrollable {
   @Prop({ reflect: true }) maxHeight: string = '';
   @Prop({ reflect: true }) autoHide: boolean = true;
   @Prop({ reflect: true }) nativeOnMobile: boolean = true;
-  @Prop({ reflect: true }) mode: 'custom' | 'native' = 'custom';
+  @Prop({ reflect: true }) mode: QScrollableMode = 'custom';
   @Prop({ reflect: true }) target: string = '';
 
-  @Event() qScroll!: EventEmitter<{ scrollTop: number; scrollHeight: number; clientHeight: number }>;
+  @Event() qScroll!: EventEmitter<QScrollableEventDetail>;
 
   @State() isScrolling: boolean = false;
   @State() isDragging: boolean = false;

@@ -1,5 +1,7 @@
 import { Component, Prop, h, Element, Event, EventEmitter } from '@stencil/core';
 
+import type { QStepDiagramItemLayout, QStepDiagramItemLineStyle, QStepDiagramItemStatus } from './step-diagram-item.types';
+
 @Component({
   tag: 'q-step-diagram-item',
   styleUrl: 'step-diagram-item.css',
@@ -7,9 +9,9 @@ import { Component, Prop, h, Element, Event, EventEmitter } from '@stencil/core'
 })
 export class QStepDiagramItem {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
-  @Prop({ reflect: true }) status: 'pending' | 'active' | 'completed' | 'success' | 'warning' | 'danger' = 'completed';
-  @Prop({ reflect: true }) lineStyle: 'solid' | 'dashed' | 'dotted' | 'none' = 'solid';
-  @Prop({ reflect: true, mutable: true }) layout: 'vertical' | 'horizontal' = 'vertical';
+  @Prop({ reflect: true }) status: QStepDiagramItemStatus = 'completed';
+  @Prop({ reflect: true }) lineStyle: QStepDiagramItemLineStyle = 'solid';
+  @Prop({ reflect: true, mutable: true }) layout: QStepDiagramItemLayout = 'vertical';
   @Element() el!: HTMLElement;
 
   @Event() qItemClick: EventEmitter<void>;

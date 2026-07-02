@@ -15,6 +15,7 @@
 | `href`     | `href`      |             | `string`                                                                 | `undefined` |
 | `iconOnly` | `icon-only` |             | `boolean`                                                                | `undefined` |
 | `loading`  | `loading`   |             | `boolean`                                                                | `false`     |
+| `rel`      | `rel`       |             | `string`                                                                 | `undefined` |
 | `size`     | `size`      |             | `"lg" \| "md" \| "sm"`                                                   | `'md'`      |
 | `target`   | `target`    |             | `string`                                                                 | `undefined` |
 | `type`     | `type`      |             | `"button" \| "reset" \| "submit"`                                        | `'button'`  |

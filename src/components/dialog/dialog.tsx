@@ -1,5 +1,6 @@
 import { Component, Prop, Element, Event, EventEmitter, Watch, Listen, State, Method, h } from '@stencil/core';
 import { handleTabTrap, waitForTransitionEnd, focusFirstElement, safeFocus } from '../../utils/dom';
+import type { QDialogBackdropEffect } from './dialog.types';
 
 @Component({
   tag: 'q-dialog',
@@ -20,6 +21,7 @@ export class QDialog {
   @Prop() cancelLabel: string = 'Cancel';
   @Prop() showCancel: boolean = true;
   @Prop() showConfirm: boolean = true;
+  @Prop({ attribute: 'backdrop-effect', reflect: true }) backdropEffect: QDialogBackdropEffect = 'blur';
 
   @Event() qConfirm!: EventEmitter<void>;
   @Event() qCancel!: EventEmitter<void>;
@@ -140,6 +142,16 @@ export class QDialog {
     this.qClose.emit();
   };
 
+  private getResolvedBackdropEffect(): QDialogBackdropEffect {
+    switch (this.backdropEffect) {
+      case 'solid':
+      case 'none':
+        return this.backdropEffect;
+      default:
+        return 'blur';
+    }
+  }
+
   // ===================== [6] RENDER (Visual Template Only) =====================
 
   render() {
@@ -150,6 +162,11 @@ export class QDialog {
       'is-open': this.isAnimatedOpen,
       'is-visible': this.isVisible,
     };
+    const backdropEffect = this.getResolvedBackdropEffect();
+    const backdropClasses = {
+      'dialog-backdrop': true,
+            [`effect-${backdropEffect}`]: true,
+    };
 
     return (
       <div
@@ -159,7 +176,7 @@ export class QDialog {
       >
         {/* Semi-transparent Backdrop Overlay */}
         <div
-          class="dialog-backdrop"
+          class={backdropClasses}
           onClick={this.handleBackdropClick}
           part="backdrop"
         />
@@ -234,3 +251,5 @@ export class QDialog {
     );
   }
 }
+
+

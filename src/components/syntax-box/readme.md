@@ -16,6 +16,7 @@
 | `heading`  | `heading`  |             | `string`                                    | `undefined` |
 | `height`   | `height`   |             | `string`                                    | `undefined` |
 | `language` | `language` |             | `"css" \| "html" \| "javascript" \| "json"` | `'html'`    |
+| `name`     | `name`     |             | `string`                                    | `undefined` |
 | `required` | `required` |             | `boolean`                                   | `false`     |
 | `value`    | `value`    |             | `string`                                    | `undefined` |
 | `variant`  | `variant`  |             | `"panel" \| "plain"`                        | `'panel'`   |

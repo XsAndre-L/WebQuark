@@ -1,5 +1,8 @@
 import { Component, Prop, Element, State, Method, Host, Event, EventEmitter, Watch, AttachInternals, h } from '@stencil/core';
 import { formatCode } from '../../utils/formatter';
+import { highlight as highlightSyntax } from '../../utils/syntax';
+
+import type { QSyntaxBoxLanguage, QSyntaxBoxVariant } from './syntax-box.types';
 
 @Component({
   tag: 'q-syntax-box',
@@ -12,8 +15,9 @@ import { formatCode } from '../../utils/formatter';
 export class QSyntaxBox {
   @Element() el!: HTMLElement;
 
-  @Prop() variant: 'panel' | 'plain' = 'panel';
-  @Prop() language: 'html' | 'javascript' | 'css' | 'json' = 'html';
+  @Prop() variant: QSyntaxBoxVariant = 'panel';
+  @Prop({ reflect: true }) name?: string;
+  @Prop() language: QSyntaxBoxLanguage = 'html';
   @Prop({ mutable: true }) code?: string;
   @Prop({ mutable: true }) value?: string;
   @Prop() heading?: string;
@@ -27,6 +31,8 @@ export class QSyntaxBox {
 
   @Event() qChange!: EventEmitter<string>;
   @Event() qInput!: EventEmitter<string>;
+
+  private initialValue = '';
 
   @Watch('code')
   watchCode(newCode: string) {
@@ -45,9 +51,7 @@ export class QSyntaxBox {
     if (this.value !== finalCode) {
       this.value = finalCode;
     }
-    if (this.internals && typeof this.internals.setFormValue === 'function') {
-      this.internals.setFormValue(finalCode || '');
-    }
+    this.syncFormValue(finalCode);
   }
 
   @Watch('value')
@@ -67,6 +71,13 @@ export class QSyntaxBox {
     if (this.code !== finalVal) {
       this.code = finalVal;
     }
+
+    this.syncFormValue(finalVal);
+  }
+
+  @Watch('editable')
+  watchEditable() {
+    this.syncFormValue(this.code);
   }
 
   componentWillLoad() {
@@ -82,9 +93,19 @@ export class QSyntaxBox {
       this.value = formatted;
     }
 
-    if (this.internals && typeof this.internals.setFormValue === 'function') {
-      this.internals.setFormValue(this.code || '');
-    }
+    this.initialValue = this.code || '';
+    this.syncFormValue(this.code);
+  }
+
+  formResetCallback() {
+    this.code = this.initialValue;
+    this.value = this.initialValue;
+    this.syncFormValue(this.code);
+  }
+
+  private syncFormValue(value: string | undefined) {
+    if (!this.internals || typeof this.internals.setFormValue !== 'function') return;
+    this.internals.setFormValue(this.editable ? value || '' : null);
   }
 
   @State() copied: boolean = false;
@@ -108,104 +129,6 @@ export class QSyntaxBox {
       }, 1500);
     });
   };
-
-  private escapeHtml(text: string): string {
-    if (!text) return '';
-    if (text.includes('&lt;') || text.includes('&gt;') || text.includes('&amp;')) {
-      return text;
-    }
-    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  }
-
-  private highlightHtml(text: string): string {
-    let esc = this.escapeHtml(text);
-    return esc
-      // Match comments: <!-- ... -->
-      .replace(/(&lt;!--[\s\S]*?--&gt;)/g, '<span class="code-comment">$1</span>')
-      // Match attribute values: double quotes or single quotes
-      .replace(/(&quot;.*?&quot;)/gi, '<span class="code-value">$1</span>')
-      .replace(/(&#39;.*?&#39;)/gi, '<span class="code-value">$1</span>')
-      // Match attributes: whitespace followed by name, then =
-      .replace(/(\s[a-z0-9-]+)=/gi, ' <span class="code-attr">$1</span>=')
-      // Match tag start: </?tagname
-      .replace(/(&lt;\/?[a-z0-9-]+)/gi, '<span class="code-tag">$1</span>')
-      // Match close tags: >
-      .replace(/(&gt;)/g, '<span class="code-tag">&gt;</span>');
-  }
-
-  private highlightJavascript(text: string): string {
-    let esc = this.escapeHtml(text);
-    const tokenRegex = /(\/\/.*|\/\*[\s\S]*?\*\/)|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`)|(\b(?:const|let|var|function|return|if|else|for|while|do|switch|case|break|continue|class|export|import|from|new|this|typeof|instanceof|try|catch|finally|throw|async|await|null|undefined|true|false)\b)|(\b\d+\b)|(\b[a-zA-Z_$][a-zA-Z0-9_$]*\b(?=\s*\())/g;
-
-    return esc.replace(tokenRegex, (match, comment, str, keyword, num, fn) => {
-      if (comment) {
-        return `<span class="code-comment">${comment}</span>`;
-      }
-      if (str) {
-        return `<span class="code-value">${str}</span>`;
-      }
-      if (keyword) {
-        return `<span class="code-tag">${keyword}</span>`;
-      }
-      if (num) {
-        return `<span class="code-number">${num}</span>`;
-      }
-      if (fn) {
-        return `<span class="code-attr">${fn}</span>`;
-      }
-      return match;
-    });
-  }
-
-  private highlightCss(text: string): string {
-    let esc = this.escapeHtml(text);
-    const tokenRegex = /(\/\*[\s\S]*?\*\/)|((?:^|\})[^{]*\{)|(\b[a-zA-Z\-]+\b\s*:)|(:\s*[^;\}]+)|("[^"]*"|'[^']*')/g;
-
-    return esc.replace(tokenRegex, (match, comment, selectorRule, property, value, str) => {
-      if (comment) {
-        return `<span class="code-comment">${comment}</span>`;
-      }
-      if (selectorRule) {
-        const braceIdx = selectorRule.indexOf('{');
-        const selector = selectorRule.slice(0, braceIdx);
-        return `<span class="code-tag">${selector}</span>{`;
-      }
-      if (property) {
-        const propName = property.replace(':', '').trim();
-        return `<span class="code-attr">${propName}</span>:`;
-      }
-      if (value) {
-        const valText = value.slice(1);
-        return `:<span class="code-value">${valText}</span>`;
-      }
-      if (str) {
-        return `<span class="code-value">${str}</span>`;
-      }
-      return match;
-    });
-  }
-
-  private highlightJson(text: string): string {
-    let esc = this.escapeHtml(text);
-    const tokenRegex = /("[^"]*")\s*:|(:\s*"[^"]*")|("[^"]*")|(\b(?:true|false|null|\d+(?:\.\d+)?)\b)/g;
-
-    return esc.replace(tokenRegex, (match, key, valWithColon, standaloneStr, literal) => {
-      if (key) {
-        return `<span class="code-tag">${key}</span>:`;
-      }
-      if (valWithColon) {
-        const val = valWithColon.slice(valWithColon.indexOf(':') + 1).trim();
-        return `: <span class="code-value">${val}</span>`;
-      }
-      if (standaloneStr) {
-        return `<span class="code-value">${standaloneStr}</span>`;
-      }
-      if (literal) {
-        return `<span class="code-attr">${literal}</span>`;
-      }
-      return match;
-    });
-  }
 
   private preEl?: HTMLPreElement;
 
@@ -262,22 +185,6 @@ export class QSyntaxBox {
     }
   };
 
-  private highlight(text: string, language: 'html' | 'javascript' | 'css' | 'json'): string {
-    if (!text) return '';
-    switch (language) {
-      case 'html':
-        return this.highlightHtml(text);
-      case 'javascript':
-        return this.highlightJavascript(text);
-      case 'css':
-        return this.highlightCss(text);
-      case 'json':
-        return this.highlightJson(text);
-      default:
-        return this.escapeHtml(text);
-    }
-  }
-
   render() {
     const resolvedHeight = this.height !== undefined ? this.height : (this.variant === 'panel' ? '110px' : 'auto');
     const isScrollable = resolvedHeight !== 'auto' && resolvedHeight !== '';
@@ -288,6 +195,7 @@ export class QSyntaxBox {
           <textarea
             class="editor-textarea"
             value={this.code}
+            name={this.name}
             disabled={this.disabled}
             required={this.required}
             onInput={this.handleInput}
@@ -296,12 +204,12 @@ export class QSyntaxBox {
             onKeyDown={this.handleKeyDown}
           />
           <pre class="code-body" ref={(el) => (this.preEl = el as HTMLPreElement)}>
-            <code innerHTML={this.highlight(this.code, this.language)}></code>
+            <code innerHTML={highlightSyntax(this.code, this.language)}></code>
           </pre>
         </div>
       ) : (
         <pre class="code-body">
-          <code innerHTML={this.highlight(this.code, this.language)}></code>
+          <code innerHTML={highlightSyntax(this.code, this.language)}></code>
         </pre>
       )
     ) : (
@@ -353,3 +261,6 @@ export class QSyntaxBox {
     );
   }
 }
+
+
+

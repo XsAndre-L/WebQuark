@@ -1,12 +1,6 @@
 import { Component, Prop, Element, Event, EventEmitter, Watch, Listen, State, h } from '@stencil/core';
 import { handleTabTrap, waitForTransitionEnd, focusFirstElement, safeFocus } from '../../utils/dom';
-
-export interface SidepanelItem {
-  label: string;
-  value: string;
-  icon?: string;
-  children?: SidepanelItem[];
-}
+import type { QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItem } from './sidepanel.types';
 
 @Component({
   tag: 'q-sidepanel',
@@ -19,13 +13,13 @@ export class QSidepanel {
 
   // ── Shared ────────────────────────────────────────────────────────────────
   /** Selects behavior: 'drawer' = slide-in overlay, 'nav' = fixed navigation sidebar */
-  @Prop({ reflect: true }) variant: 'drawer' | 'nav' = 'nav';
+  @Prop({ reflect: true }) variant: QSidepanelVariant = 'nav';
 
   // ── Drawer-mode props ─────────────────────────────────────────────────────
   /** Controls drawer open/close state (drawer mode only) */
   @Prop({ reflect: true }) open: boolean = false;
   /** Screen edge the drawer slides from (drawer mode only) */
-  @Prop({ reflect: true }) side: 'left' | 'right' | 'top' | 'bottom' = 'right';
+  @Prop({ reflect: true }) side: QSidepanelSide = 'right';
   /** Panel dimension – width or height depending on side (drawer mode only) */
   @Prop() panelSize: string = '320px';
 
@@ -35,7 +29,7 @@ export class QSidepanel {
   /** Value of the currently active/selected item (nav mode only) */
   @Prop({ reflect: true }) value: string = '';
   /** Display mode for items: flat list, one-level groups, or deep tree */
-  @Prop() mode: 'flat' | 'grouped' | 'tree' = 'flat';
+  @Prop() mode: QSidepanelMode = 'flat';
   /** Whether all parent groups start expanded on first render (nav mode only) */
   @Prop() expanded: boolean = true;
   /** If true, opening one group collapses all sibling groups (nav mode only) */
@@ -45,7 +39,7 @@ export class QSidepanel {
   /** Fires when the drawer is closed (drawer mode) */
   @Event() qClose!: EventEmitter<void>;
   /** Fires when a leaf navigation item is clicked (nav mode) */
-  @Event() qSelect!: EventEmitter<{ value: string; label: string; item: SidepanelItem }>;
+  @Event() qSelect!: EventEmitter<QSidepanelSelectDetail>;
 
   // ── Internal drawer state ─────────────────────────────────────────────────
   @State() isVisible: boolean = false;

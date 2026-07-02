@@ -18,9 +18,9 @@
 
 ## Events
 
-| Event          | Description | Type                                                    |
-| -------------- | ----------- | ------------------------------------------------------- |
-| `qSlideChange` |             | `CustomEvent<{ index: number; element: HTMLElement; }>` |
+| Event          | Description | Type                                      |
+| -------------- | ----------- | ----------------------------------------- |
+| `qSlideChange` |             | `CustomEvent<QCarouselSlideChangeDetail>` |
 
 
 ## Methods

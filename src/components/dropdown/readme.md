@@ -11,6 +11,7 @@
 | ------------- | ------------- | ----------- | ---------------------- | ----------------------- |
 | `disabled`    | `disabled`    |             | `boolean`              | `false`                 |
 | `label`       | `label`       |             | `string`               | `undefined`             |
+| `name`        | `name`        |             | `string`               | `undefined`             |
 | `options`     | `options`     |             | `Option[] \| string`   | `[]`                    |
 | `placeholder` | `placeholder` |             | `string`               | `"Select an option..."` |
 | `searchable`  | `searchable`  |             | `boolean`              | `false`                 |

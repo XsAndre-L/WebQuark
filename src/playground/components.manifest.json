@@ -1,7 +1,11 @@
-[
+﻿[
   { "tag": "q-button",            "name": "Button" },
+  { "tag": "q-link",              "name": "Link" },
   { "tag": "q-toggle",            "name": "Toggle" },
   { "tag": "q-card",              "name": "Card" },
+  { "tag": "q-panel",             "name": "Panel" },
+  { "tag": "q-navbar",            "name": "Navbar" },
+  { "tag": "q-form",              "name": "Form" },
   { "tag": "q-carousel",          "name": "Carousel" },
   { "tag": "q-circular-progress", "name": "Circular Progress" },
   { "tag": "q-dropdown",          "name": "Dropdown" },

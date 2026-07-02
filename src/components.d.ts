@@ -5,12 +5,54 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { TableColumn } from "./components/data-table/data-table";
-import { Option } from "./components/dropdown/dropdown";
-import { SidepanelItem } from "./components/sidepanel/sidepanel";
-export { TableColumn } from "./components/data-table/data-table";
-export { Option } from "./components/dropdown/dropdown";
-export { SidepanelItem } from "./components/sidepanel/sidepanel";
+import { QButtonSize, QButtonType, QButtonVariant } from "./components/button/button.types";
+import { QCardElevation } from "./components/card/card.types";
+import { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/carousel/carousel.types";
+import { QCircularProgressSize } from "./components/circular-progress/circular-progress.types";
+import { QDataTableRowClickDetail, QDataTableSelectionChangeDetail, TableColumn } from "./components/data-table/data-table.types";
+import { QDialogBackdropEffect } from "./components/dialog/dialog.types";
+import { Option, QDropdownSize } from "./components/dropdown/dropdown.types";
+import { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/form/form.types";
+import { QIconColor, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/icon/icon.types";
+import { QInputSize, QInputType } from "./components/input/input.types";
+import { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/link/link.types";
+import { NavbarItem, NavbarSelectDetail } from "./components/navbar/navbar.types";
+import { QPanelPadding, QPanelVariant } from "./components/panel/panel.types";
+import { QQuantitySelectorVariant } from "./components/quantity-selector/quantity-selector.types";
+import { QReelLayout } from "./components/reel/reel.types";
+import { QScrollableEventDetail, QScrollableMode } from "./components/scrollable/scrollable.types";
+import { QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItem } from "./components/sidepanel/sidepanel.types";
+import { QStepDiagramLayout } from "./components/step-diagram/step-diagram.types";
+import { QStepDiagramItemLayout, QStepDiagramItemLineStyle, QStepDiagramItemStatus } from "./components/step-diagram-item/step-diagram-item.types";
+import { QSyntaxBoxLanguage, QSyntaxBoxVariant } from "./components/syntax-box/syntax-box.types";
+import { QTextareaResizeMode } from "./components/textarea/textarea.types";
+import { QThumbnailMaximizeDetail } from "./components/thumbnail/thumbnail.types";
+import { QToggleSize, QToggleType } from "./components/toggle/toggle.types";
+import { QTooltipPosition } from "./components/tooltip/tooltip.types";
+export { QButtonSize, QButtonType, QButtonVariant } from "./components/button/button.types";
+export { QCardElevation } from "./components/card/card.types";
+export { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/carousel/carousel.types";
+export { QCircularProgressSize } from "./components/circular-progress/circular-progress.types";
+export { QDataTableRowClickDetail, QDataTableSelectionChangeDetail, TableColumn } from "./components/data-table/data-table.types";
+export { QDialogBackdropEffect } from "./components/dialog/dialog.types";
+export { Option, QDropdownSize } from "./components/dropdown/dropdown.types";
+export { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/form/form.types";
+export { QIconColor, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/icon/icon.types";
+export { QInputSize, QInputType } from "./components/input/input.types";
+export { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/link/link.types";
+export { NavbarItem, NavbarSelectDetail } from "./components/navbar/navbar.types";
+export { QPanelPadding, QPanelVariant } from "./components/panel/panel.types";
+export { QQuantitySelectorVariant } from "./components/quantity-selector/quantity-selector.types";
+export { QReelLayout } from "./components/reel/reel.types";
+export { QScrollableEventDetail, QScrollableMode } from "./components/scrollable/scrollable.types";
+export { QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItem } from "./components/sidepanel/sidepanel.types";
+export { QStepDiagramLayout } from "./components/step-diagram/step-diagram.types";
+export { QStepDiagramItemLayout, QStepDiagramItemLineStyle, QStepDiagramItemStatus } from "./components/step-diagram-item/step-diagram-item.types";
+export { QSyntaxBoxLanguage, QSyntaxBoxVariant } from "./components/syntax-box/syntax-box.types";
+export { QTextareaResizeMode } from "./components/textarea/textarea.types";
+export { QThumbnailMaximizeDetail } from "./components/thumbnail/thumbnail.types";
+export { QToggleSize, QToggleType } from "./components/toggle/toggle.types";
+export { QTooltipPosition } from "./components/tooltip/tooltip.types";
 export namespace Components {
     interface QButton {
         /**
@@ -28,25 +70,26 @@ export namespace Components {
           * @default false
          */
         "loading": boolean;
+        "rel"?: string;
         /**
           * @default 'md'
          */
-        "size": 'sm' | 'md' | 'lg';
+        "size": QButtonSize;
         "target"?: string;
         /**
           * @default 'button'
          */
-        "type": 'button' | 'submit' | 'reset';
+        "type": QButtonType;
         /**
           * @default 'primary'
          */
-        "variant": 'primary' | 'secondary' | 'success' | 'danger' | 'ghost' | 'text';
+        "variant": QButtonVariant;
     }
     interface QCard {
         /**
           * @default 'medium'
          */
-        "elevation": 'low' | 'medium' | 'high' | 1 | 2 | 3;
+        "elevation": QCardElevation;
         /**
           * @default false
          */
@@ -81,7 +124,7 @@ export namespace Components {
         /**
           * @default 'start'
          */
-        "snapAlignment": 'start' | 'center' | 'end' | 'none';
+        "snapAlignment": QCarouselSnapAlignment;
         "updateLimits": () => Promise<void>;
     }
     interface QCircularProgress {
@@ -93,7 +136,7 @@ export namespace Components {
         /**
           * @default 'md'
          */
-        "size": 'sm' | 'md' | 'lg';
+        "size": QCircularProgressSize;
         /**
           * @default 0
          */
@@ -143,6 +186,10 @@ export namespace Components {
         "toolbarTitle"?: string;
     }
     interface QDialog {
+        /**
+          * @default 'blur'
+         */
+        "backdropEffect": QDialogBackdropEffect;
         "cancel": () => Promise<void>;
         /**
           * @default 'Cancel'
@@ -188,6 +235,7 @@ export namespace Components {
          */
         "disabled": boolean;
         "label"?: string;
+        "name"?: string;
         /**
           * @default []
          */
@@ -203,37 +251,70 @@ export namespace Components {
         /**
           * @default 'md'
          */
-        "size": 'sm' | 'md' | 'lg';
+        "size": QDropdownSize;
         /**
           * @default ""
          */
         "value": string;
+    }
+    interface QForm {
+        "action"?: string;
+        /**
+          * @default 'on'
+         */
+        "autocomplete": QFormAutocomplete;
+        /**
+          * @default 'application/x-www-form-urlencoded'
+         */
+        "enctype": QFormEnctype;
+        /**
+          * @default 'submit'
+         */
+        "enterBehavior": QFormEnterBehavior;
+        "getValues": () => Promise<QFormValues>;
+        "label"?: string;
+        /**
+          * @default 'post'
+         */
+        "method": QFormMethod;
+        /**
+          * @default false
+         */
+        "noValidate": boolean;
+        /**
+          * @default true
+         */
+        "preventDefault": boolean;
+        "resetForm": () => Promise<void>;
+        "setValues": (values: QFormValues) => Promise<void>;
+        "submitForm": () => Promise<void>;
+        "target"?: QFormTarget;
     }
     interface QIcon {
         /**
           * The color of the icon. Defaults to 'currentColor'.
           * @default 'currentColor'
          */
-        "color": string;
+        "color": QIconColor;
         /**
           * The library to load the icon from. Options: 'lucide', 'font-awesome', 'local', or a custom base URL / template URL.
           * @default 'lucide'
          */
-        "lib": string;
+        "lib": QIconLibrary;
         /**
           * The default path for local assets when `lib` is set to 'local'.
           * @default '/assets/icons/'
          */
-        "localPath": string;
+        "localPath": QIconLocalPath;
         /**
           * The name of the icon (e.g., 'settings', 'heart', or a filename like 'logo.png').
          */
-        "name": string;
+        "name": QIconName;
         /**
           * The size of the icon. Can be a preset alias ('sm', 'md', 'lg'), a number (pixels), or any valid CSS size string (e.g., '1.5rem').
           * @default 'md'
          */
-        "size": string;
+        "size": QIconSize;
     }
     interface QInput {
         "clearValue": () => Promise<void>;
@@ -251,6 +332,7 @@ export namespace Components {
         "label"?: string;
         "max"?: number;
         "min"?: number;
+        "name"?: string;
         /**
           * @default ""
          */
@@ -262,7 +344,7 @@ export namespace Components {
         /**
           * @default 'md'
          */
-        "size": 'sm' | 'md' | 'lg';
+        "size": QInputSize;
         /**
           * @default 1
          */
@@ -270,11 +352,104 @@ export namespace Components {
         /**
           * @default 'text'
          */
-        "type": 'text' | 'password' | 'email' | 'number' | 'url' | 'search' | 'color';
+        "type": QInputType;
         /**
           * @default ""
          */
         "value": string;
+    }
+    interface QLink {
+        /**
+          * @default false
+         */
+        "disabled": boolean;
+        "download"?: string;
+        /**
+          * @default false
+         */
+        "external": boolean;
+        "href"?: string;
+        "label"?: string;
+        "mailto"?: string;
+        "rel"?: string;
+        "target"?: QLinkTarget;
+        "tel"?: string;
+        /**
+          * @default 'hover'
+         */
+        "underline": QLinkUnderline;
+        "url"?: string;
+        /**
+          * @default 'default'
+         */
+        "variant": QLinkVariant;
+    }
+    interface QNavbar {
+        /**
+          * @default ''
+         */
+        "activeValue": string;
+        /**
+          * @default true
+         */
+        "bordered": boolean;
+        "brand"?: string;
+        /**
+          * @default '/'
+         */
+        "brandHref": string;
+        /**
+          * @default false
+         */
+        "compact": boolean;
+        /**
+          * @default []
+         */
+        "items": NavbarItem[] | string;
+        /**
+          * @default ''
+         */
+        "logoAlt": string;
+        "logoSrc"?: string;
+        /**
+          * @default 'Menu'
+         */
+        "mobileLabel": string;
+        /**
+          * @default false
+         */
+        "sticky": boolean;
+        /**
+          * @default false
+         */
+        "transparent": boolean;
+    }
+    interface QPanel {
+        "ariaLabel"?: string;
+        /**
+          * @default false
+         */
+        "fullHeight": boolean;
+        /**
+          * @default 'md'
+         */
+        "padding": QPanelPadding;
+        /**
+          * @default false
+         */
+        "scrollable": boolean;
+        /**
+          * @default false
+         */
+        "stickyFooter": boolean;
+        /**
+          * @default false
+         */
+        "stickyHeader": boolean;
+        /**
+          * @default 'surface'
+         */
+        "variant": QPanelVariant;
     }
     interface QQuantitySelector {
         /**
@@ -299,13 +474,13 @@ export namespace Components {
           * Layout alignment variants: 'horizontal' or 'vertical'.
           * @default 'horizontal'
          */
-        "variant": 'horizontal' | 'vertical';
+        "variant": QQuantitySelectorVariant;
     }
     interface QReel {
         /**
           * @default 'grid'
          */
-        "layout": 'grid' | 'carousel';
+        "layout": QReelLayout;
         /**
           * @default true
          */
@@ -327,7 +502,7 @@ export namespace Components {
         /**
           * @default 'custom'
          */
-        "mode": 'custom' | 'native';
+        "mode": QScrollableMode;
         /**
           * @default true
          */
@@ -359,7 +534,7 @@ export namespace Components {
           * Display mode for items: flat list, one-level groups, or deep tree
           * @default 'flat'
          */
-        "mode": 'flat' | 'grouped' | 'tree';
+        "mode": QSidepanelMode;
         /**
           * Controls drawer open/close state (drawer mode only)
           * @default false
@@ -374,7 +549,7 @@ export namespace Components {
           * Screen edge the drawer slides from (drawer mode only)
           * @default 'right'
          */
-        "side": 'left' | 'right' | 'top' | 'bottom';
+        "side": QSidepanelSide;
         /**
           * Value of the currently active/selected item (nav mode only)
           * @default ''
@@ -384,27 +559,27 @@ export namespace Components {
           * Selects behavior: 'drawer' = slide-in overlay, 'nav' = fixed navigation sidebar
           * @default 'nav'
          */
-        "variant": 'drawer' | 'nav';
+        "variant": QSidepanelVariant;
     }
     interface QStepDiagram {
         /**
           * @default 'vertical'
          */
-        "layout": 'vertical' | 'horizontal';
+        "layout": QStepDiagramLayout;
     }
     interface QStepDiagramItem {
         /**
           * @default 'vertical'
          */
-        "layout": 'vertical' | 'horizontal';
+        "layout": QStepDiagramItemLayout;
         /**
           * @default 'solid'
          */
-        "lineStyle": 'solid' | 'dashed' | 'dotted' | 'none';
+        "lineStyle": QStepDiagramItemLineStyle;
         /**
           * @default 'completed'
          */
-        "status": 'pending' | 'active' | 'completed' | 'success' | 'warning' | 'danger';
+        "status": QStepDiagramItemStatus;
     }
     interface QSyntaxBox {
         "code"?: string;
@@ -425,7 +600,8 @@ export namespace Components {
         /**
           * @default 'html'
          */
-        "language": 'html' | 'javascript' | 'css' | 'json';
+        "language": QSyntaxBoxLanguage;
+        "name"?: string;
         /**
           * @default false
          */
@@ -435,7 +611,7 @@ export namespace Components {
         /**
           * @default 'panel'
          */
-        "variant": 'panel' | 'plain';
+        "variant": QSyntaxBoxVariant;
     }
     interface QTextarea {
         "adjustHeight": () => Promise<void>;
@@ -451,6 +627,7 @@ export namespace Components {
         "errorMessage"?: string;
         "focusElement": () => Promise<void>;
         "label"?: string;
+        "name"?: string;
         /**
           * @default ""
          */
@@ -462,7 +639,7 @@ export namespace Components {
         /**
           * @default 'auto'
          */
-        "resizeMode": 'auto' | 'manual' | 'fixed';
+        "resizeMode": QTextareaResizeMode;
         /**
           * @default 3
          */
@@ -502,6 +679,7 @@ export namespace Components {
         "disabled": boolean;
         "error"?: string;
         "label"?: string;
+        "name"?: string;
         /**
           * @default false
          */
@@ -509,15 +687,15 @@ export namespace Components {
         /**
           * @default 'md'
          */
-        "size": 'sm' | 'md' | 'lg';
+        "size": QToggleSize;
         /**
-          * Programmatically set checked state without emitting qChange. Use this from external controllers (e.g. playground) to avoid the SYNCBACK_MAP → registry → effect → prop-set feedback loop.
+          * Programmatically set checked state without emitting qChange. Use this from external controllers (e.g. playground) to avoid the SYNCBACK_MAP â†’ registry â†’ effect â†’ prop-set feedback loop.
          */
         "toggle": () => Promise<void>;
         /**
           * @default 'switch'
          */
-        "type": 'switch' | 'checkbox';
+        "type": QToggleType;
     }
     interface QTooltip {
         /**
@@ -533,7 +711,7 @@ export namespace Components {
           * The placement position of the tooltip relative to its trigger parent. Options: 'top', 'bottom', 'left', 'right'
           * @default 'top'
          */
-        "position": 'top' | 'bottom' | 'left' | 'right';
+        "position": QTooltipPosition;
     }
 }
 export interface QButtonCustomEvent<T> extends CustomEvent<T> {
@@ -556,9 +734,21 @@ export interface QDropdownCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLQDropdownElement;
 }
+export interface QFormCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQFormElement;
+}
 export interface QInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLQInputElement;
+}
+export interface QLinkCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQLinkElement;
+}
+export interface QNavbarCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQNavbarElement;
 }
 export interface QQuantitySelectorCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -623,7 +813,7 @@ declare global {
         new (): HTMLQCardElement;
     };
     interface HTMLQCarouselElementEventMap {
-        "qSlideChange": { index: number; element: HTMLElement };
+        "qSlideChange": QCarouselSlideChangeDetail;
     }
     interface HTMLQCarouselElement extends Components.QCarousel, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQCarouselElementEventMap>(type: K, listener: (this: HTMLQCarouselElement, ev: QCarouselCustomEvent<HTMLQCarouselElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -646,8 +836,8 @@ declare global {
         new (): HTMLQCircularProgressElement;
     };
     interface HTMLQDataTableElementEventMap {
-        "qRowClick": { item: any; index: number; originalEvent: MouseEvent | KeyboardEvent };
-        "qSelectionChange": { selectedKeys: any[]; selectedItems: any[] };
+        "qRowClick": QDataTableRowClickDetail;
+        "qSelectionChange": QDataTableSelectionChangeDetail;
         "qSearch": string;
     }
     interface HTMLQDataTableElement extends Components.QDataTable, HTMLStencilElement {
@@ -704,6 +894,24 @@ declare global {
         prototype: HTMLQDropdownElement;
         new (): HTMLQDropdownElement;
     };
+    interface HTMLQFormElementEventMap {
+        "qSubmit": QFormSubmitDetail;
+        "qReset": QFormResetDetail;
+    }
+    interface HTMLQFormElement extends Components.QForm, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQFormElementEventMap>(type: K, listener: (this: HTMLQFormElement, ev: QFormCustomEvent<HTMLQFormElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQFormElementEventMap>(type: K, listener: (this: HTMLQFormElement, ev: QFormCustomEvent<HTMLQFormElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLQFormElement: {
+        prototype: HTMLQFormElement;
+        new (): HTMLQFormElement;
+    };
     interface HTMLQIconElement extends Components.QIcon, HTMLStencilElement {
     }
     var HTMLQIconElement: {
@@ -730,6 +938,49 @@ declare global {
     var HTMLQInputElement: {
         prototype: HTMLQInputElement;
         new (): HTMLQInputElement;
+    };
+    interface HTMLQLinkElementEventMap {
+        "qClick": MouseEvent;
+        "qFocus": FocusEvent;
+        "qBlur": FocusEvent;
+    }
+    interface HTMLQLinkElement extends Components.QLink, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQLinkElementEventMap>(type: K, listener: (this: HTMLQLinkElement, ev: QLinkCustomEvent<HTMLQLinkElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQLinkElementEventMap>(type: K, listener: (this: HTMLQLinkElement, ev: QLinkCustomEvent<HTMLQLinkElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLQLinkElement: {
+        prototype: HTMLQLinkElement;
+        new (): HTMLQLinkElement;
+    };
+    interface HTMLQNavbarElementEventMap {
+        "qSelect": NavbarSelectDetail;
+        "qMenuToggle": boolean;
+    }
+    interface HTMLQNavbarElement extends Components.QNavbar, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQNavbarElementEventMap>(type: K, listener: (this: HTMLQNavbarElement, ev: QNavbarCustomEvent<HTMLQNavbarElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQNavbarElementEventMap>(type: K, listener: (this: HTMLQNavbarElement, ev: QNavbarCustomEvent<HTMLQNavbarElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLQNavbarElement: {
+        prototype: HTMLQNavbarElement;
+        new (): HTMLQNavbarElement;
+    };
+    interface HTMLQPanelElement extends Components.QPanel, HTMLStencilElement {
+    }
+    var HTMLQPanelElement: {
+        prototype: HTMLQPanelElement;
+        new (): HTMLQPanelElement;
     };
     interface HTMLQQuantitySelectorElementEventMap {
         "qChange": number;
@@ -770,7 +1021,7 @@ declare global {
         new (): HTMLQReelElement;
     };
     interface HTMLQScrollableElementEventMap {
-        "qScroll": { scrollTop: number; scrollHeight: number; clientHeight: number };
+        "qScroll": QScrollableEventDetail;
     }
     interface HTMLQScrollableElement extends Components.QScrollable, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQScrollableElementEventMap>(type: K, listener: (this: HTMLQScrollableElement, ev: QScrollableCustomEvent<HTMLQScrollableElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -788,7 +1039,7 @@ declare global {
     };
     interface HTMLQSidepanelElementEventMap {
         "qClose": void;
-        "qSelect": { value: string; label: string; item: SidepanelItem };
+        "qSelect": QSidepanelSelectDetail;
     }
     interface HTMLQSidepanelElement extends Components.QSidepanel, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQSidepanelElementEventMap>(type: K, listener: (this: HTMLQSidepanelElement, ev: QSidepanelCustomEvent<HTMLQSidepanelElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -867,7 +1118,7 @@ declare global {
         new (): HTMLQTextareaElement;
     };
     interface HTMLQThumbnailElementEventMap {
-        "qMaximize": { src: string; label?: string; video: boolean; alt: string; triggerEl: HTMLElement };
+        "qMaximize": QThumbnailMaximizeDetail;
     }
     interface HTMLQThumbnailElement extends Components.QThumbnail, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQThumbnailElementEventMap>(type: K, listener: (this: HTMLQThumbnailElement, ev: QThumbnailCustomEvent<HTMLQThumbnailElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -917,8 +1168,12 @@ declare global {
         "q-data-table": HTMLQDataTableElement;
         "q-dialog": HTMLQDialogElement;
         "q-dropdown": HTMLQDropdownElement;
+        "q-form": HTMLQFormElement;
         "q-icon": HTMLQIconElement;
         "q-input": HTMLQInputElement;
+        "q-link": HTMLQLinkElement;
+        "q-navbar": HTMLQNavbarElement;
+        "q-panel": HTMLQPanelElement;
         "q-quantity-selector": HTMLQQuantitySelectorElement;
         "q-reel": HTMLQReelElement;
         "q-scrollable": HTMLQScrollableElement;
@@ -952,25 +1207,26 @@ declare namespace LocalJSX {
         "onQBlur"?: (event: QButtonCustomEvent<FocusEvent>) => void;
         "onQClick"?: (event: QButtonCustomEvent<MouseEvent>) => void;
         "onQFocus"?: (event: QButtonCustomEvent<FocusEvent>) => void;
+        "rel"?: string;
         /**
           * @default 'md'
          */
-        "size"?: 'sm' | 'md' | 'lg';
+        "size"?: QButtonSize;
         "target"?: string;
         /**
           * @default 'button'
          */
-        "type"?: 'button' | 'submit' | 'reset';
+        "type"?: QButtonType;
         /**
           * @default 'primary'
          */
-        "variant"?: 'primary' | 'secondary' | 'success' | 'danger' | 'ghost' | 'text';
+        "variant"?: QButtonVariant;
     }
     interface QCard {
         /**
           * @default 'medium'
          */
-        "elevation"?: 'low' | 'medium' | 'high' | 1 | 2 | 3;
+        "elevation"?: QCardElevation;
         /**
           * @default false
          */
@@ -989,7 +1245,7 @@ declare namespace LocalJSX {
           * @default "auto"
          */
         "itemWidth"?: string;
-        "onQSlideChange"?: (event: QCarouselCustomEvent<{ index: number; element: HTMLElement }>) => void;
+        "onQSlideChange"?: (event: QCarouselCustomEvent<QCarouselSlideChangeDetail>) => void;
         /**
           * @default false
          */
@@ -1005,7 +1261,7 @@ declare namespace LocalJSX {
         /**
           * @default 'start'
          */
-        "snapAlignment"?: 'start' | 'center' | 'end' | 'none';
+        "snapAlignment"?: QCarouselSnapAlignment;
     }
     interface QCircularProgress {
         /**
@@ -1016,7 +1272,7 @@ declare namespace LocalJSX {
         /**
           * @default 'md'
          */
-        "size"?: 'sm' | 'md' | 'lg';
+        "size"?: QCircularProgressSize;
         /**
           * @default 0
          */
@@ -1039,9 +1295,9 @@ declare namespace LocalJSX {
           * @default false
          */
         "loading"?: boolean;
-        "onQRowClick"?: (event: QDataTableCustomEvent<{ item: any; index: number; originalEvent: MouseEvent | KeyboardEvent }>) => void;
+        "onQRowClick"?: (event: QDataTableCustomEvent<QDataTableRowClickDetail>) => void;
         "onQSearch"?: (event: QDataTableCustomEvent<string>) => void;
-        "onQSelectionChange"?: (event: QDataTableCustomEvent<{ selectedKeys: any[]; selectedItems: any[] }>) => void;
+        "onQSelectionChange"?: (event: QDataTableCustomEvent<QDataTableSelectionChangeDetail>) => void;
         /**
           * @default 'Search...'
          */
@@ -1069,6 +1325,10 @@ declare namespace LocalJSX {
         "toolbarTitle"?: string;
     }
     interface QDialog {
+        /**
+          * @default 'blur'
+         */
+        "backdropEffect"?: QDialogBackdropEffect;
         /**
           * @default 'Cancel'
          */
@@ -1117,9 +1377,6 @@ declare namespace LocalJSX {
          */
         "form"?: string;
         "label"?: string;
-        /**
-          * The name of the element, used when submitting an HTML form.
-         */
         "name"?: string;
         "onQBlur"?: (event: QDropdownCustomEvent<FocusEvent>) => void;
         "onQChange"?: (event: QDropdownCustomEvent<string>) => void;
@@ -1141,37 +1398,68 @@ declare namespace LocalJSX {
         /**
           * @default 'md'
          */
-        "size"?: 'sm' | 'md' | 'lg';
+        "size"?: QDropdownSize;
         /**
           * @default ""
          */
         "value"?: string;
+    }
+    interface QForm {
+        "action"?: string;
+        /**
+          * @default 'on'
+         */
+        "autocomplete"?: QFormAutocomplete;
+        /**
+          * @default 'application/x-www-form-urlencoded'
+         */
+        "enctype"?: QFormEnctype;
+        /**
+          * @default 'submit'
+         */
+        "enterBehavior"?: QFormEnterBehavior;
+        "label"?: string;
+        /**
+          * @default 'post'
+         */
+        "method"?: QFormMethod;
+        /**
+          * @default false
+         */
+        "noValidate"?: boolean;
+        "onQReset"?: (event: QFormCustomEvent<QFormResetDetail>) => void;
+        "onQSubmit"?: (event: QFormCustomEvent<QFormSubmitDetail>) => void;
+        /**
+          * @default true
+         */
+        "preventDefault"?: boolean;
+        "target"?: QFormTarget;
     }
     interface QIcon {
         /**
           * The color of the icon. Defaults to 'currentColor'.
           * @default 'currentColor'
          */
-        "color"?: string;
+        "color"?: QIconColor;
         /**
           * The library to load the icon from. Options: 'lucide', 'font-awesome', 'local', or a custom base URL / template URL.
           * @default 'lucide'
          */
-        "lib"?: string;
+        "lib"?: QIconLibrary;
         /**
           * The default path for local assets when `lib` is set to 'local'.
           * @default '/assets/icons/'
          */
-        "localPath"?: string;
+        "localPath"?: QIconLocalPath;
         /**
           * The name of the icon (e.g., 'settings', 'heart', or a filename like 'logo.png').
          */
-        "name"?: string;
+        "name"?: QIconName;
         /**
           * The size of the icon. Can be a preset alias ('sm', 'md', 'lg'), a number (pixels), or any valid CSS size string (e.g., '1.5rem').
           * @default 'md'
          */
-        "size"?: string;
+        "size"?: QIconSize;
     }
     interface QInput {
         /**
@@ -1191,9 +1479,6 @@ declare namespace LocalJSX {
         "label"?: string;
         "max"?: number;
         "min"?: number;
-        /**
-          * The name of the element, used when submitting an HTML form.
-         */
         "name"?: string;
         "onQBlur"?: (event: QInputCustomEvent<FocusEvent>) => void;
         "onQChange"?: (event: QInputCustomEvent<string>) => void;
@@ -1211,7 +1496,7 @@ declare namespace LocalJSX {
         /**
           * @default 'md'
          */
-        "size"?: 'sm' | 'md' | 'lg';
+        "size"?: QInputSize;
         /**
           * @default 1
          */
@@ -1219,11 +1504,109 @@ declare namespace LocalJSX {
         /**
           * @default 'text'
          */
-        "type"?: 'text' | 'password' | 'email' | 'number' | 'url' | 'search' | 'color';
+        "type"?: QInputType;
         /**
           * @default ""
          */
         "value"?: string;
+    }
+    interface QLink {
+        /**
+          * @default false
+         */
+        "disabled"?: boolean;
+        "download"?: string;
+        /**
+          * @default false
+         */
+        "external"?: boolean;
+        "href"?: string;
+        "label"?: string;
+        "mailto"?: string;
+        "onQBlur"?: (event: QLinkCustomEvent<FocusEvent>) => void;
+        "onQClick"?: (event: QLinkCustomEvent<MouseEvent>) => void;
+        "onQFocus"?: (event: QLinkCustomEvent<FocusEvent>) => void;
+        "rel"?: string;
+        "target"?: QLinkTarget;
+        "tel"?: string;
+        /**
+          * @default 'hover'
+         */
+        "underline"?: QLinkUnderline;
+        "url"?: string;
+        /**
+          * @default 'default'
+         */
+        "variant"?: QLinkVariant;
+    }
+    interface QNavbar {
+        /**
+          * @default ''
+         */
+        "activeValue"?: string;
+        /**
+          * @default true
+         */
+        "bordered"?: boolean;
+        "brand"?: string;
+        /**
+          * @default '/'
+         */
+        "brandHref"?: string;
+        /**
+          * @default false
+         */
+        "compact"?: boolean;
+        /**
+          * @default []
+         */
+        "items"?: NavbarItem[] | string;
+        /**
+          * @default ''
+         */
+        "logoAlt"?: string;
+        "logoSrc"?: string;
+        /**
+          * @default 'Menu'
+         */
+        "mobileLabel"?: string;
+        "onQMenuToggle"?: (event: QNavbarCustomEvent<boolean>) => void;
+        "onQSelect"?: (event: QNavbarCustomEvent<NavbarSelectDetail>) => void;
+        /**
+          * @default false
+         */
+        "sticky"?: boolean;
+        /**
+          * @default false
+         */
+        "transparent"?: boolean;
+    }
+    interface QPanel {
+        "ariaLabel"?: string;
+        /**
+          * @default false
+         */
+        "fullHeight"?: boolean;
+        /**
+          * @default 'md'
+         */
+        "padding"?: QPanelPadding;
+        /**
+          * @default false
+         */
+        "scrollable"?: boolean;
+        /**
+          * @default false
+         */
+        "stickyFooter"?: boolean;
+        /**
+          * @default false
+         */
+        "stickyHeader"?: boolean;
+        /**
+          * @default 'surface'
+         */
+        "variant"?: QPanelVariant;
     }
     interface QQuantitySelector {
         /**
@@ -1255,13 +1638,13 @@ declare namespace LocalJSX {
           * Layout alignment variants: 'horizontal' or 'vertical'.
           * @default 'horizontal'
          */
-        "variant"?: 'horizontal' | 'vertical';
+        "variant"?: QQuantitySelectorVariant;
     }
     interface QReel {
         /**
           * @default 'grid'
          */
-        "layout"?: 'grid' | 'carousel';
+        "layout"?: QReelLayout;
         /**
           * @default true
          */
@@ -1285,12 +1668,12 @@ declare namespace LocalJSX {
         /**
           * @default 'custom'
          */
-        "mode"?: 'custom' | 'native';
+        "mode"?: QScrollableMode;
         /**
           * @default true
          */
         "nativeOnMobile"?: boolean;
-        "onQScroll"?: (event: QScrollableCustomEvent<{ scrollTop: number; scrollHeight: number; clientHeight: number }>) => void;
+        "onQScroll"?: (event: QScrollableCustomEvent<QScrollableEventDetail>) => void;
         /**
           * @default ''
          */
@@ -1316,7 +1699,7 @@ declare namespace LocalJSX {
           * Display mode for items: flat list, one-level groups, or deep tree
           * @default 'flat'
          */
-        "mode"?: 'flat' | 'grouped' | 'tree';
+        "mode"?: QSidepanelMode;
         /**
           * Fires when the drawer is closed (drawer mode)
          */
@@ -1324,7 +1707,7 @@ declare namespace LocalJSX {
         /**
           * Fires when a leaf navigation item is clicked (nav mode)
          */
-        "onQSelect"?: (event: QSidepanelCustomEvent<{ value: string; label: string; item: SidepanelItem }>) => void;
+        "onQSelect"?: (event: QSidepanelCustomEvent<QSidepanelSelectDetail>) => void;
         /**
           * Controls drawer open/close state (drawer mode only)
           * @default false
@@ -1339,7 +1722,7 @@ declare namespace LocalJSX {
           * Screen edge the drawer slides from (drawer mode only)
           * @default 'right'
          */
-        "side"?: 'left' | 'right' | 'top' | 'bottom';
+        "side"?: QSidepanelSide;
         /**
           * Value of the currently active/selected item (nav mode only)
           * @default ''
@@ -1349,28 +1732,28 @@ declare namespace LocalJSX {
           * Selects behavior: 'drawer' = slide-in overlay, 'nav' = fixed navigation sidebar
           * @default 'nav'
          */
-        "variant"?: 'drawer' | 'nav';
+        "variant"?: QSidepanelVariant;
     }
     interface QStepDiagram {
         /**
           * @default 'vertical'
          */
-        "layout"?: 'vertical' | 'horizontal';
+        "layout"?: QStepDiagramLayout;
     }
     interface QStepDiagramItem {
         /**
           * @default 'vertical'
          */
-        "layout"?: 'vertical' | 'horizontal';
+        "layout"?: QStepDiagramItemLayout;
         /**
           * @default 'solid'
          */
-        "lineStyle"?: 'solid' | 'dashed' | 'dotted' | 'none';
+        "lineStyle"?: QStepDiagramItemLineStyle;
         "onQItemClick"?: (event: QStepDiagramItemCustomEvent<void>) => void;
         /**
           * @default 'completed'
          */
-        "status"?: 'pending' | 'active' | 'completed' | 'success' | 'warning' | 'danger';
+        "status"?: QStepDiagramItemStatus;
     }
     interface QSyntaxBox {
         "code"?: string;
@@ -1395,10 +1778,7 @@ declare namespace LocalJSX {
         /**
           * @default 'html'
          */
-        "language"?: 'html' | 'javascript' | 'css' | 'json';
-        /**
-          * The name of the element, used when submitting an HTML form.
-         */
+        "language"?: QSyntaxBoxLanguage;
         "name"?: string;
         "onQChange"?: (event: QSyntaxBoxCustomEvent<string>) => void;
         "onQInput"?: (event: QSyntaxBoxCustomEvent<string>) => void;
@@ -1410,7 +1790,7 @@ declare namespace LocalJSX {
         /**
           * @default 'panel'
          */
-        "variant"?: 'panel' | 'plain';
+        "variant"?: QSyntaxBoxVariant;
     }
     interface QTextarea {
         /**
@@ -1428,9 +1808,6 @@ declare namespace LocalJSX {
          */
         "form"?: string;
         "label"?: string;
-        /**
-          * The name of the element, used when submitting an HTML form.
-         */
         "name"?: string;
         "onQBlur"?: (event: QTextareaCustomEvent<FocusEvent>) => void;
         "onQChange"?: (event: QTextareaCustomEvent<string>) => void;
@@ -1448,7 +1825,7 @@ declare namespace LocalJSX {
         /**
           * @default 'auto'
          */
-        "resizeMode"?: 'auto' | 'manual' | 'fixed';
+        "resizeMode"?: QTextareaResizeMode;
         /**
           * @default 3
          */
@@ -1468,7 +1845,7 @@ declare namespace LocalJSX {
          */
         "highlighted"?: boolean;
         "label"?: string;
-        "onQMaximize"?: (event: QThumbnailCustomEvent<{ src: string; label?: string; video: boolean; alt: string; triggerEl: HTMLElement }>) => void;
+        "onQMaximize"?: (event: QThumbnailCustomEvent<QThumbnailMaximizeDetail>) => void;
         /**
           * @default ""
          */
@@ -1493,9 +1870,6 @@ declare namespace LocalJSX {
          */
         "form"?: string;
         "label"?: string;
-        /**
-          * The name of the element, used when submitting an HTML form.
-         */
         "name"?: string;
         "onQBlur"?: (event: QToggleCustomEvent<FocusEvent>) => void;
         "onQChange"?: (event: QToggleCustomEvent<boolean>) => void;
@@ -1508,11 +1882,11 @@ declare namespace LocalJSX {
         /**
           * @default 'md'
          */
-        "size"?: 'sm' | 'md' | 'lg';
+        "size"?: QToggleSize;
         /**
           * @default 'switch'
          */
-        "type"?: 'switch' | 'checkbox';
+        "type"?: QToggleType;
     }
     interface QTooltip {
         /**
@@ -1528,18 +1902,19 @@ declare namespace LocalJSX {
           * The placement position of the tooltip relative to its trigger parent. Options: 'top', 'bottom', 'left', 'right'
           * @default 'top'
          */
-        "position"?: 'top' | 'bottom' | 'left' | 'right';
+        "position"?: QTooltipPosition;
     }
 
     interface QButtonAttributes {
-        "variant": 'primary' | 'secondary' | 'success' | 'danger' | 'ghost' | 'text';
-        "size": 'sm' | 'md' | 'lg';
+        "variant": QButtonVariant;
+        "size": QButtonSize;
         "disabled": boolean;
         "loading": boolean;
-        "type": 'button' | 'submit' | 'reset';
+        "type": QButtonType;
         "expand": boolean;
         "href": string;
         "target": string;
+        "rel": string;
         "download": string;
         "iconOnly": boolean;
     }
@@ -1550,7 +1925,7 @@ declare namespace LocalJSX {
         "lift": boolean;
     }
     interface QCarouselAttributes {
-        "snapAlignment": 'start' | 'center' | 'end' | 'none';
+        "snapAlignment": QCarouselSnapAlignment;
         "showArrows": boolean;
         "showIndicators": boolean;
         "repeat": boolean;
@@ -1560,7 +1935,7 @@ declare namespace LocalJSX {
         "value": number;
         "label": string;
         "indeterminate": boolean;
-        "size": 'sm' | 'md' | 'lg';
+        "size": QCircularProgressSize;
     }
     interface QDataTableAttributes {
         "columns": TableColumn[] | string;
@@ -1585,47 +1960,97 @@ declare namespace LocalJSX {
         "cancelLabel": string;
         "showCancel": boolean;
         "showConfirm": boolean;
+        "backdropEffect": QDialogBackdropEffect;
     }
     interface QDropdownAttributes {
         "value": string;
+        "name": string;
         "label": string;
         "placeholder": string;
         "options": Option[] | string;
         "disabled": boolean;
-        "size": 'sm' | 'md' | 'lg';
+        "size": QDropdownSize;
         "searchable": boolean;
     }
+    interface QFormAttributes {
+        "label": string;
+        "action": string;
+        "method": QFormMethod;
+        "autocomplete": QFormAutocomplete;
+        "enctype": QFormEnctype;
+        "target": QFormTarget;
+        "noValidate": boolean;
+        "preventDefault": boolean;
+        "enterBehavior": QFormEnterBehavior;
+    }
     interface QIconAttributes {
-        "name": string;
-        "lib": string;
-        "size": string;
-        "color": string;
-        "localPath": string;
+        "name": QIconName;
+        "lib": QIconLibrary;
+        "size": QIconSize;
+        "color": QIconColor;
+        "localPath": QIconLocalPath;
     }
     interface QInputAttributes {
         "value": string;
-        "type": 'text' | 'password' | 'email' | 'number' | 'url' | 'search' | 'color';
+        "name": string;
+        "type": QInputType;
         "placeholder": string;
         "label": string;
         "disabled": boolean;
         "required": boolean;
         "error": string;
         "errorMessage": string;
-        "size": 'sm' | 'md' | 'lg';
+        "size": QInputSize;
         "clearable": boolean;
         "min": number;
         "max": number;
         "step": number;
+    }
+    interface QLinkAttributes {
+        "href": string;
+        "url": string;
+        "mailto": string;
+        "tel": string;
+        "target": QLinkTarget;
+        "rel": string;
+        "download": string;
+        "label": string;
+        "variant": QLinkVariant;
+        "underline": QLinkUnderline;
+        "external": boolean;
+        "disabled": boolean;
+    }
+    interface QNavbarAttributes {
+        "brand": string;
+        "logoSrc": string;
+        "logoAlt": string;
+        "brandHref": string;
+        "items": NavbarItem[] | string;
+        "activeValue": string;
+        "mobileLabel": string;
+        "sticky": boolean;
+        "compact": boolean;
+        "transparent": boolean;
+        "bordered": boolean;
+    }
+    interface QPanelAttributes {
+        "variant": QPanelVariant;
+        "padding": QPanelPadding;
+        "scrollable": boolean;
+        "fullHeight": boolean;
+        "stickyHeader": boolean;
+        "stickyFooter": boolean;
+        "ariaLabel": string;
     }
     interface QQuantitySelectorAttributes {
         "value": number;
         "step": number;
         "min": number;
         "max": number;
-        "variant": 'horizontal' | 'vertical';
+        "variant": QQuantitySelectorVariant;
     }
     interface QReelAttributes {
-        "layout": 'grid' | 'carousel';
+        "layout": QReelLayout;
         "lightbox": boolean;
     }
     interface QScrollableAttributes {
@@ -1633,30 +2058,31 @@ declare namespace LocalJSX {
         "maxHeight": string;
         "autoHide": boolean;
         "nativeOnMobile": boolean;
-        "mode": 'custom' | 'native';
+        "mode": QScrollableMode;
         "target": string;
     }
     interface QSidepanelAttributes {
-        "variant": 'drawer' | 'nav';
+        "variant": QSidepanelVariant;
         "open": boolean;
-        "side": 'left' | 'right' | 'top' | 'bottom';
+        "side": QSidepanelSide;
         "panelSize": string;
         "value": string;
-        "mode": 'flat' | 'grouped' | 'tree';
+        "mode": QSidepanelMode;
         "expanded": boolean;
         "accordion": boolean;
     }
     interface QStepDiagramAttributes {
-        "layout": 'vertical' | 'horizontal';
+        "layout": QStepDiagramLayout;
     }
     interface QStepDiagramItemAttributes {
-        "status": 'pending' | 'active' | 'completed' | 'success' | 'warning' | 'danger';
-        "lineStyle": 'solid' | 'dashed' | 'dotted' | 'none';
-        "layout": 'vertical' | 'horizontal';
+        "status": QStepDiagramItemStatus;
+        "lineStyle": QStepDiagramItemLineStyle;
+        "layout": QStepDiagramItemLayout;
     }
     interface QSyntaxBoxAttributes {
-        "variant": 'panel' | 'plain';
-        "language": 'html' | 'javascript' | 'css' | 'json';
+        "variant": QSyntaxBoxVariant;
+        "name": string;
+        "language": QSyntaxBoxLanguage;
         "code": string;
         "value": string;
         "heading": string;
@@ -1668,11 +2094,12 @@ declare namespace LocalJSX {
     }
     interface QTextareaAttributes {
         "value": string;
+        "name": string;
         "placeholder": string;
         "label": string;
         "rows": number;
         "autoGrow": boolean;
-        "resizeMode": 'auto' | 'manual' | 'fixed';
+        "resizeMode": QTextareaResizeMode;
         "disabled": boolean;
         "required": boolean;
         "error": string;
@@ -1687,8 +2114,9 @@ declare namespace LocalJSX {
     }
     interface QToggleAttributes {
         "checked": boolean;
-        "size": 'sm' | 'md' | 'lg';
-        "type": 'switch' | 'checkbox';
+        "name": string;
+        "size": QToggleSize;
+        "type": QToggleType;
         "label": string;
         "disabled": boolean;
         "required": boolean;
@@ -1696,7 +2124,7 @@ declare namespace LocalJSX {
     }
     interface QTooltipAttributes {
         "content": string;
-        "position": 'top' | 'bottom' | 'left' | 'right';
+        "position": QTooltipPosition;
         "delay": number;
     }
 
@@ -1708,8 +2136,12 @@ declare namespace LocalJSX {
         "q-data-table": Omit<QDataTable, keyof QDataTableAttributes> & { [K in keyof QDataTable & keyof QDataTableAttributes]?: QDataTable[K] } & { [K in keyof QDataTable & keyof QDataTableAttributes as `attr:${K}`]?: QDataTableAttributes[K] } & { [K in keyof QDataTable & keyof QDataTableAttributes as `prop:${K}`]?: QDataTable[K] };
         "q-dialog": Omit<QDialog, keyof QDialogAttributes> & { [K in keyof QDialog & keyof QDialogAttributes]?: QDialog[K] } & { [K in keyof QDialog & keyof QDialogAttributes as `attr:${K}`]?: QDialogAttributes[K] } & { [K in keyof QDialog & keyof QDialogAttributes as `prop:${K}`]?: QDialog[K] };
         "q-dropdown": Omit<QDropdown, keyof QDropdownAttributes> & { [K in keyof QDropdown & keyof QDropdownAttributes]?: QDropdown[K] } & { [K in keyof QDropdown & keyof QDropdownAttributes as `attr:${K}`]?: QDropdownAttributes[K] } & { [K in keyof QDropdown & keyof QDropdownAttributes as `prop:${K}`]?: QDropdown[K] };
+        "q-form": Omit<QForm, keyof QFormAttributes> & { [K in keyof QForm & keyof QFormAttributes]?: QForm[K] } & { [K in keyof QForm & keyof QFormAttributes as `attr:${K}`]?: QFormAttributes[K] } & { [K in keyof QForm & keyof QFormAttributes as `prop:${K}`]?: QForm[K] };
         "q-icon": Omit<QIcon, keyof QIconAttributes> & { [K in keyof QIcon & keyof QIconAttributes]?: QIcon[K] } & { [K in keyof QIcon & keyof QIconAttributes as `attr:${K}`]?: QIconAttributes[K] } & { [K in keyof QIcon & keyof QIconAttributes as `prop:${K}`]?: QIcon[K] };
         "q-input": Omit<QInput, keyof QInputAttributes> & { [K in keyof QInput & keyof QInputAttributes]?: QInput[K] } & { [K in keyof QInput & keyof QInputAttributes as `attr:${K}`]?: QInputAttributes[K] } & { [K in keyof QInput & keyof QInputAttributes as `prop:${K}`]?: QInput[K] };
+        "q-link": Omit<QLink, keyof QLinkAttributes> & { [K in keyof QLink & keyof QLinkAttributes]?: QLink[K] } & { [K in keyof QLink & keyof QLinkAttributes as `attr:${K}`]?: QLinkAttributes[K] } & { [K in keyof QLink & keyof QLinkAttributes as `prop:${K}`]?: QLink[K] };
+        "q-navbar": Omit<QNavbar, keyof QNavbarAttributes> & { [K in keyof QNavbar & keyof QNavbarAttributes]?: QNavbar[K] } & { [K in keyof QNavbar & keyof QNavbarAttributes as `attr:${K}`]?: QNavbarAttributes[K] } & { [K in keyof QNavbar & keyof QNavbarAttributes as `prop:${K}`]?: QNavbar[K] };
+        "q-panel": Omit<QPanel, keyof QPanelAttributes> & { [K in keyof QPanel & keyof QPanelAttributes]?: QPanel[K] } & { [K in keyof QPanel & keyof QPanelAttributes as `attr:${K}`]?: QPanelAttributes[K] } & { [K in keyof QPanel & keyof QPanelAttributes as `prop:${K}`]?: QPanel[K] };
         "q-quantity-selector": Omit<QQuantitySelector, keyof QQuantitySelectorAttributes> & { [K in keyof QQuantitySelector & keyof QQuantitySelectorAttributes]?: QQuantitySelector[K] } & { [K in keyof QQuantitySelector & keyof QQuantitySelectorAttributes as `attr:${K}`]?: QQuantitySelectorAttributes[K] } & { [K in keyof QQuantitySelector & keyof QQuantitySelectorAttributes as `prop:${K}`]?: QQuantitySelector[K] };
         "q-reel": Omit<QReel, keyof QReelAttributes> & { [K in keyof QReel & keyof QReelAttributes]?: QReel[K] } & { [K in keyof QReel & keyof QReelAttributes as `attr:${K}`]?: QReelAttributes[K] } & { [K in keyof QReel & keyof QReelAttributes as `prop:${K}`]?: QReel[K] };
         "q-scrollable": Omit<QScrollable, keyof QScrollableAttributes> & { [K in keyof QScrollable & keyof QScrollableAttributes]?: QScrollable[K] } & { [K in keyof QScrollable & keyof QScrollableAttributes as `attr:${K}`]?: QScrollableAttributes[K] } & { [K in keyof QScrollable & keyof QScrollableAttributes as `prop:${K}`]?: QScrollable[K] };
@@ -1734,8 +2166,12 @@ declare module "@stencil/core" {
             "q-data-table": LocalJSX.IntrinsicElements["q-data-table"] & JSXBase.HTMLAttributes<HTMLQDataTableElement>;
             "q-dialog": LocalJSX.IntrinsicElements["q-dialog"] & JSXBase.HTMLAttributes<HTMLQDialogElement>;
             "q-dropdown": LocalJSX.IntrinsicElements["q-dropdown"] & JSXBase.HTMLAttributes<HTMLQDropdownElement>;
+            "q-form": LocalJSX.IntrinsicElements["q-form"] & JSXBase.HTMLAttributes<HTMLQFormElement>;
             "q-icon": LocalJSX.IntrinsicElements["q-icon"] & JSXBase.HTMLAttributes<HTMLQIconElement>;
             "q-input": LocalJSX.IntrinsicElements["q-input"] & JSXBase.HTMLAttributes<HTMLQInputElement>;
+            "q-link": LocalJSX.IntrinsicElements["q-link"] & JSXBase.HTMLAttributes<HTMLQLinkElement>;
+            "q-navbar": LocalJSX.IntrinsicElements["q-navbar"] & JSXBase.HTMLAttributes<HTMLQNavbarElement>;
+            "q-panel": LocalJSX.IntrinsicElements["q-panel"] & JSXBase.HTMLAttributes<HTMLQPanelElement>;
             "q-quantity-selector": LocalJSX.IntrinsicElements["q-quantity-selector"] & JSXBase.HTMLAttributes<HTMLQQuantitySelectorElement>;
             "q-reel": LocalJSX.IntrinsicElements["q-reel"] & JSXBase.HTMLAttributes<HTMLQReelElement>;
             "q-scrollable": LocalJSX.IntrinsicElements["q-scrollable"] & JSXBase.HTMLAttributes<HTMLQScrollableElement>;

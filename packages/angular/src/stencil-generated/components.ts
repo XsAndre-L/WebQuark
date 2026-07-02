@@ -13,8 +13,12 @@ import { defineCustomElement as defineQCircularProgress } from '@webquark/core/c
 import { defineCustomElement as defineQDataTable } from '@webquark/core/components/q-data-table.js';
 import { defineCustomElement as defineQDialog } from '@webquark/core/components/q-dialog.js';
 import { defineCustomElement as defineQDropdown } from '@webquark/core/components/q-dropdown.js';
+import { defineCustomElement as defineQForm } from '@webquark/core/components/q-form.js';
 import { defineCustomElement as defineQIcon } from '@webquark/core/components/q-icon.js';
 import { defineCustomElement as defineQInput } from '@webquark/core/components/q-input.js';
+import { defineCustomElement as defineQLink } from '@webquark/core/components/q-link.js';
+import { defineCustomElement as defineQNavbar } from '@webquark/core/components/q-navbar.js';
+import { defineCustomElement as defineQPanel } from '@webquark/core/components/q-panel.js';
 import { defineCustomElement as defineQQuantitySelector } from '@webquark/core/components/q-quantity-selector.js';
 import { defineCustomElement as defineQReel } from '@webquark/core/components/q-reel.js';
 import { defineCustomElement as defineQScrollable } from '@webquark/core/components/q-scrollable.js';
@@ -28,14 +32,14 @@ import { defineCustomElement as defineQToggle } from '@webquark/core/components/
 import { defineCustomElement as defineQTooltip } from '@webquark/core/components/q-tooltip.js';
 @ProxyCmp({
   defineCustomElementFn: defineQButton,
-  inputs: ['disabled', 'download', 'expand', 'href', 'iconOnly', 'loading', 'size', 'target', 'type', 'variant']
+  inputs: ['disabled', 'download', 'expand', 'href', 'iconOnly', 'loading', 'rel', 'size', 'target', 'type', 'variant']
 })
 @Component({
   selector: 'q-button',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'download', 'expand', 'href', 'iconOnly', 'loading', 'size', 'target', 'type', 'variant'],
+  inputs: ['disabled', 'download', 'expand', 'href', 'iconOnly', 'loading', 'rel', 'size', 'target', 'type', 'variant'],
   outputs: ['qClick', 'qFocus', 'qBlur'],
 })
 export class QButton {
@@ -100,7 +104,7 @@ export declare interface QCard extends Components.QCard {}
 })
 export class QCarousel {
   protected el: HTMLQCarouselElement;
-  @Output() qSlideChange = new EventEmitter<QCarouselCustomEvent<{ index: number; element: HTMLElement }>>();
+  @Output() qSlideChange = new EventEmitter<QCarouselCustomEvent<IQCarouselQCarouselSlideChangeDetail>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -109,10 +113,11 @@ export class QCarousel {
 
 
 import type { QCarouselCustomEvent } from '@webquark/core/components';
+import type { QCarouselSlideChangeDetail as IQCarouselQCarouselSlideChangeDetail } from '@webquark/core/components';
 
 export declare interface QCarousel extends Components.QCarousel {
 
-  qSlideChange: EventEmitter<QCarouselCustomEvent<{ index: number; element: HTMLElement }>>;
+  qSlideChange: EventEmitter<QCarouselCustomEvent<IQCarouselQCarouselSlideChangeDetail>>;
 }
 
 
@@ -153,8 +158,8 @@ export declare interface QCircularProgress extends Components.QCircularProgress 
 })
 export class QDataTable {
   protected el: HTMLQDataTableElement;
-  @Output() qRowClick = new EventEmitter<QDataTableCustomEvent<{ item: any; index: number; originalEvent: MouseEvent | KeyboardEvent }>>();
-  @Output() qSelectionChange = new EventEmitter<QDataTableCustomEvent<{ selectedKeys: any[]; selectedItems: any[] }>>();
+  @Output() qRowClick = new EventEmitter<QDataTableCustomEvent<IQDataTableQDataTableRowClickDetail>>();
+  @Output() qSelectionChange = new EventEmitter<QDataTableCustomEvent<IQDataTableQDataTableSelectionChangeDetail>>();
   @Output() qSearch = new EventEmitter<QDataTableCustomEvent<string>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
@@ -164,12 +169,14 @@ export class QDataTable {
 
 
 import type { QDataTableCustomEvent } from '@webquark/core/components';
+import type { QDataTableRowClickDetail as IQDataTableQDataTableRowClickDetail } from '@webquark/core/components';
+import type { QDataTableSelectionChangeDetail as IQDataTableQDataTableSelectionChangeDetail } from '@webquark/core/components';
 
 export declare interface QDataTable extends Components.QDataTable {
 
-  qRowClick: EventEmitter<QDataTableCustomEvent<{ item: any; index: number; originalEvent: MouseEvent | KeyboardEvent }>>;
+  qRowClick: EventEmitter<QDataTableCustomEvent<IQDataTableQDataTableRowClickDetail>>;
 
-  qSelectionChange: EventEmitter<QDataTableCustomEvent<{ selectedKeys: any[]; selectedItems: any[] }>>;
+  qSelectionChange: EventEmitter<QDataTableCustomEvent<IQDataTableQDataTableSelectionChangeDetail>>;
 
   qSearch: EventEmitter<QDataTableCustomEvent<string>>;
 }
@@ -177,7 +184,7 @@ export declare interface QDataTable extends Components.QDataTable {
 
 @ProxyCmp({
   defineCustomElementFn: defineQDialog,
-  inputs: ['cancelLabel', 'closeOnEsc', 'closeOnOverlayClick', 'confirmLabel', 'dialogTitle', 'loading', 'message', 'open', 'showCancel', 'showConfirm'],
+  inputs: ['backdropEffect', 'cancelLabel', 'closeOnEsc', 'closeOnOverlayClick', 'confirmLabel', 'dialogTitle', 'loading', 'message', 'open', 'showCancel', 'showConfirm'],
   methods: ['show', 'close', 'confirm', 'cancel']
 })
 @Component({
@@ -185,7 +192,7 @@ export declare interface QDataTable extends Components.QDataTable {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['cancelLabel', 'closeOnEsc', 'closeOnOverlayClick', 'confirmLabel', 'dialogTitle', 'loading', 'message', 'open', 'showCancel', 'showConfirm'],
+  inputs: ['backdropEffect', 'cancelLabel', 'closeOnEsc', 'closeOnOverlayClick', 'confirmLabel', 'dialogTitle', 'loading', 'message', 'open', 'showCancel', 'showConfirm'],
   outputs: ['qConfirm', 'qCancel', 'qClose'],
 })
 export class QDialog {
@@ -214,14 +221,14 @@ export declare interface QDialog extends Components.QDialog {
 
 @ProxyCmp({
   defineCustomElementFn: defineQDropdown,
-  inputs: ['disabled', 'label', 'options', 'placeholder', 'searchable', 'size', 'value']
+  inputs: ['disabled', 'label', 'name', 'options', 'placeholder', 'searchable', 'size', 'value']
 })
 @Component({
   selector: 'q-dropdown',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'label', 'options', 'placeholder', 'searchable', 'size', 'value'],
+  inputs: ['disabled', 'label', 'name', 'options', 'placeholder', 'searchable', 'size', 'value'],
   outputs: ['qChange', 'qSelect', 'qFocus', 'qBlur', 'qClick'],
 })
 export class QDropdown {
@@ -256,6 +263,42 @@ export declare interface QDropdown extends Components.QDropdown {
 
 
 @ProxyCmp({
+  defineCustomElementFn: defineQForm,
+  inputs: ['action', 'autocomplete', 'enctype', 'enterBehavior', 'label', 'method', 'noValidate', 'preventDefault', 'target'],
+  methods: ['getValues', 'setValues', 'resetForm', 'submitForm']
+})
+@Component({
+  selector: 'q-form',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['action', 'autocomplete', 'enctype', 'enterBehavior', 'label', 'method', 'noValidate', 'preventDefault', 'target'],
+  outputs: ['qSubmit', 'qReset'],
+})
+export class QForm {
+  protected el: HTMLQFormElement;
+  @Output() qSubmit = new EventEmitter<QFormCustomEvent<IQFormQFormSubmitDetail>>();
+  @Output() qReset = new EventEmitter<QFormCustomEvent<IQFormQFormResetDetail>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+import type { QFormCustomEvent } from '@webquark/core/components';
+import type { QFormSubmitDetail as IQFormQFormSubmitDetail } from '@webquark/core/components';
+import type { QFormResetDetail as IQFormQFormResetDetail } from '@webquark/core/components';
+
+export declare interface QForm extends Components.QForm {
+
+  qSubmit: EventEmitter<QFormCustomEvent<IQFormQFormSubmitDetail>>;
+
+  qReset: EventEmitter<QFormCustomEvent<IQFormQFormResetDetail>>;
+}
+
+
+@ProxyCmp({
   defineCustomElementFn: defineQIcon,
   inputs: ['color', 'lib', 'localPath', 'name', 'size']
 })
@@ -280,7 +323,7 @@ export declare interface QIcon extends Components.QIcon {}
 
 @ProxyCmp({
   defineCustomElementFn: defineQInput,
-  inputs: ['clearable', 'disabled', 'error', 'errorMessage', 'label', 'max', 'min', 'placeholder', 'required', 'size', 'step', 'type', 'value'],
+  inputs: ['clearable', 'disabled', 'error', 'errorMessage', 'label', 'max', 'min', 'name', 'placeholder', 'required', 'size', 'step', 'type', 'value'],
   methods: ['focusElement', 'clearValue']
 })
 @Component({
@@ -288,7 +331,7 @@ export declare interface QIcon extends Components.QIcon {}
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['clearable', 'disabled', 'error', 'errorMessage', 'label', 'max', 'min', 'placeholder', 'required', 'size', 'step', 'type', 'value'],
+  inputs: ['clearable', 'disabled', 'error', 'errorMessage', 'label', 'max', 'min', 'name', 'placeholder', 'required', 'size', 'step', 'type', 'value'],
   outputs: ['qChange', 'qInput', 'qBlur', 'qFocus', 'qClick'],
 })
 export class QInput {
@@ -319,6 +362,99 @@ export declare interface QInput extends Components.QInput {
 
   qClick: EventEmitter<QInputCustomEvent<MouseEvent>>;
 }
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineQLink,
+  inputs: ['disabled', 'download', 'external', 'href', 'label', 'mailto', 'rel', 'target', 'tel', 'underline', 'url', 'variant']
+})
+@Component({
+  selector: 'q-link',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['disabled', 'download', 'external', 'href', 'label', 'mailto', 'rel', 'target', 'tel', 'underline', 'url', 'variant'],
+  outputs: ['qClick', 'qFocus', 'qBlur'],
+})
+export class QLink {
+  protected el: HTMLQLinkElement;
+  @Output() qClick = new EventEmitter<QLinkCustomEvent<MouseEvent>>();
+  @Output() qFocus = new EventEmitter<QLinkCustomEvent<FocusEvent>>();
+  @Output() qBlur = new EventEmitter<QLinkCustomEvent<FocusEvent>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+import type { QLinkCustomEvent } from '@webquark/core/components';
+
+export declare interface QLink extends Components.QLink {
+
+  qClick: EventEmitter<QLinkCustomEvent<MouseEvent>>;
+
+  qFocus: EventEmitter<QLinkCustomEvent<FocusEvent>>;
+
+  qBlur: EventEmitter<QLinkCustomEvent<FocusEvent>>;
+}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineQNavbar,
+  inputs: ['activeValue', 'bordered', 'brand', 'brandHref', 'compact', 'items', 'logoAlt', 'logoSrc', 'mobileLabel', 'sticky', 'transparent']
+})
+@Component({
+  selector: 'q-navbar',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['activeValue', 'bordered', 'brand', 'brandHref', 'compact', 'items', 'logoAlt', 'logoSrc', 'mobileLabel', 'sticky', 'transparent'],
+  outputs: ['qSelect', 'qMenuToggle'],
+})
+export class QNavbar {
+  protected el: HTMLQNavbarElement;
+  @Output() qSelect = new EventEmitter<QNavbarCustomEvent<IQNavbarNavbarSelectDetail>>();
+  @Output() qMenuToggle = new EventEmitter<QNavbarCustomEvent<boolean>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+import type { QNavbarCustomEvent } from '@webquark/core/components';
+import type { NavbarSelectDetail as IQNavbarNavbarSelectDetail } from '@webquark/core/components';
+
+export declare interface QNavbar extends Components.QNavbar {
+
+  qSelect: EventEmitter<QNavbarCustomEvent<IQNavbarNavbarSelectDetail>>;
+
+  qMenuToggle: EventEmitter<QNavbarCustomEvent<boolean>>;
+}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineQPanel,
+  inputs: ['ariaLabel', 'fullHeight', 'padding', 'scrollable', 'stickyFooter', 'stickyHeader', 'variant']
+})
+@Component({
+  selector: 'q-panel',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['ariaLabel', 'fullHeight', 'padding', 'scrollable', 'stickyFooter', 'stickyHeader', 'variant'],
+})
+export class QPanel {
+  protected el: HTMLQPanelElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface QPanel extends Components.QPanel {}
 
 
 @ProxyCmp({
@@ -410,7 +546,7 @@ export declare interface QReel extends Components.QReel {
 })
 export class QScrollable {
   protected el: HTMLQScrollableElement;
-  @Output() qScroll = new EventEmitter<QScrollableCustomEvent<{ scrollTop: number; scrollHeight: number; clientHeight: number }>>();
+  @Output() qScroll = new EventEmitter<QScrollableCustomEvent<IQScrollableQScrollableEventDetail>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -419,10 +555,11 @@ export class QScrollable {
 
 
 import type { QScrollableCustomEvent } from '@webquark/core/components';
+import type { QScrollableEventDetail as IQScrollableQScrollableEventDetail } from '@webquark/core/components';
 
 export declare interface QScrollable extends Components.QScrollable {
 
-  qScroll: EventEmitter<QScrollableCustomEvent<{ scrollTop: number; scrollHeight: number; clientHeight: number }>>;
+  qScroll: EventEmitter<QScrollableCustomEvent<IQScrollableQScrollableEventDetail>>;
 }
 
 
@@ -441,7 +578,7 @@ export declare interface QScrollable extends Components.QScrollable {
 export class QSidepanel {
   protected el: HTMLQSidepanelElement;
   @Output() qClose = new EventEmitter<QSidepanelCustomEvent<void>>();
-  @Output() qSelect = new EventEmitter<QSidepanelCustomEvent<{ value: string; label: string; item: IQSidepanelSidepanelItem }>>();
+  @Output() qSelect = new EventEmitter<QSidepanelCustomEvent<IQSidepanelQSidepanelSelectDetail>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -450,7 +587,7 @@ export class QSidepanel {
 
 
 import type { QSidepanelCustomEvent } from '@webquark/core/components';
-import type { SidepanelItem as IQSidepanelSidepanelItem } from '@webquark/core/components';
+import type { QSidepanelSelectDetail as IQSidepanelQSidepanelSelectDetail } from '@webquark/core/components';
 
 export declare interface QSidepanel extends Components.QSidepanel {
   /**
@@ -460,7 +597,7 @@ export declare interface QSidepanel extends Components.QSidepanel {
   /**
    * Fires when a leaf navigation item is clicked (nav mode)
    */
-  qSelect: EventEmitter<QSidepanelCustomEvent<{ value: string; label: string; item: IQSidepanelSidepanelItem }>>;
+  qSelect: EventEmitter<QSidepanelCustomEvent<IQSidepanelQSidepanelSelectDetail>>;
 }
 
 
@@ -519,7 +656,7 @@ export declare interface QStepDiagramItem extends Components.QStepDiagramItem {
 
 @ProxyCmp({
   defineCustomElementFn: defineQSyntaxBox,
-  inputs: ['code', 'copyable', 'disabled', 'editable', 'heading', 'height', 'language', 'required', 'value', 'variant'],
+  inputs: ['code', 'copyable', 'disabled', 'editable', 'heading', 'height', 'language', 'name', 'required', 'value', 'variant'],
   methods: ['scrollToBottom']
 })
 @Component({
@@ -527,7 +664,7 @@ export declare interface QStepDiagramItem extends Components.QStepDiagramItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['code', 'copyable', 'disabled', 'editable', 'heading', 'height', 'language', 'required', 'value', 'variant'],
+  inputs: ['code', 'copyable', 'disabled', 'editable', 'heading', 'height', 'language', 'name', 'required', 'value', 'variant'],
   outputs: ['qChange', 'qInput'],
 })
 export class QSyntaxBox {
@@ -553,7 +690,7 @@ export declare interface QSyntaxBox extends Components.QSyntaxBox {
 
 @ProxyCmp({
   defineCustomElementFn: defineQTextarea,
-  inputs: ['autoGrow', 'disabled', 'error', 'errorMessage', 'label', 'placeholder', 'required', 'resizeMode', 'rows', 'value'],
+  inputs: ['autoGrow', 'disabled', 'error', 'errorMessage', 'label', 'name', 'placeholder', 'required', 'resizeMode', 'rows', 'value'],
   methods: ['focusElement', 'adjustHeight']
 })
 @Component({
@@ -561,7 +698,7 @@ export declare interface QSyntaxBox extends Components.QSyntaxBox {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['autoGrow', 'disabled', 'error', 'errorMessage', 'label', 'placeholder', 'required', 'resizeMode', 'rows', 'value'],
+  inputs: ['autoGrow', 'disabled', 'error', 'errorMessage', 'label', 'name', 'placeholder', 'required', 'resizeMode', 'rows', 'value'],
   outputs: ['qChange', 'qInput', 'qBlur', 'qFocus', 'qClick'],
 })
 export class QTextarea {
@@ -608,7 +745,7 @@ export declare interface QTextarea extends Components.QTextarea {
 })
 export class QThumbnail {
   protected el: HTMLQThumbnailElement;
-  @Output() qMaximize = new EventEmitter<QThumbnailCustomEvent<{ src: string; label?: string; video: boolean; alt: string; triggerEl: HTMLElement }>>();
+  @Output() qMaximize = new EventEmitter<QThumbnailCustomEvent<IQThumbnailQThumbnailMaximizeDetail>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -617,16 +754,17 @@ export class QThumbnail {
 
 
 import type { QThumbnailCustomEvent } from '@webquark/core/components';
+import type { QThumbnailMaximizeDetail as IQThumbnailQThumbnailMaximizeDetail } from '@webquark/core/components';
 
 export declare interface QThumbnail extends Components.QThumbnail {
 
-  qMaximize: EventEmitter<QThumbnailCustomEvent<{ src: string; label?: string; video: boolean; alt: string; triggerEl: HTMLElement }>>;
+  qMaximize: EventEmitter<QThumbnailCustomEvent<IQThumbnailQThumbnailMaximizeDetail>>;
 }
 
 
 @ProxyCmp({
   defineCustomElementFn: defineQToggle,
-  inputs: ['checked', 'disabled', 'error', 'label', 'required', 'size', 'type'],
+  inputs: ['checked', 'disabled', 'error', 'label', 'name', 'required', 'size', 'type'],
   methods: ['toggle']
 })
 @Component({
@@ -634,7 +772,7 @@ export declare interface QThumbnail extends Components.QThumbnail {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['checked', 'disabled', 'error', 'label', 'required', 'size', 'type'],
+  inputs: ['checked', 'disabled', 'error', 'label', 'name', 'required', 'size', 'type'],
   outputs: ['qChange', 'qFocus', 'qBlur', 'qClick'],
 })
 export class QToggle {
