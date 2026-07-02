@@ -5,54 +5,54 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { QButtonSize, QButtonType, QButtonVariant } from "./components/button/button.types";
-import { QCardElevation } from "./components/card/card.types";
-import { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/carousel/carousel.types";
-import { QCircularProgressSize } from "./components/circular-progress/circular-progress.types";
-import { QDataTableRowClickDetail, QDataTableSelectionChangeDetail, TableColumn } from "./components/data-table/data-table.types";
-import { QDialogBackdropEffect } from "./components/dialog/dialog.types";
-import { Option, QDropdownSize } from "./components/dropdown/dropdown.types";
-import { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/form/form.types";
-import { QIconColor, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/icon/icon.types";
-import { QInputSize, QInputType } from "./components/input/input.types";
-import { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/link/link.types";
-import { NavbarItem, NavbarSelectDetail } from "./components/navbar/navbar.types";
-import { QPanelPadding, QPanelVariant } from "./components/panel/panel.types";
-import { QQuantitySelectorVariant } from "./components/quantity-selector/quantity-selector.types";
-import { QReelLayout } from "./components/reel/reel.types";
-import { QScrollableEventDetail, QScrollableMode } from "./components/scrollable/scrollable.types";
-import { QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItem } from "./components/sidepanel/sidepanel.types";
-import { QStepDiagramLayout } from "./components/step-diagram/step-diagram.types";
-import { QStepDiagramItemLayout, QStepDiagramItemLineStyle, QStepDiagramItemStatus } from "./components/step-diagram-item/step-diagram-item.types";
-import { QSyntaxBoxLanguage, QSyntaxBoxVariant } from "./components/syntax-box/syntax-box.types";
-import { QTextareaResizeMode } from "./components/textarea/textarea.types";
-import { QThumbnailMaximizeDetail } from "./components/thumbnail/thumbnail.types";
-import { QToggleSize, QToggleType } from "./components/toggle/toggle.types";
-import { QTooltipPosition } from "./components/tooltip/tooltip.types";
-export { QButtonSize, QButtonType, QButtonVariant } from "./components/button/button.types";
-export { QCardElevation } from "./components/card/card.types";
-export { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/carousel/carousel.types";
-export { QCircularProgressSize } from "./components/circular-progress/circular-progress.types";
-export { QDataTableRowClickDetail, QDataTableSelectionChangeDetail, TableColumn } from "./components/data-table/data-table.types";
-export { QDialogBackdropEffect } from "./components/dialog/dialog.types";
-export { Option, QDropdownSize } from "./components/dropdown/dropdown.types";
-export { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/form/form.types";
-export { QIconColor, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/icon/icon.types";
-export { QInputSize, QInputType } from "./components/input/input.types";
-export { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/link/link.types";
-export { NavbarItem, NavbarSelectDetail } from "./components/navbar/navbar.types";
-export { QPanelPadding, QPanelVariant } from "./components/panel/panel.types";
-export { QQuantitySelectorVariant } from "./components/quantity-selector/quantity-selector.types";
-export { QReelLayout } from "./components/reel/reel.types";
-export { QScrollableEventDetail, QScrollableMode } from "./components/scrollable/scrollable.types";
-export { QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItem } from "./components/sidepanel/sidepanel.types";
-export { QStepDiagramLayout } from "./components/step-diagram/step-diagram.types";
-export { QStepDiagramItemLayout, QStepDiagramItemLineStyle, QStepDiagramItemStatus } from "./components/step-diagram-item/step-diagram-item.types";
-export { QSyntaxBoxLanguage, QSyntaxBoxVariant } from "./components/syntax-box/syntax-box.types";
-export { QTextareaResizeMode } from "./components/textarea/textarea.types";
-export { QThumbnailMaximizeDetail } from "./components/thumbnail/thumbnail.types";
-export { QToggleSize, QToggleType } from "./components/toggle/toggle.types";
-export { QTooltipPosition } from "./components/tooltip/tooltip.types";
+import { QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
+import { QCardElevation } from "./components/layout/card/card.types";
+import { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/layout/carousel/carousel.types";
+import { QCircularProgressSize } from "./components/indicators/circular-progress/circular-progress.types";
+import { QDataTableRowClickDetail, QDataTableSelectionChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
+import { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
+import { Option, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
+import { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/layout/form/form.types";
+import { QIconColor, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
+import { QInputSize, QInputType } from "./components/inputs/input/input.types";
+import { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
+import { NavbarItem, NavbarSelectDetail } from "./components/layout/navbar/navbar.types";
+import { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
+import { QQuantitySelectorVariant } from "./components/inputs/quantity-selector/quantity-selector.types";
+import { QReelLayout } from "./components/media/reel/reel.types";
+import { QScrollableEventDetail, QScrollableMode } from "./components/layout/scrollable/scrollable.types";
+import { QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItem } from "./components/layout/sidepanel/sidepanel.types";
+import { QStepDiagramLayout } from "./components/indicators/step-diagram/step-diagram.types";
+import { QStepDiagramItemLayout, QStepDiagramItemLineStyle, QStepDiagramItemStatus } from "./components/indicators/step-diagram-item/step-diagram-item.types";
+import { QSyntaxBoxLanguage, QSyntaxBoxVariant } from "./components/data-display/syntax-box/syntax-box.types";
+import { QTextareaResizeMode } from "./components/inputs/textarea/textarea.types";
+import { QThumbnailMaximizeDetail } from "./components/media/thumbnail/thumbnail.types";
+import { QToggleSize, QToggleType } from "./components/inputs/toggle/toggle.types";
+import { QTooltipPosition } from "./components/overlays/tooltip/tooltip.types";
+export { QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
+export { QCardElevation } from "./components/layout/card/card.types";
+export { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/layout/carousel/carousel.types";
+export { QCircularProgressSize } from "./components/indicators/circular-progress/circular-progress.types";
+export { QDataTableRowClickDetail, QDataTableSelectionChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
+export { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
+export { Option, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
+export { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/layout/form/form.types";
+export { QIconColor, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
+export { QInputSize, QInputType } from "./components/inputs/input/input.types";
+export { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
+export { NavbarItem, NavbarSelectDetail } from "./components/layout/navbar/navbar.types";
+export { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
+export { QQuantitySelectorVariant } from "./components/inputs/quantity-selector/quantity-selector.types";
+export { QReelLayout } from "./components/media/reel/reel.types";
+export { QScrollableEventDetail, QScrollableMode } from "./components/layout/scrollable/scrollable.types";
+export { QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItem } from "./components/layout/sidepanel/sidepanel.types";
+export { QStepDiagramLayout } from "./components/indicators/step-diagram/step-diagram.types";
+export { QStepDiagramItemLayout, QStepDiagramItemLineStyle, QStepDiagramItemStatus } from "./components/indicators/step-diagram-item/step-diagram-item.types";
+export { QSyntaxBoxLanguage, QSyntaxBoxVariant } from "./components/data-display/syntax-box/syntax-box.types";
+export { QTextareaResizeMode } from "./components/inputs/textarea/textarea.types";
+export { QThumbnailMaximizeDetail } from "./components/media/thumbnail/thumbnail.types";
+export { QToggleSize, QToggleType } from "./components/inputs/toggle/toggle.types";
+export { QTooltipPosition } from "./components/overlays/tooltip/tooltip.types";
 export namespace Components {
     interface QButton {
         /**
@@ -516,47 +516,42 @@ export namespace Components {
     }
     interface QSidepanel {
         /**
-          * If true, opening one group collapses all sibling groups (nav mode only)
+          * If true, opening one group collapses all sibling groups
           * @default false
          */
         "accordion": boolean;
         /**
-          * Whether all parent groups start expanded on first render (nav mode only)
           * @default true
          */
         "expanded": boolean;
         /**
-          * Navigation item tree passed programmatically (nav mode only)
           * @default []
          */
         "items": SidepanelItem[];
         /**
-          * Display mode for items: flat list, one-level groups, or deep tree
+          * Item display mode: flat list, one-level groups, or deep tree
           * @default 'flat'
          */
         "mode": QSidepanelMode;
         /**
-          * Controls drawer open/close state (drawer mode only)
           * @default false
          */
         "open": boolean;
         /**
-          * Panel dimension – width or height depending on side (drawer mode only)
+          * Width or height depending on `side` (drawer mode only)
           * @default '320px'
          */
         "panelSize": string;
         /**
-          * Screen edge the drawer slides from (drawer mode only)
           * @default 'right'
          */
         "side": QSidepanelSide;
         /**
-          * Value of the currently active/selected item (nav mode only)
           * @default ''
          */
         "value": string;
         /**
-          * Selects behavior: 'drawer' = slide-in overlay, 'nav' = fixed navigation sidebar
+          * 'drawer' = slide-in overlay, 'nav' = fixed navigation sidebar
           * @default 'nav'
          */
         "variant": QSidepanelVariant;
@@ -1681,55 +1676,47 @@ declare namespace LocalJSX {
     }
     interface QSidepanel {
         /**
-          * If true, opening one group collapses all sibling groups (nav mode only)
+          * If true, opening one group collapses all sibling groups
           * @default false
          */
         "accordion"?: boolean;
         /**
-          * Whether all parent groups start expanded on first render (nav mode only)
           * @default true
          */
         "expanded"?: boolean;
         /**
-          * Navigation item tree passed programmatically (nav mode only)
           * @default []
          */
         "items"?: SidepanelItem[];
         /**
-          * Display mode for items: flat list, one-level groups, or deep tree
+          * Item display mode: flat list, one-level groups, or deep tree
           * @default 'flat'
          */
         "mode"?: QSidepanelMode;
-        /**
-          * Fires when the drawer is closed (drawer mode)
-         */
         "onQClose"?: (event: QSidepanelCustomEvent<void>) => void;
         /**
-          * Fires when a leaf navigation item is clicked (nav mode)
+          * Fires only for leaf items; clicking a parent group toggles it instead
          */
         "onQSelect"?: (event: QSidepanelCustomEvent<QSidepanelSelectDetail>) => void;
         /**
-          * Controls drawer open/close state (drawer mode only)
           * @default false
          */
         "open"?: boolean;
         /**
-          * Panel dimension – width or height depending on side (drawer mode only)
+          * Width or height depending on `side` (drawer mode only)
           * @default '320px'
          */
         "panelSize"?: string;
         /**
-          * Screen edge the drawer slides from (drawer mode only)
           * @default 'right'
          */
         "side"?: QSidepanelSide;
         /**
-          * Value of the currently active/selected item (nav mode only)
           * @default ''
          */
         "value"?: string;
         /**
-          * Selects behavior: 'drawer' = slide-in overlay, 'nav' = fixed navigation sidebar
+          * 'drawer' = slide-in overlay, 'nav' = fixed navigation sidebar
           * @default 'nav'
          */
         "variant"?: QSidepanelVariant;

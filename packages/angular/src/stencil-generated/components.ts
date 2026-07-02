@@ -590,12 +590,10 @@ import type { QSidepanelCustomEvent } from '@webquark/core/components';
 import type { QSidepanelSelectDetail as IQSidepanelQSidepanelSelectDetail } from '@webquark/core/components';
 
 export declare interface QSidepanel extends Components.QSidepanel {
-  /**
-   * Fires when the drawer is closed (drawer mode)
-   */
+
   qClose: EventEmitter<QSidepanelCustomEvent<void>>;
   /**
-   * Fires when a leaf navigation item is clicked (nav mode)
+   * Fires only for leaf items; clicking a parent group toggles it instead
    */
   qSelect: EventEmitter<QSidepanelCustomEvent<IQSidepanelQSidepanelSelectDetail>>;
 }
