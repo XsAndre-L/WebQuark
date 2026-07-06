@@ -33,6 +33,7 @@ export class QInput {
 
   @State() hasPrefix: boolean = false;
   @State() hasSuffix: boolean = false;
+  @State() passwordVisible: boolean = false;
 
   @Event() qChange!: EventEmitter<string>;
   @Event() qInput!: EventEmitter<string>;
@@ -202,14 +203,35 @@ export class QInput {
     }
   };
 
+  private handlePasswordToggle = (ev: MouseEvent) => {
+    ev.preventDefault();
+    ev.stopPropagation();
+    if (this.disabled || this.type !== 'password') return;
+
+    const selectionStart = this.inputEl?.selectionStart ?? null;
+    const selectionEnd = this.inputEl?.selectionEnd ?? null;
+
+    this.passwordVisible = !this.passwordVisible;
+
+    requestAnimationFrame(() => {
+      if (!this.inputEl) return;
+      this.inputEl.focus();
+      if (selectionStart !== null && selectionEnd !== null) {
+        this.inputEl.setSelectionRange(selectionStart, selectionEnd);
+      }
+    });
+  };
+
   // ===================== [6] RENDER (Visual Template Only) =====================
 
   render() {
     const hasError = !!(this.error || this.errorMessage);
     const displayError = this.error || this.errorMessage;
     const showClearBtn = this.clearable && !this.disabled && this.value.length > 0;
+    const showPasswordToggle = this.type === 'password' && !this.disabled;
+    const inputType: QInputType = showPasswordToggle && this.passwordVisible ? 'text' : this.type;
 
-    const showSuffixContainer = this.hasSuffix || showClearBtn;
+    const showSuffixContainer = this.hasSuffix || showClearBtn || showPasswordToggle;
 
     return (
       <div 
@@ -249,7 +271,7 @@ export class QInput {
               'has-prefix-padding': this.hasPrefix,
               'has-suffix-padding': showSuffixContainer
             }}
-            type={this.type}
+            type={inputType}
             name={this.name}
             value={this.value}
             placeholder={this.placeholder}
@@ -300,7 +322,30 @@ export class QInput {
                 </svg>
               </button>
             )}
-            <span style={{ display: showClearBtn ? 'none' : 'block' }}>
+            {showPasswordToggle && (
+              <button
+                class="password-toggle-btn"
+                type="button"
+                onClick={this.handlePasswordToggle}
+                aria-label={this.passwordVisible ? 'Hide password' : 'Show password'}
+                aria-pressed={this.passwordVisible ? 'true' : 'false'}
+              >
+                {this.passwordVisible ? (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M3 3l18 18" />
+                    <path d="M10.58 10.58A2 2 0 0 0 12 14a2 2 0 0 0 1.42-.58" />
+                    <path d="M9.88 4.24A10.2 10.2 0 0 1 12 4c7 0 10 8 10 8a18.5 18.5 0 0 1-4.08 5.19" />
+                    <path d="M6.61 6.61A18.5 18.5 0 0 0 2 12s3 8 10 8a10.7 10.7 0 0 0 5.39-1.61" />
+                  </svg>
+                ) : (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                )}
+              </button>
+            )}
+            <span style={{ display: !showClearBtn && this.hasSuffix ? 'block' : 'none' }}>
               <slot 
                 name="suffix" 
                 onSlotchange={this.handleSuffixSlotChange} 
