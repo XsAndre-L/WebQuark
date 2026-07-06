@@ -106,11 +106,13 @@
 }
 
 /* Clear Button Sizing */
-.clear-btn {
+.clear-btn,
+.password-toggle-btn {
   background: transparent;
   border: none;
   cursor: pointer;
   padding: 4px;
+  padding-left: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -120,13 +122,15 @@
   transition: background var(--q-transition-fast, 150ms ease), color var(--q-transition-fast, 150ms ease);
 }
 
-.clear-btn:hover {
+.clear-btn:hover,
+.password-toggle-btn:hover {
   background: rgba(249, 250, 251, 0.08); /* Static background color fallback before color-mix */
   background: var(--q-btn-hover-overlay, color-mix(in srgb, var(--q-fg-base, #f9fafb) 8%, transparent));
   color: var(--q-fg-base, #f9fafb);
 }
 
-.clear-btn svg {
+.clear-btn svg,
+.password-toggle-btn svg {
   width: 14px;
   height: 14px;
 }
@@ -174,7 +178,8 @@ input.input-box[type="color"]::-moz-color-swatch {
 .input-wrapper.size-sm .suffix-container {
   padding: 0 8px;
 }
-.input-wrapper.size-sm .clear-btn svg {
+.input-wrapper.size-sm .clear-btn svg,
+.input-wrapper.size-sm .password-toggle-btn svg {
   width: 12px;
   height: 12px;
 }
@@ -193,8 +198,10 @@ input.input-box[type="color"]::-moz-color-swatch {
 .input-wrapper.size-md .prefix-container,
 .input-wrapper.size-md .suffix-container {
   padding: 0 12px;
+
 }
-.input-wrapper.size-md .clear-btn svg {
+.input-wrapper.size-md .clear-btn svg,
+.input-wrapper.size-md .password-toggle-btn svg {
   width: 14px;
   height: 14px;
 }
@@ -214,7 +221,8 @@ input.input-box[type="color"]::-moz-color-swatch {
 .input-wrapper.size-lg .suffix-container {
   padding: 0 16px;
 }
-.input-wrapper.size-lg .clear-btn svg {
+.input-wrapper.size-lg .clear-btn svg,
+.input-wrapper.size-lg .password-toggle-btn svg {
   width: 18px;
   height: 18px;
 }
