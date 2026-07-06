@@ -1,0 +1,96 @@
+:host {
+  display: block;
+  min-width: var(--q-card-min-width, 280px);
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+  transition: transform var(--q-card-transition-duration, 250ms ease);
+}
+
+/* Elevate host z-index and apply hover lift/scale transforms on the host */
+:host([interactive]:hover),
+:host([interactive]:focus-within),
+:host([lift]:hover),
+:host([lift]:focus-within) {
+  transform: var(--q-card-hover-transform, translateY(-4px) scale(1.02));
+  z-index: 5;
+}
+
+:host([interactive]:active) {
+  transform: scale(0.99);
+}
+
+.card-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: var(--q-radius-lg, 12px);
+  padding: var(--q-padding-lg, 24px);
+  border: var(--q-card-border, 1px solid var(--q-border-color, #374151));
+  box-sizing: border-box;
+
+  /* Unreal Engine OSR safe fallback: Enforces high-opacity base background */
+  background: #1f2937;
+  background: var(--q-bg-card, var(--q-bg-surface-1, #1f2937));
+
+  /* Transitions for borders, shadows, and opacity */
+  transition: border-color var(--q-card-transition-duration, 250ms ease),
+              box-shadow var(--q-card-transition-duration, 250ms ease),
+              opacity var(--q-card-transition-duration, 250ms ease);
+}
+
+/* Glassmorphism support without backdrop-filter to prevent OSR crashes */
+.card-container.is-glass {
+  background: rgba(31, 41, 55, 0.85);
+  background: var(--q-bg-glass, rgba(31, 41, 55, 0.85));
+}
+
+/* Elevation Levels */
+.elevation-low,
+.elevation-1 {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--q-shadow-low, 0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.elevation-medium,
+.elevation-2 {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--q-shadow-medium, 0 8px 16px rgba(0, 0, 0, 0.3));
+}
+
+.elevation-high,
+.elevation-3 {
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.45);
+  box-shadow: var(--q-shadow-high, 0 16px 32px rgba(0, 0, 0, 0.45));
+}
+
+/* Interactive States inside the shadow DOM triggered by host hover/focus */
+:host([interactive]:hover) .card-container,
+:host([interactive]:focus-within) .card-container {
+  box-shadow: var(--q-shadow-high, 0 16px 32px rgba(0, 0, 0, 0.45)), var(--q-glow-interactive, 0 0 20px rgba(96, 165, 250, 0.3));
+  border-color: #60a5fa;
+  border-color: var(--q-color-primary, #60a5fa);
+  outline: none;
+  cursor: pointer;
+}
+
+/* Header Slot Typography */
+.card-header {
+  font-family: var(--q-font-family, inherit);
+  font-size: var(--q-font-size-lg, 1.125rem);
+  font-weight: var(--q-font-weight-bold, 700);
+  line-height: 1.4;
+  margin-bottom: var(--q-padding-sm, 12px);
+}
+
+.card-header.is-hidden {
+  display: none;
+}
+
+/* Body Slot Typography */
+.card-body {
+  font-family: var(--q-font-family, inherit);
+  font-size: var(--q-font-size-base, 1rem);
+  font-weight: var(--q-font-weight-normal, 400);
+  line-height: 1.5;
+}
