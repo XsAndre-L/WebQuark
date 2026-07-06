@@ -3,7 +3,16 @@ import { focusFirstElement, handleTabTrap } from '../../../utils/dom';
 import { handleDrawerOpenChange } from './internals/drawer';
 import { seedExpandedGroups, toggleGroup } from './internals/groups';
 import { renderNavItems } from './internals/nav-items';
-import type { QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItem } from './sidepanel.types';
+import type {
+  QSidepanelCollapseControl,
+  QSidepanelCollapseMode,
+  QSidepanelCollapsedChangeDetail,
+  QSidepanelMode,
+  QSidepanelSelectDetail,
+  QSidepanelSide,
+  QSidepanelVariant,
+  SidepanelItem,
+} from './sidepanel.types';
 
 @Component({
   tag: 'q-sidepanel',
@@ -32,11 +41,23 @@ export class QSidepanel {
   @Prop() expanded: boolean = true;
   /** If true, opening one group collapses all sibling groups */
   @Prop() accordion: boolean = false;
+  /** Enables the collapse feature. Only takes effect when variant="nav". Reflected so host-level width CSS (e.g. the collapsed/rail width rule) can be gated on it, keeping it in sync with the inner is-collapsed/collapse-mode-* classes applied in render(). */
+  @Prop({ reflect: true }) collapsible: boolean = false;
+  /** Current collapsed state. Reflected + mutable: the component's own built-in control can flip it directly (same pattern as q-toggle's `checked`), while consumers can also drive it externally via property binding. */
+  @Prop({ reflect: true, mutable: true }) collapsed: boolean = false;
+  /** Where to render the built-in collapse toggle button. 'none' means the consumer supplies their own control and drives `collapsed` externally. */
+  @Prop() collapseControl: QSidepanelCollapseControl = 'none';
+  /** Visual behavior while collapsed: 'rail' shrinks to an icon-only rail, 'hidden' collapses to near-zero width. Reflected so light-DOM consumers can style slotted header/footer content differently per mode (e.g. q-sidepanel[collapsed][collapse-mode="rail"]). */
+  @Prop({ reflect: true }) collapseMode: QSidepanelCollapseMode = 'rail';
+  /** Accessible label for the built-in collapse control (aria-label/title). */
+  @Prop() collapseLabel: string = 'Toggle sidebar';
 
   // ── Events ────────────────────────────────────────────────────────────────
   @Event() qClose!: EventEmitter<void>;
   /** Fires only for leaf items; clicking a parent group toggles it instead */
   @Event() qSelect!: EventEmitter<QSidepanelSelectDetail>;
+  /** Fires whenever the BUILT-IN collapse control toggles collapsed. Does not fire when a consumer sets [collapsed] externally themselves. */
+  @Event() qCollapsedChange!: EventEmitter<QSidepanelCollapsedChangeDetail>;
 
   // ── Internal drawer state ─────────────────────────────────────────────────
   @State() isVisible: boolean = false;
@@ -120,17 +141,74 @@ export class QSidepanel {
     }
   }
 
+  private handleCollapseToggle = () => {
+    const next = !this.collapsed;
+    this.collapsed = next;
+    this.qCollapsedChange.emit({ collapsed: next });
+  };
+
   // ===================== [6] RENDER (Visual Template Only) =====================
+
+  private getCollapseIconName(): string {
+    switch (this.side) {
+      case 'right':
+        return this.collapsed ? 'chevron-left' : 'chevron-right';
+      case 'top':
+        return this.collapsed ? 'chevron-down' : 'chevron-up';
+      case 'bottom':
+        return this.collapsed ? 'chevron-up' : 'chevron-down';
+      case 'left':
+      default:
+        return this.collapsed ? 'chevron-right' : 'chevron-left';
+    }
+  }
+
+  private renderCollapseControl(placement: QSidepanelCollapseControl) {
+    return (
+      <button
+        type="button"
+        class={{
+          'collapse-control': true,
+          [`collapse-control--${placement}`]: true,
+        }}
+        part="collapse-control"
+        aria-label={this.collapseLabel}
+        title={this.collapseLabel}
+        aria-expanded={String(!this.collapsed)}
+        onClick={this.handleCollapseToggle}
+      >
+        <q-icon name={this.getCollapseIconName()} lib="lucide" size="sm" />
+      </button>
+    );
+  }
 
   render() {
     if (this.variant === 'nav') {
+      const isCollapseActive = this.collapsible;
+      const isCollapsed = isCollapseActive && this.collapsed;
+      const isHiddenCollapsed = isCollapsed && this.collapseMode === 'hidden';
+
+      const navClasses = {
+        'nav-sidebar': true,
+        'is-collapsible': isCollapseActive,
+        'is-collapsed': isCollapsed,
+        [`collapse-mode-${this.collapseMode}`]: isCollapsed,
+      };
+
       return (
-        <div class="nav-sidebar" role="navigation" aria-label="Sidebar navigation">
+        <div class={navClasses} role="navigation" aria-label="Sidebar navigation">
           <div class="nav-header" part="header">
-            <slot name="header" />
+            {/* aria-hidden lives on this inner wrapper (not nav-header itself) so the
+                built-in collapse-control button below -- which stays visually/keyboard
+                reachable in collapse-mode="hidden" via the CSS override -- is never pulled
+                out of the accessibility tree by an aria-hidden ancestor. */}
+            <span aria-hidden={isHiddenCollapsed ? 'true' : undefined}>
+              <slot name="header" />
+            </span>
+            {isCollapseActive && this.collapseControl === 'header' && this.renderCollapseControl('header')}
           </div>
 
-          <div class="nav-body" role="menu" part="body">
+          <div class="nav-body" role="menu" part="body" aria-hidden={isHiddenCollapsed ? 'true' : undefined}>
             {renderNavItems({
               items: this.items,
               expandedGroups: this.expandedGroups,
@@ -140,8 +218,13 @@ export class QSidepanel {
           </div>
 
           <div class="nav-footer" part="footer">
-            <slot name="footer" />
+            <span aria-hidden={isHiddenCollapsed ? 'true' : undefined}>
+              <slot name="footer" />
+            </span>
+            {isCollapseActive && this.collapseControl === 'footer' && this.renderCollapseControl('footer')}
           </div>
+
+          {isCollapseActive && this.collapseControl === 'edge' && this.renderCollapseControl('edge')}
         </div>
       );
     }

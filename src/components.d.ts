@@ -21,7 +21,7 @@ import { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.ty
 import { QQuantitySelectorVariant } from "./components/inputs/quantity-selector/quantity-selector.types";
 import { QReelLayout } from "./components/media/reel/reel.types";
 import { QScrollableEventDetail, QScrollableMode } from "./components/layout/scrollable/scrollable.types";
-import { QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItem } from "./components/layout/sidepanel/sidepanel.types";
+import { QSidepanelCollapseControl, QSidepanelCollapsedChangeDetail, QSidepanelCollapseMode, QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItem } from "./components/layout/sidepanel/sidepanel.types";
 import { QStepDiagramLayout } from "./components/indicators/step-diagram/step-diagram.types";
 import { QStepDiagramItemLayout, QStepDiagramItemLineStyle, QStepDiagramItemStatus } from "./components/indicators/step-diagram-item/step-diagram-item.types";
 import { QSyntaxBoxLanguage, QSyntaxBoxVariant } from "./components/data-display/syntax-box/syntax-box.types";
@@ -45,7 +45,7 @@ export { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.ty
 export { QQuantitySelectorVariant } from "./components/inputs/quantity-selector/quantity-selector.types";
 export { QReelLayout } from "./components/media/reel/reel.types";
 export { QScrollableEventDetail, QScrollableMode } from "./components/layout/scrollable/scrollable.types";
-export { QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItem } from "./components/layout/sidepanel/sidepanel.types";
+export { QSidepanelCollapseControl, QSidepanelCollapsedChangeDetail, QSidepanelCollapseMode, QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItem } from "./components/layout/sidepanel/sidepanel.types";
 export { QStepDiagramLayout } from "./components/indicators/step-diagram/step-diagram.types";
 export { QStepDiagramItemLayout, QStepDiagramItemLineStyle, QStepDiagramItemStatus } from "./components/indicators/step-diagram-item/step-diagram-item.types";
 export { QSyntaxBoxLanguage, QSyntaxBoxVariant } from "./components/data-display/syntax-box/syntax-box.types";
@@ -520,6 +520,31 @@ export namespace Components {
           * @default false
          */
         "accordion": boolean;
+        /**
+          * Where to render the built-in collapse toggle button. 'none' means the consumer supplies their own control and drives `collapsed` externally.
+          * @default 'none'
+         */
+        "collapseControl": QSidepanelCollapseControl;
+        /**
+          * Accessible label for the built-in collapse control (aria-label/title).
+          * @default 'Toggle sidebar'
+         */
+        "collapseLabel": string;
+        /**
+          * Visual behavior while collapsed: 'rail' shrinks to an icon-only rail, 'hidden' collapses to near-zero width. Reflected so light-DOM consumers can style slotted header/footer content differently per mode (e.g. q-sidepanel[collapsed][collapse-mode="rail"]).
+          * @default 'rail'
+         */
+        "collapseMode": QSidepanelCollapseMode;
+        /**
+          * Current collapsed state. Reflected + mutable: the component's own built-in control can flip it directly (same pattern as q-toggle's `checked`), while consumers can also drive it externally via property binding.
+          * @default false
+         */
+        "collapsed": boolean;
+        /**
+          * Enables the collapse feature. Only takes effect when variant="nav". Reflected so host-level width CSS (e.g. the collapsed/rail width rule) can be gated on it, keeping it in sync with the inner is-collapsed/collapse-mode-* classes applied in render().
+          * @default false
+         */
+        "collapsible": boolean;
         /**
           * @default true
          */
@@ -1035,6 +1060,7 @@ declare global {
     interface HTMLQSidepanelElementEventMap {
         "qClose": void;
         "qSelect": QSidepanelSelectDetail;
+        "qCollapsedChange": QSidepanelCollapsedChangeDetail;
     }
     interface HTMLQSidepanelElement extends Components.QSidepanel, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQSidepanelElementEventMap>(type: K, listener: (this: HTMLQSidepanelElement, ev: QSidepanelCustomEvent<HTMLQSidepanelElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1681,6 +1707,31 @@ declare namespace LocalJSX {
          */
         "accordion"?: boolean;
         /**
+          * Where to render the built-in collapse toggle button. 'none' means the consumer supplies their own control and drives `collapsed` externally.
+          * @default 'none'
+         */
+        "collapseControl"?: QSidepanelCollapseControl;
+        /**
+          * Accessible label for the built-in collapse control (aria-label/title).
+          * @default 'Toggle sidebar'
+         */
+        "collapseLabel"?: string;
+        /**
+          * Visual behavior while collapsed: 'rail' shrinks to an icon-only rail, 'hidden' collapses to near-zero width. Reflected so light-DOM consumers can style slotted header/footer content differently per mode (e.g. q-sidepanel[collapsed][collapse-mode="rail"]).
+          * @default 'rail'
+         */
+        "collapseMode"?: QSidepanelCollapseMode;
+        /**
+          * Current collapsed state. Reflected + mutable: the component's own built-in control can flip it directly (same pattern as q-toggle's `checked`), while consumers can also drive it externally via property binding.
+          * @default false
+         */
+        "collapsed"?: boolean;
+        /**
+          * Enables the collapse feature. Only takes effect when variant="nav". Reflected so host-level width CSS (e.g. the collapsed/rail width rule) can be gated on it, keeping it in sync with the inner is-collapsed/collapse-mode-* classes applied in render().
+          * @default false
+         */
+        "collapsible"?: boolean;
+        /**
           * @default true
          */
         "expanded"?: boolean;
@@ -1694,6 +1745,10 @@ declare namespace LocalJSX {
          */
         "mode"?: QSidepanelMode;
         "onQClose"?: (event: QSidepanelCustomEvent<void>) => void;
+        /**
+          * Fires whenever the BUILT-IN collapse control toggles collapsed. Does not fire when a consumer sets [collapsed] externally themselves.
+         */
+        "onQCollapsedChange"?: (event: QSidepanelCustomEvent<QSidepanelCollapsedChangeDetail>) => void;
         /**
           * Fires only for leaf items; clicking a parent group toggles it instead
          */
@@ -2057,6 +2112,11 @@ declare namespace LocalJSX {
         "mode": QSidepanelMode;
         "expanded": boolean;
         "accordion": boolean;
+        "collapsible": boolean;
+        "collapsed": boolean;
+        "collapseControl": QSidepanelCollapseControl;
+        "collapseMode": QSidepanelCollapseMode;
+        "collapseLabel": string;
     }
     interface QStepDiagramAttributes {
         "layout": QStepDiagramLayout;
