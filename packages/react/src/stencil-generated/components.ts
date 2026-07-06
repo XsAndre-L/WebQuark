@@ -11,7 +11,7 @@ import type { EventName, StencilReactComponent } from '@stencil/react-output-tar
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
 
-import { type NavbarSelectDetail, type Option, type QButtonCustomEvent, type QCarouselCustomEvent, type QCarouselSlideChangeDetail, type QDataTableCustomEvent, type QDataTableRowClickDetail, type QDataTableSelectionChangeDetail, type QDialogCustomEvent, type QDropdownCustomEvent, type QFormCustomEvent, type QFormResetDetail, type QFormSubmitDetail, type QInputCustomEvent, type QLinkCustomEvent, type QNavbarCustomEvent, type QQuantitySelectorCustomEvent, type QReelCustomEvent, type QScrollableCustomEvent, type QScrollableEventDetail, type QSidepanelCustomEvent, type QSidepanelSelectDetail, type QStepDiagramItemCustomEvent, type QSyntaxBoxCustomEvent, type QTextareaCustomEvent, type QThumbnailCustomEvent, type QThumbnailMaximizeDetail, type QToggleCustomEvent } from "@webquark/core";
+import { type NavbarSelectDetail, type Option, type QButtonCustomEvent, type QCarouselCustomEvent, type QCarouselSlideChangeDetail, type QDataTableCustomEvent, type QDataTableRowClickDetail, type QDataTableSelectionChangeDetail, type QDialogCustomEvent, type QDropdownCustomEvent, type QFormCustomEvent, type QFormResetDetail, type QFormSubmitDetail, type QInputCustomEvent, type QLinkCustomEvent, type QNavbarCustomEvent, type QQuantitySelectorCustomEvent, type QReelCustomEvent, type QScrollableCustomEvent, type QScrollableEventDetail, type QSidepanelCollapsedChangeDetail, type QSidepanelCustomEvent, type QSidepanelSelectDetail, type QStepDiagramItemCustomEvent, type QSyntaxBoxCustomEvent, type QTextareaCustomEvent, type QThumbnailCustomEvent, type QThumbnailMaximizeDetail, type QToggleCustomEvent } from "@webquark/core";
 import type { Components } from "@webquark/core/dist/components";
 import { QButton as QButtonElement, defineCustomElement as defineQButton } from "@webquark/core/dist/components/q-button.js";
 import { QCard as QCardElement, defineCustomElement as defineQCard } from "@webquark/core/dist/components/q-card.js";
@@ -300,7 +300,8 @@ export const QScrollable: StencilReactComponent<QScrollableElement, QScrollableE
 
 export type QSidepanelEvents = {
     onQClose: EventName<QSidepanelCustomEvent<void>>,
-    onQSelect: EventName<QSidepanelCustomEvent<QSidepanelSelectDetail>>
+    onQSelect: EventName<QSidepanelCustomEvent<QSidepanelSelectDetail>>,
+    onQCollapsedChange: EventName<QSidepanelCustomEvent<QSidepanelCollapsedChangeDetail>>
 };
 
 export const QSidepanel: StencilReactComponent<QSidepanelElement, QSidepanelEvents, Components.QSidepanel> = /*@__PURE__*/ createComponent<QSidepanelElement, QSidepanelEvents, Components.QSidepanel>({
@@ -310,7 +311,8 @@ export const QSidepanel: StencilReactComponent<QSidepanelElement, QSidepanelEven
     react: React,
     events: {
         onQClose: 'qClose',
-        onQSelect: 'qSelect'
+        onQSelect: 'qSelect',
+        onQCollapsedChange: 'qCollapsedChange'
     } as QSidepanelEvents,
     defineCustomElement: defineQSidepanel
 });

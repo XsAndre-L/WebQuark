@@ -565,20 +565,21 @@ export declare interface QScrollable extends Components.QScrollable {
 
 @ProxyCmp({
   defineCustomElementFn: defineQSidepanel,
-  inputs: ['accordion', 'expanded', 'items', 'mode', 'open', 'panelSize', 'side', 'value', 'variant']
+  inputs: ['accordion', 'collapseControl', 'collapseLabel', 'collapseMode', 'collapsed', 'collapsible', 'expanded', 'items', 'mode', 'open', 'panelSize', 'side', 'value', 'variant']
 })
 @Component({
   selector: 'q-sidepanel',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['accordion', 'expanded', 'items', 'mode', 'open', 'panelSize', 'side', 'value', 'variant'],
-  outputs: ['qClose', 'qSelect'],
+  inputs: ['accordion', 'collapseControl', 'collapseLabel', 'collapseMode', 'collapsed', 'collapsible', 'expanded', 'items', 'mode', 'open', 'panelSize', 'side', 'value', 'variant'],
+  outputs: ['qClose', 'qSelect', 'qCollapsedChange'],
 })
 export class QSidepanel {
   protected el: HTMLQSidepanelElement;
   @Output() qClose = new EventEmitter<QSidepanelCustomEvent<void>>();
   @Output() qSelect = new EventEmitter<QSidepanelCustomEvent<IQSidepanelQSidepanelSelectDetail>>();
+  @Output() qCollapsedChange = new EventEmitter<QSidepanelCustomEvent<IQSidepanelQSidepanelCollapsedChangeDetail>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -588,6 +589,7 @@ export class QSidepanel {
 
 import type { QSidepanelCustomEvent } from '@webquark/core/components';
 import type { QSidepanelSelectDetail as IQSidepanelQSidepanelSelectDetail } from '@webquark/core/components';
+import type { QSidepanelCollapsedChangeDetail as IQSidepanelQSidepanelCollapsedChangeDetail } from '@webquark/core/components';
 
 export declare interface QSidepanel extends Components.QSidepanel {
 
@@ -596,6 +598,10 @@ export declare interface QSidepanel extends Components.QSidepanel {
    * Fires only for leaf items; clicking a parent group toggles it instead
    */
   qSelect: EventEmitter<QSidepanelCustomEvent<IQSidepanelQSidepanelSelectDetail>>;
+  /**
+   * Fires whenever the BUILT-IN collapse control toggles collapsed. Does not fire when a consumer sets [collapsed] externally themselves.
+   */
+  qCollapsedChange: EventEmitter<QSidepanelCustomEvent<IQSidepanelQSidepanelCollapsedChangeDetail>>;
 }
 
 

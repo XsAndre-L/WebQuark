@@ -21,6 +21,7 @@ export function renderNavItems(options: RenderNavItemsOptions): any[] {
           style={{ paddingLeft: `${16 + depth * 16}px` }}
           role={hasChildren ? 'button' : 'menuitem'}
           tabindex={0}
+          title={item.label}
           aria-expanded={hasChildren ? String(isExpanded) : undefined}
           aria-current={isActive ? 'page' : undefined}
           onClick={() => onItemClick(item)}
