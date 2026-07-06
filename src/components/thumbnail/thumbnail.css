@@ -1,0 +1,109 @@
+:host {
+  display: block;
+  box-sizing: border-box;
+}
+
+.thumb-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--q-thumb-radius, var(--q-radius-md, 8px));
+  /* 2px border prevents visual frame jumping on highlight mode toggles */
+  border: 2px solid var(--q-thumb-border-color, transparent);
+  overflow: hidden;
+  cursor: pointer;
+  outline: none;
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-user-select: none;
+  
+  transition: transform var(--q-transition-normal, 250ms ease),
+              box-shadow var(--q-transition-normal, 250ms ease),
+              border-color var(--q-transition-normal, 250ms ease);
+}
+
+.thumb-wrapper:hover,
+.thumb-wrapper:focus-visible {
+  transform: scale(1.03);
+  --q-thumb-border-color: var(--q-color-primary, #60a5fa);
+  box-shadow: var(--q-shadow-medium, 0 8px 16px rgba(0,0,0,0.3));
+}
+
+/* Highlighted state styling */
+.is-highlighted {
+  --q-thumb-border-color: var(--q-color-primary, #60a5fa);
+  box-shadow: var(--q-thumb-glow, var(--q-glow-interactive, 0 0 20px rgba(96,165,250,0.3)));
+}
+
+/* Media aspect ratio frame container */
+.thumb-media-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--q-thumb-aspect-ratio, 16 / 9);
+  background: var(--q-bg-surface-2, #374151);
+  overflow: hidden;
+}
+
+.thumb-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--q-transition-normal, 250ms ease);
+}
+
+.thumb-wrapper:hover .thumb-image {
+  transform: scale(1.05);
+}
+
+/* Video Play Overlay Indicator */
+.video-play-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.7);
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  transition: background var(--q-transition-normal, 250ms ease), transform var(--q-transition-normal, 250ms ease);
+}
+
+.thumb-wrapper:hover .video-play-indicator {
+  background: var(--q-color-primary, #60a5fa);
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.video-play-indicator svg {
+  width: 16px;
+  height: 16px;
+  margin-left: 2px;
+}
+
+/* Caption Bottom Strip overlay */
+.thumb-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Solid fallback background */
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.4) 70%, rgba(0, 0, 0, 0) 100%);
+  padding: 12px 8px 8px 8px;
+  box-sizing: border-box;
+}
+
+.caption-text {
+  font-family: var(--q-font-family, inherit);
+  font-size: var(--q-font-size-xs, 0.75rem);
+  font-weight: var(--q-font-weight-medium, 500);
+  color: #ffffff;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}

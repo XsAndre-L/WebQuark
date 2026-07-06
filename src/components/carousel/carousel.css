@@ -1,0 +1,177 @@
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+}
+
+::slotted(*) {
+  box-sizing: border-box;
+  flex: var(--q-carousel-item-flex, 0 0 auto);
+  width: var(--q-carousel-item-width, auto);
+  scroll-snap-align: var(--q-carousel-snap-align, none);
+}
+
+.carousel-wrapper {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Viewport slider shell */
+.carousel-viewport {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  width: 100%;
+  gap: var(--q-carousel-gap, 16px);
+  padding: var(--q-carousel-padding, 48px 40px);
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  outline: none;
+}
+
+.carousel-viewport:focus-visible {
+  box-shadow: 0 0 0 2px var(--q-color-primary, #60a5fa);
+  border-radius: var(--q-radius-md, 8px);
+}
+
+/* Hide native scrollbars to keep overlay interfaces clean */
+.carousel-viewport::-webkit-scrollbar {
+  display: none;
+}
+.carousel-viewport {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Scroll snap rules mapping */
+.snap-start { scroll-snap-type: x mandatory; }
+.snap-center { scroll-snap-type: x mandatory; }
+.snap-end { scroll-snap-type: x mandatory; }
+
+/* Navigation buttons (OSR Safe solid transparent fallbacks) */
+.arrow-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: var(--q-carousel-arrow-size, 40px);
+  height: var(--q-carousel-arrow-size, 40px);
+  border-radius: 50%;
+  background: #4b5563; /* static fallback */
+  background: var(--q-carousel-arrow-bg, var(--q-bg-surface-3, #4b5563));
+  border: 1px solid var(--q-border-color, #374151); /* static fallback */
+  border: var(--q-carousel-arrow-border, var(--q-border, 1px solid var(--q-border-color, #374151)));
+  color: #f9fafb; /* static fallback */
+  color: var(--q-carousel-arrow-color, var(--q-fg-base, #f9fafb));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  outline: none;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* static fallback */
+  box-shadow: var(--q-shadow-medium, 0 8px 16px rgba(0,0,0,0.3));
+  opacity: 0; /* Fade in on hover or focus */
+  user-select: none;
+  -webkit-user-select: none;
+  
+  /* Restrict transitions to opacity and transform only */
+  transition: opacity var(--q-transition-normal, 250ms ease),
+              transform var(--q-transition-normal, 250ms ease);
+}
+
+.arrow-left { left: 8px; }
+.arrow-right { right: 8px; }
+
+/* Reveal arrows on hover or focus of the component wrapper */
+.carousel-wrapper:hover .arrow-btn,
+.carousel-wrapper:focus-within .arrow-btn {
+  opacity: 1;
+}
+
+.arrow-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--q-bg-base, #111827), 0 0 0 4px var(--q-color-primary, #60a5fa);
+  opacity: 1;
+  z-index: 12;
+}
+
+.arrow-btn:hover {
+  background: #60a5fa; /* static fallback */
+  background: var(--q-color-primary, #60a5fa);
+  border-color: #60a5fa; /* static fallback */
+  border-color: var(--q-color-primary, #60a5fa);
+  color: #111827; /* static fallback */
+  color: var(--q-bg-base, #111827);
+  transform: translateY(-50%) scale(1.08);
+}
+
+.arrow-btn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+/* Navigation button helper states */
+.arrow-btn[aria-disabled="true"] {
+  opacity: 0.25 !important;
+  pointer-events: none;
+  cursor: not-allowed;
+  transform: translateY(-50%) scale(0.9);
+}
+
+.arrow-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Indicator dots track */
+.carousel-indicators {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--q-carousel-indicator-gap, 8px);
+  margin-top: 16px;
+  width: 100%;
+}
+
+.indicator-dot {
+  padding: 0;
+  width: 6px; /* static fallback */
+  width: var(--q-carousel-indicator-size, 6px);
+  height: 6px; /* static fallback */
+  height: var(--q-carousel-indicator-size, 6px);
+  border-radius: var(--q-carousel-indicator-size, 6px);
+  background: #9ca3af; /* static fallback */
+  background: var(--q-fg-muted, #9ca3af);
+  border: none;
+  cursor: pointer;
+  outline: none;
+  opacity: 0.5;
+  user-select: none;
+  -webkit-user-select: none;
+  
+  /* Animate width for a perfect pill shape (prevents scaleX ellipse distortion) */
+  transition: width var(--q-transition-normal, 250ms ease),
+              opacity var(--q-transition-normal, 250ms ease);
+}
+
+.indicator-dot:hover {
+  opacity: 0.8;
+}
+
+.indicator-dot:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--q-bg-base, #111827), 0 0 0 4px var(--q-color-primary, #60a5fa);
+  opacity: 1;
+}
+
+.indicator-dot.is-active {
+  background: #60a5fa; /* static fallback */
+  background: var(--q-color-primary, #60a5fa);
+  opacity: 1;
+  width: 15px; /* static fallback */
+  width: calc(var(--q-carousel-indicator-size, 6px) * 2.5);
+}

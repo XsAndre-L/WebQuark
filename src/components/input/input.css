@@ -1,0 +1,276 @@
+:host {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Header Label Typography */
+.input-label {
+  font-family: var(--q-font-family, inherit);
+  font-size: var(--q-font-size-sm, 0.7rem);
+  font-weight: var(--q-font-weight-bold, 700);
+  color: var(--q-fg-muted, #9ca3af);
+  margin-bottom: 6px;
+  
+  transition: color var(--q-transition-fast, 150ms ease);
+}
+
+/* Input Control Flex Box */
+.input-control {
+  display: flex;
+  /* stretch so children (spinners) can fill full height; prefix/suffix self-align via align-items:center */
+  align-items: stretch;
+  position: relative;
+  width: 100%;
+  background: var(--q-input-bg, var(--q-bg-surface-2, #374151));
+  /* Standard static border limits size shifts on focus overlays */
+  border: var(--q-input-border, var(--q-border, 1px solid var(--q-border-color, #4b5563)));
+  border-radius: var(--q-input-radius, var(--q-radius-md, 8px));
+  box-sizing: border-box;
+  overflow: hidden;
+  
+  transition: border-color var(--q-transition-fast, 150ms ease), 
+              box-shadow var(--q-transition-fast, 150ms ease);
+}
+
+/* Native Input Box */
+.input-box {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: var(--q-input-padding, 10px 14px);
+  line-height: 1.2;
+  align-self: center;    /* centre vertically inside the stretch container */
+  
+  font-family: var(--q-font-family, inherit);
+  font-size: var(--q-font-size-base, 1rem);
+  font-weight: var(--q-font-weight-normal, 400);
+  color: var(--q-fg-base, #f9fafb);
+  
+  outline: none;
+  box-sizing: border-box;
+}
+
+/* Slot & Button Positioning inside the Flex Control */
+.prefix-container,
+.suffix-container {
+  display: flex;
+  align-items: center;   /* self-centre inside the stretch container */
+  padding: 0 12px;
+  color: var(--q-fg-muted, #9ca3af);
+  flex-shrink: 0;
+}
+
+.prefix-container {
+  padding-right: 0;
+}
+
+.suffix-container {
+  padding-left: 0;
+}
+
+/* Focused State triggers color update, keeping width constant */
+.input-control:focus-within {
+  border-color: var(--q-color-primary, #60a5fa);
+  box-shadow: 0 0 0 1px var(--q-color-primary, #60a5fa);
+}
+
+.input-wrapper:focus-within .input-label {
+  color: var(--q-color-primary, #60a5fa);
+}
+
+/* Validation Error State Specificity Overrides */
+.has-error .input-control {
+  border-color: var(--q-color-danger, #ef4444) !important;
+  box-shadow: none;
+}
+
+.has-error.input-wrapper:focus-within .input-label,
+.has-error .input-label {
+  color: var(--q-color-danger, #ef4444) !important;
+}
+
+.error-msg {
+  font-family: var(--q-font-family, inherit);
+  font-size: var(--q-font-size-sm, 0.7rem);
+  font-weight: var(--q-font-weight-normal, 400);
+  color: var(--q-color-danger, #ef4444);
+  margin-top: 6px;
+}
+
+/* Clear Button Sizing */
+.clear-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--q-fg-muted, #9ca3af);
+  border-radius: 50%;
+  outline: none;
+  transition: background var(--q-transition-fast, 150ms ease), color var(--q-transition-fast, 150ms ease);
+}
+
+.clear-btn:hover {
+  background: rgba(249, 250, 251, 0.08); /* Static background color fallback before color-mix */
+  background: var(--q-btn-hover-overlay, color-mix(in srgb, var(--q-fg-base, #f9fafb) 8%, transparent));
+  color: var(--q-fg-base, #f9fafb);
+}
+
+.clear-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Disabled State Visual Styling */
+.is-disabled {
+  opacity: 0.6;
+}
+.is-disabled .input-control {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Color input styling */
+input.input-box[type="color"] {
+  height: 40px;
+  padding: 6px;
+  cursor: pointer;
+  background: transparent;
+}
+
+input.input-box[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+input.input-box[type="color"]::-webkit-color-swatch {
+  border: none;
+  border-radius: var(--q-radius-sm, 4px);
+}
+
+input.input-box[type="color"]::-moz-color-swatch {
+  border: none;
+  border-radius: var(--q-radius-sm, 4px);
+}
+
+/* Sizing Layouts */
+.input-wrapper.size-sm .input-label {
+  font-size: var(--q-font-size-xs, 0.75rem);
+}
+.input-wrapper.size-sm .input-box {
+  padding: 6px 10px;
+  font-size: var(--q-font-size-sm, 0.7rem);
+}
+.input-wrapper.size-sm .prefix-container,
+.input-wrapper.size-sm .suffix-container {
+  padding: 0 8px;
+}
+.input-wrapper.size-sm .clear-btn svg {
+  width: 12px;
+  height: 12px;
+}
+.input-wrapper.size-sm input.input-box[type="color"] {
+  height: 32px;
+  padding: 4px;
+}
+
+.input-wrapper.size-md .input-label {
+  font-size: var(--q-font-size-sm, 0.7rem);
+}
+.input-wrapper.size-md .input-box {
+  padding: 10px 14px;
+  font-size: var(--q-font-size-base, 1rem);
+}
+.input-wrapper.size-md .prefix-container,
+.input-wrapper.size-md .suffix-container {
+  padding: 0 12px;
+}
+.input-wrapper.size-md .clear-btn svg {
+  width: 14px;
+  height: 14px;
+}
+.input-wrapper.size-md input.input-box[type="color"] {
+  height: 40px;
+  padding: 6px;
+}
+
+.input-wrapper.size-lg .input-label {
+  font-size: var(--q-font-size-base, 1rem);
+}
+.input-wrapper.size-lg .input-box {
+  padding: 14px 18px;
+  font-size: var(--q-font-size-lg, 1.125rem);
+}
+.input-wrapper.size-lg .prefix-container,
+.input-wrapper.size-lg .suffix-container {
+  padding: 0 16px;
+}
+.input-wrapper.size-lg .clear-btn svg {
+  width: 18px;
+  height: 18px;
+}
+.input-wrapper.size-lg input.input-box[type="color"] {
+  height: 48px;
+  padding: 8px;
+}
+
+/* Hide Native WebKit and Firefox Spinners */
+.input-box::-webkit-inner-spin-button,
+.input-box::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.input-box[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Custom Stacked Spinners */
+.input-spinners {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;   /* fill the full height of .input-control */
+  width: 36px;
+  flex-shrink: 0;
+  border-left: 1px solid var(--q-border-color, #4b5563);
+}
+
+.spinner-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;               /* each button takes exactly half the available height */
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  color: var(--q-fg-muted, #9ca3af);
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: background-color var(--q-transition-fast, 150ms ease),
+              color var(--q-transition-fast, 150ms ease);
+}
+
+.spinner-btn:hover {
+  background: var(--q-bg-surface-3, #4b5563);
+  color: var(--q-fg-base, #f9fafb);
+}
+
+.spinner-up {
+  border-bottom: 1px solid var(--q-border-color, #4b5563);
+}
+
+.spinner-btn svg {
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+}
