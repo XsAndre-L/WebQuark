@@ -19,6 +19,7 @@
   /* Injected third-party SVGs often ship width/height attributes that must not resize the host. */
   width: 100% !important;
   height: 100% !important;
+  stroke-width: var(--q-icon-stroke-width) !important;
   display: block;
 }
 

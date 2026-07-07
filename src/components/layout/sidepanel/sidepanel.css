@@ -479,6 +479,12 @@
   transition: background 80ms ease-out, color 80ms ease-out;
 }
 
+.collapse-control q-icon {
+  width: var(--q-sidepanel-collapse-icon-size, 20px) !important;
+  height: var(--q-sidepanel-collapse-icon-size, 20px) !important;
+  --q-icon-stroke-width: var(--q-sidepanel-collapse-icon-stroke-width, 2.8);
+}
+
 .collapse-control:hover,
 .collapse-control:focus-visible {
   background: var(--q-bg-surface-2, rgba(255, 255, 255, 0.05));
