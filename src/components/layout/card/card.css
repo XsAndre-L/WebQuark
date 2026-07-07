@@ -24,8 +24,8 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  border-radius: var(--q-radius-lg, 12px);
-  padding: var(--q-padding-lg, 24px);
+  border-radius: var(--q-radius-lg, 11px);
+  padding: var(--q-padding-lg, 16px);
   border: var(--q-card-border, 1px solid var(--q-border-color, #374151));
   box-sizing: border-box;
 
@@ -46,20 +46,17 @@
 }
 
 /* Elevation Levels */
-.elevation-low,
-.elevation-1 {
+.elevation-low {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   box-shadow: var(--q-shadow-low, 0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
-.elevation-medium,
-.elevation-2 {
+.elevation-medium {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
   box-shadow: var(--q-shadow-medium, 0 8px 16px rgba(0, 0, 0, 0.3));
 }
 
-.elevation-high,
-.elevation-3 {
+.elevation-high {
   box-shadow: 0 16px 32px rgba(0, 0, 0, 0.45);
   box-shadow: var(--q-shadow-high, 0 16px 32px rgba(0, 0, 0, 0.45));
 }
@@ -77,10 +74,10 @@
 /* Header Slot Typography */
 .card-header {
   font-family: var(--q-font-family, inherit);
-  font-size: var(--q-font-size-lg, 1.125rem);
-  font-weight: var(--q-font-weight-bold, 700);
+  font-size: var(--q-font-size-lg, 1rem);
+  font-weight: var(--q-font-weight-bold, 600);
   line-height: 1.4;
-  margin-bottom: var(--q-padding-sm, 12px);
+  margin-bottom: var(--q-padding-sm, 4px);
 }
 
 .card-header.is-hidden {
@@ -90,7 +87,7 @@
 /* Body Slot Typography */
 .card-body {
   font-family: var(--q-font-family, inherit);
-  font-size: var(--q-font-size-base, 1rem);
+  font-size: var(--q-font-size-base, 0.9rem);
   font-weight: var(--q-font-weight-normal, 400);
   line-height: 1.5;
 }

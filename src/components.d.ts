@@ -112,20 +112,27 @@ export namespace Components {
          */
         "variant": QButtonVariant;
     }
+    /**
+     * Flexible content card with optional header slot, elevation, glass, lift, and interactive button semantics.
+     */
     interface QCard {
         /**
+          * Visual elevation level; numeric values are accepted as legacy aliases for low, medium, and high.
           * @default 'medium'
          */
         "elevation": QCardElevation;
         /**
+          * Applies translucent glass styling without backdrop-filter.
           * @default false
          */
         "glass": boolean;
         /**
+          * Adds button semantics and keyboard activation to the card container.
           * @default false
          */
         "interactive": boolean;
         /**
+          * Applies a visual hover/focus lift without adding interactive semantics.
           * @default false
          */
         "lift": boolean;
@@ -1183,6 +1190,9 @@ declare global {
         prototype: HTMLQButtonElement;
         new (): HTMLQButtonElement;
     };
+    /**
+     * Flexible content card with optional header slot, elevation, glass, lift, and interactive button semantics.
+     */
     interface HTMLQCardElement extends Components.QCard, HTMLStencilElement {
     }
     var HTMLQCardElement: {
@@ -1700,20 +1710,27 @@ declare namespace LocalJSX {
          */
         "variant"?: QButtonVariant;
     }
+    /**
+     * Flexible content card with optional header slot, elevation, glass, lift, and interactive button semantics.
+     */
     interface QCard {
         /**
+          * Visual elevation level; numeric values are accepted as legacy aliases for low, medium, and high.
           * @default 'medium'
          */
         "elevation"?: QCardElevation;
         /**
+          * Applies translucent glass styling without backdrop-filter.
           * @default false
          */
         "glass"?: boolean;
         /**
+          * Adds button semantics and keyboard activation to the card container.
           * @default false
          */
         "interactive"?: boolean;
         /**
+          * Applies a visual hover/focus lift without adding interactive semantics.
           * @default false
          */
         "lift"?: boolean;
@@ -3115,6 +3132,9 @@ declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
             "q-button": LocalJSX.IntrinsicElements["q-button"] & JSXBase.HTMLAttributes<HTMLQButtonElement>;
+            /**
+             * Flexible content card with optional header slot, elevation, glass, lift, and interactive button semantics.
+             */
             "q-card": LocalJSX.IntrinsicElements["q-card"] & JSXBase.HTMLAttributes<HTMLQCardElement>;
             "q-carousel": LocalJSX.IntrinsicElements["q-carousel"] & JSXBase.HTMLAttributes<HTMLQCarouselElement>;
             /**
