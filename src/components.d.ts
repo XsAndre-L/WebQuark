@@ -754,21 +754,31 @@ export namespace Components {
          */
         "value": string;
     }
+    /**
+     * Media thumbnail that emits qMaximize for gallery and reel lightbox workflows.
+     */
     interface QThumbnail {
         /**
-          * @default ""
+          * Alternative text for the thumbnail image.
+          * @default ''
          */
         "alt": string;
         /**
+          * Applies the highlighted visual state.
           * @default false
          */
         "highlighted": boolean;
+        /**
+          * Visible caption text and preferred accessible label.
+         */
         "label"?: string;
         /**
-          * @default ""
+          * Image or poster URL rendered by the thumbnail.
+          * @default ''
          */
         "src": string;
         /**
+          * Marks the media as video and renders a decorative play indicator.
           * @default false
          */
         "video": boolean;
@@ -1250,6 +1260,9 @@ declare global {
     interface HTMLQThumbnailElementEventMap {
         "qMaximize": QThumbnailMaximizeDetail;
     }
+    /**
+     * Media thumbnail that emits qMaximize for gallery and reel lightbox workflows.
+     */
     interface HTMLQThumbnailElement extends Components.QThumbnail, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQThumbnailElementEventMap>(type: K, listener: (this: HTMLQThumbnailElement, ev: QThumbnailCustomEvent<HTMLQThumbnailElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2080,22 +2093,35 @@ declare namespace LocalJSX {
          */
         "value"?: string;
     }
+    /**
+     * Media thumbnail that emits qMaximize for gallery and reel lightbox workflows.
+     */
     interface QThumbnail {
         /**
-          * @default ""
+          * Alternative text for the thumbnail image.
+          * @default ''
          */
         "alt"?: string;
         /**
+          * Applies the highlighted visual state.
           * @default false
          */
         "highlighted"?: boolean;
+        /**
+          * Visible caption text and preferred accessible label.
+         */
         "label"?: string;
+        /**
+          * Emitted when the thumbnail is activated.
+         */
         "onQMaximize"?: (event: QThumbnailCustomEvent<QThumbnailMaximizeDetail>) => void;
         /**
-          * @default ""
+          * Image or poster URL rendered by the thumbnail.
+          * @default ''
          */
         "src"?: string;
         /**
+          * Marks the media as video and renders a decorative play indicator.
           * @default false
          */
         "video"?: boolean;
@@ -2450,6 +2476,9 @@ declare module "@stencil/core" {
             "q-step-diagram-item": LocalJSX.IntrinsicElements["q-step-diagram-item"] & JSXBase.HTMLAttributes<HTMLQStepDiagramItemElement>;
             "q-syntax-box": LocalJSX.IntrinsicElements["q-syntax-box"] & JSXBase.HTMLAttributes<HTMLQSyntaxBoxElement>;
             "q-textarea": LocalJSX.IntrinsicElements["q-textarea"] & JSXBase.HTMLAttributes<HTMLQTextareaElement>;
+            /**
+             * Media thumbnail that emits qMaximize for gallery and reel lightbox workflows.
+             */
             "q-thumbnail": LocalJSX.IntrinsicElements["q-thumbnail"] & JSXBase.HTMLAttributes<HTMLQThumbnailElement>;
             "q-toggle": LocalJSX.IntrinsicElements["q-toggle"] & JSXBase.HTMLAttributes<HTMLQToggleElement>;
             "q-tooltip": LocalJSX.IntrinsicElements["q-tooltip"] & JSXBase.HTMLAttributes<HTMLQTooltipElement>;

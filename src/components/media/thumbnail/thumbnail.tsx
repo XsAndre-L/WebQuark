@@ -2,6 +2,10 @@ import { Component, Prop, h, Element, Event, EventEmitter } from '@stencil/core'
 
 import type { QThumbnailMaximizeDetail } from './thumbnail.types';
 
+/**
+ * Media thumbnail that emits qMaximize for gallery and reel lightbox workflows.
+ * @slot - Custom overlay content rendered above the thumbnail media.
+ */
 @Component({
   tag: 'q-thumbnail',
   styleUrl: 'thumbnail.css',
@@ -9,15 +13,23 @@ import type { QThumbnailMaximizeDetail } from './thumbnail.types';
 })
 export class QThumbnail {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
-  @Prop() src: string = "";
+  /** Image or poster URL rendered by the thumbnail. */
+  @Prop() src: string = '';
+  /** Marks the media as video and renders a decorative play indicator. */
   @Prop({ reflect: true }) video: boolean = false;
+  /** Visible caption text and preferred accessible label. */
   @Prop() label?: string;
-  @Prop() alt: string = "";
+  /** Alternative text for the thumbnail image. */
+  @Prop() alt: string = '';
+  /** Applies the highlighted visual state. */
   @Prop({ reflect: true }) highlighted: boolean = false;
 
   @Element() el!: HTMLElement;
 
-  @Event() qMaximize: EventEmitter<QThumbnailMaximizeDetail>;
+  /** Emitted when the thumbnail is activated. */
+  @Event() qMaximize!: EventEmitter<QThumbnailMaximizeDetail>;
+
+  // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
   private handleTrigger = (e: Event) => {
     e.stopPropagation();
@@ -26,32 +38,39 @@ export class QThumbnail {
       label: this.label,
       video: this.video,
       alt: this.alt,
-      triggerEl: this.el
+      triggerEl: this.el,
     });
+  };
+
+  private handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+
+    e.preventDefault();
+    this.handleTrigger(e);
   };
 
   // ===================== [6] RENDER (Visual Template Only) =====================
 
   render() {
     return (
-      <div 
+      <div
         class={{
           'thumb-wrapper': true,
           'is-highlighted': this.highlighted,
-          'is-video': this.video
+          'is-video': this.video,
         }}
         onClick={this.handleTrigger}
         role="button"
         tabindex="0"
         aria-label={this.label || this.alt || 'Media item'}
-        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') this.handleTrigger(e); }}
+        onKeyDown={this.handleKeyDown}
       >
         <div class="thumb-media-container">
           <img class="thumb-image" src={this.src} alt={this.alt} loading="lazy" />
 
           {this.video && (
-            <div class="video-play-indicator">
-              <svg viewBox="0 0 24 24" fill="currentColor">
+            <div class="video-play-indicator" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <polygon points="5 3 19 12 5 21 5 3" />
               </svg>
             </div>
