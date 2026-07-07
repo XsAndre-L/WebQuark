@@ -228,11 +228,17 @@ import type { QDataTableRowClickDetail as IQDataTableQDataTableRowClickDetail } 
 import type { QDataTableSelectionChangeDetail as IQDataTableQDataTableSelectionChangeDetail } from '@webquark/core/components';
 
 export declare interface QDataTable extends Components.QDataTable {
-
+  /**
+   * Emitted when a non-interactive row area is clicked or activated with the keyboard.
+   */
   qRowClick: EventEmitter<QDataTableCustomEvent<IQDataTableQDataTableRowClickDetail>>;
-
+  /**
+   * Emitted when selected rows change.
+   */
   qSelectionChange: EventEmitter<QDataTableCustomEvent<IQDataTableQDataTableSelectionChangeDetail>>;
-
+  /**
+   * Emitted when the built-in search input value changes.
+   */
   qSearch: EventEmitter<QDataTableCustomEvent<string>>;
 }
 

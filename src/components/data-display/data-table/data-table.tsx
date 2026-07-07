@@ -1,12 +1,26 @@
-import { Component, Prop, Element, Event, EventEmitter, h } from '@stencil/core';
+import { Component, Prop, Event, EventEmitter, h } from '@stencil/core';
 import { safeParseJson } from '../../../utils/utils';
 import type { QDataTableRowClickDetail, QDataTableSelectionChangeDetail, TableColumn } from './data-table.types';
 
-function getNestedValue(obj: any, path: string): any {
+function getNestedValue<T extends Record<string, any>>(obj: T, path: string): any {
   if (!obj || !path) return undefined;
   return path.split('.').reduce((acc, part) => acc && acc[part], obj);
 }
 
+/**
+ * Data grid with optional toolbar, search, row activation, and multi-row selection.
+ * @slot toolbar-left - Content placed before the search and filters area.
+ * @slot filters - Filter controls displayed in the left toolbar group.
+ * @slot actions - Action controls displayed in the right toolbar group.
+ * @slot empty - Empty-state content shown when no rows are available.
+ * @slot footer - Footer content rendered below the scrollable table.
+ * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
+ * @cssprop --q-table-dropdown-bg - Background color forwarded to slotted q-dropdown controls.
+ * @cssprop --q-table-dropdown-menu-bg - Menu background color forwarded to slotted q-dropdown controls.
+ * @cssprop --q-table-dropdown-border - Border style forwarded to slotted q-dropdown controls.
+ * @cssprop --q-table-dropdown-primary - Primary color forwarded to slotted q-dropdown controls.
+ * @cssprop --q-table-dropdown-fg - Foreground color forwarded to slotted q-dropdown controls.
+ */
 @Component({
   tag: 'q-data-table',
   styleUrl: 'data-table.css',
@@ -14,36 +28,60 @@ function getNestedValue(obj: any, path: string): any {
 })
 export class QDataTable {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
-  @Element() el!: HTMLElement;
-
+  /** Column definitions, or a JSON string of column definitions. */
   @Prop() columns: TableColumn[] | string = [];
+
+  /** Row data, or a JSON string of row data. */
   @Prop() items: any[] | string = [];
+
+  /** Shows a loading state and suppresses row rendering while true. */
   @Prop() loading: boolean = false;
+
+  /** Enables row selection checkboxes and selection state. */
   @Prop() selectable: boolean = false;
+
+  /** Keys for currently selected rows. */
   @Prop({ mutable: true }) selectedKeys: any[] = [];
+
+  /** Row field used as the stable selection and render key. Falls back to the row index. */
   @Prop() keyField: string = 'id';
+
+  /** Shows the optional toolbar above the table. */
   @Prop() showToolbar: boolean = false;
+
+  /** Title text rendered in the toolbar. */
   @Prop() toolbarTitle?: string;
+
+  /** Shows the built-in toolbar search input. */
   @Prop() showSearch: boolean = false;
+
+  /** Placeholder text for the built-in search input. */
   @Prop() searchPlaceholder: string = 'Search...';
+
+  /** Current search input value. */
   @Prop({ mutable: true }) searchValue: string = '';
 
+  /** Emitted when a non-interactive row area is clicked or activated with the keyboard. */
   @Event() qRowClick!: EventEmitter<QDataTableRowClickDetail>;
+
+  /** Emitted when selected rows change. */
   @Event() qSelectionChange!: EventEmitter<QDataTableSelectionChangeDetail>;
+
+  /** Emitted when the built-in search input value changes. */
   @Event() qSearch!: EventEmitter<string>;
+
+  // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
   private getParsedColumns(): TableColumn[] {
     return safeParseJson<TableColumn[]>(this.columns, [], 'QDataTable');
   }
-
-  // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
   private getParsedItems(): any[] {
     return safeParseJson<any[]>(this.items, [], 'QDataTable');
   }
 
   private getItemKey(item: any, index: number): any {
-    if (item && this.keyField in item) {
+    if (item && typeof item === 'object' && this.keyField in item) {
       return item[this.keyField];
     }
     return index;
@@ -83,12 +121,7 @@ export class QDataTable {
     this.emitSelectionChange();
   }
 
-  private toggleRowSelection(item: any, index: number, event: Event) {
-    event.stopPropagation();
-    this.toggleKeyInSelection(this.getItemKey(item, index));
-  }
-
-  private toggleAllSelection(event: Event) {
+  private handleSelectAllChange(event: Event) {
     const checkbox = event.target as HTMLInputElement;
     const isChecked = checkbox.checked;
 
@@ -99,6 +132,11 @@ export class QDataTable {
       this.selectedKeys = [];
     }
     this.emitSelectionChange();
+  }
+
+  private handleRowCheckboxChange(item: any, index: number, event: Event) {
+    event.stopPropagation();
+    this.toggleKeyInSelection(this.getItemKey(item, index));
   }
 
   private emitSelectionChange() {
@@ -180,6 +218,7 @@ export class QDataTable {
     const items = this.getParsedItems();
     const { checked, indeterminate } = this.getSelectionState();
     const selectedKeySet = this.getSelectedKeySet();
+    const columnSpan = columns.length + (this.selectable ? 1 : 0) || 1;
 
     return (
       <div class="table-container" role="grid">
@@ -215,101 +254,88 @@ export class QDataTable {
               <tr role="row">
                 {this.selectable && (
                   <th class="col-selection" role="columnheader">
-                  <input
-                    type="checkbox"
-                    class="checkbox-input"
-                    checked={checked}
-                    ref={el => {
-                      if (el) el.indeterminate = indeterminate;
-                    }}
-                    onChange={e => this.toggleAllSelection(e)}
-                    aria-label="Select all rows"
-                  />
-                </th>
-              )}
-              {columns.map(col => {
-                const style: Record<string, string> = {};
-                if (col.width) {
-                  style.width = col.width;
-                }
-                return (
-                  <th
-                    style={style}
-                    class={col.className || ''}
-                    role="columnheader"
-                  >
-                    {this.getHeaderLabel(col)}
+                    <input
+                      type="checkbox"
+                      class="checkbox-input"
+                      checked={checked}
+                      ref={el => {
+                        if (el) el.indeterminate = indeterminate;
+                      }}
+                      onChange={e => this.handleSelectAllChange(e)}
+                      aria-label="Select all rows"
+                    />
                   </th>
-                );
-              })}
-            </tr>
-          </thead>
-          <tbody>
-            {this.loading ? (
-              <tr role="row">
-                <td
-                  colSpan={columns.length + (this.selectable ? 1 : 0)}
-                  class="loading-placeholder-cell"
-                  role="gridcell"
-                />
+                )}
+                {columns.map(col => {
+                  const style: Record<string, string> = {};
+                  if (col.width) {
+                    style.width = col.width;
+                  }
+                  return (
+                    <th style={style} class={col.className || ''} role="columnheader">
+                      {this.getHeaderLabel(col)}
+                    </th>
+                  );
+                })}
               </tr>
-            ) : items.length === 0 ? (
-              <tr role="row">
-                <td
-                  colSpan={columns.length + (this.selectable ? 1 : 0)}
-                  class="empty-cell"
-                  role="gridcell"
-                >
-                  <slot name="empty">No data available</slot>
-                </td>
-              </tr>
-            ) : (
-              items.map((item, index) => {
-                const key = this.getItemKey(item, index);
-                const isSelected = selectedKeySet.has(key);
+            </thead>
+            <tbody>
+              {this.loading ? (
+                <tr role="row">
+                  <td colSpan={columnSpan} class="loading-placeholder-cell" role="gridcell">
+                    <div class="table-loading-state">
+                      <q-circular-progress indeterminate={true} size="sm" />
+                    </div>
+                  </td>
+                </tr>
+              ) : items.length === 0 ? (
+                <tr role="row">
+                  <td colSpan={columnSpan} class="empty-cell" role="gridcell">
+                    <slot name="empty">No data available</slot>
+                  </td>
+                </tr>
+              ) : (
+                items.map((item, index) => {
+                  const key = this.getItemKey(item, index);
+                  const isSelected = selectedKeySet.has(key);
 
-                return (
-                  <tr
-                    key={key}
-                    class={{
-                      'row-el': true,
-                      'is-selected': isSelected,
-                    }}
-                    tabindex="0"
-                    role="row"
-                    aria-selected={isSelected ? 'true' : 'false'}
-                    onClick={e => this.handleRowClick(item, index, e)}
-                    onKeyDown={e => this.handleRowKeyDown(item, index, e)}
-                  >
-                    {this.selectable && (
-                      <td class="cell-selection" role="gridcell">
-                        <input
-                          type="checkbox"
-                          class="checkbox-input"
-                          checked={isSelected}
-                          onChange={e => this.toggleRowSelection(item, index, e)}
-                          aria-label={`Select row ${index + 1}`}
-                        />
-                      </td>
-                    )}
-                    {columns.map(col => (
-                      <td class={col.className || ''} role="gridcell">
-                        {this.renderCell(item, col)}
-                      </td>
-                    ))}
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
-        {this.loading && (
-          <div class="table-loading-overlay">
-            <q-circular-progress indeterminate={true} size="sm" />
-          </div>
-        )}
-       </div>
-       <slot name="footer" />
+                  return (
+                    <tr
+                      key={key}
+                      class={{
+                        'row-el': true,
+                        'is-selected': isSelected,
+                      }}
+                      tabindex="0"
+                      role="row"
+                      aria-selected={isSelected ? 'true' : 'false'}
+                      onClick={e => this.handleRowClick(item, index, e)}
+                      onKeyDown={e => this.handleRowKeyDown(item, index, e)}
+                    >
+                      {this.selectable && (
+                        <td class="cell-selection" role="gridcell">
+                          <input
+                            type="checkbox"
+                            class="checkbox-input"
+                            checked={isSelected}
+                            onChange={e => this.handleRowCheckboxChange(item, index, e)}
+                            aria-label={`Select row ${index + 1}`}
+                          />
+                        </td>
+                      )}
+                      {columns.map(col => (
+                        <td class={col.className || ''} role="gridcell">
+                          {this.renderCell(item, col)}
+                        </td>
+                      ))}
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+        <slot name="footer" />
       </div>
     );
   }
