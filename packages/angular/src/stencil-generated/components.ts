@@ -764,9 +764,13 @@ export class QSyntaxBox {
 import type { QSyntaxBoxCustomEvent } from '@webquark/core/components';
 
 export declare interface QSyntaxBox extends Components.QSyntaxBox {
-
+  /**
+   * Emitted when editable content is committed by the native change event or by formatting.
+   */
   qChange: EventEmitter<QSyntaxBoxCustomEvent<string>>;
-
+  /**
+   * Emitted on each editable content input and after formatting.
+   */
   qInput: EventEmitter<QSyntaxBoxCustomEvent<string>>;
 }
 

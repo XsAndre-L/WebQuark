@@ -1,4 +1,5 @@
 :host {
+  /* Syntax boxes intentionally keep an always-dark code theme so token contrast remains stable across app themes. */
   --q-syntax-bg: #0d1117;
   --q-syntax-border: #21262d;
   --q-syntax-header-bg: #161b22;
@@ -8,6 +9,10 @@
   --q-syntax-attr: #79c0ff;
   --q-syntax-value: #a5d6ff;
   --q-syntax-number: #f0883e;
+  --q-syntax-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --q-syntax-header-font-size: var(--q-font-size-sm, 0.7rem);
+  --q-syntax-code-font-size: var(--q-font-size-base, 0.9rem);
+  --q-syntax-compact-font-size: var(--q-font-size-sm, 0.7rem);
 
   display: block;
   box-sizing: border-box;
@@ -34,7 +39,7 @@
   padding: 4px 16px;
   background: var(--q-syntax-header-bg);
   border-bottom: 1px solid var(--q-syntax-border);
-  font-size: 0.8rem;
+  font-size: var(--q-syntax-header-font-size);
   color: var(--q-syntax-comment);
   box-sizing: border-box;
   flex-shrink: 0;
@@ -55,7 +60,6 @@
   flex-shrink: 0;
 }
 
-
 /* Plain Layout */
 .plain-container {
   margin: 0;
@@ -69,15 +73,8 @@
   padding: 16px;
   overflow-x: hidden;
   overflow-y: auto;
-  font-family:
-    ui-monospace,
-    SFMono-Regular,
-    SF Mono,
-    Menlo,
-    Consolas,
-    Liberation Mono,
-    monospace;
-  font-size: 0.85rem;
+  font-family: var(--q-syntax-font-mono);
+  font-size: var(--q-syntax-code-font-size);
   line-height: 1.5;
   color: var(--q-syntax-text);
   white-space: pre-wrap;
@@ -87,7 +84,7 @@
 /* For plain variant custom classes if needed */
 :host(.variant-card-code) .code-body {
   padding: 10px;
-  font-size: 0.75rem;
+  font-size: var(--q-syntax-compact-font-size);
   border-radius: var(--q-radius-md, 8px);
   background: var(--q-syntax-bg);
   border: 1px solid var(--q-syntax-border);
@@ -132,15 +129,8 @@
   margin: 0;
   padding: 16px;
   box-sizing: border-box;
-  font-family:
-    ui-monospace,
-    SFMono-Regular,
-    SF Mono,
-    Menlo,
-    Consolas,
-    Liberation Mono,
-    monospace;
-  font-size: 0.85rem;
+  font-family: var(--q-syntax-font-mono);
+  font-size: var(--q-syntax-code-font-size);
   line-height: 1.5;
   white-space: pre-wrap;
   word-wrap: break-word;
@@ -178,29 +168,35 @@
 }
 
 /* Plain variant editor styles */
-:host(.is-editable) .plain-container:focus-within {
+:host([editable]) .plain-container:focus-within {
   outline: var(--q-focus-ring, 2px solid var(--q-color-primary, #60a5fa));
   border-radius: var(--q-radius-md, 8px);
 }
 
 /* Disabled State Visual Styling */
-:host([disabled]),
-:host(.is-disabled) {
+:host([disabled]) {
   opacity: 0.6;
   cursor: not-allowed !important;
 }
 
 :host([disabled]) .editor-textarea,
-:host(.is-disabled) .editor-textarea,
 .editor-textarea:disabled,
 :host([disabled]) .code-body,
-:host(.is-disabled) .code-body,
-:host([disabled]) .code-body *,
-:host(.is-disabled) .code-body * {
+:host([disabled]) .code-body * {
   cursor: not-allowed !important;
   user-select: none;
   -webkit-user-select: none;
 }
 
-
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 
