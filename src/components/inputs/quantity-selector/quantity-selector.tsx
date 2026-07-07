@@ -2,6 +2,10 @@ import { Component, Prop, State, Event, EventEmitter, h, Watch } from '@stencil/
 
 import type { QQuantitySelectorVariant } from './quantity-selector.types';
 
+/**
+ * Numeric quantity control with increment/decrement buttons and a bounded editable value.
+ * @part input - Editable numeric value field.
+ */
 @Component({
   tag: 'q-quantity-selector',
   styleUrl: 'quantity-selector.css',
@@ -25,49 +29,57 @@ export class QQuantitySelector {
   @Prop({ reflect: true }) variant: QQuantitySelectorVariant = 'horizontal';
 
   /** Emitted when the quantity value changes. */
-  @Event() qChange: EventEmitter<number>;
+  @Event() qChange!: EventEmitter<number>;
 
-  @Event() qFocus: EventEmitter<FocusEvent>;
-  @Event() qBlur: EventEmitter<FocusEvent>;
-  @Event() qClick: EventEmitter<MouseEvent>;
+  /** Emitted when the input receives focus. */
+  @Event() qFocus!: EventEmitter<FocusEvent>;
+
+  /** Emitted when the input loses focus, after the value is reconciled. */
+  @Event() qBlur!: EventEmitter<FocusEvent>;
+
+  /** Emitted when the quantity selector is clicked. */
+  @Event() qClick!: EventEmitter<MouseEvent>;
+
+  // ========================= [2] INTERNAL STATE & REFS =========================
 
   @State() inputValue: string = '0';
+
+  // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
   @Watch('value')
   watchValue(newValue: number) {
     if (newValue !== parseFloat(this.inputValue)) {
-      this.inputValue = newValue !== undefined && newValue !== null ? String(newValue) : '0';
+      this.inputValue = Number.isFinite(newValue) ? String(newValue) : '0';
     }
   }
 
-  // ========================= [3] LIFECYCLE & WATCHERS ==========================
-
   componentWillLoad() {
-    this.inputValue = this.value !== undefined && this.value !== null ? String(this.value) : '0';
+    this.inputValue = Number.isFinite(this.value) ? String(this.value) : '0';
   }
 
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
   private getCalculatedWidth(): string {
-  const hasMin = this.min !== undefined && this.min !== null;
-  const hasMax = this.max !== undefined && this.max !== null;
+    const hasMin = this.min !== undefined && this.min !== null;
+    const hasMax = this.max !== undefined && this.max !== null;
 
-  let charCount = 3;
+    let charCount = 3;
 
-  if (hasMin || hasMax) {
-    charCount = Math.max(
-      3,
-      this.min?.toString().length ?? 0,
-      this.max?.toString().length ?? 0
-    );
-  } else {
-    charCount = Math.max(3, this.value?.toString().length ?? 0);
+    if (hasMin || hasMax) {
+      charCount = Math.max(
+        3,
+        this.min?.toString().length ?? 0,
+        this.max?.toString().length ?? 0
+      );
+    } else {
+      charCount = Math.max(3, this.value?.toString().length ?? 0);
+    }
+
+    return `calc(${charCount} * var(--q-quantity-selector-char-width, 1ch) + var(--q-quantity-selector-input-padding, 16px))`;
   }
 
-  return `calc(${charCount} * var(--q-quantity-selector-char-width, 1ch) + var(--q-quantity-selector-input-padding, 16px))`;
-}
   private increment = () => {
-    const current = this.value !== undefined && this.value !== null ? this.value : 0;
+    const current = Number.isFinite(this.value) ? this.value : 0;
     let next = current + this.step;
     if (this.max !== undefined && this.max !== null) {
       next = Math.min(this.max, next);
@@ -81,7 +93,7 @@ export class QQuantitySelector {
   };
 
   private decrement = () => {
-    const current = this.value !== undefined && this.value !== null ? this.value : 0;
+    const current = Number.isFinite(this.value) ? this.value : 0;
     let next = current - this.step;
     if (this.min !== undefined && this.min !== null) {
       next = Math.max(this.min, next);
@@ -147,6 +159,26 @@ export class QQuantitySelector {
     this.reconcileValue();
   };
 
+  private handleKeyDown = (ev: KeyboardEvent) => {
+    if (ev.key === 'ArrowUp') {
+      ev.preventDefault();
+      this.increment();
+    } else if (ev.key === 'ArrowDown') {
+      ev.preventDefault();
+      this.decrement();
+    } else if (ev.key === 'Home' && this.min !== undefined && this.min !== null) {
+      ev.preventDefault();
+      this.value = this.min;
+      this.inputValue = String(this.min);
+      this.qChange.emit(this.value);
+    } else if (ev.key === 'End' && this.max !== undefined && this.max !== null) {
+      ev.preventDefault();
+      this.value = this.max;
+      this.inputValue = String(this.max);
+      this.qChange.emit(this.value);
+    }
+  };
+
   private reconcileValue() {
     let parsed = parseFloat(this.inputValue);
     if (isNaN(parsed)) {
@@ -177,12 +209,13 @@ export class QQuantitySelector {
   // ===================== [6] RENDER (Visual Template Only) =====================
 
   render() {
-    const isMinDisabled = this.min !== undefined && this.min !== null && this.value <= this.min;
-    const isMaxDisabled = this.max !== undefined && this.max !== null && this.value >= this.max;
+    const hasFiniteValue = Number.isFinite(this.value);
+    const isMinDisabled = hasFiniteValue && this.min !== undefined && this.min !== null && this.value <= this.min;
+    const isMaxDisabled = hasFiniteValue && this.max !== undefined && this.max !== null && this.value >= this.max;
 
     const decBtn = (
       <button type="button" class="quantity-btn quantity-btn-decrement" onClick={this.decrement} disabled={isMinDisabled} aria-label="Decrement quantity">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon" aria-hidden="true">
           <line x1="5" y1="12" x2="19" y2="12"></line>
         </svg>
       </button>
@@ -190,7 +223,7 @@ export class QQuantitySelector {
 
     const incBtn = (
       <button type="button" class="quantity-btn quantity-btn-increment" onClick={this.increment} disabled={isMaxDisabled} aria-label="Increment quantity">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon" aria-hidden="true">
           <line x1="12" y1="5" x2="12" y2="19"></line>
           <line x1="5" y1="12" x2="19" y2="12"></line>
         </svg>
@@ -216,6 +249,12 @@ export class QQuantitySelector {
           onBlur={this.handleBlur}
           onFocus={this.handleFocus}
           onChange={this.handleChange}
+          onKeyDown={this.handleKeyDown}
+          role="spinbutton"
+          aria-valuenow={hasFiniteValue ? String(this.value) : undefined}
+          aria-valuemin={this.min !== undefined && this.min !== null ? String(this.min) : undefined}
+          aria-valuemax={this.max !== undefined && this.max !== null ? String(this.max) : undefined}
+          aria-label="Quantity"
           style={{ width: calculatedWidth }}
           part="input"
         />

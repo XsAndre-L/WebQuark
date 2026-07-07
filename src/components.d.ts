@@ -698,6 +698,9 @@ export namespace Components {
          */
         "variant": QPanelVariant;
     }
+    /**
+     * Numeric quantity control with increment/decrement buttons and a bounded editable value.
+     */
     interface QQuantitySelector {
         /**
           * Maximum allowed value limit (optional).
@@ -1361,6 +1364,9 @@ declare global {
         "qBlur": FocusEvent;
         "qClick": MouseEvent;
     }
+    /**
+     * Numeric quantity control with increment/decrement buttons and a bounded editable value.
+     */
     interface HTMLQQuantitySelectorElement extends Components.QQuantitySelector, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQQuantitySelectorElementEventMap>(type: K, listener: (this: HTMLQQuantitySelectorElement, ev: QQuantitySelectorCustomEvent<HTMLQQuantitySelectorElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2304,6 +2310,9 @@ declare namespace LocalJSX {
          */
         "variant"?: QPanelVariant;
     }
+    /**
+     * Numeric quantity control with increment/decrement buttons and a bounded editable value.
+     */
     interface QQuantitySelector {
         /**
           * Maximum allowed value limit (optional).
@@ -2313,12 +2322,21 @@ declare namespace LocalJSX {
           * Minimum allowed value limit (optional).
          */
         "min"?: number;
+        /**
+          * Emitted when the input loses focus, after the value is reconciled.
+         */
         "onQBlur"?: (event: QQuantitySelectorCustomEvent<FocusEvent>) => void;
         /**
           * Emitted when the quantity value changes.
          */
         "onQChange"?: (event: QQuantitySelectorCustomEvent<number>) => void;
+        /**
+          * Emitted when the quantity selector is clicked.
+         */
         "onQClick"?: (event: QQuantitySelectorCustomEvent<MouseEvent>) => void;
+        /**
+          * Emitted when the input receives focus.
+         */
         "onQFocus"?: (event: QQuantitySelectorCustomEvent<FocusEvent>) => void;
         /**
           * The increment/decrement step amount.
@@ -3017,6 +3035,9 @@ declare module "@stencil/core" {
             "q-link": LocalJSX.IntrinsicElements["q-link"] & JSXBase.HTMLAttributes<HTMLQLinkElement>;
             "q-navbar": LocalJSX.IntrinsicElements["q-navbar"] & JSXBase.HTMLAttributes<HTMLQNavbarElement>;
             "q-panel": LocalJSX.IntrinsicElements["q-panel"] & JSXBase.HTMLAttributes<HTMLQPanelElement>;
+            /**
+             * Numeric quantity control with increment/decrement buttons and a bounded editable value.
+             */
             "q-quantity-selector": LocalJSX.IntrinsicElements["q-quantity-selector"] & JSXBase.HTMLAttributes<HTMLQQuantitySelectorElement>;
             "q-reel": LocalJSX.IntrinsicElements["q-reel"] & JSXBase.HTMLAttributes<HTMLQReelElement>;
             "q-scrollable": LocalJSX.IntrinsicElements["q-scrollable"] & JSXBase.HTMLAttributes<HTMLQScrollableElement>;
