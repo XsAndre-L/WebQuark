@@ -497,44 +497,79 @@ export namespace Components {
          */
         "size": QIconSize;
     }
+    /**
+     * Form-associated input field with optional prefix/suffix slots, clear button, password visibility toggle, and numeric spinner controls.
+     */
     interface QInput {
+        /**
+          * Clears the current value and focuses the native input.
+         */
         "clearValue": () => Promise<void>;
         /**
+          * Shows a clear button when the field has a value.
           * @default false
          */
         "clearable": boolean;
         /**
+          * Disables input interaction.
           * @default false
          */
         "disabled": boolean;
+        /**
+          * Validation error text or error-state flag.
+         */
         "error"?: string;
+        /**
+          * Validation helper text displayed when the field is in an error state.
+         */
         "errorMessage"?: string;
+        /**
+          * Moves focus to the native input.
+         */
         "focusElement": () => Promise<void>;
+        /**
+          * Optional label rendered above the input.
+         */
         "label"?: string;
+        /**
+          * Maximum numeric value for number inputs.
+         */
         "max"?: number;
+        /**
+          * Minimum numeric value for number inputs.
+         */
         "min"?: number;
+        /**
+          * Native form field name.
+         */
         "name"?: string;
         /**
+          * Placeholder text shown when the field is empty.
           * @default ""
          */
         "placeholder": string;
         /**
+          * Marks the field as required for native forms.
           * @default false
          */
         "required": boolean;
         /**
+          * Visual size preset.
           * @default 'md'
          */
         "size": QInputSize;
         /**
+          * Numeric increment/decrement step.
           * @default 1
          */
         "step"?: number;
         /**
+          * Native input type; password adds a visibility toggle and number adds spinner controls.
           * @default 'text'
          */
         "type": QInputType;
         /**
+          * Current input value.
           * @default ""
          */
         "value": string;
@@ -1257,6 +1292,9 @@ declare global {
         "qFocus": FocusEvent;
         "qClick": MouseEvent;
     }
+    /**
+     * Form-associated input field with optional prefix/suffix slots, clear button, password visibility toggle, and numeric spinner controls.
+     */
     interface HTMLQInputElement extends Components.QInput, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQInputElementEventMap>(type: K, listener: (this: HTMLQInputElement, ev: QInputCustomEvent<HTMLQInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2035,51 +2073,95 @@ declare namespace LocalJSX {
          */
         "size"?: QIconSize;
     }
+    /**
+     * Form-associated input field with optional prefix/suffix slots, clear button, password visibility toggle, and numeric spinner controls.
+     */
     interface QInput {
         /**
+          * Shows a clear button when the field has a value.
           * @default false
          */
         "clearable"?: boolean;
         /**
+          * Disables input interaction.
           * @default false
          */
         "disabled"?: boolean;
+        /**
+          * Validation error text or error-state flag.
+         */
         "error"?: string;
+        /**
+          * Validation helper text displayed when the field is in an error state.
+         */
         "errorMessage"?: string;
         /**
           * The `id` of a `<form>` element to associate this element with.
          */
         "form"?: string;
+        /**
+          * Optional label rendered above the input.
+         */
         "label"?: string;
+        /**
+          * Maximum numeric value for number inputs.
+         */
         "max"?: number;
+        /**
+          * Minimum numeric value for number inputs.
+         */
         "min"?: number;
+        /**
+          * Native form field name.
+         */
         "name"?: string;
+        /**
+          * Emitted when the native input loses focus.
+         */
         "onQBlur"?: (event: QInputCustomEvent<FocusEvent>) => void;
+        /**
+          * Emitted when the committed value changes.
+         */
         "onQChange"?: (event: QInputCustomEvent<string>) => void;
+        /**
+          * Emitted when the native input is clicked.
+         */
         "onQClick"?: (event: QInputCustomEvent<MouseEvent>) => void;
+        /**
+          * Emitted when the native input receives focus.
+         */
         "onQFocus"?: (event: QInputCustomEvent<FocusEvent>) => void;
+        /**
+          * Emitted as the user types or spinner controls update the value.
+         */
         "onQInput"?: (event: QInputCustomEvent<string>) => void;
         /**
+          * Placeholder text shown when the field is empty.
           * @default ""
          */
         "placeholder"?: string;
         /**
+          * Marks the field as required for native forms.
           * @default false
          */
         "required"?: boolean;
         /**
+          * Visual size preset.
           * @default 'md'
          */
         "size"?: QInputSize;
         /**
+          * Numeric increment/decrement step.
           * @default 1
          */
         "step"?: number;
         /**
+          * Native input type; password adds a visibility toggle and number adds spinner controls.
           * @default 'text'
          */
         "type"?: QInputType;
         /**
+          * Current input value.
           * @default ""
          */
         "value"?: string;
@@ -2925,6 +3007,9 @@ declare module "@stencil/core" {
             "q-dropdown": LocalJSX.IntrinsicElements["q-dropdown"] & JSXBase.HTMLAttributes<HTMLQDropdownElement>;
             "q-form": LocalJSX.IntrinsicElements["q-form"] & JSXBase.HTMLAttributes<HTMLQFormElement>;
             "q-icon": LocalJSX.IntrinsicElements["q-icon"] & JSXBase.HTMLAttributes<HTMLQIconElement>;
+            /**
+             * Form-associated input field with optional prefix/suffix slots, clear button, password visibility toggle, and numeric spinner controls.
+             */
             "q-input": LocalJSX.IntrinsicElements["q-input"] & JSXBase.HTMLAttributes<HTMLQInputElement>;
             /**
              * Inline link with disabled handling, external-link affordances, and optional icon slots.

@@ -1,7 +1,19 @@
-import { Component, Prop, State, Event, EventEmitter, Element, Method, AttachInternals, Watch, h } from '@stencil/core';
+import { Component, Prop, State, Event, EventEmitter, Method, AttachInternals, Watch, h } from '@stencil/core';
 
 import type { QInputSize, QInputType } from './input.types';
+import { hasAssignedSlotContent } from './input.utils';
 
+/**
+ * Form-associated input field with optional prefix/suffix slots, clear button, password visibility toggle, and numeric spinner controls.
+ * @slot prefix - Content displayed before the native input.
+ * @slot suffix - Content displayed after the native input when no clear or password toggle button is visible.
+ * @part label - Optional field label.
+ * @part control - Wrapper around the native input and inline controls.
+ * @part prefix - Prefix slot container.
+ * @part suffix - Suffix slot container.
+ * @part spinners - Numeric spinner button container.
+ * @part error-msg - Validation helper text.
+ */
 @Component({
   tag: 'q-input',
   styleUrl: 'input.css',
@@ -12,22 +24,47 @@ import type { QInputSize, QInputType } from './input.types';
 })
 export class QInput {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
+  /** Current input value. */
   @Prop({ mutable: true }) value: string = "";
-  @Prop({ reflect: true }) name?: string;
-  @Prop() type: QInputType = 'text';
-  @Prop() placeholder: string = "";
-  @Prop() label?: string;
-  @Prop({ reflect: true }) disabled: boolean = false;
-  @Prop({ reflect: true }) required: boolean = false;
-  @Prop({ reflect: true }) error?: string;
-  @Prop() errorMessage?: string;
-  @Prop() size: QInputSize = 'md';
-  @Prop() clearable: boolean = false;
-  @Prop() min?: number;
-  @Prop() max?: number;
-  @Prop() step?: number = 1;
 
-  @Element() el!: HTMLElement;
+  /** Native form field name. */
+  @Prop({ reflect: true }) name?: string;
+
+  /** Native input type; password adds a visibility toggle and number adds spinner controls. */
+  @Prop() type: QInputType = 'text';
+
+  /** Placeholder text shown when the field is empty. */
+  @Prop() placeholder: string = "";
+
+  /** Optional label rendered above the input. */
+  @Prop() label?: string;
+
+  /** Disables input interaction. */
+  @Prop({ reflect: true }) disabled: boolean = false;
+
+  /** Marks the field as required for native forms. */
+  @Prop({ reflect: true }) required: boolean = false;
+
+  /** Validation error text or error-state flag. */
+  @Prop({ reflect: true }) error?: string;
+
+  /** Validation helper text displayed when the field is in an error state. */
+  @Prop() errorMessage?: string;
+
+  /** Visual size preset. */
+  @Prop() size: QInputSize = 'md';
+
+  /** Shows a clear button when the field has a value. */
+  @Prop() clearable: boolean = false;
+
+  /** Minimum numeric value for number inputs. */
+  @Prop() min?: number;
+
+  /** Maximum numeric value for number inputs. */
+  @Prop() max?: number;
+
+  /** Numeric increment/decrement step. */
+  @Prop() step?: number = 1;
 
   @AttachInternals() internals!: ElementInternals;
 
@@ -35,10 +72,19 @@ export class QInput {
   @State() hasSuffix: boolean = false;
   @State() passwordVisible: boolean = false;
 
+  /** Emitted when the committed value changes. */
   @Event() qChange!: EventEmitter<string>;
+
+  /** Emitted as the user types or spinner controls update the value. */
   @Event() qInput!: EventEmitter<string>;
+
+  /** Emitted when the native input loses focus. */
   @Event() qBlur!: EventEmitter<FocusEvent>;
+
+  /** Emitted when the native input receives focus. */
   @Event() qFocus!: EventEmitter<FocusEvent>;
+
+  /** Emitted when the native input is clicked. */
   @Event() qClick!: EventEmitter<MouseEvent>;
 
   private inputEl?: HTMLInputElement;
@@ -72,11 +118,13 @@ export class QInput {
 
   // ============================ [4] EXPOSED METHODS ============================
 
+  /** Moves focus to the native input. */
   @Method()
   async focusElement() {
     this.inputEl?.focus();
   }
 
+  /** Clears the current value and focuses the native input. */
   @Method()
   async clearValue() {
     this.handleClear();
@@ -86,12 +134,12 @@ export class QInput {
 
   private handlePrefixSlotChange = (ev: Event) => {
     const slot = ev.target as HTMLSlotElement;
-    this.hasPrefix = slot.assignedNodes({ flatten: true }).length > 0;
+    this.hasPrefix = hasAssignedSlotContent(slot);
   };
 
   private handleSuffixSlotChange = (ev: Event) => {
     const slot = ev.target as HTMLSlotElement;
-    this.hasSuffix = slot.assignedNodes({ flatten: true }).length > 0;
+    this.hasSuffix = hasAssignedSlotContent(slot);
   };
 
   private handleInput = (ev: Event) => {
@@ -106,8 +154,7 @@ export class QInput {
     this.qChange.emit(this.value);
   };
 
-  private handleIncrement = () => {
-    if (this.disabled) return;
+  private resolveNumericBase(): number {
     let base = parseFloat(this.value);
     if (isNaN(base)) {
       if (this.min !== undefined && this.min !== null && this.min > 0) {
@@ -118,14 +165,26 @@ export class QInput {
         base = 0;
       }
     }
-    const stepVal = (this.step !== undefined && this.step !== null) ? this.step : 1;
-    let newValue = base + stepVal;
-    if (this.max !== undefined && this.max !== null) {
-      newValue = Math.min(this.max, newValue);
-    }
+    return base;
+  }
+
+  private clampNumericValue(value: number): number {
+    let clamped = value;
     if (this.min !== undefined && this.min !== null) {
-      newValue = Math.max(this.min, newValue);
+      clamped = Math.max(this.min, clamped);
     }
+    if (this.max !== undefined && this.max !== null) {
+      clamped = Math.min(this.max, clamped);
+    }
+    return clamped;
+  }
+
+  private stepValue(direction: 1 | -1) {
+    if (this.disabled) return;
+
+    const stepVal = (this.step !== undefined && this.step !== null) ? this.step : 1;
+    const newValue = this.clampNumericValue(this.resolveNumericBase() + (stepVal * direction));
+
     this.value = String(newValue);
     // Imperatively update the native input so the display refreshes immediately.
     // Stencil's async VDOM re-render can be skipped when this.value was already
@@ -133,33 +192,14 @@ export class QInput {
     if (this.inputEl) this.inputEl.value = this.value;
     this.qInput.emit(this.value);
     this.qChange.emit(this.value);
+  }
+
+  private handleIncrement = () => {
+    this.stepValue(1);
   };
 
   private handleDecrement = () => {
-    if (this.disabled) return;
-    let base = parseFloat(this.value);
-    if (isNaN(base)) {
-      if (this.min !== undefined && this.min !== null && this.min > 0) {
-        base = this.min;
-      } else if (this.max !== undefined && this.max !== null && this.max < 0) {
-        base = this.max;
-      } else {
-        base = 0;
-      }
-    }
-    const stepVal = (this.step !== undefined && this.step !== null) ? this.step : 1;
-    let newValue = base - stepVal;
-    if (this.min !== undefined && this.min !== null) {
-      newValue = Math.max(this.min, newValue);
-    }
-    if (this.max !== undefined && this.max !== null) {
-      newValue = Math.min(this.max, newValue);
-    }
-    this.value = String(newValue);
-    // Same imperative update as handleIncrement â€” see comment there.
-    if (this.inputEl) this.inputEl.value = this.value;
-    this.qInput.emit(this.value);
-    this.qChange.emit(this.value);
+    this.stepValue(-1);
   };
 
   private handleBlur = (ev: FocusEvent) => {
@@ -222,6 +262,18 @@ export class QInput {
     });
   };
 
+  private handleKeyDown = (ev: KeyboardEvent) => {
+    if (this.type !== 'number' || this.disabled) return;
+
+    if (ev.key === 'ArrowUp') {
+      ev.preventDefault();
+      this.handleIncrement();
+    } else if (ev.key === 'ArrowDown') {
+      ev.preventDefault();
+      this.handleDecrement();
+    }
+  };
+
   // ===================== [6] RENDER (Visual Template Only) =====================
 
   render() {
@@ -232,6 +284,10 @@ export class QInput {
     const inputType: QInputType = showPasswordToggle && this.passwordVisible ? 'text' : this.type;
 
     const showSuffixContainer = this.hasSuffix || showClearBtn || showPasswordToggle;
+    const numericValue = parseFloat(this.value);
+    const hasNumericValue = this.type === 'number' && !isNaN(numericValue);
+    const isMinDisabled = hasNumericValue && this.min !== undefined && this.min !== null && numericValue <= this.min;
+    const isMaxDisabled = hasNumericValue && this.max !== undefined && this.max !== null && numericValue >= this.max;
 
     return (
       <div 
@@ -285,19 +341,24 @@ export class QInput {
             onBlur={this.handleBlur}
             onFocus={this.handleFocus}
             onClick={this.handleClick}
+            onKeyDown={this.handleKeyDown}
+            role={this.type === 'number' ? 'spinbutton' : undefined}
+            aria-valuenow={hasNumericValue ? String(numericValue) : undefined}
+            aria-valuemin={this.type === 'number' && this.min !== undefined && this.min !== null ? String(this.min) : undefined}
+            aria-valuemax={this.type === 'number' && this.max !== undefined && this.max !== null ? String(this.max) : undefined}
             aria-invalid={hasError ? 'true' : 'false'}
             aria-describedby={hasError ? 'q-field-error' : undefined}
           />
 
           {this.type === 'number' && !this.disabled && (
             <div class="input-spinners" part="spinners">
-              <button class="spinner-btn spinner-up" type="button" onClick={this.handleIncrement} tabindex="-1">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <button class="spinner-btn spinner-up" type="button" onClick={this.handleIncrement} disabled={isMaxDisabled} aria-label="Increase value">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                   <path d="M18 15l-6-6-6 6" />
                 </svg>
               </button>
-              <button class="spinner-btn spinner-down" type="button" onClick={this.handleDecrement} tabindex="-1">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <button class="spinner-btn spinner-down" type="button" onClick={this.handleDecrement} disabled={isMinDisabled} aria-label="Decrease value">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                   <path d="M6 9l6 6 6-6" />
                 </svg>
               </button>
