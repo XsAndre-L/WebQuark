@@ -8,19 +8,19 @@
 :host([size="sm"]) {
   --q-progress-size: 64px;
   --q-progress-stroke-width: 6px;
-  --q-progress-font-size: var(--q-font-size-xs, 0.75rem);
+  --q-progress-font-size: var(--q-font-size-sm, 0.7rem);
 }
 
 :host([size="md"]) {
   --q-progress-size: 120px;
   --q-progress-stroke-width: 8px;
-  --q-progress-font-size: var(--q-font-size-lg, 1.125rem);
+  --q-progress-font-size: var(--q-font-size-lg, 1rem);
 }
 
 :host([size="lg"]) {
   --q-progress-size: 180px;
   --q-progress-stroke-width: 10px;
-  --q-progress-font-size: var(--q-font-size-2xl, 1.5rem);
+  --q-progress-font-size: calc(var(--q-font-size-lg, 1rem) * 1.5);
 }
 
 .progress-container {
@@ -53,7 +53,7 @@
   stroke: var(--q-progress-fill-color, var(--q-color-primary, #60a5fa));
   stroke-width: var(--q-progress-stroke-width, 8px);
   stroke-linecap: var(--q-progress-linecap, round);
-  
+
   /* Unreal Engine OSR safe animation: simple CSS transition property */
   transition: stroke-dashoffset var(--q-progress-animation-duration, 1s) cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -62,16 +62,16 @@
 .progress-text {
   fill: var(--q-fg-base, #f9fafb);
   font-family: var(--q-font-family, inherit);
-  font-size: var(--q-progress-font-size, var(--q-font-size-lg, 1.125rem));
-  font-weight: var(--q-progress-font-weight, var(--q-font-weight-bold, 700));
+  font-size: var(--q-progress-font-size, var(--q-font-size-lg, 1rem));
+  font-weight: var(--q-progress-font-weight, var(--q-font-weight-bold, 600));
   text-anchor: middle;
   dominant-baseline: central;
-  
-  transition: fill var(--q-transition-normal, 250ms ease);
+
+  transition: fill var(--q-transition-normal, 250ms cubic-bezier(0.4, 0, 0.2, 1));
 }
 
 /* Indeterminate infinite loading spinner (OSR safe 2D rotation of circles only) */
-.is-indeterminate .progress-ring-circles {
+:host([indeterminate]) .progress-ring-circles {
   animation: q-spin 1.4s linear infinite;
 }
 
