@@ -1,4 +1,4 @@
-import { expect, describe, it } from 'vitest';
+import { expect, describe, it, vi } from 'vitest';
 // @ts-ignore
 import { defineCustomElements } from '../../../../../dist/loader';
 
@@ -12,9 +12,14 @@ describe('q-quantity-selector', () => {
     if (typeof (el as any).componentOnReady === 'function') {
       await (el as any).componentOnReady();
     } else {
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await wait(50);
     }
+    await wait();
     return el;
+  }
+
+  function wait(ms = 0) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   it('renders with default values', async () => {
@@ -25,52 +30,75 @@ describe('q-quantity-selector', () => {
     el.remove();
   });
 
+  it('adds spinbutton semantics to the editable value', async () => {
+    const el = await createComponent({ value: 5, min: 2, max: 7 });
+    const input = el.shadowRoot.querySelector('input') as HTMLInputElement;
+
+    expect(input.getAttribute('role')).toBe('spinbutton');
+    expect(input.getAttribute('aria-valuenow')).toBe('5');
+    expect(input.getAttribute('aria-valuemin')).toBe('2');
+    expect(input.getAttribute('aria-valuemax')).toBe('7');
+    expect(input.getAttribute('aria-label')).toBe('Quantity');
+
+    el.remove();
+  });
+
+  it('normalizes non-finite values to a safe input display', async () => {
+    const el = await createComponent({ value: Number.NaN });
+    const input = el.shadowRoot.querySelector('input') as HTMLInputElement;
+
+    expect(input.value).toBe('0');
+    expect(input.getAttribute('aria-valuenow')).toBeNull();
+
+    el.value = Number.NaN;
+    await wait();
+    expect(input.value).toBe('0');
+
+    el.remove();
+  });
+
   it('respects min and max boundaries when incrementing/decrementing', async () => {
     const el = await createComponent({ value: 5, min: 2, max: 7 });
 
     const decBtn = el.shadowRoot.querySelector('.quantity-btn-decrement') as HTMLButtonElement;
     const incBtn = el.shadowRoot.querySelector('.quantity-btn-increment') as HTMLButtonElement;
 
-    // Increment should work up to max
     incBtn.click();
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await wait();
     expect(el.value).toBe(6);
 
     incBtn.click();
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await wait();
     expect(el.value).toBe(7);
 
-    // Increment at max should not exceed max
     incBtn.click();
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await wait();
     expect(el.value).toBe(7);
 
-    // Decrement should work down to min
     decBtn.click();
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await wait();
     expect(el.value).toBe(6);
 
     decBtn.click();
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await wait();
     expect(el.value).toBe(5);
 
     decBtn.click();
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await wait();
     expect(el.value).toBe(4);
 
     decBtn.click();
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await wait();
     expect(el.value).toBe(3);
 
     decBtn.click();
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await wait();
     expect(el.value).toBe(2);
 
-    // Decrement at min should not go below min
     decBtn.click();
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await wait();
     expect(el.value).toBe(2);
-    
+
     el.remove();
   });
 
@@ -81,13 +109,13 @@ describe('q-quantity-selector', () => {
     const decBtn = el.shadowRoot.querySelector('.quantity-btn-decrement') as HTMLButtonElement;
 
     incBtn.click();
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await wait();
     expect(el.value).toBe(15);
 
     decBtn.click();
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await wait();
     expect(el.value).toBe(10);
-    
+
     el.remove();
   });
 
@@ -101,9 +129,75 @@ describe('q-quantity-selector', () => {
 
     const incBtn = el.shadowRoot.querySelector('.quantity-btn-increment') as HTMLButtonElement;
     incBtn.click();
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await wait();
 
     expect(emittedValue).toBe(6);
+    el.remove();
+  });
+
+  it('sanitizes direct input and updates value when in bounds', async () => {
+    const el = await createComponent({ value: 0, min: 0, max: 100 });
+    const input = el.shadowRoot.querySelector('input') as HTMLInputElement;
+
+    input.value = '1a-2.3.4';
+    input.dispatchEvent(new Event('input'));
+    await wait();
+
+    expect(input.value).toBe('12.34');
+    expect(el.value).toBe(12.34);
+
+    el.remove();
+  });
+
+  it('reconciles out-of-range typed values on blur', async () => {
+    const el = await createComponent({ value: 5, min: 0, max: 10 });
+    const input = el.shadowRoot.querySelector('input') as HTMLInputElement;
+
+    input.value = '99';
+    input.dispatchEvent(new Event('input'));
+    await wait();
+    expect(el.value).toBe(5);
+
+    input.dispatchEvent(new FocusEvent('blur'));
+    await wait();
+
+    expect(el.value).toBe(10);
+    expect(input.value).toBe('10');
+
+    el.remove();
+  });
+
+  it('emits focus blur and click events', async () => {
+    const el = await createComponent({ value: 1 });
+    const focusHandler = vi.fn();
+    const blurHandler = vi.fn();
+    const clickHandler = vi.fn();
+    el.addEventListener('qFocus', focusHandler);
+    el.addEventListener('qBlur', blurHandler);
+    el.addEventListener('qClick', clickHandler);
+
+    const input = el.shadowRoot.querySelector('input') as HTMLInputElement;
+    const wrapper = el.shadowRoot.querySelector('.quantity-selector') as HTMLElement;
+
+    input.dispatchEvent(new FocusEvent('focus'));
+    input.dispatchEvent(new FocusEvent('blur'));
+    wrapper.click();
+    await wait();
+
+    expect(focusHandler).toHaveBeenCalledTimes(1);
+    expect(blurHandler).toHaveBeenCalledTimes(1);
+    expect(clickHandler).toHaveBeenCalledTimes(1);
+
+    el.remove();
+  });
+
+  it('renders increment before decrement in vertical variant', async () => {
+    const el = await createComponent({ variant: 'vertical' });
+    const buttons = Array.from(el.shadowRoot.querySelectorAll('.quantity-btn')) as HTMLButtonElement[];
+
+    expect(buttons[0].classList.contains('quantity-btn-increment')).toBe(true);
+    expect(buttons[1].classList.contains('quantity-btn-decrement')).toBe(true);
+
     el.remove();
   });
 
@@ -113,11 +207,10 @@ describe('q-quantity-selector', () => {
     const input = el.shadowRoot.querySelector('input') as HTMLInputElement;
     expect(input.style.width).toBe('calc(3 * var(--q-quantity-selector-char-width, 1ch) + var(--q-quantity-selector-input-padding, 16px))');
 
-    // Update value to a 5-digit number
     el.value = 12345;
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await wait();
     expect(input.style.width).toBe('calc(5 * var(--q-quantity-selector-char-width, 1ch) + var(--q-quantity-selector-input-padding, 16px))');
-    
+
     el.remove();
   });
 
@@ -127,11 +220,10 @@ describe('q-quantity-selector', () => {
     const input = el.shadowRoot.querySelector('input') as HTMLInputElement;
     expect(input.style.width).toBe('calc(4 * var(--q-quantity-selector-char-width, 1ch) + var(--q-quantity-selector-input-padding, 16px))');
 
-    // Update value to 10 -> width should NOT change (still 4)
     el.value = 10;
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await wait();
     expect(input.style.width).toBe('calc(4 * var(--q-quantity-selector-char-width, 1ch) + var(--q-quantity-selector-input-padding, 16px))');
-    
+
     el.remove();
   });
 
@@ -140,7 +232,7 @@ describe('q-quantity-selector', () => {
 
     const input = el.shadowRoot.querySelector('input') as HTMLInputElement;
     expect(input.style.width).toBe('calc(4 * var(--q-quantity-selector-char-width, 1ch) + var(--q-quantity-selector-input-padding, 16px))');
-    
+
     el.remove();
   });
 });

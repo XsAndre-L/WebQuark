@@ -582,11 +582,17 @@ export declare interface QQuantitySelector extends Components.QQuantitySelector 
    * Emitted when the quantity value changes.
    */
   qChange: EventEmitter<QQuantitySelectorCustomEvent<number>>;
-
+  /**
+   * Emitted when the input receives focus.
+   */
   qFocus: EventEmitter<QQuantitySelectorCustomEvent<FocusEvent>>;
-
+  /**
+   * Emitted when the input loses focus, after the value is reconciled.
+   */
   qBlur: EventEmitter<QQuantitySelectorCustomEvent<FocusEvent>>;
-
+  /**
+   * Emitted when the quantity selector is clicked.
+   */
   qClick: EventEmitter<QQuantitySelectorCustomEvent<MouseEvent>>;
 }
 
