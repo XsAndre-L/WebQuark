@@ -1024,31 +1024,48 @@ export namespace Components {
          */
         "video": boolean;
     }
+    /**
+     * Form-associated switch or checkbox toggle control.
+     */
     interface QToggle {
         /**
+          * Current checked state.
           * @default false
          */
         "checked": boolean;
         /**
+          * Disables toggle interaction.
           * @default false
          */
         "disabled": boolean;
+        /**
+          * Validation helper text displayed when the toggle is in an error state.
+         */
         "error"?: string;
+        /**
+          * Optional label rendered next to the toggle.
+         */
         "label"?: string;
+        /**
+          * Native form field name.
+         */
         "name"?: string;
         /**
+          * Marks the toggle as required for native forms.
           * @default false
          */
         "required": boolean;
         /**
+          * Visual size preset.
           * @default 'md'
          */
         "size": QToggleSize;
         /**
-          * Programmatically set checked state without emitting qChange. Use this from external controllers (e.g. playground) to avoid the SYNCBACK_MAP â†’ registry â†’ effect â†’ prop-set feedback loop.
+          * Programmatically toggles checked and emits qChange.
          */
         "toggle": () => Promise<void>;
         /**
+          * Visual and semantic control type: switch or checkbox.
           * @default 'switch'
          */
         "type": QToggleType;
@@ -1563,6 +1580,9 @@ declare global {
         "qBlur": FocusEvent;
         "qClick": MouseEvent;
     }
+    /**
+     * Form-associated switch or checkbox toggle control.
+     */
     interface HTMLQToggleElement extends Components.QToggle, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQToggleElementEventMap>(type: K, listener: (this: HTMLQToggleElement, ev: QToggleCustomEvent<HTMLQToggleElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2734,35 +2754,64 @@ declare namespace LocalJSX {
          */
         "video"?: boolean;
     }
+    /**
+     * Form-associated switch or checkbox toggle control.
+     */
     interface QToggle {
         /**
+          * Current checked state.
           * @default false
          */
         "checked"?: boolean;
         /**
+          * Disables toggle interaction.
           * @default false
          */
         "disabled"?: boolean;
+        /**
+          * Validation helper text displayed when the toggle is in an error state.
+         */
         "error"?: string;
         /**
           * The `id` of a `<form>` element to associate this element with.
          */
         "form"?: string;
+        /**
+          * Optional label rendered next to the toggle.
+         */
         "label"?: string;
+        /**
+          * Native form field name.
+         */
         "name"?: string;
+        /**
+          * Emitted when the toggle loses focus.
+         */
         "onQBlur"?: (event: QToggleCustomEvent<FocusEvent>) => void;
+        /**
+          * Emitted when the checked state changes.
+         */
         "onQChange"?: (event: QToggleCustomEvent<boolean>) => void;
+        /**
+          * Emitted before the toggle changes due to pointer or keyboard activation.
+         */
         "onQClick"?: (event: QToggleCustomEvent<MouseEvent>) => void;
+        /**
+          * Emitted when the toggle receives focus.
+         */
         "onQFocus"?: (event: QToggleCustomEvent<FocusEvent>) => void;
         /**
+          * Marks the toggle as required for native forms.
           * @default false
          */
         "required"?: boolean;
         /**
+          * Visual size preset.
           * @default 'md'
          */
         "size"?: QToggleSize;
         /**
+          * Visual and semantic control type: switch or checkbox.
           * @default 'switch'
          */
         "type"?: QToggleType;
@@ -3130,6 +3179,9 @@ declare module "@stencil/core" {
              * Media thumbnail that emits qMaximize for gallery and reel lightbox workflows.
              */
             "q-thumbnail": LocalJSX.IntrinsicElements["q-thumbnail"] & JSXBase.HTMLAttributes<HTMLQThumbnailElement>;
+            /**
+             * Form-associated switch or checkbox toggle control.
+             */
             "q-toggle": LocalJSX.IntrinsicElements["q-toggle"] & JSXBase.HTMLAttributes<HTMLQToggleElement>;
             "q-tooltip": LocalJSX.IntrinsicElements["q-tooltip"] & JSXBase.HTMLAttributes<HTMLQTooltipElement>;
         }

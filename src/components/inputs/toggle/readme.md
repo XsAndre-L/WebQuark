@@ -5,37 +5,39 @@
 <!-- Auto Generated Below -->
 
 
+## Overview
+
+Form-associated switch or checkbox toggle control.
+
 ## Properties
 
-| Property   | Attribute  | Description | Type                     | Default     |
-| ---------- | ---------- | ----------- | ------------------------ | ----------- |
-| `checked`  | `checked`  |             | `boolean`                | `false`     |
-| `disabled` | `disabled` |             | `boolean`                | `false`     |
-| `error`    | `error`    |             | `string`                 | `undefined` |
-| `label`    | `label`    |             | `string`                 | `undefined` |
-| `name`     | `name`     |             | `string`                 | `undefined` |
-| `required` | `required` |             | `boolean`                | `false`     |
-| `size`     | `size`     |             | `"lg" \| "md" \| "sm"`   | `'md'`      |
-| `type`     | `type`     |             | `"checkbox" \| "switch"` | `'switch'`  |
+| Property   | Attribute  | Description                                                            | Type                     | Default     |
+| ---------- | ---------- | ---------------------------------------------------------------------- | ------------------------ | ----------- |
+| `checked`  | `checked`  | Current checked state.                                                 | `boolean`                | `false`     |
+| `disabled` | `disabled` | Disables toggle interaction.                                           | `boolean`                | `false`     |
+| `error`    | `error`    | Validation helper text displayed when the toggle is in an error state. | `string`                 | `undefined` |
+| `label`    | `label`    | Optional label rendered next to the toggle.                            | `string`                 | `undefined` |
+| `name`     | `name`     | Native form field name.                                                | `string`                 | `undefined` |
+| `required` | `required` | Marks the toggle as required for native forms.                         | `boolean`                | `false`     |
+| `size`     | `size`     | Visual size preset.                                                    | `"lg" \| "md" \| "sm"`   | `'md'`      |
+| `type`     | `type`     | Visual and semantic control type: switch or checkbox.                  | `"checkbox" \| "switch"` | `'switch'`  |
 
 
 ## Events
 
-| Event     | Description | Type                      |
-| --------- | ----------- | ------------------------- |
-| `qBlur`   |             | `CustomEvent<FocusEvent>` |
-| `qChange` |             | `CustomEvent<boolean>`    |
-| `qClick`  |             | `CustomEvent<MouseEvent>` |
-| `qFocus`  |             | `CustomEvent<FocusEvent>` |
+| Event     | Description                                                              | Type                      |
+| --------- | ------------------------------------------------------------------------ | ------------------------- |
+| `qBlur`   | Emitted when the toggle loses focus.                                     | `CustomEvent<FocusEvent>` |
+| `qChange` | Emitted when the checked state changes.                                  | `CustomEvent<boolean>`    |
+| `qClick`  | Emitted before the toggle changes due to pointer or keyboard activation. | `CustomEvent<MouseEvent>` |
+| `qFocus`  | Emitted when the toggle receives focus.                                  | `CustomEvent<FocusEvent>` |
 
 
 ## Methods
 
 ### `toggle() => Promise<void>`
 
-Programmatically set checked state without emitting qChange.
-Use this from external controllers (e.g. playground) to avoid
-the SYNCBACK_MAP â†’ registry â†’ effect â†’ prop-set feedback loop.
+Programmatically toggles checked and emits qChange.
 
 #### Returns
 
@@ -44,18 +46,27 @@ Type: `Promise<void>`
 
 
 
+## Slots
+
+| Slot               | Description                                        |
+| ------------------ | -------------------------------------------------- |
+|                    | Label content rendered next to the control.        |
+| `"checked-icon"`   | Custom icon shown when checkbox type is checked.   |
+| `"unchecked-icon"` | Custom icon shown when checkbox type is unchecked. |
+
+
 ## Shadow Parts
 
-| Part               | Description |
-| ------------------ | ----------- |
-| `"box"`            |             |
-| `"control"`        |             |
-| `"error-msg"`      |             |
-| `"icon-checked"`   |             |
-| `"icon-unchecked"` |             |
-| `"label"`          |             |
-| `"thumb"`          |             |
-| `"track"`          |             |
+| Part               | Description                                              |
+| ------------------ | -------------------------------------------------------- |
+| `"box"`            | Visual checkbox box.                                     |
+| `"control"`        | Non-visual wrapper around the visual switch or checkbox. |
+| `"error-msg"`      | Validation helper text.                                  |
+| `"icon-checked"`   | Checked icon wrapper for checkbox type.                  |
+| `"icon-unchecked"` | Unchecked icon wrapper for checkbox type.                |
+| `"label"`          | Label text wrapper.                                      |
+| `"thumb"`          | Visual switch thumb.                                     |
+| `"track"`          | Visual switch track.                                     |
 
 
 ----------------------------------------------

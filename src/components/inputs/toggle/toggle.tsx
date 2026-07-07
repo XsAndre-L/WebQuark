@@ -1,7 +1,22 @@
-﻿import { Component, Prop, State, Event, EventEmitter, Element, Method, AttachInternals, Watch, h } from '@stencil/core';
+import { Component, Prop, State, Event, EventEmitter, Element, Method, AttachInternals, Watch, h } from '@stencil/core';
 
 import type { QToggleSize, QToggleType } from './toggle.types';
+import { isToggleActivationKey } from './toggle.utils';
 
+/**
+ * Form-associated switch or checkbox toggle control.
+ * @slot - Label content rendered next to the control.
+ * @slot checked-icon - Custom icon shown when checkbox type is checked.
+ * @slot unchecked-icon - Custom icon shown when checkbox type is unchecked.
+ * @part control - Non-visual wrapper around the visual switch or checkbox.
+ * @part track - Visual switch track.
+ * @part thumb - Visual switch thumb.
+ * @part box - Visual checkbox box.
+ * @part icon-checked - Checked icon wrapper for checkbox type.
+ * @part icon-unchecked - Unchecked icon wrapper for checkbox type.
+ * @part label - Label text wrapper.
+ * @part error-msg - Validation helper text.
+ */
 @Component({
   tag: 'q-toggle',
   styleUrl: 'toggle.css',
@@ -14,27 +29,47 @@ export class QToggle {
 
   @AttachInternals() internals!: ElementInternals;
 
+  /** Current checked state. */
   @Prop({ mutable: true, reflect: true }) checked: boolean = false;
+
+  /** Native form field name. */
   @Prop({ reflect: true }) name?: string;
+
+  /** Visual size preset. */
   @Prop() size: QToggleSize = 'md';
+
+  /** Visual and semantic control type: switch or checkbox. */
   @Prop() type: QToggleType = 'switch';
+
+  /** Optional label rendered next to the toggle. */
   @Prop() label?: string;
+
+  /** Disables toggle interaction. */
   @Prop({ reflect: true }) disabled: boolean = false;
+
+  /** Marks the toggle as required for native forms. */
   @Prop({ reflect: true }) required: boolean = false;
+
+  /** Validation helper text displayed when the toggle is in an error state. */
   @Prop() error?: string;
 
-  @State() hasCheckedIcon: boolean = false;
-  @State() hasUncheckedIcon: boolean = false;
-  @State() hasDefaultSlot: boolean = false;
-
+  /** Emitted when the checked state changes. */
   @Event() qChange!: EventEmitter<boolean>;
+
+  /** Emitted when the toggle receives focus. */
   @Event() qFocus!: EventEmitter<FocusEvent>;
+
+  /** Emitted when the toggle loses focus. */
   @Event() qBlur!: EventEmitter<FocusEvent>;
+
+  /** Emitted before the toggle changes due to pointer or keyboard activation. */
   @Event() qClick!: EventEmitter<MouseEvent>;
 
-  private initialValue: boolean = false;
-
   // ========================= [2] INTERNAL STATE & REFS =========================
+
+  @State() hasDefaultSlot: boolean = false;
+
+  private initialValue: boolean = false;
 
   // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
@@ -60,13 +95,9 @@ export class QToggle {
     }
   }
 
-  /**
-   * Programmatically set checked state without emitting qChange.
-   * Use this from external controllers (e.g. playground) to avoid
-   * the SYNCBACK_MAP â†’ registry â†’ effect â†’ prop-set feedback loop.
-   */
   // ============================ [4] EXPOSED METHODS ============================
 
+  /** Programmatically toggles checked and emits qChange. */
   @Method()
   async toggle() {
     if (!this.disabled) {
@@ -84,16 +115,10 @@ export class QToggle {
   private checkSlots() {
     const defaultSlot = this.el.shadowRoot?.querySelector('slot:not([name])') as HTMLSlotElement;
     this.hasDefaultSlot = defaultSlot ? defaultSlot.assignedNodes({ flatten: true }).some(node => {
-      if (node.nodeType === 1) return true; // element node
-      if (node.nodeType === 3) return node.textContent?.trim() !== ''; // text node
+      if (node.nodeType === Node.ELEMENT_NODE) return true;
+      if (node.nodeType === Node.TEXT_NODE) return node.textContent?.trim() !== '';
       return false;
     }) : false;
-
-    const checkedSlot = this.el.shadowRoot?.querySelector('slot[name="checked-icon"]') as HTMLSlotElement;
-    this.hasCheckedIcon = checkedSlot ? checkedSlot.assignedNodes({ flatten: true }).length > 0 : false;
-
-    const uncheckedSlot = this.el.shadowRoot?.querySelector('slot[name="unchecked-icon"]') as HTMLSlotElement;
-    this.hasUncheckedIcon = uncheckedSlot ? uncheckedSlot.assignedNodes({ flatten: true }).length > 0 : false;
   }
 
   private handleClick = (e: MouseEvent) => {
@@ -109,9 +134,8 @@ export class QToggle {
 
   private handleKeyDown = (e: KeyboardEvent) => {
     if (this.disabled) return;
-    if (e.key === ' ' || e.key === 'Enter') {
+    if (isToggleActivationKey(e.key)) {
       e.preventDefault();
-      // Dispatch qClick programmatically for keyboard activation
       const clickEvent = new MouseEvent('click', {
         bubbles: true,
         cancelable: true,
@@ -150,7 +174,7 @@ export class QToggle {
             [`type-${this.type}`]: true,
             [`size-${this.size}`]: true,
           }}
-          role="checkbox"
+          role={this.type === 'switch' ? 'switch' : 'checkbox'}
           aria-checked={this.checked ? 'true' : 'false'}
           aria-disabled={this.disabled ? 'true' : 'false'}
           aria-required={this.required ? 'true' : 'false'}
@@ -173,7 +197,7 @@ export class QToggle {
                 <span class={{ 'icon-wrap': true, 'is-hidden': !this.checked }} part="icon-checked">
                   <slot name="checked-icon" onSlotchange={this.handleSlotChange}>
                     {/* Default animated checkmark SVG */}
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="default-check-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="default-check-icon" aria-hidden="true">
                       <polyline points="20 6 9 17 4 12" />
                     </svg>
                   </slot>
