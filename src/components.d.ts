@@ -8,6 +8,7 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
 import { QCardElevation } from "./components/layout/card/card.types";
 import { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/layout/carousel/carousel.types";
+import { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/actions/chip/chip.types";
 import { QCircularProgressSize } from "./components/indicators/circular-progress/circular-progress.types";
 import { QDataTableRowClickDetail, QDataTableSelectionChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
 import { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
@@ -32,6 +33,7 @@ import { QTooltipPosition } from "./components/overlays/tooltip/tooltip.types";
 export { QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
 export { QCardElevation } from "./components/layout/card/card.types";
 export { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/layout/carousel/carousel.types";
+export { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/actions/chip/chip.types";
 export { QCircularProgressSize } from "./components/indicators/circular-progress/circular-progress.types";
 export { QDataTableRowClickDetail, QDataTableSelectionChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
 export { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
@@ -126,6 +128,38 @@ export namespace Components {
          */
         "snapAlignment": QCarouselSnapAlignment;
         "updateLimits": () => Promise<void>;
+    }
+    interface QChip {
+        /**
+          * @default false
+         */
+        "clickable": boolean;
+        /**
+          * @default false
+         */
+        "disabled": boolean;
+        "download"?: string;
+        "href"?: string;
+        "label"?: string;
+        "rel"?: string;
+        /**
+          * @default false
+         */
+        "removable": boolean;
+        /**
+          * @default false
+         */
+        "selected": boolean;
+        /**
+          * @default 'md'
+         */
+        "size": QChipSize;
+        "target"?: QChipTarget;
+        "value"?: string;
+        /**
+          * @default 'neutral'
+         */
+        "variant": QChipVariant;
     }
     interface QCircularProgress {
         /**
@@ -742,6 +776,10 @@ export interface QCarouselCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLQCarouselElement;
 }
+export interface QChipCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQChipElement;
+}
 export interface QDataTableCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLQDataTableElement;
@@ -848,6 +886,26 @@ declare global {
     var HTMLQCarouselElement: {
         prototype: HTMLQCarouselElement;
         new (): HTMLQCarouselElement;
+    };
+    interface HTMLQChipElementEventMap {
+        "qClick": MouseEvent;
+        "qRemove": QChipRemoveDetail;
+        "qFocus": FocusEvent;
+        "qBlur": FocusEvent;
+    }
+    interface HTMLQChipElement extends Components.QChip, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQChipElementEventMap>(type: K, listener: (this: HTMLQChipElement, ev: QChipCustomEvent<HTMLQChipElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQChipElementEventMap>(type: K, listener: (this: HTMLQChipElement, ev: QChipCustomEvent<HTMLQChipElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLQChipElement: {
+        prototype: HTMLQChipElement;
+        new (): HTMLQChipElement;
     };
     interface HTMLQCircularProgressElement extends Components.QCircularProgress, HTMLStencilElement {
     }
@@ -1185,6 +1243,7 @@ declare global {
         "q-button": HTMLQButtonElement;
         "q-card": HTMLQCardElement;
         "q-carousel": HTMLQCarouselElement;
+        "q-chip": HTMLQChipElement;
         "q-circular-progress": HTMLQCircularProgressElement;
         "q-data-table": HTMLQDataTableElement;
         "q-dialog": HTMLQDialogElement;
@@ -1283,6 +1342,42 @@ declare namespace LocalJSX {
           * @default 'start'
          */
         "snapAlignment"?: QCarouselSnapAlignment;
+    }
+    interface QChip {
+        /**
+          * @default false
+         */
+        "clickable"?: boolean;
+        /**
+          * @default false
+         */
+        "disabled"?: boolean;
+        "download"?: string;
+        "href"?: string;
+        "label"?: string;
+        "onQBlur"?: (event: QChipCustomEvent<FocusEvent>) => void;
+        "onQClick"?: (event: QChipCustomEvent<MouseEvent>) => void;
+        "onQFocus"?: (event: QChipCustomEvent<FocusEvent>) => void;
+        "onQRemove"?: (event: QChipCustomEvent<QChipRemoveDetail>) => void;
+        "rel"?: string;
+        /**
+          * @default false
+         */
+        "removable"?: boolean;
+        /**
+          * @default false
+         */
+        "selected"?: boolean;
+        /**
+          * @default 'md'
+         */
+        "size"?: QChipSize;
+        "target"?: QChipTarget;
+        "value"?: string;
+        /**
+          * @default 'neutral'
+         */
+        "variant"?: QChipVariant;
     }
     interface QCircularProgress {
         /**
@@ -1973,6 +2068,20 @@ declare namespace LocalJSX {
         "repeat": boolean;
         "itemWidth": string;
     }
+    interface QChipAttributes {
+        "label": string;
+        "value": string;
+        "href": string;
+        "target": QChipTarget;
+        "rel": string;
+        "download": string;
+        "variant": QChipVariant;
+        "size": QChipSize;
+        "selected": boolean;
+        "disabled": boolean;
+        "clickable": boolean;
+        "removable": boolean;
+    }
     interface QCircularProgressAttributes {
         "value": number;
         "label": string;
@@ -2179,6 +2288,7 @@ declare namespace LocalJSX {
         "q-button": Omit<QButton, keyof QButtonAttributes> & { [K in keyof QButton & keyof QButtonAttributes]?: QButton[K] } & { [K in keyof QButton & keyof QButtonAttributes as `attr:${K}`]?: QButtonAttributes[K] } & { [K in keyof QButton & keyof QButtonAttributes as `prop:${K}`]?: QButton[K] };
         "q-card": Omit<QCard, keyof QCardAttributes> & { [K in keyof QCard & keyof QCardAttributes]?: QCard[K] } & { [K in keyof QCard & keyof QCardAttributes as `attr:${K}`]?: QCardAttributes[K] } & { [K in keyof QCard & keyof QCardAttributes as `prop:${K}`]?: QCard[K] };
         "q-carousel": Omit<QCarousel, keyof QCarouselAttributes> & { [K in keyof QCarousel & keyof QCarouselAttributes]?: QCarousel[K] } & { [K in keyof QCarousel & keyof QCarouselAttributes as `attr:${K}`]?: QCarouselAttributes[K] } & { [K in keyof QCarousel & keyof QCarouselAttributes as `prop:${K}`]?: QCarousel[K] };
+        "q-chip": Omit<QChip, keyof QChipAttributes> & { [K in keyof QChip & keyof QChipAttributes]?: QChip[K] } & { [K in keyof QChip & keyof QChipAttributes as `attr:${K}`]?: QChipAttributes[K] } & { [K in keyof QChip & keyof QChipAttributes as `prop:${K}`]?: QChip[K] };
         "q-circular-progress": Omit<QCircularProgress, keyof QCircularProgressAttributes> & { [K in keyof QCircularProgress & keyof QCircularProgressAttributes]?: QCircularProgress[K] } & { [K in keyof QCircularProgress & keyof QCircularProgressAttributes as `attr:${K}`]?: QCircularProgressAttributes[K] } & { [K in keyof QCircularProgress & keyof QCircularProgressAttributes as `prop:${K}`]?: QCircularProgress[K] };
         "q-data-table": Omit<QDataTable, keyof QDataTableAttributes> & { [K in keyof QDataTable & keyof QDataTableAttributes]?: QDataTable[K] } & { [K in keyof QDataTable & keyof QDataTableAttributes as `attr:${K}`]?: QDataTableAttributes[K] } & { [K in keyof QDataTable & keyof QDataTableAttributes as `prop:${K}`]?: QDataTable[K] };
         "q-dialog": Omit<QDialog, keyof QDialogAttributes> & { [K in keyof QDialog & keyof QDialogAttributes]?: QDialog[K] } & { [K in keyof QDialog & keyof QDialogAttributes as `attr:${K}`]?: QDialogAttributes[K] } & { [K in keyof QDialog & keyof QDialogAttributes as `prop:${K}`]?: QDialog[K] };
@@ -2209,6 +2319,7 @@ declare module "@stencil/core" {
             "q-button": LocalJSX.IntrinsicElements["q-button"] & JSXBase.HTMLAttributes<HTMLQButtonElement>;
             "q-card": LocalJSX.IntrinsicElements["q-card"] & JSXBase.HTMLAttributes<HTMLQCardElement>;
             "q-carousel": LocalJSX.IntrinsicElements["q-carousel"] & JSXBase.HTMLAttributes<HTMLQCarouselElement>;
+            "q-chip": LocalJSX.IntrinsicElements["q-chip"] & JSXBase.HTMLAttributes<HTMLQChipElement>;
             "q-circular-progress": LocalJSX.IntrinsicElements["q-circular-progress"] & JSXBase.HTMLAttributes<HTMLQCircularProgressElement>;
             "q-data-table": LocalJSX.IntrinsicElements["q-data-table"] & JSXBase.HTMLAttributes<HTMLQDataTableElement>;
             "q-dialog": LocalJSX.IntrinsicElements["q-dialog"] & JSXBase.HTMLAttributes<HTMLQDialogElement>;

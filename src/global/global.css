@@ -124,6 +124,18 @@
   --q-btn-padding-md: 5px 8px;
   --q-btn-padding-lg: 9px 16px;
 
+  /* Chip (q-chip) */
+  --q-chip-radius: 999px;
+  --q-chip-border: var(--q-border);
+  --q-chip-font-weight: var(--q-font-weight-bold);
+  --q-chip-padding-sm: 4px 9px;
+  --q-chip-padding-md: 6px 11px;
+  --q-chip-padding-lg: 8px 14px;
+  --q-chip-height-sm: 24px;
+  --q-chip-height-md: 30px;
+  --q-chip-height-lg: 36px;
+  --q-chip-active-transform: scale(0.97);
+
   /* Unified Form Field Variables (Borders & Radius Consistency) */
   --q-field-bg: var(--q-bg-surface-2);
   --q-field-border: var(--q-border);

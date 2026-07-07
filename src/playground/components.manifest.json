@@ -1,5 +1,6 @@
 ﻿[
   { "tag": "q-button",            "name": "Button" },
+  { "tag": "q-chip",              "name": "Chip" },
   { "tag": "q-link",              "name": "Link" },
   { "tag": "q-toggle",            "name": "Toggle" },
   { "tag": "q-card",              "name": "Card" },

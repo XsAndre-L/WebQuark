@@ -12,6 +12,7 @@ This document tracks the implementation and availability of generic Web Componen
 | Component Tag | Category | Status | Specs / Docs | Core Purpose |
 | :--- | :--- | :--- | :--- | :--- |
 | **`<q-button>`** | Form Input | `🟢 Implemented` | [q-button.md](./components/q-button.md) | Premium tactile action button, loading spinner support. |
+| **`<q-chip>`** | Actions / Data Display | `Implemented` | [q-chip.md](./components/q-chip.md) | Compact filter, status, and navigation chips with optional removal. |
 | **`<q-card>`** | Layout | `🟢 Implemented` | [q-card.md](./components/q-card.md) | Scoped glassmorphic card container with elevation. |
 | **`<q-carousel>`** | Media / Grid | `🟢 Implemented` | [q-carousel.md](./components/q-carousel.md) | Horizontal scrolling snaps with prev/next arrows. |
 | **`<q-circular-progress>`** | Data Display | `🟢 Implemented` | [q-circular-progress.md](./components/q-circular-progress.md) | Circular SVG reactive progress rings with fill transitions. |

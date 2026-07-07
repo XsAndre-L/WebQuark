@@ -1,0 +1,105 @@
+{
+  "name": "Chip",
+  "tag": "q-chip",
+  "props": {
+    "variant": {
+      "type": "select",
+      "options": ["neutral", "filter", "primary", "success", "warning", "danger"],
+      "default": "neutral",
+      "desc": "Chip visual tone"
+    },
+    "size": {
+      "type": "select",
+      "options": ["sm", "md", "lg"],
+      "default": "md",
+      "desc": "Height, padding, and font-size scale"
+    },
+    "href": {
+      "type": "string",
+      "default": "",
+      "desc": "Turns the chip into an anchor when removable is false"
+    },
+    "target": {
+      "type": "select",
+      "options": ["", "_self", "_blank", "_parent", "_top"],
+      "default": "",
+      "desc": "Anchor target context"
+    },
+    "selected": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Applies selected styling and ARIA state"
+    },
+    "clickable": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Renders a button chip when no href is supplied"
+    },
+    "removable": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Shows a trailing remove action"
+    },
+    "disabled": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Blocks chip interaction"
+    }
+  },
+  "slots": {
+    "default": {
+      "type": "text",
+      "default": "Chip",
+      "desc": "Chip label"
+    },
+    "icon-left": {
+      "type": "html",
+      "default": "",
+      "desc": "Leading icon or symbol"
+    },
+    "icon-right": {
+      "type": "html",
+      "default": "",
+      "desc": "Trailing icon or symbol"
+    }
+  },
+  "variants": [
+    {
+      "name": "Filter Selected",
+      "props": { "variant": "filter", "selected": true, "href": "#users" },
+      "slots": { "default": "User Management" }
+    },
+    {
+      "name": "Primary",
+      "props": { "variant": "primary" },
+      "slots": { "default": "Primary" }
+    },
+    {
+      "name": "Success Status",
+      "props": { "variant": "success" },
+      "slots": { "default": "Synced" }
+    },
+    {
+      "name": "Warning Status",
+      "props": { "variant": "warning" },
+      "slots": { "default": "Pending" }
+    },
+    {
+      "name": "Removable",
+      "props": { "removable": true },
+      "slots": { "default": "Western Cape" }
+    }
+  ],
+  "edgeCases": [
+    {
+      "name": "Long Label",
+      "props": { "variant": "filter" },
+      "slots": { "default": "A very long chip label that should truncate without breaking its parent layout" }
+    },
+    {
+      "name": "Disabled Link Chip",
+      "props": { "href": "/disabled", "disabled": true },
+      "slots": { "default": "Disabled" }
+    }
+  ]
+}

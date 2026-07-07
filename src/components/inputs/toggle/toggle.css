@@ -186,7 +186,7 @@
   --q-toggle-switch-width: 44px;
   --q-toggle-switch-height: 24px;
   --q-toggle-thumb-size: 18px;
-  --q-toggle-checkbox-size: 20px;
+  --q-toggle-checkbox-size: 18px;
 }
 .toggle-wrapper.size-md .toggle-label-text {
   font-size: 0.95rem;

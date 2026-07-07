@@ -9,6 +9,7 @@ import type { Components } from '@webquark/core/components';
 import { defineCustomElement as defineQButton } from '@webquark/core/components/q-button.js';
 import { defineCustomElement as defineQCard } from '@webquark/core/components/q-card.js';
 import { defineCustomElement as defineQCarousel } from '@webquark/core/components/q-carousel.js';
+import { defineCustomElement as defineQChip } from '@webquark/core/components/q-chip.js';
 import { defineCustomElement as defineQCircularProgress } from '@webquark/core/components/q-circular-progress.js';
 import { defineCustomElement as defineQDataTable } from '@webquark/core/components/q-data-table.js';
 import { defineCustomElement as defineQDialog } from '@webquark/core/components/q-dialog.js';
@@ -118,6 +119,46 @@ import type { QCarouselSlideChangeDetail as IQCarouselQCarouselSlideChangeDetail
 export declare interface QCarousel extends Components.QCarousel {
 
   qSlideChange: EventEmitter<QCarouselCustomEvent<IQCarouselQCarouselSlideChangeDetail>>;
+}
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineQChip,
+  inputs: ['clickable', 'disabled', 'download', 'href', 'label', 'rel', 'removable', 'selected', 'size', 'target', 'value', 'variant']
+})
+@Component({
+  selector: 'q-chip',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['clickable', 'disabled', 'download', 'href', 'label', 'rel', 'removable', 'selected', 'size', 'target', 'value', 'variant'],
+  outputs: ['qClick', 'qRemove', 'qFocus', 'qBlur'],
+})
+export class QChip {
+  protected el: HTMLQChipElement;
+  @Output() qClick = new EventEmitter<QChipCustomEvent<MouseEvent>>();
+  @Output() qRemove = new EventEmitter<QChipCustomEvent<IQChipQChipRemoveDetail>>();
+  @Output() qFocus = new EventEmitter<QChipCustomEvent<FocusEvent>>();
+  @Output() qBlur = new EventEmitter<QChipCustomEvent<FocusEvent>>();
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+import type { QChipCustomEvent } from '@webquark/core/components';
+import type { QChipRemoveDetail as IQChipQChipRemoveDetail } from '@webquark/core/components';
+
+export declare interface QChip extends Components.QChip {
+
+  qClick: EventEmitter<QChipCustomEvent<MouseEvent>>;
+
+  qRemove: EventEmitter<QChipCustomEvent<IQChipQChipRemoveDetail>>;
+
+  qFocus: EventEmitter<QChipCustomEvent<FocusEvent>>;
+
+  qBlur: EventEmitter<QChipCustomEvent<FocusEvent>>;
 }
 
 
