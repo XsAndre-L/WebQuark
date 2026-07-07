@@ -452,11 +452,17 @@ export class QLink {
 import type { QLinkCustomEvent } from '@webquark/core/components';
 
 export declare interface QLink extends Components.QLink {
-
+  /**
+   * Emitted when the link is clicked and not disabled.
+   */
   qClick: EventEmitter<QLinkCustomEvent<MouseEvent>>;
-
+  /**
+   * Emitted when the inner anchor receives focus.
+   */
   qFocus: EventEmitter<QLinkCustomEvent<FocusEvent>>;
-
+  /**
+   * Emitted when the inner anchor loses focus.
+   */
   qBlur: EventEmitter<QLinkCustomEvent<FocusEvent>>;
 }
 
