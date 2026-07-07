@@ -1,10 +1,5 @@
-export type QReelLayout = 'grid' | 'carousel';
+import type { QThumbnailMaximizeDetail } from '../thumbnail/thumbnail.types';
 
-export interface QReelMedia {
-  src: string;
-  label?: string;
-  video: boolean;
-  alt: string;
-  triggerEl?: HTMLElement;
-}
+export type QReelLayout = 'grid' | 'carousel';
+export type QReelMedia = QThumbnailMaximizeDetail;
 
