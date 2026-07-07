@@ -98,6 +98,10 @@
   --q-reel-columns-desktop: repeat(auto-fill, minmax(200px, 1fr));
   --q-reel-columns-mobile: 1fr;
   --q-lightbox-max-size: 90vh;
+  --q-reel-lightbox-btn-bg: rgba(0, 0, 0, 0.5);
+  --q-reel-lightbox-btn-border: 1px solid rgba(255, 255, 255, 0.2);
+  --q-reel-lightbox-btn-color: #ffffff;
+  --q-reel-lightbox-btn-hover-bg: rgba(255, 255, 255, 0.2);
 
   /* Carousel (q-carousel) */
   --q-carousel-gap: 16px;

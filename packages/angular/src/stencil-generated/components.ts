@@ -571,9 +571,13 @@ export class QReel {
 import type { QReelCustomEvent } from '@webquark/core/components';
 
 export declare interface QReel extends Components.QReel {
-
+  /**
+   * Emitted when the lightbox opens.
+   */
   qLightboxOpen: EventEmitter<QReelCustomEvent<void>>;
-
+  /**
+   * Emitted when the lightbox closes.
+   */
   qLightboxClose: EventEmitter<QReelCustomEvent<void>>;
 }
 

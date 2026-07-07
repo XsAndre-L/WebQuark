@@ -557,10 +557,12 @@ export namespace Components {
     }
     interface QReel {
         /**
+          * Layout used for slotted q-thumbnail items.
           * @default 'grid'
          */
         "layout": QReelLayout;
         /**
+          * Enables the built-in fullscreen lightbox when thumbnails emit qMaximize.
           * @default true
          */
         "lightbox": boolean;
@@ -1849,14 +1851,22 @@ declare namespace LocalJSX {
     }
     interface QReel {
         /**
+          * Layout used for slotted q-thumbnail items.
           * @default 'grid'
          */
         "layout"?: QReelLayout;
         /**
+          * Enables the built-in fullscreen lightbox when thumbnails emit qMaximize.
           * @default true
          */
         "lightbox"?: boolean;
+        /**
+          * Emitted when the lightbox closes.
+         */
         "onQLightboxClose"?: (event: QReelCustomEvent<void>) => void;
+        /**
+          * Emitted when the lightbox opens.
+         */
         "onQLightboxOpen"?: (event: QReelCustomEvent<void>) => void;
     }
     interface QScrollable {
