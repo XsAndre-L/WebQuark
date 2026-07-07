@@ -225,7 +225,7 @@ export declare interface QDataTable extends Components.QDataTable {
 
 @ProxyCmp({
   defineCustomElementFn: defineQDialog,
-  inputs: ['backdropEffect', 'cancelLabel', 'closeOnEsc', 'closeOnOverlayClick', 'confirmLabel', 'dialogTitle', 'loading', 'message', 'open', 'showCancel', 'showConfirm'],
+  inputs: ['backdropEffect', 'cancelLabel', 'closeLabel', 'closeOnEsc', 'closeOnOverlayClick', 'confirmLabel', 'dialogTitle', 'loading', 'message', 'open', 'showCancel', 'showConfirm'],
   methods: ['show', 'close', 'confirm', 'cancel']
 })
 @Component({
@@ -233,7 +233,7 @@ export declare interface QDataTable extends Components.QDataTable {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['backdropEffect', 'cancelLabel', 'closeOnEsc', 'closeOnOverlayClick', 'confirmLabel', 'dialogTitle', 'loading', 'message', 'open', 'showCancel', 'showConfirm'],
+  inputs: ['backdropEffect', 'cancelLabel', 'closeLabel', 'closeOnEsc', 'closeOnOverlayClick', 'confirmLabel', 'dialogTitle', 'loading', 'message', 'open', 'showCancel', 'showConfirm'],
   outputs: ['qConfirm', 'qCancel', 'qClose'],
 })
 export class QDialog {
@@ -251,11 +251,17 @@ export class QDialog {
 import type { QDialogCustomEvent } from '@webquark/core/components';
 
 export declare interface QDialog extends Components.QDialog {
-
+  /**
+   * Emitted when the confirm action is activated.
+   */
   qConfirm: EventEmitter<QDialogCustomEvent<void>>;
-
+  /**
+   * Emitted when the cancel action is activated.
+   */
   qCancel: EventEmitter<QDialogCustomEvent<void>>;
-
+  /**
+   * Emitted whenever the dialog is closed through a public action.
+   */
   qClose: EventEmitter<QDialogCustomEvent<void>>;
 }
 
