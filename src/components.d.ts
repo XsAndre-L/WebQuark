@@ -228,47 +228,69 @@ export namespace Components {
          */
         "value": number;
     }
+    /**
+     * Data grid with optional toolbar, search, row activation, and multi-row selection.
+     * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
+     * @cssprop --q-table-dropdown-bg - Background color forwarded to slotted q-dropdown controls.
+     * @cssprop --q-table-dropdown-menu-bg - Menu background color forwarded to slotted q-dropdown controls.
+     * @cssprop --q-table-dropdown-border - Border style forwarded to slotted q-dropdown controls.
+     * @cssprop --q-table-dropdown-primary - Primary color forwarded to slotted q-dropdown controls.
+     * @cssprop --q-table-dropdown-fg - Foreground color forwarded to slotted q-dropdown controls.
+     */
     interface QDataTable {
         /**
+          * Column definitions, or a JSON string of column definitions.
           * @default []
          */
         "columns": TableColumn[] | string;
         /**
+          * Row data, or a JSON string of row data.
           * @default []
          */
         "items": any[] | string;
         /**
+          * Row field used as the stable selection and render key. Falls back to the row index.
           * @default 'id'
          */
         "keyField": string;
         /**
+          * Shows a loading state and suppresses row rendering while true.
           * @default false
          */
         "loading": boolean;
         /**
+          * Placeholder text for the built-in search input.
           * @default 'Search...'
          */
         "searchPlaceholder": string;
         /**
+          * Current search input value.
           * @default ''
          */
         "searchValue": string;
         /**
+          * Enables row selection checkboxes and selection state.
           * @default false
          */
         "selectable": boolean;
         /**
+          * Keys for currently selected rows.
           * @default []
          */
         "selectedKeys": any[];
         /**
+          * Shows the built-in toolbar search input.
           * @default false
          */
         "showSearch": boolean;
         /**
+          * Shows the optional toolbar above the table.
           * @default false
          */
         "showToolbar": boolean;
+        /**
+          * Title text rendered in the toolbar.
+         */
         "toolbarTitle"?: string;
     }
     interface QDialog {
@@ -1065,6 +1087,15 @@ declare global {
         "qSelectionChange": QDataTableSelectionChangeDetail;
         "qSearch": string;
     }
+    /**
+     * Data grid with optional toolbar, search, row activation, and multi-row selection.
+     * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
+     * @cssprop --q-table-dropdown-bg - Background color forwarded to slotted q-dropdown controls.
+     * @cssprop --q-table-dropdown-menu-bg - Menu background color forwarded to slotted q-dropdown controls.
+     * @cssprop --q-table-dropdown-border - Border style forwarded to slotted q-dropdown controls.
+     * @cssprop --q-table-dropdown-primary - Primary color forwarded to slotted q-dropdown controls.
+     * @cssprop --q-table-dropdown-fg - Foreground color forwarded to slotted q-dropdown controls.
+     */
     interface HTMLQDataTableElement extends Components.QDataTable, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQDataTableElementEventMap>(type: K, listener: (this: HTMLQDataTableElement, ev: QDataTableCustomEvent<HTMLQDataTableElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1620,50 +1651,81 @@ declare namespace LocalJSX {
          */
         "value"?: number;
     }
+    /**
+     * Data grid with optional toolbar, search, row activation, and multi-row selection.
+     * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
+     * @cssprop --q-table-dropdown-bg - Background color forwarded to slotted q-dropdown controls.
+     * @cssprop --q-table-dropdown-menu-bg - Menu background color forwarded to slotted q-dropdown controls.
+     * @cssprop --q-table-dropdown-border - Border style forwarded to slotted q-dropdown controls.
+     * @cssprop --q-table-dropdown-primary - Primary color forwarded to slotted q-dropdown controls.
+     * @cssprop --q-table-dropdown-fg - Foreground color forwarded to slotted q-dropdown controls.
+     */
     interface QDataTable {
         /**
+          * Column definitions, or a JSON string of column definitions.
           * @default []
          */
         "columns"?: TableColumn[] | string;
         /**
+          * Row data, or a JSON string of row data.
           * @default []
          */
         "items"?: any[] | string;
         /**
+          * Row field used as the stable selection and render key. Falls back to the row index.
           * @default 'id'
          */
         "keyField"?: string;
         /**
+          * Shows a loading state and suppresses row rendering while true.
           * @default false
          */
         "loading"?: boolean;
+        /**
+          * Emitted when a non-interactive row area is clicked or activated with the keyboard.
+         */
         "onQRowClick"?: (event: QDataTableCustomEvent<QDataTableRowClickDetail>) => void;
+        /**
+          * Emitted when the built-in search input value changes.
+         */
         "onQSearch"?: (event: QDataTableCustomEvent<string>) => void;
+        /**
+          * Emitted when selected rows change.
+         */
         "onQSelectionChange"?: (event: QDataTableCustomEvent<QDataTableSelectionChangeDetail>) => void;
         /**
+          * Placeholder text for the built-in search input.
           * @default 'Search...'
          */
         "searchPlaceholder"?: string;
         /**
+          * Current search input value.
           * @default ''
          */
         "searchValue"?: string;
         /**
+          * Enables row selection checkboxes and selection state.
           * @default false
          */
         "selectable"?: boolean;
         /**
+          * Keys for currently selected rows.
           * @default []
          */
         "selectedKeys"?: any[];
         /**
+          * Shows the built-in toolbar search input.
           * @default false
          */
         "showSearch"?: boolean;
         /**
+          * Shows the optional toolbar above the table.
           * @default false
          */
         "showToolbar"?: boolean;
+        /**
+          * Title text rendered in the toolbar.
+         */
         "toolbarTitle"?: string;
     }
     interface QDialog {
@@ -2665,6 +2727,15 @@ declare module "@stencil/core" {
              */
             "q-chip": LocalJSX.IntrinsicElements["q-chip"] & JSXBase.HTMLAttributes<HTMLQChipElement>;
             "q-circular-progress": LocalJSX.IntrinsicElements["q-circular-progress"] & JSXBase.HTMLAttributes<HTMLQCircularProgressElement>;
+            /**
+             * Data grid with optional toolbar, search, row activation, and multi-row selection.
+             * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
+             * @cssprop --q-table-dropdown-bg - Background color forwarded to slotted q-dropdown controls.
+             * @cssprop --q-table-dropdown-menu-bg - Menu background color forwarded to slotted q-dropdown controls.
+             * @cssprop --q-table-dropdown-border - Border style forwarded to slotted q-dropdown controls.
+             * @cssprop --q-table-dropdown-primary - Primary color forwarded to slotted q-dropdown controls.
+             * @cssprop --q-table-dropdown-fg - Foreground color forwarded to slotted q-dropdown controls.
+             */
             "q-data-table": LocalJSX.IntrinsicElements["q-data-table"] & JSXBase.HTMLAttributes<HTMLQDataTableElement>;
             "q-dialog": LocalJSX.IntrinsicElements["q-dialog"] & JSXBase.HTMLAttributes<HTMLQDialogElement>;
             "q-dropdown": LocalJSX.IntrinsicElements["q-dropdown"] & JSXBase.HTMLAttributes<HTMLQDropdownElement>;
