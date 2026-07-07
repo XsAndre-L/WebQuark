@@ -370,9 +370,13 @@ import type { QFormSubmitDetail as IQFormQFormSubmitDetail } from '@webquark/cor
 import type { QFormResetDetail as IQFormQFormResetDetail } from '@webquark/core/components';
 
 export declare interface QForm extends Components.QForm {
-
+  /**
+   * Emitted after a valid submit with collected values and FormData.
+   */
   qSubmit: EventEmitter<QFormCustomEvent<IQFormQFormSubmitDetail>>;
-
+  /**
+   * Emitted when the native form resets.
+   */
   qReset: EventEmitter<QFormCustomEvent<IQFormQFormResetDetail>>;
 }
 

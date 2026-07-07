@@ -12,8 +12,8 @@
   font-family: var(--q-font-family, inherit);
 }
 
-.form-header:empty,
-.form-actions:empty {
+.form-header.is-hidden,
+.form-actions.is-hidden {
   display: none;
 }
 
@@ -21,7 +21,7 @@
   margin: 0;
   color: var(--q-form-title-color, var(--q-fg-base, #172033));
   font-size: var(--q-form-title-size, var(--q-font-size-lg, 1rem));
-  font-weight: var(--q-font-weight-bold, 650);
+  font-weight: var(--q-font-weight-bold, 600);
   line-height: 1.3;
 }
 

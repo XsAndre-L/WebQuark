@@ -68,6 +68,40 @@ export function applyValues(formEl: HTMLFormElement | undefined, hostEl: HTMLEle
   });
 }
 
+export function resetValues(formEl: HTMLFormElement | undefined, hostEl: HTMLElement) {
+  getNamedControls(formEl, hostEl).forEach((control) => {
+    if (typeof control.formResetCallback === 'function') {
+      control.formResetCallback();
+      return;
+    }
+
+    const tagName = control.tagName.toLowerCase();
+
+    if (tagName === 'input') {
+      const input = control as HTMLInputElement;
+      if (input.type === 'checkbox' || input.type === 'radio') {
+        input.checked = input.defaultChecked;
+      } else if (input.type !== 'file') {
+        input.value = input.getAttribute('value') ?? input.defaultValue ?? '';
+      }
+      return;
+    }
+
+    if (tagName === 'textarea') {
+      const textarea = control as HTMLTextAreaElement;
+      textarea.value = textarea.textContent ?? textarea.defaultValue ?? '';
+      return;
+    }
+
+    if (tagName === 'select') {
+      const select = control as HTMLSelectElement;
+      Array.from(select.options).forEach(option => {
+        option.selected = option.defaultSelected;
+      });
+    }
+  });
+}
+
 function appendControlToFormData(formData: FormData, control: NamedFormControl) {
   const name = control.getAttribute('name');
   if (!name || control.disabled) return;
