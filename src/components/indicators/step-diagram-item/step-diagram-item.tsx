@@ -1,7 +1,19 @@
-import { Component, Prop, h, Element, Event, EventEmitter } from '@stencil/core';
+import { Component, Prop, h, Event, EventEmitter } from '@stencil/core';
 
 import type { QStepDiagramItemLayout, QStepDiagramItemLineStyle, QStepDiagramItemStatus } from './step-diagram-item.types';
+import { isStepDiagramItemActivationKey } from './step-diagram-item.utils';
 
+/**
+ * Interactive step item for q-step-diagram sequences.
+ * @slot badge - Optional custom badge content.
+ * @slot title - Step title content.
+ * @slot - Step body content.
+ * @part badge - Decorative badge node.
+ * @part connector - Connector line between steps.
+ * @part content - Focusable content button.
+ * @part title - Step title wrapper.
+ * @part body - Step body wrapper.
+ */
 @Component({
   tag: 'q-step-diagram-item',
   styleUrl: 'step-diagram-item.css',
@@ -9,19 +21,17 @@ import type { QStepDiagramItemLayout, QStepDiagramItemLineStyle, QStepDiagramIte
 })
 export class QStepDiagramItem {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
+  /** Visual and semantic state of the step. */
   @Prop({ reflect: true }) status: QStepDiagramItemStatus = 'completed';
+
+  /** Connector line style shown after the step. */
   @Prop({ reflect: true }) lineStyle: QStepDiagramItemLineStyle = 'solid';
+
+  /** Layout inherited from q-step-diagram and reflected for host styling. */
   @Prop({ reflect: true, mutable: true }) layout: QStepDiagramItemLayout = 'vertical';
-  @Element() el!: HTMLElement;
 
+  /** Emitted when the focusable step content is clicked or activated with Enter/Space. */
   @Event() qItemClick: EventEmitter<void>;
-
-  componentWillLoad() {
-    const parent = this.el.closest('q-step-diagram');
-    if (parent) {
-      this.layout = (parent as any).layout;
-    }
-  }
 
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
@@ -31,7 +41,7 @@ export class QStepDiagramItem {
   };
 
   private handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
+    if (isStepDiagramItemActivationKey(e.key)) {
       e.preventDefault();
       e.stopPropagation();
       this.qItemClick.emit();
@@ -42,22 +52,10 @@ export class QStepDiagramItem {
 
   render() {
     return (
-      <div 
-        class={{
-          'step-item': true,
-          [`status-${this.status}`]: true,
-          [`line-${this.lineStyle}`]: true,
-          [`layout-${this.layout}`]: true
-        }}
-      >
+      <div class="step-item">
         {/* Visual Line Path and Node Circle - decorative */}
         <div class="step-line-container">
-          <div 
-            class="step-badge" 
-            onClick={this.handleTrigger} 
-            aria-hidden="true"
-            part="badge"
-          >
+          <div class="step-badge" aria-hidden="true" part="badge">
             <slot name="badge">
               <div class="badge-dot" />
             </slot>
@@ -73,6 +71,8 @@ export class QStepDiagramItem {
           tabindex="0"
           role="button"
           part="content"
+          aria-current={this.status === 'active' ? 'step' : undefined}
+          aria-disabled={this.status === 'pending' ? 'true' : undefined}
         >
           <div class="step-title" part="title">
             <slot name="title" />

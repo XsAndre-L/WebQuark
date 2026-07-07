@@ -732,7 +732,9 @@ export class QStepDiagramItem {
 import type { QStepDiagramItemCustomEvent } from '@webquark/core/components';
 
 export declare interface QStepDiagramItem extends Components.QStepDiagramItem {
-
+  /**
+   * Emitted when the focusable step content is clicked or activated with Enter/Space.
+   */
   qItemClick: EventEmitter<QStepDiagramItemCustomEvent<void>>;
 }
 
