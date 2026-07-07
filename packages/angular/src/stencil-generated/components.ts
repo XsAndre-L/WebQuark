@@ -918,13 +918,21 @@ export class QToggle {
 import type { QToggleCustomEvent } from '@webquark/core/components';
 
 export declare interface QToggle extends Components.QToggle {
-
+  /**
+   * Emitted when the checked state changes.
+   */
   qChange: EventEmitter<QToggleCustomEvent<boolean>>;
-
+  /**
+   * Emitted when the toggle receives focus.
+   */
   qFocus: EventEmitter<QToggleCustomEvent<FocusEvent>>;
-
+  /**
+   * Emitted when the toggle loses focus.
+   */
   qBlur: EventEmitter<QToggleCustomEvent<FocusEvent>>;
-
+  /**
+   * Emitted before the toggle changes due to pointer or keyboard activation.
+   */
   qClick: EventEmitter<QToggleCustomEvent<MouseEvent>>;
 }
 

@@ -5,7 +5,7 @@
   --q-toggle-thumb-size: var(--q-toggle-size, 18px);
 
   /* Checkbox Mode Dimensions */
-  --q-toggle-checkbox-size: var(--q-toggle-box-size, 20px);
+  --q-toggle-checkbox-size: var(--q-toggle-box-size, 18px);
 
   /* Colors */
   --q-toggle-bg-off: var(--q-bg-surface-2, #374151);
@@ -13,16 +13,16 @@
   --q-toggle-thumb-color: var(--q-fg-base, #f9fafb);
   --q-toggle-border-color: var(--q-border-color, #4b5563);
   --q-toggle-border-color-on: var(--q-color-primary, #60a5fa);
-  
+
   /* Focus / Validation */
-  --q-toggle-focus-ring: var(--q-glow-primary, 0 0 0 3px rgba(96, 165, 250, 0.4));
-  --q-toggle-error-color: var(--q-color-danger, #ef4444);
+  --q-toggle-focus-ring: var(--q-focus-ring, 2px solid var(--q-color-primary, #60a5fa));
+  --q-toggle-error-color: var(--q-color-danger, #f87171);
 
   display: inline-block;
   outline: none;
 }
 
-:host(.is-disabled) {
+:host([disabled]) {
   cursor: not-allowed;
   opacity: 0.6;
   pointer-events: none;
@@ -41,6 +41,7 @@
   position: relative;
   user-select: none;
   -webkit-user-select: none;
+  outline: none;
 }
 
 .toggle-wrapper.is-disabled {
@@ -48,29 +49,31 @@
   pointer-events: none;
 }
 
-/* Focus indicators on keydown focus */
-:host(:focus-visible) .toggle-control {
-  box-shadow: var(--q-toggle-focus-ring);
+/* Focus indicators on keyboard focus */
+.toggle-wrapper:focus-visible .switch-track,
+.toggle-wrapper:focus-visible .checkbox-box {
+  outline: var(--q-toggle-focus-ring);
+  outline-offset: 2px;
 }
 
 .toggle-control {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: box-shadow var(--q-transition-normal, 200ms ease);
 }
 
 /* Switch Mode styling */
-.type-switch .toggle-control {
+.switch-track {
   width: var(--q-toggle-switch-width);
   height: var(--q-toggle-switch-height);
   background-color: var(--q-toggle-bg-off);
   border-radius: 9999px;
   position: relative;
+  flex-shrink: 0;
   transition: background-color var(--q-transition-normal, 250ms cubic-bezier(0.4, 0, 0.2, 1));
 }
 
-.type-switch.is-checked .toggle-control {
+.type-switch.is-checked .switch-track {
   background-color: var(--q-toggle-bg-on);
 }
 
@@ -92,18 +95,22 @@
 }
 
 /* Checkbox Mode styling */
-.type-checkbox .toggle-control {
+.checkbox-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: var(--q-toggle-checkbox-size);
   height: var(--q-toggle-checkbox-size);
-  border-radius: var(--q-radius-xs, 4px);
+  border-radius: var(--q-radius-sm, 4px);
   border: 2px solid var(--q-toggle-border-color);
   background-color: transparent;
-  transition: 
-    background-color var(--q-transition-normal, 200ms ease),
-    border-color var(--q-transition-normal, 200ms ease);
+  box-sizing: border-box;
+  transition:
+    background-color var(--q-transition-normal, 250ms cubic-bezier(0.4, 0, 0.2, 1)),
+    border-color var(--q-transition-normal, 250ms cubic-bezier(0.4, 0, 0.2, 1));
 }
 
-.type-checkbox.is-checked .toggle-control {
+.type-checkbox.is-checked .checkbox-box {
   background-color: var(--q-toggle-bg-on);
   border-color: var(--q-toggle-border-color-on);
 }
@@ -142,7 +149,7 @@
   font-size: 0.95rem;
   font-weight: 500;
   color: var(--q-fg-base);
-  transition: color var(--q-transition-normal, 200ms ease);
+  transition: color var(--q-transition-normal, 250ms cubic-bezier(0.4, 0, 0.2, 1));
 }
 
 .toggle-label-text.is-hidden {
@@ -150,12 +157,13 @@
 }
 
 /* Error styles */
-.toggle-wrapper.has-error .toggle-control {
-  border-color: var(--q-toggle-error-color) !important;
+.toggle-wrapper.has-error .checkbox-box {
+  border-color: var(--q-toggle-error-color);
 }
 
-.toggle-wrapper.has-error.type-switch .toggle-control {
-  background-color: rgba(239, 68, 68, 0.2);
+.toggle-wrapper.has-error.type-switch .switch-track {
+  background-color: rgba(248, 113, 113, 0.2);
+  background-color: color-mix(in srgb, var(--q-toggle-error-color) 20%, transparent);
 }
 
 .error-msg {
@@ -171,7 +179,7 @@
   --q-toggle-switch-width: 32px;
   --q-toggle-switch-height: 18px;
   --q-toggle-thumb-size: 12px;
-  --q-toggle-checkbox-size: 16px;
+  --q-toggle-checkbox-size: 14px;
 }
 .toggle-wrapper.size-sm .toggle-label-text {
   font-size: var(--q-font-size-sm, 0.7rem);
@@ -186,7 +194,7 @@
   --q-toggle-switch-width: 44px;
   --q-toggle-switch-height: 24px;
   --q-toggle-thumb-size: 18px;
-  --q-toggle-checkbox-size: 18px;
+  --q-toggle-checkbox-size: 16px;
 }
 .toggle-wrapper.size-md .toggle-label-text {
   font-size: 0.95rem;
@@ -201,10 +209,10 @@
   --q-toggle-switch-width: 56px;
   --q-toggle-switch-height: 30px;
   --q-toggle-thumb-size: 24px;
-  --q-toggle-checkbox-size: 24px;
+  --q-toggle-checkbox-size: 22px;
 }
 .toggle-wrapper.size-lg .toggle-label-text {
-  font-size: var(--q-font-size-lg, 1.125rem);
+  font-size: var(--q-font-size-lg, 1rem);
 }
 .toggle-wrapper.size-lg .default-check-icon {
   width: 16px;
