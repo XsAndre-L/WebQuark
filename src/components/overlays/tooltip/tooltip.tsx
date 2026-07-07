@@ -2,6 +2,8 @@ import { Component, Prop, State, Element, h, Host } from '@stencil/core';
 
 import type { QTooltipPosition } from './tooltip.types';
 
+let tooltipId = 0;
+
 @Component({
   tag: 'q-tooltip',
   styleUrl: 'tooltip.css',
@@ -9,18 +11,18 @@ import type { QTooltipPosition } from './tooltip.types';
 })
 export class QTooltip {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
-  @Element() el: HTMLElement;
+  @Element() el!: HTMLElement;
 
   /**
    * The text content to display inside the tooltip.
    */
-  @Prop() content: string;
+  @Prop() content?: string;
 
   /**
    * The placement position of the tooltip relative to its trigger parent.
    * Options: 'top', 'bottom', 'left', 'right'
    */
-  @Prop() position: QTooltipPosition = 'top';
+  @Prop({ reflect: true }) position: QTooltipPosition = 'top';
 
   /**
    * The delay in milliseconds before the tooltip shows up.
@@ -29,17 +31,20 @@ export class QTooltip {
 
   @State() visible: boolean = false;
 
-  private showTimer: any;
+  private showTimer?: ReturnType<typeof setTimeout>;
 
   // ========================= [2] INTERNAL STATE & REFS =========================
 
   private parentEl: HTMLElement | null = null;
+  private describedByAdded = false;
+  private tooltipId = '';
 
   // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
   connectedCallback() {
     this.parentEl = this.el.parentElement;
     if (this.parentEl) {
+      this.syncAriaDescribedBy();
       this.parentEl.addEventListener('mouseenter', this.show);
       this.parentEl.addEventListener('mouseleave', this.hide);
       this.parentEl.addEventListener('focusin', this.show);
@@ -53,6 +58,7 @@ export class QTooltip {
       this.parentEl.removeEventListener('mouseleave', this.hide);
       this.parentEl.removeEventListener('focusin', this.show);
       this.parentEl.removeEventListener('focusout', this.hide);
+      this.removeAriaDescribedBy();
     }
     this.removeScrollListeners();
     clearTimeout(this.showTimer);
@@ -120,7 +126,7 @@ export class QTooltip {
   private updatePosition = () => {
     if (!this.parentEl) return;
     const parentRect = this.parentEl.getBoundingClientRect();
-    
+
     let offsetLeft = 0;
     let offsetTop = 0;
     const container = this.getContainingBlock(this.el);
@@ -177,6 +183,37 @@ export class QTooltip {
     this.hide();
   };
 
+  private syncAriaDescribedBy() {
+    if (!this.parentEl) return;
+
+    this.tooltipId = this.el.id || `q-tooltip-${++tooltipId}`;
+    if (!this.el.id) {
+      this.el.id = this.tooltipId;
+    }
+
+    const describedBy = this.parentEl.getAttribute('aria-describedby');
+    const ids = describedBy ? describedBy.split(/\s+/).filter(Boolean) : [];
+    if (!ids.includes(this.tooltipId)) {
+      this.parentEl.setAttribute('aria-describedby', [...ids, this.tooltipId].join(' '));
+      this.describedByAdded = true;
+    }
+  }
+
+  private removeAriaDescribedBy() {
+    if (!this.parentEl || !this.describedByAdded || !this.tooltipId) return;
+
+    const describedBy = this.parentEl.getAttribute('aria-describedby');
+    if (!describedBy) return;
+
+    const ids = describedBy.split(/\s+/).filter(id => id && id !== this.tooltipId);
+    if (ids.length) {
+      this.parentEl.setAttribute('aria-describedby', ids.join(' '));
+    } else {
+      this.parentEl.removeAttribute('aria-describedby');
+    }
+    this.describedByAdded = false;
+  }
+
   private addScrollListeners() {
     window.addEventListener('scroll', this.handleScroll, { passive: true });
     window.addEventListener('resize', this.handleScroll);
@@ -205,8 +242,7 @@ export class QTooltip {
         class={{
           'is-visible': this.visible,
         }}
-        position={this.position}
-        aria-hidden="true"
+        aria-hidden={this.visible ? 'false' : 'true'}
         role="tooltip"
       >
         <div class="tooltip-bubble">
