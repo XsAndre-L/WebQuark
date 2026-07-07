@@ -125,6 +125,9 @@
 
   /* Button (q-button) */
   --q-btn-radius: var(--q-radius-md);
+  --q-btn-radius-sm: var(--q-radius-sm);
+  --q-btn-radius-md: var(--q-radius-md);
+  --q-btn-radius-lg: var(--q-radius-lg);
   --q-btn-font-size: var(--q-font-size-base);
   --q-btn-font-weight: var(--q-font-weight-bold);
   --q-btn-active-transform: scale(0.97);
@@ -132,6 +135,9 @@
   --q-btn-padding-sm: 6px 10px;
   --q-btn-padding-md: 5px 8px;
   --q-btn-padding-lg: 9px 16px;
+  --q-btn-icon-padding-sm: 4px;
+  --q-btn-icon-padding-md: 6px;
+  --q-btn-icon-padding-lg: 9px;
 
   /* Chip (q-chip) */
   --q-chip-radius: 999px;

@@ -5,45 +5,58 @@ import type { QButtonSize, QButtonType, QButtonVariant } from './button.types';
   tag: 'q-button',
   styleUrl: 'button.css',
   shadow: {
-    delegatesFocus: true
+    delegatesFocus: true,
   },
 })
 export class QButton {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Element() el!: HTMLElement;
 
+  /** Visual style of the button. */
   @Prop() variant: QButtonVariant = 'primary';
+  /** Button size. */
   @Prop() size: QButtonSize = 'md';
+  /** Disables interaction and marks the control as unavailable. */
   @Prop({ reflect: true }) disabled: boolean = false;
+  /** Shows a spinner and suppresses interaction while work is in progress. */
   @Prop({ reflect: true }) loading: boolean = false;
+  /** Native button type used when rendering a `<button>`. */
   @Prop() type: QButtonType = 'button';
+  /** Expands the button to fill its container width. */
   @Prop({ reflect: true }) expand: boolean = false;
+  /** URL to render the component as a link. */
   @Prop() href?: string;
+  /** Link target used when `href` is set. */
   @Prop() target?: string;
+  /** Link rel value. Defaults to noopener noreferrer for target="_blank". */
   @Prop() rel?: string;
+  /** Download filename or boolean download hint for link buttons. */
   @Prop() download?: string;
+  /** Renders compact icon-only spacing. When unset, this is auto-detected from slotted icon content. */
   @Prop({ reflect: true }) iconOnly?: boolean;
+  /** Accessible label forwarded to the inner button or anchor. Required for icon-only buttons. */
+  @Prop() ariaLabel?: string;
 
+  /** Emitted on click, unless disabled or loading. */
   @Event() qClick!: EventEmitter<MouseEvent>;
+  /** Emitted when the inner control receives focus. */
   @Event() qFocus!: EventEmitter<FocusEvent>;
+  /** Emitted when the inner control loses focus. */
   @Event() qBlur!: EventEmitter<FocusEvent>;
+
+  // ========================= [2] INTERNAL STATE & REFS =========================
 
   @State() autoIconOnly: boolean = false;
 
-  componentWillLoad() {
-    this.checkIconOnly();
-  }
-
   // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
-  componentWillUpdate() {
+  componentWillLoad() {
     this.checkIconOnly();
   }
 
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
   private checkIconOnly = () => {
-    if (!this.el) return;
     const text = this.el.textContent ? this.el.textContent.trim() : '';
     const hasIcon = this.el.querySelector('q-icon') !== null ||
                     this.el.querySelector('[slot="icon-left"]') !== null ||
@@ -88,10 +101,9 @@ export class QButton {
       'btn': true,
       [`variant-${this.variant}`]: true,
       [`size-${this.size}`]: true,
-      'is-loading': this.loading,
       'is-disabled': isBtnDisabled,
       'is-expanded': this.expand,
-      'is-icon-only': isIcon
+      'is-icon-only': isIcon,
     };
 
     const innerContent = [
@@ -113,6 +125,8 @@ export class QButton {
           download={this.download}
           tabindex={isBtnDisabled ? -1 : undefined}
           aria-disabled={isBtnDisabled ? 'true' : 'false'}
+          aria-busy={this.loading ? 'true' : 'false'}
+          aria-label={this.ariaLabel}
           onClick={this.handleClick}
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}
@@ -128,6 +142,7 @@ export class QButton {
         type={this.type}
         disabled={isBtnDisabled}
         aria-busy={this.loading ? 'true' : 'false'}
+        aria-label={this.ariaLabel}
         onClick={this.handleClick}
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}

@@ -58,31 +58,56 @@ export { QTooltipPosition } from "./components/overlays/tooltip/tooltip.types";
 export namespace Components {
     interface QButton {
         /**
+          * Accessible label forwarded to the inner button or anchor. Required for icon-only buttons.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Disables interaction and marks the control as unavailable.
           * @default false
          */
         "disabled": boolean;
+        /**
+          * Download filename or boolean download hint for link buttons.
+         */
         "download"?: string;
         /**
+          * Expands the button to fill its container width.
           * @default false
          */
         "expand": boolean;
+        /**
+          * URL to render the component as a link.
+         */
         "href"?: string;
+        /**
+          * Renders compact icon-only spacing. When unset, this is auto-detected from slotted icon content.
+         */
         "iconOnly"?: boolean;
         /**
+          * Shows a spinner and suppresses interaction while work is in progress.
           * @default false
          */
         "loading": boolean;
+        /**
+          * Link rel value. Defaults to noopener noreferrer for target="_blank".
+         */
         "rel"?: string;
         /**
+          * Button size.
           * @default 'md'
          */
         "size": QButtonSize;
+        /**
+          * Link target used when `href` is set.
+         */
         "target"?: string;
         /**
+          * Native button type used when rendering a `<button>`.
           * @default 'button'
          */
         "type": QButtonType;
         /**
+          * Visual style of the button.
           * @default 'primary'
          */
         "variant": QButtonVariant;
@@ -1334,34 +1359,68 @@ declare global {
 declare namespace LocalJSX {
     interface QButton {
         /**
+          * Accessible label forwarded to the inner button or anchor. Required for icon-only buttons.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Disables interaction and marks the control as unavailable.
           * @default false
          */
         "disabled"?: boolean;
+        /**
+          * Download filename or boolean download hint for link buttons.
+         */
         "download"?: string;
         /**
+          * Expands the button to fill its container width.
           * @default false
          */
         "expand"?: boolean;
+        /**
+          * URL to render the component as a link.
+         */
         "href"?: string;
+        /**
+          * Renders compact icon-only spacing. When unset, this is auto-detected from slotted icon content.
+         */
         "iconOnly"?: boolean;
         /**
+          * Shows a spinner and suppresses interaction while work is in progress.
           * @default false
          */
         "loading"?: boolean;
+        /**
+          * Emitted when the inner control loses focus.
+         */
         "onQBlur"?: (event: QButtonCustomEvent<FocusEvent>) => void;
+        /**
+          * Emitted on click, unless disabled or loading.
+         */
         "onQClick"?: (event: QButtonCustomEvent<MouseEvent>) => void;
+        /**
+          * Emitted when the inner control receives focus.
+         */
         "onQFocus"?: (event: QButtonCustomEvent<FocusEvent>) => void;
+        /**
+          * Link rel value. Defaults to noopener noreferrer for target="_blank".
+         */
         "rel"?: string;
         /**
+          * Button size.
           * @default 'md'
          */
         "size"?: QButtonSize;
+        /**
+          * Link target used when `href` is set.
+         */
         "target"?: string;
         /**
+          * Native button type used when rendering a `<button>`.
           * @default 'button'
          */
         "type"?: QButtonType;
         /**
+          * Visual style of the button.
           * @default 'primary'
          */
         "variant"?: QButtonVariant;
@@ -2188,6 +2247,7 @@ declare namespace LocalJSX {
         "rel": string;
         "download": string;
         "iconOnly": boolean;
+        "ariaLabel": string;
     }
     interface QCardAttributes {
         "elevation": string;

@@ -33,14 +33,14 @@ import { defineCustomElement as defineQToggle } from '@webquark/core/components/
 import { defineCustomElement as defineQTooltip } from '@webquark/core/components/q-tooltip.js';
 @ProxyCmp({
   defineCustomElementFn: defineQButton,
-  inputs: ['disabled', 'download', 'expand', 'href', 'iconOnly', 'loading', 'rel', 'size', 'target', 'type', 'variant']
+  inputs: ['ariaLabel', 'disabled', 'download', 'expand', 'href', 'iconOnly', 'loading', 'rel', 'size', 'target', 'type', 'variant']
 })
 @Component({
   selector: 'q-button',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'download', 'expand', 'href', 'iconOnly', 'loading', 'rel', 'size', 'target', 'type', 'variant'],
+  inputs: ['ariaLabel', 'disabled', 'download', 'expand', 'href', 'iconOnly', 'loading', 'rel', 'size', 'target', 'type', 'variant'],
   outputs: ['qClick', 'qFocus', 'qBlur'],
 })
 export class QButton {
@@ -58,11 +58,17 @@ export class QButton {
 import type { QButtonCustomEvent } from '@webquark/core/components';
 
 export declare interface QButton extends Components.QButton {
-
+  /**
+   * Emitted on click, unless disabled or loading.
+   */
   qClick: EventEmitter<QButtonCustomEvent<MouseEvent>>;
-
+  /**
+   * Emitted when the inner control receives focus.
+   */
   qFocus: EventEmitter<QButtonCustomEvent<FocusEvent>>;
-
+  /**
+   * Emitted when the inner control loses focus.
+   */
   qBlur: EventEmitter<QButtonCustomEvent<FocusEvent>>;
 }
 
