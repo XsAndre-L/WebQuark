@@ -1,6 +1,8 @@
 import { expect, describe, it, vi } from 'vitest';
 // @ts-ignore
 import { defineCustomElements } from '../../../../../dist/loader';
+// @ts-ignore
+import { QChip as QChipElement } from '../../../../../dist/components/q-chip.js';
 
 defineCustomElements();
 
@@ -23,6 +25,17 @@ describe('q-chip', () => {
 
     expect(anchor.getAttribute('href')).toBe('/admin/users');
     expect(anchor.textContent?.trim()).toBe('Users');
+    el.remove();
+  });
+
+  it('renders a neutral span chip by default', async () => {
+    const el = await createComponent({ label: 'Draft' });
+    const chip = el.shadowRoot.querySelector('span.chip') as HTMLSpanElement;
+
+    expect(chip).toBeTruthy();
+    expect(chip.classList.contains('variant-neutral')).toBe(true);
+    expect(chip.classList.contains('size-md')).toBe(true);
+    expect(chip.textContent?.trim()).toBe('Draft');
     el.remove();
   });
 
@@ -74,12 +87,54 @@ describe('q-chip', () => {
     el.remove();
   });
 
+  it('disables the remove button and suppresses qRemove when disabled', async () => {
+    const el = await createComponent({ removable: true, disabled: true, value: 'archived', label: 'Archived' });
+    const handler = vi.fn();
+    el.addEventListener('qRemove', handler);
+
+    const removeButton = el.shadowRoot.querySelector('.remove-button') as HTMLButtonElement;
+    removeButton.click();
+    await new Promise(resolve => setTimeout(resolve, 10));
+
+    expect(removeButton.hasAttribute('disabled')).toBe(true);
+    expect(handler).not.toHaveBeenCalled();
+    el.remove();
+  });
+
+  it('emits qFocus and qBlur from the interactive chip', async () => {
+    const el = await createComponent({ clickable: true, label: 'Focus me' });
+    const focusHandler = vi.fn();
+    const blurHandler = vi.fn();
+    el.addEventListener('qFocus', focusHandler);
+    el.addEventListener('qBlur', blurHandler);
+
+    const button = el.shadowRoot.querySelector('button.chip') as HTMLButtonElement;
+    button.dispatchEvent(new FocusEvent('focus', { bubbles: true }));
+    button.dispatchEvent(new FocusEvent('blur', { bubbles: true }));
+    await new Promise(resolve => setTimeout(resolve, 10));
+
+    expect(focusHandler).toHaveBeenCalledTimes(1);
+    expect(blurHandler).toHaveBeenCalledTimes(1);
+    el.remove();
+  });
+
   it('does not nest a removable chip inside an anchor or button', async () => {
     const el = await createComponent({ href: '/admin/users', clickable: true, removable: true });
 
     expect(el.shadowRoot.querySelector('span.chip')).toBeTruthy();
     expect(el.shadowRoot.querySelector('a.chip')).toBeNull();
     expect(el.shadowRoot.querySelector('button.chip')).toBeNull();
+    el.remove();
+  });
+
+  it('keeps selected variant color rules for non-primary variants', async () => {
+    const el = await createComponent({ variant: 'success', selected: true, label: 'Synced' });
+    const chip = el.shadowRoot.querySelector('.chip') as HTMLElement;
+    const styles = String((QChipElement as any).style || '');
+
+    expect(chip.classList.contains('variant-success')).toBe(true);
+    expect(chip.classList.contains('is-selected')).toBe(true);
+    expect(styles).toContain('.variant-success.is-selected');
     el.remove();
   });
 });
