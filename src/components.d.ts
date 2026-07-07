@@ -931,38 +931,66 @@ export namespace Components {
          */
         "variant": QSyntaxBoxVariant;
     }
+    /**
+     * Form-associated textarea with optional auto-grow behavior and validation messaging.
+     */
     interface QTextarea {
+        /**
+          * Recalculates the auto-grow height when resizeMode is auto.
+         */
         "adjustHeight": () => Promise<void>;
         /**
+          * Enables automatic height growth when resizeMode is auto.
           * @default true
          */
         "autoGrow": boolean;
         /**
+          * Disables textarea interaction.
           * @default false
          */
         "disabled": boolean;
+        /**
+          * Validation error text or error-state flag.
+         */
         "error"?: string;
+        /**
+          * Validation helper text displayed when the field is in an error state.
+         */
         "errorMessage"?: string;
+        /**
+          * Moves focus to the native textarea.
+         */
         "focusElement": () => Promise<void>;
+        /**
+          * Optional label rendered above the textarea.
+         */
         "label"?: string;
+        /**
+          * Native form field name.
+         */
         "name"?: string;
         /**
+          * Placeholder text shown when the field is empty.
           * @default ""
          */
         "placeholder": string;
         /**
+          * Marks the field as required for native forms.
           * @default false
          */
         "required": boolean;
         /**
+          * Resize behavior: auto grows to content, manual allows vertical drag, fixed locks the height.
           * @default 'auto'
          */
         "resizeMode": QTextareaResizeMode;
         /**
+          * Visible row count used by the native textarea.
           * @default 3
          */
         "rows": number;
         /**
+          * Current textarea value.
           * @default ""
          */
         "value": string;
@@ -1492,6 +1520,9 @@ declare global {
         "qFocus": FocusEvent;
         "qClick": MouseEvent;
     }
+    /**
+     * Form-associated textarea with optional auto-grow behavior and validation messaging.
+     */
     interface HTMLQTextareaElement extends Components.QTextarea, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQTextareaElementEventMap>(type: K, listener: (this: HTMLQTextareaElement, ev: QTextareaCustomEvent<HTMLQTextareaElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2590,45 +2621,82 @@ declare namespace LocalJSX {
          */
         "variant"?: QSyntaxBoxVariant;
     }
+    /**
+     * Form-associated textarea with optional auto-grow behavior and validation messaging.
+     */
     interface QTextarea {
         /**
+          * Enables automatic height growth when resizeMode is auto.
           * @default true
          */
         "autoGrow"?: boolean;
         /**
+          * Disables textarea interaction.
           * @default false
          */
         "disabled"?: boolean;
+        /**
+          * Validation error text or error-state flag.
+         */
         "error"?: string;
+        /**
+          * Validation helper text displayed when the field is in an error state.
+         */
         "errorMessage"?: string;
         /**
           * The `id` of a `<form>` element to associate this element with.
          */
         "form"?: string;
+        /**
+          * Optional label rendered above the textarea.
+         */
         "label"?: string;
+        /**
+          * Native form field name.
+         */
         "name"?: string;
+        /**
+          * Emitted when the native textarea loses focus.
+         */
         "onQBlur"?: (event: QTextareaCustomEvent<FocusEvent>) => void;
+        /**
+          * Emitted when the committed value changes.
+         */
         "onQChange"?: (event: QTextareaCustomEvent<string>) => void;
+        /**
+          * Emitted when the native textarea is clicked.
+         */
         "onQClick"?: (event: QTextareaCustomEvent<MouseEvent>) => void;
+        /**
+          * Emitted when the native textarea receives focus.
+         */
         "onQFocus"?: (event: QTextareaCustomEvent<FocusEvent>) => void;
+        /**
+          * Emitted as the user types.
+         */
         "onQInput"?: (event: QTextareaCustomEvent<string>) => void;
         /**
+          * Placeholder text shown when the field is empty.
           * @default ""
          */
         "placeholder"?: string;
         /**
+          * Marks the field as required for native forms.
           * @default false
          */
         "required"?: boolean;
         /**
+          * Resize behavior: auto grows to content, manual allows vertical drag, fixed locks the height.
           * @default 'auto'
          */
         "resizeMode"?: QTextareaResizeMode;
         /**
+          * Visible row count used by the native textarea.
           * @default 3
          */
         "rows"?: number;
         /**
+          * Current textarea value.
           * @default ""
          */
         "value"?: string;
@@ -3054,6 +3122,9 @@ declare module "@stencil/core" {
              * Displays and optionally edits syntax-highlighted code, with form association in editable mode.
              */
             "q-syntax-box": LocalJSX.IntrinsicElements["q-syntax-box"] & JSXBase.HTMLAttributes<HTMLQSyntaxBoxElement>;
+            /**
+             * Form-associated textarea with optional auto-grow behavior and validation messaging.
+             */
             "q-textarea": LocalJSX.IntrinsicElements["q-textarea"] & JSXBase.HTMLAttributes<HTMLQTextareaElement>;
             /**
              * Media thumbnail that emits qMaximize for gallery and reel lightbox workflows.

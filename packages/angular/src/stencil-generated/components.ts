@@ -833,15 +833,25 @@ export class QTextarea {
 import type { QTextareaCustomEvent } from '@webquark/core/components';
 
 export declare interface QTextarea extends Components.QTextarea {
-
+  /**
+   * Emitted when the committed value changes.
+   */
   qChange: EventEmitter<QTextareaCustomEvent<string>>;
-
+  /**
+   * Emitted as the user types.
+   */
   qInput: EventEmitter<QTextareaCustomEvent<string>>;
-
+  /**
+   * Emitted when the native textarea loses focus.
+   */
   qBlur: EventEmitter<QTextareaCustomEvent<FocusEvent>>;
-
+  /**
+   * Emitted when the native textarea receives focus.
+   */
   qFocus: EventEmitter<QTextareaCustomEvent<FocusEvent>>;
-
+  /**
+   * Emitted when the native textarea is clicked.
+   */
   qClick: EventEmitter<QTextareaCustomEvent<MouseEvent>>;
 }
 
