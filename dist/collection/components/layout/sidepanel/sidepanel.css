@@ -51,9 +51,9 @@
 .sidepanel-drawer {
   position: absolute;
   background: #1f2937; /* static fallback background */
-  background: var(--q-panel-bg, var(--q-bg-surface-1, #1f2937));
+  background: var(--q-sidepanel-bg, var(--q-panel-bg, var(--q-bg-surface-1, #1f2937)));
   box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12); /* static fallback */
-  box-shadow: var(--q-panel-shadow, var(--q-shadow-high, 0 16px 32px rgba(0,0,0,0.12)));
+  box-shadow: var(--q-sidepanel-shadow, var(--q-panel-shadow, var(--q-shadow-high, 0 16px 32px rgba(0,0,0,0.12))));
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -71,7 +71,7 @@
   width: var(--q-panel-width, 320px);
   height: 100vh;
   border-right: 1px solid #374151; /* static fallback */
-  border-right: var(--q-panel-border, var(--q-border, 1px solid var(--q-border-color, #374151)));
+  border-right: var(--q-sidepanel-border, var(--q-panel-border, var(--q-border, 1px solid var(--q-border-color, #374151))));
   transform: translateX(-100%);
 }
 .side-left.is-open .sidepanel-drawer {
@@ -85,7 +85,7 @@
   width: var(--q-panel-width, 320px);
   height: 100vh;
   border-left: 1px solid #374151; /* static fallback */
-  border-left: var(--q-panel-border, var(--q-border, 1px solid var(--q-border-color, #374151)));
+  border-left: var(--q-sidepanel-border, var(--q-panel-border, var(--q-border, 1px solid var(--q-border-color, #374151))));
   transform: translateX(100%);
 }
 .side-right.is-open .sidepanel-drawer {
@@ -99,7 +99,7 @@
   width: 100vw;
   height: var(--q-panel-width, 320px);
   border-bottom: 1px solid #374151; /* static fallback */
-  border-bottom: var(--q-panel-border, var(--q-border, 1px solid var(--q-border-color, #374151)));
+  border-bottom: var(--q-sidepanel-border, var(--q-panel-border, var(--q-border, 1px solid var(--q-border-color, #374151))));
   transform: translateY(-100%);
 }
 .side-top.is-open .sidepanel-drawer {
@@ -113,7 +113,7 @@
   width: 100vw;
   height: var(--q-panel-width, 320px);
   border-top: 1px solid #374151; /* static fallback */
-  border-top: var(--q-panel-border, var(--q-border, 1px solid var(--q-border-color, #374151)));
+  border-top: var(--q-sidepanel-border, var(--q-panel-border, var(--q-border, 1px solid var(--q-border-color, #374151))));
   transform: translateY(100%);
 }
 .side-bottom.is-open .sidepanel-drawer {

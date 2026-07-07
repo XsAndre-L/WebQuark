@@ -170,10 +170,14 @@
   --q-dropdown-border: var(--q-field-border);
   --q-dropdown-radius: var(--q-field-radius);
 
-  /* Sidepanel (q-sidepanel) */
+  /* Panel (q-panel) */
   --q-panel-bg: var(--q-bg-surface-1);
   --q-panel-border: var(--q-border);
-  --q-panel-shadow: var(--q-shadow-high);
+
+  /* Sidepanel (q-sidepanel) */
+  --q-sidepanel-bg: var(--q-bg-surface-1);
+  --q-sidepanel-border: var(--q-border);
+  --q-sidepanel-shadow: var(--q-shadow-high);
 
   /* Scrollbars */
   --q-scrollbar-width: 6px;
