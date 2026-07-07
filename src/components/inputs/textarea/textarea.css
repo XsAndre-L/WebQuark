@@ -15,7 +15,7 @@
 .textarea-label {
   font-family: var(--q-font-family, inherit);
   font-size: var(--q-font-size-sm, 0.7rem);
-  font-weight: var(--q-font-weight-bold, 700);
+  font-weight: var(--q-font-weight-bold, 600);
   color: var(--q-fg-muted, #9ca3af);
   margin-bottom: 6px;
   
@@ -32,15 +32,20 @@
   padding: var(--q-input-padding, 10px 14px);
   
   font-family: var(--q-font-family, inherit);
-  font-size: var(--q-font-size-base, 1rem);
+  font-size: var(--q-font-size-base, 0.9rem);
   font-weight: var(--q-font-weight-normal, 400);
   line-height: 1.5;
   color: var(--q-fg-base, #f9fafb);
   
-  resize: none; /* Disables manual sizing grab handle */
+  /* Default: no native resize handle; see .resize-manual for manual mode. */
+  resize: none;
   outline: none;
   transition: border-color var(--q-transition-fast, 150ms ease), 
               box-shadow var(--q-transition-fast, 150ms ease);
+}
+
+.textarea-box.resize-manual {
+  resize: vertical;
 }
 
 /* Focused State maps color only to prevent border jumps */

@@ -1,7 +1,13 @@
-﻿import { Component, Prop, Event, EventEmitter, Element, Method, AttachInternals, Watch, h } from '@stencil/core';
+import { Component, Prop, Event, EventEmitter, Method, AttachInternals, Watch, h } from '@stencil/core';
 
 import type { QTextareaResizeMode } from './textarea.types';
 
+/**
+ * Form-associated textarea with optional auto-grow behavior and validation messaging.
+ * @part label - Optional field label.
+ * @part textarea - Native textarea field.
+ * @part error-msg - Validation helper text.
+ */
 @Component({
   tag: 'q-textarea',
   styleUrl: 'textarea.css',
@@ -11,27 +17,55 @@ import type { QTextareaResizeMode } from './textarea.types';
   formAssociated: true
 })
 export class QTextarea {
-  // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
-  @Element() el!: HTMLElement;
-
+  // ======== [1] STENCIL API (Props, Events, AttachInternals) =========
+  /** Current textarea value. */
   @Prop({ mutable: true }) value: string = "";
+
+  /** Native form field name. */
   @Prop({ reflect: true }) name?: string;
+
+  /** Placeholder text shown when the field is empty. */
   @Prop() placeholder: string = "";
+
+  /** Optional label rendered above the textarea. */
   @Prop() label?: string;
+
+  /** Visible row count used by the native textarea. */
   @Prop() rows: number = 3;
+
+  /** Enables automatic height growth when resizeMode is auto. */
   @Prop() autoGrow: boolean = true;
+
+  /** Resize behavior: auto grows to content, manual allows vertical drag, fixed locks the height. */
   @Prop() resizeMode: QTextareaResizeMode = 'auto';
+
+  /** Disables textarea interaction. */
   @Prop({ reflect: true }) disabled: boolean = false;
+
+  /** Marks the field as required for native forms. */
   @Prop({ reflect: true }) required: boolean = false;
+
+  /** Validation error text or error-state flag. */
   @Prop({ reflect: true }) error?: string;
+
+  /** Validation helper text displayed when the field is in an error state. */
   @Prop() errorMessage?: string;
 
   @AttachInternals() internals!: ElementInternals;
 
+  /** Emitted when the committed value changes. */
   @Event() qChange!: EventEmitter<string>;
+
+  /** Emitted as the user types. */
   @Event() qInput!: EventEmitter<string>;
+
+  /** Emitted when the native textarea loses focus. */
   @Event() qBlur!: EventEmitter<FocusEvent>;
+
+  /** Emitted when the native textarea receives focus. */
   @Event() qFocus!: EventEmitter<FocusEvent>;
+
+  /** Emitted when the native textarea is clicked. */
   @Event() qClick!: EventEmitter<MouseEvent>;
 
   private textareaEl?: HTMLTextAreaElement;
@@ -47,6 +81,12 @@ export class QTextarea {
     if (this.internals && typeof this.internals.setFormValue === 'function') {
       this.internals.setFormValue(newValue);
     }
+    requestAnimationFrame(() => this.adjustHeightInternal());
+  }
+
+  @Watch('resizeMode')
+  @Watch('autoGrow')
+  handleResizeModeChange() {
     requestAnimationFrame(() => this.adjustHeightInternal());
   }
 
@@ -71,11 +111,13 @@ export class QTextarea {
 
   // ============================ [4] EXPOSED METHODS ============================
 
+  /** Moves focus to the native textarea. */
   @Method()
   async focusElement() {
     this.textareaEl?.focus();
   }
 
+  /** Recalculates the auto-grow height when resizeMode is auto. */
   @Method()
   async adjustHeight() {
     this.adjustHeightInternal();
@@ -119,14 +161,13 @@ export class QTextarea {
   private adjustHeightInternal() {
     if (this.activeResizeMode !== 'auto' || !this.textareaEl) return;
 
-    // OSR Safe calculation: reset height to recalculate scrollHeight
+    // OSR safe calculation: reset height to recalculate scrollHeight.
     this.textareaEl.style.height = 'auto';
 
     const scrollHeight = this.textareaEl.scrollHeight;
     if (scrollHeight > 0) {
       this.textareaEl.style.height = `${scrollHeight}px`;
     } else {
-      // Fallback if textarea is initialized inside a hidden container (zero-height bug)
       this.textareaEl.style.height = '';
     }
   }
@@ -136,9 +177,10 @@ export class QTextarea {
   render() {
     const hasError = !!(this.error || this.errorMessage);
     const displayError = this.error || this.errorMessage;
+    const ariaLabel = !this.label && this.placeholder ? this.placeholder : undefined;
 
     return (
-      <div 
+      <div
         class={{
           'textarea-wrapper': true,
           'is-disabled': this.disabled,
@@ -156,8 +198,10 @@ export class QTextarea {
         <textarea
           ref={(el) => (this.textareaEl = el as HTMLTextAreaElement)}
           id="q-field"
-          class="textarea-box"
-          style={{ resize: this.activeResizeMode === 'manual' ? 'vertical' : 'none' }}
+          class={{
+            'textarea-box': true,
+            'resize-manual': this.activeResizeMode === 'manual'
+          }}
           part="textarea"
           value={this.value}
           name={this.name}
@@ -172,6 +216,7 @@ export class QTextarea {
           onClick={this.handleClick}
           aria-invalid={hasError ? 'true' : 'false'}
           aria-describedby={hasError ? 'q-field-error' : undefined}
+          aria-label={ariaLabel}
         />
 
         {/* Validation Helper Message */}
