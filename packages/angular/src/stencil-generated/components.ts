@@ -686,14 +686,14 @@ export declare interface QSidepanel extends Components.QSidepanel {
 
 @ProxyCmp({
   defineCustomElementFn: defineQStepDiagram,
-  inputs: ['layout']
+  inputs: ['ariaLabel', 'layout']
 })
 @Component({
   selector: 'q-step-diagram',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['layout'],
+  inputs: ['ariaLabel', 'layout'],
 })
 export class QStepDiagram {
   protected el: HTMLQStepDiagramElement;

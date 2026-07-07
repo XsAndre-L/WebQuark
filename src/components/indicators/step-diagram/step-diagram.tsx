@@ -3,6 +3,10 @@ import { syncPropertyToSlottedChildren } from '../../../utils/dom';
 
 import type { QStepDiagramLayout } from './step-diagram.types';
 
+/**
+ * Groups step diagram items into a vertical or horizontal sequence.
+ * @slot - Accepts one or more q-step-diagram-item elements.
+ */
 @Component({
   tag: 'q-step-diagram',
   styleUrl: 'step-diagram.css',
@@ -10,22 +14,23 @@ import type { QStepDiagramLayout } from './step-diagram.types';
 })
 export class QStepDiagram {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
-  @Prop() layout: QStepDiagramLayout = 'vertical';
-  @Element() el!: HTMLElement;
+  /** Controls whether step items are stacked vertically or arranged horizontally. */
+  @Prop({ reflect: true }) layout: QStepDiagramLayout = 'vertical';
 
-  @Watch('layout')
-  handleLayoutChange(newLayout: QStepDiagramLayout) {
-    this.propagateLayout(newLayout);
-  }
+  /** Accessible label for the step sequence. */
+  @Prop() ariaLabel: string = 'Steps';
+
+  @Element() el!: HTMLElement;
 
   // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
-  componentDidLoad() {
-    this.propagateLayout(this.layout);
+  @Watch('layout')
+  private handleLayoutChange(newLayout: QStepDiagramLayout): void {
+    this.propagateLayout(newLayout);
   }
 
-  componentDidUpdate() {
-    this.propagateLayout(this.layout);
+  componentDidLoad() {
+    this.handleLayoutChange(this.layout);
   }
 
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
@@ -42,10 +47,14 @@ export class QStepDiagram {
 
   render() {
     return (
-      <div class={{
-        'step-diagram': true,
-        [`layout-${this.layout}`]: true
-      }}>
+      <div
+        class={{
+          'step-diagram': true,
+          [`layout-${this.layout}`]: true,
+        }}
+        role="list"
+        aria-label={this.ariaLabel}
+      >
         <slot onSlotchange={this.handleSlotChange} />
       </div>
     );

@@ -784,8 +784,17 @@ export namespace Components {
          */
         "variant": QSidepanelVariant;
     }
+    /**
+     * Groups step diagram items into a vertical or horizontal sequence.
+     */
     interface QStepDiagram {
         /**
+          * Accessible label for the step sequence.
+          * @default 'Steps'
+         */
+        "ariaLabel": string;
+        /**
+          * Controls whether step items are stacked vertically or arranged horizontally.
           * @default 'vertical'
          */
         "layout": QStepDiagramLayout;
@@ -1358,6 +1367,9 @@ declare global {
         prototype: HTMLQSidepanelElement;
         new (): HTMLQSidepanelElement;
     };
+    /**
+     * Groups step diagram items into a vertical or horizontal sequence.
+     */
     interface HTMLQStepDiagramElement extends Components.QStepDiagram, HTMLStencilElement {
     }
     var HTMLQStepDiagramElement: {
@@ -2315,8 +2327,17 @@ declare namespace LocalJSX {
          */
         "variant"?: QSidepanelVariant;
     }
+    /**
+     * Groups step diagram items into a vertical or horizontal sequence.
+     */
     interface QStepDiagram {
         /**
+          * Accessible label for the step sequence.
+          * @default 'Steps'
+         */
+        "ariaLabel"?: string;
+        /**
+          * Controls whether step items are stacked vertically or arranged horizontally.
           * @default 'vertical'
          */
         "layout"?: QStepDiagramLayout;
@@ -2722,6 +2743,7 @@ declare namespace LocalJSX {
     }
     interface QStepDiagramAttributes {
         "layout": QStepDiagramLayout;
+        "ariaLabel": string;
     }
     interface QStepDiagramItemAttributes {
         "status": QStepDiagramItemStatus;
@@ -2845,6 +2867,9 @@ declare module "@stencil/core" {
             "q-reel": LocalJSX.IntrinsicElements["q-reel"] & JSXBase.HTMLAttributes<HTMLQReelElement>;
             "q-scrollable": LocalJSX.IntrinsicElements["q-scrollable"] & JSXBase.HTMLAttributes<HTMLQScrollableElement>;
             "q-sidepanel": LocalJSX.IntrinsicElements["q-sidepanel"] & JSXBase.HTMLAttributes<HTMLQSidepanelElement>;
+            /**
+             * Groups step diagram items into a vertical or horizontal sequence.
+             */
             "q-step-diagram": LocalJSX.IntrinsicElements["q-step-diagram"] & JSXBase.HTMLAttributes<HTMLQStepDiagramElement>;
             "q-step-diagram-item": LocalJSX.IntrinsicElements["q-step-diagram-item"] & JSXBase.HTMLAttributes<HTMLQStepDiagramItemElement>;
             /**
