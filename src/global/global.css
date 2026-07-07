@@ -88,7 +88,7 @@
   --q-step-diag-item-gap: 24px;
   /* Media Reel & Thumbnail (q-reel / q-thumbnail) */
   --q-thumb-aspect-ratio: 16 / 9;
-  --q-thumb-border: var(--q-border);
+  --q-thumb-border: 2px solid var(--q-thumb-border-color);
   --q-thumb-hover-transform: var(--q-hover-transform);
   --q-thumb-overlay-bg: rgba(0, 0, 0, 0.4);
   --q-thumb-radius: var(--q-radius-md);

@@ -814,7 +814,9 @@ import type { QThumbnailCustomEvent } from '@webquark/core/components';
 import type { QThumbnailMaximizeDetail as IQThumbnailQThumbnailMaximizeDetail } from '@webquark/core/components';
 
 export declare interface QThumbnail extends Components.QThumbnail {
-
+  /**
+   * Emitted when the thumbnail is activated.
+   */
   qMaximize: EventEmitter<QThumbnailCustomEvent<IQThumbnailQThumbnailMaximizeDetail>>;
 }
 
