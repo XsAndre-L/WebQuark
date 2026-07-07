@@ -1,4 +1,4 @@
-import { Component, Prop, Element, Event, EventEmitter, Watch, Listen, State, h } from '@stencil/core';
+import { Component, Prop, Event, EventEmitter, Watch, Listen, State, h } from '@stencil/core';
 import { focusFirstElement, handleTabTrap } from '../../../utils/dom';
 import { handleDrawerOpenChange } from './internals/drawer';
 import { seedExpandedGroups, toggleGroup } from './internals/groups';
@@ -21,20 +21,22 @@ import type {
 })
 export class QSidepanel {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
-  @Element() el!: HTMLElement;
-
   // ── Shared ────────────────────────────────────────────────────────────────
   /** 'drawer' = slide-in overlay, 'nav' = fixed navigation sidebar */
   @Prop({ reflect: true }) variant: QSidepanelVariant = 'nav';
 
   // ── Drawer-mode props ─────────────────────────────────────────────────────
-  @Prop({ reflect: true }) open: boolean = false;
+  /** Controls drawer visibility when variant="drawer". */
+  @Prop({ reflect: true, mutable: true }) open: boolean = false;
+  /** Edge the drawer opens from. */
   @Prop({ reflect: true }) side: QSidepanelSide = 'right';
   /** Width or height depending on `side` (drawer mode only) */
   @Prop() panelSize: string = '320px';
 
   // ── Nav-mode props ────────────────────────────────────────────────────────
+  /** Navigation items rendered in nav mode. */
   @Prop() items: SidepanelItem[] = [];
+  /** Active leaf item value. */
   @Prop({ reflect: true }) value: string = '';
   /** Item display mode: flat list, one-level groups, or deep tree */
   @Prop() mode: QSidepanelMode = 'flat';
@@ -53,6 +55,7 @@ export class QSidepanel {
   @Prop() collapseLabel: string = 'Toggle sidebar';
 
   // ── Events ────────────────────────────────────────────────────────────────
+  /** Emitted when the drawer is requested to close. */
   @Event() qClose!: EventEmitter<void>;
   /** Fires only for leaf items; clicking a parent group toggles it instead */
   @Event() qSelect!: EventEmitter<QSidepanelSelectDetail>;
@@ -71,6 +74,8 @@ export class QSidepanel {
   // ========================= [2] INTERNAL STATE & REFS =========================
 
   private previousActiveElement: HTMLElement | null = null;
+  private drawerOpenCleanup?: () => void;
+  private hasUserToggledGroups = false;
 
   // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
@@ -91,10 +96,15 @@ export class QSidepanel {
     }
   }
 
+  disconnectedCallback() {
+    this.clearDrawerOpenCleanup();
+  }
+
   @Watch('open')
   handleOpenChange(isOpen: boolean) {
     if (this.variant !== 'drawer') return;
-    handleDrawerOpenChange({
+    this.clearDrawerOpenCleanup();
+    this.drawerOpenCleanup = handleDrawerOpenChange({
       isOpen,
       drawerEl: this.drawerEl,
       previousActiveElement: this.previousActiveElement,
@@ -106,11 +116,15 @@ export class QSidepanel {
 
   @Watch('items')
   handleItemsChange() {
-    if (this.expanded) {
+    if (this.expanded && !this.hasUserToggledGroups) {
       const newSet = new Set<string>();
       seedExpandedGroups(this.items, newSet);
       this.expandedGroups = newSet;
+      return;
     }
+
+    const groupValues = this.getGroupValues(this.items);
+    this.expandedGroups = new Set(Array.from(this.expandedGroups).filter(value => groupValues.has(value)));
   }
 
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
@@ -133,19 +147,41 @@ export class QSidepanel {
     }
   };
 
-  private handleNavItemClick(item: SidepanelItem) {
+  private handleNavItemClick = (item: SidepanelItem) => {
     if (item.children && item.children.length > 0) {
+      this.hasUserToggledGroups = true;
       this.expandedGroups = toggleGroup(this.items, this.expandedGroups, this.accordion, item.value);
     } else {
       this.qSelect.emit({ value: item.value, label: item.label, item });
     }
-  }
+  };
 
   private handleCollapseToggle = () => {
     const next = !this.collapsed;
     this.collapsed = next;
     this.qCollapsedChange.emit({ collapsed: next });
   };
+
+  private clearDrawerOpenCleanup() {
+    if (this.drawerOpenCleanup) {
+      this.drawerOpenCleanup();
+      this.drawerOpenCleanup = undefined;
+    }
+  }
+
+  private getGroupValues(items: SidepanelItem[]): Set<string> {
+    const values = new Set<string>();
+
+    const visit = (item: SidepanelItem) => {
+      if (item.children && item.children.length > 0) {
+        values.add(item.value);
+        item.children.forEach(visit);
+      }
+    };
+
+    items.forEach(visit);
+    return values;
+  }
 
   // ===================== [6] RENDER (Visual Template Only) =====================
 
@@ -208,12 +244,12 @@ export class QSidepanel {
             {isCollapseActive && this.collapseControl === 'header' && this.renderCollapseControl('header')}
           </div>
 
-          <div class="nav-body" role="menu" part="body" aria-hidden={isHiddenCollapsed ? 'true' : undefined}>
+          <div class="nav-body" part="body" aria-hidden={isHiddenCollapsed ? 'true' : undefined}>
             {renderNavItems({
               items: this.items,
               expandedGroups: this.expandedGroups,
               activeValue: this.value,
-              onItemClick: (item) => this.handleNavItemClick(item),
+              onItemClick: this.handleNavItemClick,
             })}
           </div>
 

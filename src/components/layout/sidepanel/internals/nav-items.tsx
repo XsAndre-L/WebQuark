@@ -16,10 +16,9 @@ export function renderNavItems(options: RenderNavItemsOptions): any[] {
             'nav-item': true,
             'nav-item--active': isActive,
             'nav-item--parent': hasChildren,
-            'nav-item--expanded': hasChildren && isExpanded,
           }}
           style={{ paddingLeft: `${16 + depth * 16}px` }}
-          role={hasChildren ? 'button' : 'menuitem'}
+          role="button"
           tabindex={0}
           title={item.label}
           aria-expanded={hasChildren ? String(isExpanded) : undefined}

@@ -10,8 +10,8 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 2000;
-  
+  z-index: var(--q-z-index-overlay, 1000);
+
   display: flex;
   pointer-events: none; /* Allows click-throughs when closed */
   overflow: hidden;
@@ -58,7 +58,7 @@
   display: flex;
   flex-direction: column;
   outline: none;
-  
+
   /* Unreal OSR-Safe 2D slide-out animations */
   transition: transform var(--q-panel-transition-duration, var(--q-transition-normal, 250ms ease)) cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -206,9 +206,9 @@
   width: 100%;   /* Fill the host; parent controls actual sidebar width */
   height: 100%;
   background: #111827; /* static fallback */
-  background: var(--q-sidepanel-bg, var(--bg-sidebar, #111827));
+  background: var(--q-sidepanel-bg, var(--q-bg-surface-1, #111827));
   border-right: 1px solid rgba(255,255,255,0.08); /* static fallback */
-  border-right: 1px solid var(--border-color, rgba(255,255,255,0.08));
+  border-right: 1px solid var(--q-border-color, rgba(255,255,255,0.08));
   box-sizing: border-box;
   font-family: var(--q-font-family, inherit);
   /* NOTE: intentionally overflow:visible (not hidden). The edge collapse
@@ -226,7 +226,7 @@
 
 .nav-header {
   flex-shrink: 0;
-  border-bottom: var(--q-sidepanel-nav-border, var(--q-border, 1px solid var(--border-color, rgba(255,255,255,0.08))));
+  border-bottom: var(--q-sidepanel-nav-border, var(--q-border, 1px solid var(--q-border-color, rgba(255,255,255,0.08))));
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -276,7 +276,7 @@
 
 .nav-footer {
   flex-shrink: 0;
-  border-top: var(--q-sidepanel-nav-border, var(--q-border, 1px solid var(--border-color, rgba(255,255,255,0.08))));
+  border-top: var(--q-sidepanel-nav-border, var(--q-border, 1px solid var(--q-border-color, rgba(255,255,255,0.08))));
   padding: 8px 0;
   overflow: hidden;
   display: flex;
