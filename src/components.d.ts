@@ -221,44 +221,76 @@ export namespace Components {
     }
     interface QDialog {
         /**
+          * Backdrop rendering style. The `blur` option uses backdrop-filter and is not safe for CEF/Unreal Webview contexts.
           * @default 'blur'
          */
         "backdropEffect": QDialogBackdropEffect;
+        /**
+          * Runs the cancel action unless the dialog is loading.
+         */
         "cancel": () => Promise<void>;
         /**
+          * Text shown on the cancel action button.
           * @default 'Cancel'
          */
         "cancelLabel": string;
+        /**
+          * Closes the dialog and emits qClose.
+         */
         "close": () => Promise<void>;
         /**
+          * Accessible label for the header close button.
+          * @default 'Close dialog'
+         */
+        "closeLabel": string;
+        /**
+          * Allows the Escape key to cancel and close the dialog.
           * @default true
          */
         "closeOnEsc": boolean;
         /**
+          * Allows backdrop clicks to cancel and close the dialog.
           * @default true
          */
         "closeOnOverlayClick": boolean;
+        /**
+          * Runs the confirm action unless the dialog is loading.
+         */
         "confirm": () => Promise<void>;
         /**
+          * Text shown on the confirm action button.
           * @default 'Confirm'
          */
         "confirmLabel": string;
+        /**
+          * Optional title text rendered in the default dialog header.
+         */
         "dialogTitle"?: string;
         /**
+          * Disables dialog actions and marks the confirm button busy.
           * @default false
          */
         "loading": boolean;
+        /**
+          * Optional message text rendered in the default dialog body.
+         */
         "message"?: string;
         /**
+          * Controls the dialog's visibility.
           * @default false
          */
         "open": boolean;
+        /**
+          * Opens the dialog.
+         */
         "show": () => Promise<void>;
         /**
+          * Shows the cancel action button.
           * @default true
          */
         "showCancel": boolean;
         /**
+          * Shows the confirm action button.
           * @default true
          */
         "showConfirm": boolean;
@@ -1442,43 +1474,72 @@ declare namespace LocalJSX {
     }
     interface QDialog {
         /**
+          * Backdrop rendering style. The `blur` option uses backdrop-filter and is not safe for CEF/Unreal Webview contexts.
           * @default 'blur'
          */
         "backdropEffect"?: QDialogBackdropEffect;
         /**
+          * Text shown on the cancel action button.
           * @default 'Cancel'
          */
         "cancelLabel"?: string;
         /**
+          * Accessible label for the header close button.
+          * @default 'Close dialog'
+         */
+        "closeLabel"?: string;
+        /**
+          * Allows the Escape key to cancel and close the dialog.
           * @default true
          */
         "closeOnEsc"?: boolean;
         /**
+          * Allows backdrop clicks to cancel and close the dialog.
           * @default true
          */
         "closeOnOverlayClick"?: boolean;
         /**
+          * Text shown on the confirm action button.
           * @default 'Confirm'
          */
         "confirmLabel"?: string;
+        /**
+          * Optional title text rendered in the default dialog header.
+         */
         "dialogTitle"?: string;
         /**
+          * Disables dialog actions and marks the confirm button busy.
           * @default false
          */
         "loading"?: boolean;
+        /**
+          * Optional message text rendered in the default dialog body.
+         */
         "message"?: string;
+        /**
+          * Emitted when the cancel action is activated.
+         */
         "onQCancel"?: (event: QDialogCustomEvent<void>) => void;
+        /**
+          * Emitted whenever the dialog is closed through a public action.
+         */
         "onQClose"?: (event: QDialogCustomEvent<void>) => void;
+        /**
+          * Emitted when the confirm action is activated.
+         */
         "onQConfirm"?: (event: QDialogCustomEvent<void>) => void;
         /**
+          * Controls the dialog's visibility.
           * @default false
          */
         "open"?: boolean;
         /**
+          * Shows the cancel action button.
           * @default true
          */
         "showCancel"?: boolean;
         /**
+          * Shows the confirm action button.
           * @default true
          */
         "showConfirm"?: boolean;
@@ -2109,6 +2170,7 @@ declare namespace LocalJSX {
         "loading": boolean;
         "confirmLabel": string;
         "cancelLabel": string;
+        "closeLabel": string;
         "showCancel": boolean;
         "showConfirm": boolean;
         "backdropEffect": QDialogBackdropEffect;

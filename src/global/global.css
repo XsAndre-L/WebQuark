@@ -61,6 +61,11 @@
   --q-transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
   --q-transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
 
+  /* Z-index */
+  --q-z-index-overlay: 1000;
+  --q-z-index-popover: 1100;
+  --q-z-index-toast: 1200;
+
   /* ==========================================================================
      COMPONENT-SPECIFIC TUNING (Composite overrides)
      ========================================================================== */

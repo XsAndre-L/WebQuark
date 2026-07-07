@@ -197,26 +197,34 @@ export function calculateDynamicFontSize(
  * @param callback The callback function to run on transition completion.
  * @param timeout Optional explicit timeout override. Defaults to parsed CSS transition duration + 50ms buffer.
  */
-export function waitForTransitionEnd(element: HTMLElement, callback: () => void, timeout?: number): void {
+export function waitForTransitionEnd(element: HTMLElement, callback: () => void, timeout?: number): () => void {
   if (!element) {
     callback();
-    return;
+    return () => undefined;
   }
 
   let called = false;
-  
+  let timer: ReturnType<typeof setTimeout> | undefined;
+
+  const cleanup = () => {
+    if (timer !== undefined) {
+      clearTimeout(timer);
+      timer = undefined;
+    }
+    element.removeEventListener('transitionend', done);
+  };
+
   const done = () => {
     if (called) return;
     called = true;
-    clearTimeout(timer);
-    element.removeEventListener('transitionend', done);
+    cleanup();
     callback();
   };
 
   // Determine safety timeout buffer
   let fallbackTimeout = timeout;
   if (fallbackTimeout === undefined && typeof window !== 'undefined') {
-    const durationStr = window.getComputedStyle(element).transitionDuration;
+    const durationStr = window.getComputedStyle(element).transitionDuration || '';
     const durationMs = parseFloat(durationStr) * (durationStr.includes('ms') ? 1 : 1000);
     fallbackTimeout = isNaN(durationMs) || durationMs === 0 ? 350 : durationMs + 50;
   } else if (fallbackTimeout === undefined) {
@@ -224,7 +232,9 @@ export function waitForTransitionEnd(element: HTMLElement, callback: () => void,
   }
 
   element.addEventListener('transitionend', done);
-  const timer = setTimeout(done, fallbackTimeout);
+  timer = setTimeout(done, fallbackTimeout);
+
+  return cleanup;
 }
 
 /**
