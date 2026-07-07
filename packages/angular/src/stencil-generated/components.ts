@@ -428,15 +428,25 @@ export class QInput {
 import type { QInputCustomEvent } from '@webquark/core/components';
 
 export declare interface QInput extends Components.QInput {
-
+  /**
+   * Emitted when the committed value changes.
+   */
   qChange: EventEmitter<QInputCustomEvent<string>>;
-
+  /**
+   * Emitted as the user types or spinner controls update the value.
+   */
   qInput: EventEmitter<QInputCustomEvent<string>>;
-
+  /**
+   * Emitted when the native input loses focus.
+   */
   qBlur: EventEmitter<QInputCustomEvent<FocusEvent>>;
-
+  /**
+   * Emitted when the native input receives focus.
+   */
   qFocus: EventEmitter<QInputCustomEvent<FocusEvent>>;
-
+  /**
+   * Emitted when the native input is clicked.
+   */
   qClick: EventEmitter<QInputCustomEvent<MouseEvent>>;
 }
 

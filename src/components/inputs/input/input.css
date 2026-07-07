@@ -15,7 +15,7 @@
 .input-label {
   font-family: var(--q-font-family, inherit);
   font-size: var(--q-font-size-sm, 0.7rem);
-  font-weight: var(--q-font-weight-bold, 700);
+  font-weight: var(--q-font-weight-bold, 600);
   color: var(--q-fg-muted, #9ca3af);
   margin-bottom: 6px;
   
@@ -50,7 +50,7 @@
   align-self: center;    /* centre vertically inside the stretch container */
   
   font-family: var(--q-font-family, inherit);
-  font-size: var(--q-font-size-base, 1rem);
+  font-size: var(--q-font-size-base, 0.9rem);
   font-weight: var(--q-font-weight-normal, 400);
   color: var(--q-fg-base, #f9fafb);
   
@@ -168,7 +168,7 @@ input.input-box[type="color"]::-moz-color-swatch {
 
 /* Sizing Layouts */
 .input-wrapper.size-sm .input-label {
-  font-size: var(--q-font-size-xs, 0.75rem);
+  font-size: var(--q-font-size-sm, 0.7rem);
 }
 .input-wrapper.size-sm .input-box {
   padding: 6px 10px;
@@ -193,7 +193,7 @@ input.input-box[type="color"]::-moz-color-swatch {
 }
 .input-wrapper.size-md .input-box {
   padding: 10px 14px;
-  font-size: var(--q-font-size-base, 1rem);
+  font-size: var(--q-font-size-base, 0.9rem);
 }
 .input-wrapper.size-md .prefix-container,
 .input-wrapper.size-md .suffix-container {
@@ -211,11 +211,11 @@ input.input-box[type="color"]::-moz-color-swatch {
 }
 
 .input-wrapper.size-lg .input-label {
-  font-size: var(--q-font-size-base, 1rem);
+  font-size: var(--q-font-size-base, 0.9rem);
 }
 .input-wrapper.size-lg .input-box {
   padding: 14px 18px;
-  font-size: var(--q-font-size-lg, 1.125rem);
+  font-size: var(--q-font-size-lg, 1rem);
 }
 .input-wrapper.size-lg .prefix-container,
 .input-wrapper.size-lg .suffix-container {
@@ -271,6 +271,16 @@ input.input-box[type="color"]::-moz-color-swatch {
 .spinner-btn:hover {
   background: var(--q-bg-surface-3, #4b5563);
   color: var(--q-fg-base, #f9fafb);
+}
+
+.spinner-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.spinner-btn:disabled:hover {
+  background: transparent;
+  color: var(--q-fg-muted, #9ca3af);
 }
 
 .spinner-up {
