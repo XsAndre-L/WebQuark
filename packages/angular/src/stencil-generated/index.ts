@@ -5,6 +5,7 @@ export const DIRECTIVES = [
   d.QButton,
   d.QCard,
   d.QCarousel,
+  d.QChip,
   d.QCircularProgress,
   d.QDataTable,
   d.QDialog,
