@@ -489,28 +489,59 @@ export namespace Components {
          */
         "value": string;
     }
+    /**
+     * Inline link with disabled handling, external-link affordances, and optional icon slots.
+     */
     interface QLink {
         /**
+          * Disables navigation, focus, and click emission.
           * @default false
          */
         "disabled": boolean;
+        /**
+          * Download filename or boolean download hint.
+         */
         "download"?: string;
         /**
+          * Shows the external-link cue and applies safe default rel when rel is not supplied.
           * @default false
          */
         "external": boolean;
+        /**
+          * Primary destination URL. Takes precedence over url, mailto, and tel.
+         */
         "href"?: string;
+        /**
+          * Fallback text when no default slot content is provided.
+         */
         "label"?: string;
+        /**
+          * Email address used to generate a mailto: URL when href/url are not set.
+         */
         "mailto"?: string;
+        /**
+          * Native anchor rel value. Defaults to noopener noreferrer for target="_blank" or external links.
+         */
         "rel"?: string;
+        /**
+          * Native anchor target.
+         */
         "target"?: QLinkTarget;
+        /**
+          * Phone number used to generate a tel: URL when href/url/mailto are not set.
+         */
         "tel"?: string;
         /**
+          * Underline behavior.
           * @default 'hover'
          */
         "underline": QLinkUnderline;
+        /**
+          * Alias destination URL kept for compatibility. `href` wins when both are set.
+         */
         "url"?: string;
         /**
+          * Visual style of the link.
           * @default 'default'
          */
         "variant": QLinkVariant;
@@ -1138,6 +1169,9 @@ declare global {
         "qFocus": FocusEvent;
         "qBlur": FocusEvent;
     }
+    /**
+     * Inline link with disabled handling, external-link affordances, and optional icon slots.
+     */
     interface HTMLQLinkElement extends Components.QLink, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQLinkElementEventMap>(type: K, listener: (this: HTMLQLinkElement, ev: QLinkCustomEvent<HTMLQLinkElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1860,31 +1894,71 @@ declare namespace LocalJSX {
          */
         "value"?: string;
     }
+    /**
+     * Inline link with disabled handling, external-link affordances, and optional icon slots.
+     */
     interface QLink {
         /**
+          * Disables navigation, focus, and click emission.
           * @default false
          */
         "disabled"?: boolean;
+        /**
+          * Download filename or boolean download hint.
+         */
         "download"?: string;
         /**
+          * Shows the external-link cue and applies safe default rel when rel is not supplied.
           * @default false
          */
         "external"?: boolean;
+        /**
+          * Primary destination URL. Takes precedence over url, mailto, and tel.
+         */
         "href"?: string;
+        /**
+          * Fallback text when no default slot content is provided.
+         */
         "label"?: string;
+        /**
+          * Email address used to generate a mailto: URL when href/url are not set.
+         */
         "mailto"?: string;
+        /**
+          * Emitted when the inner anchor loses focus.
+         */
         "onQBlur"?: (event: QLinkCustomEvent<FocusEvent>) => void;
+        /**
+          * Emitted when the link is clicked and not disabled.
+         */
         "onQClick"?: (event: QLinkCustomEvent<MouseEvent>) => void;
+        /**
+          * Emitted when the inner anchor receives focus.
+         */
         "onQFocus"?: (event: QLinkCustomEvent<FocusEvent>) => void;
+        /**
+          * Native anchor rel value. Defaults to noopener noreferrer for target="_blank" or external links.
+         */
         "rel"?: string;
+        /**
+          * Native anchor target.
+         */
         "target"?: QLinkTarget;
+        /**
+          * Phone number used to generate a tel: URL when href/url/mailto are not set.
+         */
         "tel"?: string;
         /**
+          * Underline behavior.
           * @default 'hover'
          */
         "underline"?: QLinkUnderline;
+        /**
+          * Alias destination URL kept for compatibility. `href` wins when both are set.
+         */
         "url"?: string;
         /**
+          * Visual style of the link.
           * @default 'default'
          */
         "variant"?: QLinkVariant;
@@ -2597,6 +2671,9 @@ declare module "@stencil/core" {
             "q-form": LocalJSX.IntrinsicElements["q-form"] & JSXBase.HTMLAttributes<HTMLQFormElement>;
             "q-icon": LocalJSX.IntrinsicElements["q-icon"] & JSXBase.HTMLAttributes<HTMLQIconElement>;
             "q-input": LocalJSX.IntrinsicElements["q-input"] & JSXBase.HTMLAttributes<HTMLQInputElement>;
+            /**
+             * Inline link with disabled handling, external-link affordances, and optional icon slots.
+             */
             "q-link": LocalJSX.IntrinsicElements["q-link"] & JSXBase.HTMLAttributes<HTMLQLinkElement>;
             "q-navbar": LocalJSX.IntrinsicElements["q-navbar"] & JSXBase.HTMLAttributes<HTMLQNavbarElement>;
             "q-panel": LocalJSX.IntrinsicElements["q-panel"] & JSXBase.HTMLAttributes<HTMLQPanelElement>;
