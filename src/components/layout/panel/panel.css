@@ -18,7 +18,7 @@
   height: auto;
   box-sizing: border-box;
   overflow: hidden;
-  color: var(--q-panel-fg, var(--q-fg-base, #172033));
+  color: var(--q-panel-fg, var(--q-fg-base, #f9fafb));
   font-family: var(--q-font-family, inherit);
 }
 
@@ -32,13 +32,13 @@
 }
 
 .variant-surface {
-  background: var(--q-panel-bg, var(--q-bg-surface-1, #ffffff));
+  background: var(--q-panel-bg, var(--q-bg-surface-1, #1f2937));
 }
 
 .variant-bordered {
-  background: var(--q-panel-bg, var(--q-bg-surface-1, #ffffff));
-  border: var(--q-panel-border, var(--q-border, 1px solid var(--q-border-color, #d7dee8)));
-  border-radius: var(--q-panel-radius, var(--q-radius-md, 8px));
+  background: var(--q-panel-bg, var(--q-bg-surface-1, #1f2937));
+  border: var(--q-panel-border, var(--q-border, 1px solid var(--q-border-color, #374151)));
+  border-radius: var(--q-panel-radius, var(--q-radius-md, 7px));
 }
 
 .panel-header,
@@ -58,12 +58,20 @@
   border-top: var(--q-panel-divider, 1px solid transparent);
 }
 
-.has-sticky-header .panel-header {
+.uses-sticky-scroll {
+  overflow: auto;
+}
+
+.uses-sticky-scroll .panel-body {
+  overflow: visible;
+}
+
+.uses-sticky-scroll.has-sticky-header .panel-header {
   position: sticky;
   top: 0;
 }
 
-.has-sticky-footer .panel-footer {
+.uses-sticky-scroll.has-sticky-footer .panel-footer {
   position: sticky;
   bottom: 0;
 }
@@ -89,13 +97,13 @@
 }
 
 .padding-sm .panel-body {
-  padding: var(--q-panel-padding-sm, var(--q-padding-md, 10px));
+  padding: var(--q-panel-padding-sm, var(--q-padding-sm, 4px));
 }
 
 .padding-md .panel-body {
-  padding: var(--q-panel-padding-md, var(--q-padding-lg, 16px));
+  padding: var(--q-panel-padding-md, var(--q-padding-md, 9px));
 }
 
 .padding-lg .panel-body {
-  padding: var(--q-panel-padding-lg, 24px);
+  padding: var(--q-panel-padding-lg, var(--q-padding-lg, 16px));
 }

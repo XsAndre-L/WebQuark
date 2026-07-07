@@ -1,10 +1,19 @@
-﻿import { expect, describe, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 // @ts-ignore
 import { defineCustomElements } from '../../../../../dist/loader';
 
 defineCustomElements();
 
 describe('q-panel', () => {
+  const waitForUpdate = () =>
+    new Promise(resolve => {
+      if (typeof requestAnimationFrame === 'function') {
+        requestAnimationFrame(() => requestAnimationFrame(resolve));
+        return;
+      }
+      setTimeout(resolve, 0);
+    });
+
   async function createComponent(props: Record<string, any> = {}, html = ''): Promise<any> {
     const el = document.createElement('q-panel');
     Object.assign(el, props);
@@ -13,22 +22,63 @@ describe('q-panel', () => {
     if (typeof (el as any).componentOnReady === 'function') {
       await (el as any).componentOnReady();
     } else {
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await waitForUpdate();
     }
+    await waitForUpdate();
     return el;
   }
+
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
 
   it('renders body content', async () => {
     const el = await createComponent({}, '<p>Panel body</p>');
     expect(el.shadowRoot.querySelector('.panel-body')).not.toBeNull();
     expect(el.textContent).toContain('Panel body');
-    el.remove();
   });
 
-  it('reveals the header slot when provided', async () => {
-    const el = await createComponent({}, '<span slot="header">Header</span>');
-    await new Promise(resolve => setTimeout(resolve, 10));
+  it('reveals the header and footer slots when provided', async () => {
+    const el = await createComponent({}, '<span slot="header">Header</span><span slot="footer">Footer</span>');
+
     expect(el.shadowRoot.querySelector('.panel-header')?.classList.contains('is-hidden')).toBe(false);
-    el.remove();
+    expect(el.shadowRoot.querySelector('.panel-footer')?.classList.contains('is-hidden')).toBe(false);
+  });
+
+  it('applies variant, padding, full-height, and sticky classes', async () => {
+    const el = await createComponent({
+      variant: 'bordered',
+      padding: 'lg',
+      fullHeight: true,
+      scrollable: true,
+      stickyHeader: true,
+      stickyFooter: true,
+    });
+
+    const panel = el.shadowRoot.querySelector('.panel') as HTMLElement;
+
+    expect(panel.classList.contains('variant-bordered')).toBe(true);
+    expect(panel.classList.contains('padding-lg')).toBe(true);
+    expect(panel.classList.contains('is-full-height')).toBe(true);
+    expect(panel.classList.contains('is-scrollable')).toBe(true);
+    expect(panel.classList.contains('has-sticky-header')).toBe(true);
+    expect(panel.classList.contains('has-sticky-footer')).toBe(true);
+    expect(panel.classList.contains('uses-sticky-scroll')).toBe(true);
+  });
+
+  it('passes ariaLabel to the panel container', async () => {
+    const el = await createComponent({ ariaLabel: 'Activity' });
+    const panel = el.shadowRoot.querySelector('.panel') as HTMLElement;
+
+    expect(panel.getAttribute('aria-label')).toBe('Activity');
+  });
+
+  it('makes scrollable body content keyboard focusable and named', async () => {
+    const el = await createComponent({ scrollable: true, ariaLabel: 'Activity' }, '<p>Scrollable body</p>');
+    const body = el.shadowRoot.querySelector('.panel-body') as HTMLElement;
+
+    expect(body.getAttribute('tabindex')).toBe('0');
+    expect(body.getAttribute('role')).toBe('region');
+    expect(body.getAttribute('aria-label')).toBe('Activity content');
   });
 });

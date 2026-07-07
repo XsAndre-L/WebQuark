@@ -740,29 +740,41 @@ export namespace Components {
          */
         "transparent": boolean;
     }
+    /**
+     * Flexible panel surface with optional header, body, and footer regions.
+     */
     interface QPanel {
+        /**
+          * Accessible label for the panel container and scrollable body region.
+         */
         "ariaLabel"?: string;
         /**
+          * Stretches the panel to fill the available height.
           * @default false
          */
         "fullHeight": boolean;
         /**
+          * Padding density applied to the body region.
           * @default 'md'
          */
         "padding": QPanelPadding;
         /**
+          * Enables internal scrolling for overflowing panel content.
           * @default false
          */
         "scrollable": boolean;
         /**
+          * Keeps the footer pinned when the panel itself is the scroll container.
           * @default false
          */
         "stickyFooter": boolean;
         /**
+          * Keeps the header pinned when the panel itself is the scroll container.
           * @default false
          */
         "stickyHeader": boolean;
         /**
+          * Visual treatment for the panel container.
           * @default 'surface'
          */
         "variant": QPanelVariant;
@@ -1478,6 +1490,9 @@ declare global {
         prototype: HTMLQNavbarElement;
         new (): HTMLQNavbarElement;
     };
+    /**
+     * Flexible panel surface with optional header, body, and footer regions.
+     */
     interface HTMLQPanelElement extends Components.QPanel, HTMLStencilElement {
     }
     var HTMLQPanelElement: {
@@ -2481,29 +2496,41 @@ declare namespace LocalJSX {
          */
         "transparent"?: boolean;
     }
+    /**
+     * Flexible panel surface with optional header, body, and footer regions.
+     */
     interface QPanel {
+        /**
+          * Accessible label for the panel container and scrollable body region.
+         */
         "ariaLabel"?: string;
         /**
+          * Stretches the panel to fill the available height.
           * @default false
          */
         "fullHeight"?: boolean;
         /**
+          * Padding density applied to the body region.
           * @default 'md'
          */
         "padding"?: QPanelPadding;
         /**
+          * Enables internal scrolling for overflowing panel content.
           * @default false
          */
         "scrollable"?: boolean;
         /**
+          * Keeps the footer pinned when the panel itself is the scroll container.
           * @default false
          */
         "stickyFooter"?: boolean;
         /**
+          * Keeps the header pinned when the panel itself is the scroll container.
           * @default false
          */
         "stickyHeader"?: boolean;
         /**
+          * Visual treatment for the panel container.
           * @default 'surface'
          */
         "variant"?: QPanelVariant;
@@ -3310,6 +3337,9 @@ declare module "@stencil/core" {
              * Responsive site navigation with optional brand content, actions, and mobile menu.
              */
             "q-navbar": LocalJSX.IntrinsicElements["q-navbar"] & JSXBase.HTMLAttributes<HTMLQNavbarElement>;
+            /**
+             * Flexible panel surface with optional header, body, and footer regions.
+             */
             "q-panel": LocalJSX.IntrinsicElements["q-panel"] & JSXBase.HTMLAttributes<HTMLQPanelElement>;
             /**
              * Numeric quantity control with increment/decrement buttons and a bounded editable value.
