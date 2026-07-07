@@ -629,6 +629,7 @@ export namespace Components {
          */
         "expanded": boolean;
         /**
+          * Navigation items rendered in nav mode.
           * @default []
          */
         "items": SidepanelItem[];
@@ -638,6 +639,7 @@ export namespace Components {
          */
         "mode": QSidepanelMode;
         /**
+          * Controls drawer visibility when variant="drawer".
           * @default false
          */
         "open": boolean;
@@ -647,10 +649,12 @@ export namespace Components {
          */
         "panelSize": string;
         /**
+          * Edge the drawer opens from.
           * @default 'right'
          */
         "side": QSidepanelSide;
         /**
+          * Active leaf item value.
           * @default ''
          */
         "value": string;
@@ -1918,6 +1922,7 @@ declare namespace LocalJSX {
          */
         "expanded"?: boolean;
         /**
+          * Navigation items rendered in nav mode.
           * @default []
          */
         "items"?: SidepanelItem[];
@@ -1926,6 +1931,9 @@ declare namespace LocalJSX {
           * @default 'flat'
          */
         "mode"?: QSidepanelMode;
+        /**
+          * Emitted when the drawer is requested to close.
+         */
         "onQClose"?: (event: QSidepanelCustomEvent<void>) => void;
         /**
           * Fires whenever the BUILT-IN collapse control toggles collapsed. Does not fire when a consumer sets [collapsed] externally themselves.
@@ -1936,6 +1944,7 @@ declare namespace LocalJSX {
          */
         "onQSelect"?: (event: QSidepanelCustomEvent<QSidepanelSelectDetail>) => void;
         /**
+          * Controls drawer visibility when variant="drawer".
           * @default false
          */
         "open"?: boolean;
@@ -1945,10 +1954,12 @@ declare namespace LocalJSX {
          */
         "panelSize"?: string;
         /**
+          * Edge the drawer opens from.
           * @default 'right'
          */
         "side"?: QSidepanelSide;
         /**
+          * Active leaf item value.
           * @default ''
          */
         "value"?: string;

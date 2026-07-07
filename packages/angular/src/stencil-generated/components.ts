@@ -639,7 +639,9 @@ import type { QSidepanelSelectDetail as IQSidepanelQSidepanelSelectDetail } from
 import type { QSidepanelCollapsedChangeDetail as IQSidepanelQSidepanelCollapsedChangeDetail } from '@webquark/core/components';
 
 export declare interface QSidepanel extends Components.QSidepanel {
-
+  /**
+   * Emitted when the drawer is requested to close.
+   */
   qClose: EventEmitter<QSidepanelCustomEvent<void>>;
   /**
    * Fires only for leaf items; clicking a parent group toggles it instead
