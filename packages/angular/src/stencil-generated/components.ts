@@ -671,7 +671,9 @@ import type { QScrollableCustomEvent } from '@webquark/core/components';
 import type { QScrollableEventDetail as IQScrollableQScrollableEventDetail } from '@webquark/core/components';
 
 export declare interface QScrollable extends Components.QScrollable {
-
+  /**
+   * Emitted when the viewport scrolls.
+   */
   qScroll: EventEmitter<QScrollableCustomEvent<IQScrollableQScrollableEventDetail>>;
 }
 

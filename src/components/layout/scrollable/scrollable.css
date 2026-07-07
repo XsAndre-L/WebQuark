@@ -36,27 +36,27 @@
 
 /* Native Mode: Style the viewport's own native scrollbars (if it scrolls itself) */
 :host([mode='native']) .q-scrollable-viewport {
-  scrollbar-width: thin;
-  scrollbar-color: var(--q-bg-surface-3, #4b5563) transparent;
+  scrollbar-width: var(--q-scrollbar-width-thin, thin);
+  scrollbar-color: var(--q-scrollbar-thumb-color, var(--q-border-color, #374151)) var(--q-scrollbar-track-color, transparent);
 }
 
 :host([mode='native']) .q-scrollable-viewport::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: var(--q-scrollbar-width, 6px);
+  height: var(--q-scrollbar-width, 6px);
   display: block;
 }
 
 :host([mode='native']) .q-scrollable-viewport::-webkit-scrollbar-track {
-  background: transparent;
+  background: var(--q-scrollbar-track-color, transparent);
 }
 
 :host([mode='native']) .q-scrollable-viewport::-webkit-scrollbar-thumb {
-  background: var(--q-bg-surface-3, #4b5563);
-  border-radius: 4px;
+  background: var(--q-scrollbar-thumb-color, var(--q-border-color, #374151));
+  border-radius: var(--q-scrollbar-radius, 4px);
 }
 
 :host([mode='native']) .q-scrollable-viewport::-webkit-scrollbar-thumb:hover {
-  background: var(--q-color-primary, #3b82f6);
+  background: var(--q-scrollbar-thumb-color-hover, var(--q-color-primary, #60a5fa));
 }
 
 /* Custom Scrollbar Track */
@@ -65,9 +65,9 @@
   top: 4px;
   right: 4px;
   bottom: 4px;
-  width: 8px;
-  background: transparent;
-  border-radius: 4px;
+  width: var(--q-scrollbar-width, 6px);
+  background: var(--q-scrollbar-track-color, transparent);
+  border-radius: var(--q-scrollbar-radius, 4px);
   z-index: 10;
   pointer-events: auto;
   opacity: 0;
@@ -80,9 +80,8 @@
 .q-scrollbar-thumb {
   position: absolute;
   width: 100%;
-  min-height: 36px;
-  background: var(--q-bg-surface-3, #4b5563);
-  border-radius: 4px;
+  background: var(--q-scrollbar-thumb-color, var(--q-border-color, #374151));
+  border-radius: var(--q-scrollbar-radius, 4px);
   cursor: pointer;
   transform: translateY(0);
   transition: background-color 150ms ease;
@@ -90,8 +89,10 @@
   -webkit-user-select: none;
 }
 
-.q-scrollbar-thumb:hover {
-  background: var(--q-color-primary, #3b82f6);
+.q-scrollbar-thumb:hover,
+.q-scrollbar-thumb:focus-visible {
+  background: var(--q-scrollbar-thumb-color-hover, var(--q-color-primary, #60a5fa));
+  outline: none;
 }
 
 /* Visibility states */
