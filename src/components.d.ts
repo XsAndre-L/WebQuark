@@ -446,37 +446,67 @@ export namespace Components {
          */
         "value": string;
     }
+    /**
+     * Form wrapper that bridges slotted WebQuark controls to a native form element.
+     */
     interface QForm {
+        /**
+          * Native form action URL.
+         */
         "action"?: string;
         /**
+          * Native form autocomplete behavior.
           * @default 'on'
          */
         "autocomplete": QFormAutocomplete;
         /**
+          * Native form encoding type used during submission.
           * @default 'application/x-www-form-urlencoded'
          */
         "enctype": QFormEnctype;
         /**
+          * Controls how Enter behaves inside text-like controls.
           * @default 'submit'
          */
         "enterBehavior": QFormEnterBehavior;
+        /**
+          * Returns values collected from named native and WebQuark form controls.
+         */
         "getValues": () => Promise<QFormValues>;
+        /**
+          * Visible form title used as the native form accessible name when no custom header is slotted.
+         */
         "label"?: string;
         /**
+          * Native form submission method.
           * @default 'post'
          */
         "method": QFormMethod;
         /**
+          * Disables native constraint validation when true.
           * @default false
          */
         "noValidate": boolean;
         /**
+          * Prevents the native submit event's default navigation by default.
           * @default true
          */
         "preventDefault": boolean;
+        /**
+          * Resets the native form and associated controls.
+         */
         "resetForm": () => Promise<void>;
+        /**
+          * Applies values to matching named native and WebQuark form controls.
+         */
         "setValues": (values: QFormValues) => Promise<void>;
+        /**
+          * Requests native form submission, falling back to dispatching a submit event.
+         */
         "submitForm": () => Promise<void>;
+        /**
+          * Native browsing context target for form submission.
+         */
         "target"?: QFormTarget;
     }
     interface QIcon {
@@ -1340,6 +1370,9 @@ declare global {
         "qSubmit": QFormSubmitDetail;
         "qReset": QFormResetDetail;
     }
+    /**
+     * Form wrapper that bridges slotted WebQuark controls to a native form element.
+     */
     interface HTMLQFormElement extends Components.QForm, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQFormElementEventMap>(type: K, listener: (this: HTMLQFormElement, ev: QFormCustomEvent<HTMLQFormElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2105,35 +2138,59 @@ declare namespace LocalJSX {
          */
         "value"?: string;
     }
+    /**
+     * Form wrapper that bridges slotted WebQuark controls to a native form element.
+     */
     interface QForm {
+        /**
+          * Native form action URL.
+         */
         "action"?: string;
         /**
+          * Native form autocomplete behavior.
           * @default 'on'
          */
         "autocomplete"?: QFormAutocomplete;
         /**
+          * Native form encoding type used during submission.
           * @default 'application/x-www-form-urlencoded'
          */
         "enctype"?: QFormEnctype;
         /**
+          * Controls how Enter behaves inside text-like controls.
           * @default 'submit'
          */
         "enterBehavior"?: QFormEnterBehavior;
+        /**
+          * Visible form title used as the native form accessible name when no custom header is slotted.
+         */
         "label"?: string;
         /**
+          * Native form submission method.
           * @default 'post'
          */
         "method"?: QFormMethod;
         /**
+          * Disables native constraint validation when true.
           * @default false
          */
         "noValidate"?: boolean;
+        /**
+          * Emitted when the native form resets.
+         */
         "onQReset"?: (event: QFormCustomEvent<QFormResetDetail>) => void;
+        /**
+          * Emitted after a valid submit with collected values and FormData.
+         */
         "onQSubmit"?: (event: QFormCustomEvent<QFormSubmitDetail>) => void;
         /**
+          * Prevents the native submit event's default navigation by default.
           * @default true
          */
         "preventDefault"?: boolean;
+        /**
+          * Native browsing context target for form submission.
+         */
         "target"?: QFormTarget;
     }
     interface QIcon {
@@ -3191,6 +3248,9 @@ declare module "@stencil/core" {
              * Form-associated dropdown/select control with optional search and incremental option rendering.
              */
             "q-dropdown": LocalJSX.IntrinsicElements["q-dropdown"] & JSXBase.HTMLAttributes<HTMLQDropdownElement>;
+            /**
+             * Form wrapper that bridges slotted WebQuark controls to a native form element.
+             */
             "q-form": LocalJSX.IntrinsicElements["q-form"] & JSXBase.HTMLAttributes<HTMLQFormElement>;
             "q-icon": LocalJSX.IntrinsicElements["q-icon"] & JSXBase.HTMLAttributes<HTMLQIconElement>;
             /**

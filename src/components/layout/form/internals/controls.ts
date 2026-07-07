@@ -10,6 +10,14 @@ export function getNamedControls(formEl: HTMLFormElement | undefined, hostEl: HT
   }
 
   hostEl.querySelectorAll<NamedFormControl>('[name]').forEach((control) => controls.add(control));
+  hostEl.shadowRoot?.querySelectorAll<HTMLSlotElement>('slot').forEach((slot) => {
+    slot.assignedElements({ flatten: true }).forEach((element) => {
+      if (element.matches('[name]')) {
+        controls.add(element as NamedFormControl);
+      }
+      element.querySelectorAll<NamedFormControl>('[name]').forEach((control) => controls.add(control));
+    });
+  });
 
   return Array.from(controls);
 }

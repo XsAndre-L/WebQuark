@@ -1,10 +1,12 @@
 import type { HandleEnterBehaviorOptions } from '../form.types';
 import { focusAdjacentControl, getControlFromEvent } from './controls';
 
+const nativeInteractiveTags = new Set(['a', 'button', 'select', 'textarea']);
+
 export function handleEnterBehavior({ ev, enterBehavior, formEl, hostEl, requestSubmit }: HandleEnterBehaviorOptions): boolean {
   if (ev.key !== 'Enter' || enterBehavior === 'submit') return false;
 
-  if (shouldIgnoreEnterBehavior(ev)) return false;
+  if (shouldIgnoreEnterBehavior(ev, hostEl)) return false;
 
   ev.preventDefault();
 
@@ -23,25 +25,17 @@ export function handleEnterBehavior({ ev, enterBehavior, formEl, hostEl, request
   return true;
 }
 
-function shouldIgnoreEnterBehavior(ev: KeyboardEvent): boolean {
+function shouldIgnoreEnterBehavior(ev: KeyboardEvent, hostEl: HTMLElement): boolean {
   if (ev.ctrlKey || ev.altKey || ev.metaKey || ev.isComposing) return true;
 
   return ev.composedPath().some((target) => {
     if (!(target instanceof HTMLElement)) return false;
+    if (target === hostEl) return false;
 
     const tagName = target.tagName.toLowerCase();
     if (target.isContentEditable) return true;
+    if (nativeInteractiveTags.has(tagName)) return true;
 
-    return [
-      'a',
-      'button',
-      'textarea',
-      'q-button',
-      'q-dropdown',
-      'q-link',
-      'q-syntax-box',
-      'q-textarea',
-      'q-toggle',
-    ].includes(tagName);
+    return tagName.startsWith('q-') && tagName !== 'q-input';
   });
 }

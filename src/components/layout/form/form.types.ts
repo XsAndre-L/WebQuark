@@ -28,6 +28,7 @@ export type NamedFormControl = HTMLElement & {
   type?: string;
   files?: FileList | null;
   focusElement?: () => Promise<void> | void;
+  formResetCallback?: () => void;
 };
 
 export interface HandleEnterBehaviorOptions {

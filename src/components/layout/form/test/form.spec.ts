@@ -5,8 +5,9 @@ import { defineCustomElements } from '../../../../../dist/loader';
 defineCustomElements();
 
 describe('q-form', () => {
-  async function createComponent(html = ''): Promise<any> {
+  async function createComponent(html = '', props: Record<string, any> = {}): Promise<any> {
     const el = document.createElement('q-form');
+    Object.assign(el, props);
     el.innerHTML = html;
     document.body.appendChild(el);
     if (typeof (el as any).componentOnReady === 'function') {
@@ -23,6 +24,37 @@ describe('q-form', () => {
     return event;
   }
 
+  it('hides empty header and actions regions', async () => {
+    const el = await createComponent();
+
+    expect(el.shadowRoot.querySelector('.form-header')?.classList.contains('is-hidden')).toBe(true);
+    expect(el.shadowRoot.querySelector('.form-actions')?.classList.contains('is-hidden')).toBe(true);
+    el.remove();
+  });
+
+  it('links the visible label to the native form accessible name', async () => {
+    const el = await createComponent('', { label: 'Profile settings' });
+    const title = el.shadowRoot.querySelector('.form-title') as HTMLHeadingElement;
+    const form = el.shadowRoot.querySelector('form') as HTMLFormElement;
+
+    expect(title.textContent).toBe('Profile settings');
+    expect(form.getAttribute('aria-labelledby')).toBe(title.id);
+    expect(el.shadowRoot.querySelector('.form-header')?.classList.contains('is-hidden')).toBe(false);
+    el.remove();
+  });
+
+  it('reveals slotted header and action regions', async () => {
+    const el = await createComponent(`
+      <span slot="header">Account</span>
+      <q-button slot="actions" type="submit">Save</q-button>
+    `);
+    await new Promise(resolve => setTimeout(resolve, 10));
+
+    expect(el.shadowRoot.querySelector('.form-header')?.classList.contains('is-hidden')).toBe(false);
+    expect(el.shadowRoot.querySelector('.form-actions')?.classList.contains('is-hidden')).toBe(false);
+    el.remove();
+  });
+
   it('collects named native input values on submit', async () => {
     const el = await createComponent('<input name="email" value="user@example.com" />');
     const handler = vi.fn();
@@ -30,6 +62,48 @@ describe('q-form', () => {
 
     const form = el.shadowRoot.querySelector('form') as HTMLFormElement;
     form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    await new Promise(resolve => setTimeout(resolve, 10));
+
+    expect(handler).toHaveBeenCalledTimes(1);
+    expect(handler.mock.calls[0][0].detail.values.email).toBe('user@example.com');
+    el.remove();
+  });
+
+  it('gets and sets named control values through public methods', async () => {
+    const el = await createComponent(`
+      <input name="email" value="old@example.com" />
+      <q-toggle name="enabled"></q-toggle>
+    `);
+
+    await el.setValues({ email: 'new@example.com', enabled: true });
+    const input = el.querySelector('input') as HTMLInputElement;
+    const toggle = el.querySelector('q-toggle') as any;
+    const values = await el.getValues();
+
+    expect(input.value).toBe('new@example.com');
+    expect(toggle.checked).toBe(true);
+    expect(values.email).toBe('new@example.com');
+    expect(values.enabled).toBe(true);
+    el.remove();
+  });
+
+  it('resets the native form through resetForm', async () => {
+    const el = await createComponent('<input name="email" value="initial@example.com" />');
+    const input = el.querySelector('input') as HTMLInputElement;
+    input.value = 'changed@example.com';
+
+    await el.resetForm();
+
+    expect(input.value).toBe('initial@example.com');
+    el.remove();
+  });
+
+  it('submits the native form through submitForm', async () => {
+    const el = await createComponent('<input name="email" value="user@example.com" />');
+    const handler = vi.fn();
+    el.addEventListener('qSubmit', handler);
+
+    await el.submitForm();
     await new Promise(resolve => setTimeout(resolve, 10));
 
     expect(handler).toHaveBeenCalledTimes(1);
@@ -147,6 +221,21 @@ describe('q-form', () => {
 
     expect(event.defaultPrevented).toBe(true);
     expect(handler).not.toHaveBeenCalled();
+    el.remove();
+  });
+
+  it('does not intercept Enter from non-input custom controls', async () => {
+    const el = await createComponent(`
+      <q-quantity-selector name="qty" value="1"></q-quantity-selector>
+      <q-input name="next"></q-input>
+    `);
+    el.enterBehavior = 'focus-next';
+
+    const quantity = el.querySelector('q-quantity-selector') as any;
+    await quantity.componentOnReady?.();
+    const event = dispatchEnter(quantity);
+
+    expect(event.defaultPrevented).toBe(false);
     el.remove();
   });
 });

@@ -1,6 +1,6 @@
-import { Component, Element, Event, EventEmitter, Listen, Method, Prop, h } from '@stencil/core';
+import { Component, Element, Event, EventEmitter, Listen, Method, Prop, State, h } from '@stencil/core';
 import { handleEnterBehavior } from './internals/enter-behavior';
-import { applyValues, collectValues, createFormData } from './internals/values';
+import { applyValues, collectValues, createFormData, resetValues } from './internals/values';
 import type {
   NamedFormControl,
   QFormAction,
@@ -14,49 +14,118 @@ import type {
   QFormValues,
 } from './form.types';
 
+let formIds = 0;
+
+/**
+ * Form wrapper that bridges slotted WebQuark controls to a native form element.
+ *
+ * @slot - Form fields and body content.
+ * @slot header - Optional custom header content.
+ * @slot actions - Optional form action controls.
+ * @part header - Header container.
+ * @part form - Native form element.
+ * @part body - Body content container.
+ * @part actions - Action controls container.
+ */
 @Component({
   tag: 'q-form',
   styleUrl: 'form.css',
   shadow: true,
 })
 export class QForm {
+  // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Element() el!: HTMLElement;
 
+  /** Visible form title used as the native form accessible name when no custom header is slotted. */
   @Prop() label?: string;
+
+  /** Native form action URL. */
   @Prop() action?: string;
+
+  /** Native form submission method. */
   @Prop() method: QFormMethod = 'post';
+
+  /** Native form autocomplete behavior. */
   @Prop() autocomplete: QFormAutocomplete = 'on';
+
+  /** Native form encoding type used during submission. */
   @Prop() enctype: QFormEnctype = 'application/x-www-form-urlencoded';
+
+  /** Native browsing context target for form submission. */
   @Prop() target?: QFormTarget;
+
+  /** Disables native constraint validation when true. */
   @Prop({ attribute: 'no-validate' }) noValidate: boolean = false;
+
+  /** Prevents the native submit event's default navigation by default. */
   @Prop() preventDefault: boolean = true;
+
+  /** Controls how Enter behaves inside text-like controls. */
   @Prop({ attribute: 'enter-behavior' }) enterBehavior: QFormEnterBehavior = 'submit';
 
+  /** Emitted after a valid submit with collected values and FormData. */
   @Event() qSubmit!: EventEmitter<QFormSubmitDetail>;
+
+  /** Emitted when the native form resets. */
   @Event() qReset!: EventEmitter<QFormResetDetail>;
 
-  private formEl?: HTMLFormElement;
-  private handledButtonClicks = new WeakSet<Event>();
+  // ========================= [2] INTERNAL STATE & REFS =========================
 
+  @State() hasHeaderSlot: boolean = false;
+  @State() hasActionsSlot: boolean = false;
+
+  private formEl?: HTMLFormElement;
+  private headerSlot?: HTMLSlotElement;
+  private actionsSlot?: HTMLSlotElement;
+  private handledButtonClicks = new WeakSet<Event>();
+  private readonly titleId = `q-form-title-${++formIds}`;
+  private initialValues: QFormValues = {};
+
+  // ========================= [3] LIFECYCLE & WATCHERS ==========================
+
+  componentDidLoad() {
+    this.updateHeaderSlotState();
+    this.updateActionsSlotState();
+    this.initialValues = collectValues(this.formEl, this.el);
+  }
+
+  // ============================ [4] EXPOSED METHODS ============================
+
+  /** Returns values collected from named native and WebQuark form controls. */
   @Method()
   async getValues(): Promise<QFormValues> {
     return collectValues(this.formEl, this.el);
   }
 
+  /** Applies values to matching named native and WebQuark form controls. */
   @Method()
   async setValues(values: QFormValues): Promise<void> {
     applyValues(this.formEl, this.el, values);
   }
 
+  /** Resets the native form and associated controls. */
   @Method()
   async resetForm(): Promise<void> {
-    this.formEl?.reset();
+    if (!this.formEl) return;
+
+    const nativeReset = HTMLFormElement.prototype.reset;
+    if (typeof nativeReset === 'function') {
+      nativeReset.call(this.formEl);
+    } else {
+      this.formEl.dispatchEvent(new globalThis.Event('reset', { bubbles: true, cancelable: true }));
+    }
+
+    resetValues(this.formEl, this.el);
+    applyValues(this.formEl, this.el, this.initialValues);
   }
 
+  /** Requests native form submission, falling back to dispatching a submit event. */
   @Method()
   async submitForm(): Promise<void> {
     this.requestSubmit();
   }
+
+  // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
   @Listen('click')
   handleComposedClick(ev: MouseEvent) {
@@ -65,6 +134,7 @@ export class QForm {
 
   @Listen('qClick')
   handleButtonClick(ev: CustomEvent<MouseEvent>) {
+    // q-button forwards its original MouseEvent in qClick.detail; the WeakSet prevents the host click listener from handling it twice.
     if (ev.detail && this.handledButtonClicks.has(ev.detail)) return;
     if (ev.detail) this.handledButtonClicks.add(ev.detail);
     this.handleComposedFormAction(ev, ev);
@@ -112,6 +182,7 @@ export class QForm {
   private dispatchSubmitEvent() {
     this.formEl?.dispatchEvent(new globalThis.Event('submit', { bubbles: true, cancelable: true }));
   }
+
   private getFormActionFromComposedPath(path: EventTarget[]): QFormAction | undefined {
     for (const target of path) {
       if (!(target instanceof HTMLElement)) continue;
@@ -123,6 +194,32 @@ export class QForm {
     }
 
     return undefined;
+  }
+
+  private handleHeaderSlotChange = () => {
+    this.updateHeaderSlotState();
+  };
+
+  private handleActionsSlotChange = () => {
+    this.updateActionsSlotState();
+  };
+
+  private updateHeaderSlotState() {
+    this.hasHeaderSlot = this.slotHasAssignedContent(this.headerSlot);
+  }
+
+  private updateActionsSlotState() {
+    this.hasActionsSlot = this.slotHasAssignedContent(this.actionsSlot);
+  }
+
+  private slotHasAssignedContent(slot: HTMLSlotElement | undefined): boolean {
+    if (!slot) return false;
+
+    return slot.assignedNodes({ flatten: true }).some(node => {
+      if (node.nodeType === Node.ELEMENT_NODE) return true;
+      if (node.nodeType === Node.TEXT_NODE) return Boolean(node.textContent?.trim());
+      return false;
+    });
   }
 
   private handleSubmit = (ev: Event) => {
@@ -155,12 +252,18 @@ export class QForm {
     });
   };
 
+  // ===================== [6] RENDER (Visual Template Only) =====================
+
   render() {
+    const hasHeaderContent = Boolean(this.label) || this.hasHeaderSlot;
+    const formLabelledBy = this.label && !this.hasHeaderSlot ? this.titleId : undefined;
+    const formAriaLabel = this.label && this.hasHeaderSlot ? this.label : undefined;
+
     return (
       <div class="form-shell">
-        <div class="form-header" part="header">
-          <slot name="header">
-            {this.label && <h2 class="form-title">{this.label}</h2>}
+        <div class={{ 'form-header': true, 'is-hidden': !hasHeaderContent }} part="header">
+          <slot name="header" ref={(el) => (this.headerSlot = el as HTMLSlotElement)} onSlotchange={this.handleHeaderSlotChange}>
+            {this.label && <h2 id={this.titleId} class="form-title">{this.label}</h2>}
           </slot>
         </div>
 
@@ -172,6 +275,8 @@ export class QForm {
           enctype={this.enctype}
           target={this.target}
           noValidate={this.noValidate}
+          aria-labelledby={formLabelledBy}
+          aria-label={formAriaLabel}
           part="form"
           onSubmit={this.handleSubmit}
           onReset={this.handleReset}
@@ -180,17 +285,11 @@ export class QForm {
             <slot />
           </div>
 
-          <div class="form-actions" part="actions">
-            <slot name="actions" />
+          <div class={{ 'form-actions': true, 'is-hidden': !this.hasActionsSlot }} part="actions">
+            <slot name="actions" ref={(el) => (this.actionsSlot = el as HTMLSlotElement)} onSlotchange={this.handleActionsSlotChange} />
           </div>
         </form>
       </div>
     );
   }
 }
-
-
-
-
-
-
