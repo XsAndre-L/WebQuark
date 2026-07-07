@@ -3,49 +3,81 @@ import { safeParseJson } from '../../../utils/utils';
 import { safeFocus } from '../../../utils/dom';
 import type { Option, QDropdownSize } from './dropdown.types';
 
+const AVG_CHAR_WIDTH_PX = 7.2;
+const WIDTH_CHROME_PX = 38;
+const MIN_SEARCHABLE_SM_WIDTH_PX = 160;
+
+/**
+ * Form-associated dropdown/select control with optional search and incremental option rendering.
+ * @part label - Optional field label.
+ * @part trigger - Button that opens the option menu.
+ * @part menu - Floating option menu.
+ */
 @Component({
   tag: 'q-dropdown',
   styleUrl: 'dropdown.css',
   shadow: {
-    delegatesFocus: true
+    delegatesFocus: true,
   },
-  formAssociated: true
+  formAssociated: true,
 })
 export class QDropdown {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
-  @Prop({ mutable: true }) value: string = "";
+  /** Selected option value. */
+  @Prop({ mutable: true }) value: string = '';
+
+  /** Form field name. */
   @Prop({ reflect: true }) name?: string;
+
+  /** Optional label rendered above the trigger. */
   @Prop() label?: string;
-  @Prop() placeholder: string = "Select an option...";
+
+  /** Placeholder text shown when no option is selected. */
+  @Prop() placeholder: string = 'Select an option...';
+
+  /** Options to render; accepts an array or a JSON string of { label, value } objects. */
   @Prop() options: Option[] | string = [];
+
+  /** Disables the trigger and prevents selection changes. */
   @Prop({ reflect: true }) disabled: boolean = false;
+
+  /** Visual size preset. */
   @Prop({ reflect: true }) size: QDropdownSize = 'md';
+
+  /** Shows a search input inside the menu. */
   @Prop() searchable: boolean = false;
 
   @State() isOpen: boolean = false;
   @State() focusedIndex: number = -1;
-  @State() searchTerm: string = "";
+  @State() searchTerm: string = '';
   @State() visibleCount: number = 20;
   @State() isScrollingLoading: boolean = false;
-
-  private scrollTimeout: any = null;
 
   @Element() el!: HTMLElement;
 
   @AttachInternals() internals!: ElementInternals;
 
+  /** Emitted with the selected option value when selection changes. */
   @Event() qChange!: EventEmitter<string>;
-  @Event() qSelect!: EventEmitter<Option>;
-  @Event() qFocus!: EventEmitter<FocusEvent>;
-  @Event() qBlur!: EventEmitter<FocusEvent>;
-  @Event() qClick!: EventEmitter<MouseEvent>;
 
-  private triggerEl?: HTMLButtonElement;
+  /** Emitted with the selected option object when selection changes. */
+  @Event() qSelect!: EventEmitter<Option>;
+
+  /** Emitted when the trigger receives focus. */
+  @Event() qFocus!: EventEmitter<FocusEvent>;
+
+  /** Emitted when the trigger loses focus. */
+  @Event() qBlur!: EventEmitter<FocusEvent>;
+
+  /** Emitted before the trigger toggles the menu. */
+  @Event() qClick!: EventEmitter<MouseEvent>;
 
   // ========================= [2] INTERNAL STATE & REFS =========================
 
+  private triggerEl?: HTMLButtonElement;
   private searchInputEl?: HTMLInputElement;
-  private initialValue: string = "";
+  private initialValue: string = '';
+  private scrollTimeout: ReturnType<typeof setTimeout> | null = null;
 
   // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
@@ -61,12 +93,12 @@ export class QDropdown {
   }
 
   componentWillLoad() {
-    this.initialValue = this.value || "";
+    this.initialValue = this.value || '';
     if (this.internals && typeof this.internals.setFormValue === 'function') {
       this.internals.setFormValue(this.value);
     }
     if (!this.searchTerm) {
-      this.searchTerm = "";
+      this.searchTerm = '';
     }
   }
 
@@ -81,18 +113,30 @@ export class QDropdown {
 
   private clearScrollLoading() {
     this.isScrollingLoading = false;
-    if (this.scrollTimeout) {
+    if (this.scrollTimeout !== null) {
       clearTimeout(this.scrollTimeout);
       this.scrollTimeout = null;
     }
   }
 
-  private getFilteredOptions(): Option[] {
-    const list = safeParseJson(this.options, [], 'QDropdown');
+  private getOptionLabel(option: Partial<Option> | undefined): string {
+    return typeof option?.label === 'string' ? option.label : '';
+  }
 
-    if (this.searchable && this.searchTerm && this.searchTerm.trim() !== "") {
+  private getAllOptions(): Option[] {
+    return safeParseJson<Option[]>(this.options, [], 'QDropdown').filter((opt): opt is Option => Boolean(opt) && typeof opt === 'object' && typeof opt.value === 'string');
+  }
+
+  private getSelectedOption(options = this.getAllOptions()): Option | undefined {
+    return options.find(opt => opt.value === this.value);
+  }
+
+  private getFilteredOptions(): Option[] {
+    const list = this.getAllOptions();
+
+    if (this.searchable && this.searchTerm && this.searchTerm.trim() !== '') {
       const term = this.searchTerm.toLowerCase();
-      return list.filter(opt => opt.label.toLowerCase().includes(term));
+      return list.filter(opt => this.getOptionLabel(opt).toLowerCase().includes(term));
     }
     return list;
   }
@@ -106,7 +150,7 @@ export class QDropdown {
     this.isOpen = !this.isOpen;
     this.clearScrollLoading();
     if (this.isOpen) {
-      this.searchTerm = "";
+      this.searchTerm = '';
       this.visibleCount = 20;
       if (this.searchable) {
         this.focusedIndex = -1;
@@ -118,7 +162,7 @@ export class QDropdown {
       }
     } else {
       this.focusedIndex = -1;
-      this.searchTerm = "";
+      this.searchTerm = '';
       this.visibleCount = 20;
       requestAnimationFrame(() => safeFocus(this.triggerEl));
     }
@@ -128,7 +172,7 @@ export class QDropdown {
     this.value = option.value;
     this.isOpen = false;
     this.focusedIndex = -1;
-    this.searchTerm = "";
+    this.searchTerm = '';
     this.clearScrollLoading();
     this.qChange.emit(option.value);
     this.qSelect.emit(option);
@@ -151,7 +195,7 @@ export class QDropdown {
 
   private handleSearchInput = (ev: Event) => {
     const target = ev.target as HTMLInputElement;
-    this.searchTerm = target.value || "";
+    this.searchTerm = target.value || '';
     this.focusedIndex = -1;
     this.visibleCount = 20;
     this.clearScrollLoading();
@@ -168,7 +212,7 @@ export class QDropdown {
       const totalCount = this.getFilteredOptions().length;
       if (this.visibleCount < totalCount) {
         this.isScrollingLoading = true;
-        if (this.scrollTimeout) {
+        if (this.scrollTimeout !== null) {
           clearTimeout(this.scrollTimeout);
         }
         this.scrollTimeout = setTimeout(() => {
@@ -190,6 +234,26 @@ export class QDropdown {
       const listElement = this.el.shadowRoot?.querySelector(`#q-field-item-${this.focusedIndex}`) as HTMLElement;
       listElement?.focus();
     }
+  }
+
+  private calculateWidthFromLength(labelLength: number, minWidth = 0): string {
+    const calculatedWidth = labelLength * AVG_CHAR_WIDTH_PX + WIDTH_CHROME_PX;
+    return `${Math.ceil(Math.max(minWidth, calculatedWidth))}px`;
+  }
+
+  private computeDynamicWidth(allOptions: Option[], selectedOption?: Option): string | undefined {
+    if (this.size !== 'sm') return undefined;
+
+    if (this.searchable) {
+      const labelText = selectedOption ? this.getOptionLabel(selectedOption) : this.placeholder;
+      return this.calculateWidthFromLength(labelText ? labelText.length : 0, MIN_SEARCHABLE_SM_WIDTH_PX);
+    }
+
+    const lengths = allOptions.map(option => this.getOptionLabel(option).length);
+    if (this.placeholder) {
+      lengths.push(this.placeholder.length);
+    }
+    return this.calculateWidthFromLength(Math.max(...lengths, 0));
   }
 
   private handleKeyDown = (ev: KeyboardEvent) => {
@@ -282,7 +346,7 @@ export class QDropdown {
           ev.preventDefault();
           this.isOpen = false;
           this.focusedIndex = -1;
-          this.searchTerm = "";
+          this.searchTerm = '';
           this.clearScrollLoading();
           requestAnimationFrame(() => safeFocus(this.triggerEl));
         }
@@ -291,7 +355,7 @@ export class QDropdown {
         if (this.isOpen) {
           this.isOpen = false;
           this.focusedIndex = -1;
-          this.searchTerm = "";
+          this.searchTerm = '';
           this.clearScrollLoading();
         }
         break;
@@ -305,7 +369,7 @@ export class QDropdown {
     if (this.el && !path.includes(this.el)) {
       this.isOpen = false;
       this.focusedIndex = -1;
-      this.searchTerm = "";
+      this.searchTerm = '';
       this.visibleCount = 20;
       this.clearScrollLoading();
     }
@@ -314,30 +378,13 @@ export class QDropdown {
   // ===================== [6] RENDER (Visual Template Only) =====================
 
   render() {
+    const allOptions = this.getAllOptions();
     const opts = this.parsedOptions;
-    const selectedOption = this.parsedOptions.find(opt => opt.value === this.value) 
-      || (typeof this.options === 'object' && Array.isArray(this.options) ? this.options.find(opt => opt.value === this.value) : undefined);
-    const displayLabel = selectedOption ? selectedOption.label : this.placeholder;
+    const selectedOption = this.getSelectedOption(allOptions);
+    const selectedLabel = this.getOptionLabel(selectedOption);
+    const displayLabel = selectedOption && selectedLabel ? selectedLabel : this.placeholder;
     const hasSelection = selectedOption !== undefined;
-
-    let dynamicWidth: string | undefined = undefined;
-    if (this.size === 'sm') {
-      if (this.searchable) {
-        const labelText = selectedOption ? selectedOption.label : this.placeholder;
-        const labelLength = labelText ? labelText.length : 0;
-        const calculatedWidth = labelLength * 7.2 + 38;
-        dynamicWidth = `${Math.ceil(Math.max(160, calculatedWidth))}px`;
-      } else {
-        const allOptions = safeParseJson<Option[]>(this.options, []);
-        const lengths = allOptions.map(o => o.label ? o.label.length : 0);
-        if (this.placeholder) {
-          lengths.push(this.placeholder.length);
-        }
-        const maxLength = Math.max(...lengths, 0);
-        const calculatedWidth = maxLength * 7.2 + 38;
-        dynamicWidth = `${Math.ceil(calculatedWidth)}px`;
-      }
-    }
+    const dynamicWidth = this.computeDynamicWidth(allOptions, selectedOption);
 
     return (
       <div 
@@ -399,6 +446,11 @@ export class QDropdown {
                   placeholder="Search..."
                   value={this.searchTerm}
                   onInput={this.handleSearchInput}
+                  role="combobox"
+                  aria-autocomplete="list"
+                  aria-controls="q-field-menu"
+                  aria-expanded={this.isOpen ? 'true' : 'false'}
+                  aria-activedescendant={this.focusedIndex >= 0 ? `q-field-item-${this.focusedIndex}` : undefined}
                 />
               </div>
             )}
@@ -420,7 +472,7 @@ export class QDropdown {
                     aria-selected={option.value === this.value ? 'true' : 'false'}
                     onClick={() => this.handleSelect(option)}
                   >
-                    {option.label}
+                    {this.getOptionLabel(option)}
                   </li>
                 ))
               )}

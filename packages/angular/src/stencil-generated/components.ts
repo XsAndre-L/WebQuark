@@ -316,15 +316,25 @@ import type { QDropdownCustomEvent } from '@webquark/core/components';
 import type { Option as IQDropdownOption } from '@webquark/core/components';
 
 export declare interface QDropdown extends Components.QDropdown {
-
+  /**
+   * Emitted with the selected option value when selection changes.
+   */
   qChange: EventEmitter<QDropdownCustomEvent<string>>;
-
+  /**
+   * Emitted with the selected option object when selection changes.
+   */
   qSelect: EventEmitter<QDropdownCustomEvent<IQDropdownOption>>;
-
+  /**
+   * Emitted when the trigger receives focus.
+   */
   qFocus: EventEmitter<QDropdownCustomEvent<FocusEvent>>;
-
+  /**
+   * Emitted when the trigger loses focus.
+   */
   qBlur: EventEmitter<QDropdownCustomEvent<FocusEvent>>;
-
+  /**
+   * Emitted before the trigger toggles the menu.
+   */
   qClick: EventEmitter<QDropdownCustomEvent<MouseEvent>>;
 }
 

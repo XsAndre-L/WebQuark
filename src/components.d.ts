@@ -382,31 +382,46 @@ export namespace Components {
          */
         "showConfirm": boolean;
     }
+    /**
+     * Form-associated dropdown/select control with optional search and incremental option rendering.
+     */
     interface QDropdown {
         /**
+          * Disables the trigger and prevents selection changes.
           * @default false
          */
         "disabled": boolean;
+        /**
+          * Optional label rendered above the trigger.
+         */
         "label"?: string;
+        /**
+          * Form field name.
+         */
         "name"?: string;
         /**
+          * Options to render; accepts an array or a JSON string of { label, value } objects.
           * @default []
          */
         "options": Option[] | string;
         /**
-          * @default "Select an option..."
+          * Placeholder text shown when no option is selected.
+          * @default 'Select an option...'
          */
         "placeholder": string;
         /**
+          * Shows a search input inside the menu.
           * @default false
          */
         "searchable": boolean;
         /**
+          * Visual size preset.
           * @default 'md'
          */
         "size": QDropdownSize;
         /**
-          * @default ""
+          * Selected option value.
+          * @default ''
          */
         "value": string;
     }
@@ -1194,6 +1209,9 @@ declare global {
         "qBlur": FocusEvent;
         "qClick": MouseEvent;
     }
+    /**
+     * Form-associated dropdown/select control with optional search and incremental option rendering.
+     */
     interface HTMLQDropdownElement extends Components.QDropdown, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQDropdownElementEventMap>(type: K, listener: (this: HTMLQDropdownElement, ev: QDropdownCustomEvent<HTMLQDropdownElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1880,8 +1898,12 @@ declare namespace LocalJSX {
          */
         "showConfirm"?: boolean;
     }
+    /**
+     * Form-associated dropdown/select control with optional search and incremental option rendering.
+     */
     interface QDropdown {
         /**
+          * Disables the trigger and prevents selection changes.
           * @default false
          */
         "disabled"?: boolean;
@@ -1889,31 +1911,57 @@ declare namespace LocalJSX {
           * The `id` of a `<form>` element to associate this element with.
          */
         "form"?: string;
+        /**
+          * Optional label rendered above the trigger.
+         */
         "label"?: string;
+        /**
+          * Form field name.
+         */
         "name"?: string;
+        /**
+          * Emitted when the trigger loses focus.
+         */
         "onQBlur"?: (event: QDropdownCustomEvent<FocusEvent>) => void;
+        /**
+          * Emitted with the selected option value when selection changes.
+         */
         "onQChange"?: (event: QDropdownCustomEvent<string>) => void;
+        /**
+          * Emitted before the trigger toggles the menu.
+         */
         "onQClick"?: (event: QDropdownCustomEvent<MouseEvent>) => void;
+        /**
+          * Emitted when the trigger receives focus.
+         */
         "onQFocus"?: (event: QDropdownCustomEvent<FocusEvent>) => void;
+        /**
+          * Emitted with the selected option object when selection changes.
+         */
         "onQSelect"?: (event: QDropdownCustomEvent<Option>) => void;
         /**
+          * Options to render; accepts an array or a JSON string of { label, value } objects.
           * @default []
          */
         "options"?: Option[] | string;
         /**
-          * @default "Select an option..."
+          * Placeholder text shown when no option is selected.
+          * @default 'Select an option...'
          */
         "placeholder"?: string;
         /**
+          * Shows a search input inside the menu.
           * @default false
          */
         "searchable"?: boolean;
         /**
+          * Visual size preset.
           * @default 'md'
          */
         "size"?: QDropdownSize;
         /**
-          * @default ""
+          * Selected option value.
+          * @default ''
          */
         "value"?: string;
     }
@@ -2871,6 +2919,9 @@ declare module "@stencil/core" {
              */
             "q-data-table": LocalJSX.IntrinsicElements["q-data-table"] & JSXBase.HTMLAttributes<HTMLQDataTableElement>;
             "q-dialog": LocalJSX.IntrinsicElements["q-dialog"] & JSXBase.HTMLAttributes<HTMLQDialogElement>;
+            /**
+             * Form-associated dropdown/select control with optional search and incremental option rendering.
+             */
             "q-dropdown": LocalJSX.IntrinsicElements["q-dropdown"] & JSXBase.HTMLAttributes<HTMLQDropdownElement>;
             "q-form": LocalJSX.IntrinsicElements["q-form"] & JSXBase.HTMLAttributes<HTMLQFormElement>;
             "q-icon": LocalJSX.IntrinsicElements["q-icon"] & JSXBase.HTMLAttributes<HTMLQIconElement>;
