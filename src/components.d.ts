@@ -819,30 +819,45 @@ export namespace Components {
          */
         "lightbox": boolean;
     }
+    /**
+     * Scroll container with custom or native scrollbar styling.
+     */
     interface QScrollable {
         /**
+          * Hides the custom scrollbar until hover, scroll, or drag activity.
           * @default true
          */
         "autoHide": boolean;
         /**
+          * CSS height applied to the scrollable host.
           * @default '100%'
          */
         "height": string;
         /**
+          * Optional max-height applied to the scrollable host.
           * @default ''
          */
         "maxHeight": string;
         /**
+          * Scrollbar rendering mode. Custom renders WebQuark's own thumb; native styles browser scrollbars.
           * @default 'custom'
          */
         "mode": QScrollableMode;
         /**
+          * Uses native scrollbars on coarse pointer devices when true.
           * @default true
          */
         "nativeOnMobile": boolean;
+        /**
+          * Moves the viewport to its maximum vertical scroll position.
+         */
         "scrollToBottom": () => Promise<void>;
+        /**
+          * Moves the viewport to a specific vertical scroll position.
+         */
         "scrollToPosition": (top: number) => Promise<void>;
         /**
+          * CSS selector for an external native-scroll target resolved from this component's root node.
           * @default ''
          */
         "target": string;
@@ -1543,6 +1558,9 @@ declare global {
     interface HTMLQScrollableElementEventMap {
         "qScroll": QScrollableEventDetail;
     }
+    /**
+     * Scroll container with custom or native scrollbar styling.
+     */
     interface HTMLQScrollableElement extends Components.QScrollable, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQScrollableElementEventMap>(type: K, listener: (this: HTMLQScrollableElement, ev: QScrollableCustomEvent<HTMLQScrollableElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2599,29 +2617,41 @@ declare namespace LocalJSX {
          */
         "onQLightboxOpen"?: (event: QReelCustomEvent<void>) => void;
     }
+    /**
+     * Scroll container with custom or native scrollbar styling.
+     */
     interface QScrollable {
         /**
+          * Hides the custom scrollbar until hover, scroll, or drag activity.
           * @default true
          */
         "autoHide"?: boolean;
         /**
+          * CSS height applied to the scrollable host.
           * @default '100%'
          */
         "height"?: string;
         /**
+          * Optional max-height applied to the scrollable host.
           * @default ''
          */
         "maxHeight"?: string;
         /**
+          * Scrollbar rendering mode. Custom renders WebQuark's own thumb; native styles browser scrollbars.
           * @default 'custom'
          */
         "mode"?: QScrollableMode;
         /**
+          * Uses native scrollbars on coarse pointer devices when true.
           * @default true
          */
         "nativeOnMobile"?: boolean;
+        /**
+          * Emitted when the viewport scrolls.
+         */
         "onQScroll"?: (event: QScrollableCustomEvent<QScrollableEventDetail>) => void;
         /**
+          * CSS selector for an external native-scroll target resolved from this component's root node.
           * @default ''
          */
         "target"?: string;
@@ -3346,6 +3376,9 @@ declare module "@stencil/core" {
              */
             "q-quantity-selector": LocalJSX.IntrinsicElements["q-quantity-selector"] & JSXBase.HTMLAttributes<HTMLQQuantitySelectorElement>;
             "q-reel": LocalJSX.IntrinsicElements["q-reel"] & JSXBase.HTMLAttributes<HTMLQReelElement>;
+            /**
+             * Scroll container with custom or native scrollbar styling.
+             */
             "q-scrollable": LocalJSX.IntrinsicElements["q-scrollable"] & JSXBase.HTMLAttributes<HTMLQScrollableElement>;
             "q-sidepanel": LocalJSX.IntrinsicElements["q-sidepanel"] & JSXBase.HTMLAttributes<HTMLQSidepanelElement>;
             /**

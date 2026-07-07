@@ -2,6 +2,17 @@ import { Component, Prop, Element, Event, EventEmitter, State, Watch, Method, Ho
 
 import type { QScrollableEventDetail, QScrollableMode } from './scrollable.types';
 
+let scrollableIds = 0;
+
+/**
+ * Scroll container with custom or native scrollbar styling.
+ *
+ * @slot - Content rendered inside the scrollable viewport.
+ * @part viewport - Scrollable viewport element.
+ * @part content - Content wrapper inside the viewport.
+ * @part track - Custom scrollbar track.
+ * @part thumb - Custom scrollbar thumb.
+ */
 @Component({
   tag: 'q-scrollable',
   styleUrl: 'scrollable.css',
@@ -11,28 +22,45 @@ export class QScrollable {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Element() el!: HTMLElement;
 
+  /** CSS height applied to the scrollable host. */
   @Prop({ reflect: true }) height: string = '100%';
+
+  /** Optional max-height applied to the scrollable host. */
   @Prop({ reflect: true }) maxHeight: string = '';
+
+  /** Hides the custom scrollbar until hover, scroll, or drag activity. */
   @Prop({ reflect: true }) autoHide: boolean = true;
+
+  /** Uses native scrollbars on coarse pointer devices when true. */
   @Prop({ reflect: true }) nativeOnMobile: boolean = true;
+
+  /** Scrollbar rendering mode. Custom renders WebQuark's own thumb; native styles browser scrollbars. */
   @Prop({ reflect: true }) mode: QScrollableMode = 'custom';
+
+  /** CSS selector for an external native-scroll target resolved from this component's root node. */
   @Prop({ reflect: true }) target: string = '';
 
+  /** Emitted when the viewport scrolls. */
   @Event() qScroll!: EventEmitter<QScrollableEventDetail>;
 
   @State() isScrolling: boolean = false;
   @State() isDragging: boolean = false;
-
-  private viewportEl?: HTMLDivElement;
+  @State() scrollValueNow: number = 0;
+  @State() scrollValueMax: number = 0;
 
   // ========================= [2] INTERNAL STATE & REFS =========================
 
+  private static readonly MIN_THUMB_HEIGHT_PX = 36;
+  private static readonly KEY_SCROLL_STEP_PX = 40;
+
+  private readonly viewportId = `q-scrollable-viewport-${++scrollableIds}`;
+  private viewportEl?: HTMLDivElement;
   private contentEl?: HTMLDivElement;
   private trackEl?: HTMLDivElement;
   private thumbEl?: HTMLDivElement;
 
   private resizeObserver?: ResizeObserver;
-  private scrollTimeout?: any;
+  private scrollTimeout?: ReturnType<typeof setTimeout>;
   private isUpdatingPosition = false;
 
   private dragStartY: number = 0;
@@ -86,69 +114,62 @@ export class QScrollable {
 
   // ============================ [4] EXPOSED METHODS ============================
 
+  /** Moves the viewport to its maximum vertical scroll position. */
   @Method()
   async scrollToBottom() {
     if (this.viewportEl) {
-      this.viewportEl.scrollTop = this.viewportEl.scrollHeight;
+      this.setViewportScrollTop(this.viewportEl.scrollHeight);
     }
   }
 
+  /** Moves the viewport to a specific vertical scroll position. */
   @Method()
   async scrollToPosition(top: number) {
     if (this.viewportEl) {
-      this.viewportEl.scrollTop = top;
+      this.setViewportScrollTop(top);
     }
   }
 
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
   private setViewportRef = (el: HTMLDivElement | null) => {
-    if (this.viewportEl && this.resizeObserver) {
-      try {
-        this.resizeObserver.unobserve(this.viewportEl);
-      } catch (e) {
-        // Ignore
-      }
-    }
-
-    this.viewportEl = el || undefined;
-
-    if (this.mode === 'custom' && el) {
-      if (typeof ResizeObserver !== 'undefined') {
-        if (!this.resizeObserver) {
-          this.resizeObserver = new ResizeObserver(() => {
-            this.updateScrollbarSize();
-          });
-        }
-        this.resizeObserver.observe(el);
-      }
-      this.updateScrollbarSize();
-    }
+    this.viewportEl = this.syncResizeObserver(this.viewportEl, el);
   };
 
   private setContentRef = (el: HTMLDivElement | null) => {
-    if (this.contentEl && this.resizeObserver) {
+    this.contentEl = this.syncResizeObserver(this.contentEl, el);
+  };
+
+  private syncResizeObserver(previousEl: Element | undefined, nextEl: HTMLDivElement | null): HTMLDivElement | undefined {
+    if (previousEl && this.resizeObserver) {
       try {
-        this.resizeObserver.unobserve(this.contentEl);
+        this.resizeObserver.unobserve(previousEl);
       } catch (e) {
         // Ignore
       }
     }
 
-    this.contentEl = el || undefined;
+    const resolvedEl = nextEl || undefined;
 
-    if (this.mode === 'custom' && el) {
-      if (typeof ResizeObserver !== 'undefined') {
-        if (!this.resizeObserver) {
-          this.resizeObserver = new ResizeObserver(() => {
-            this.updateScrollbarSize();
-          });
-        }
-        this.resizeObserver.observe(el);
-      }
+    if (this.mode === 'custom' && resolvedEl && typeof ResizeObserver !== 'undefined') {
+      this.ensureResizeObserver();
+      this.resizeObserver?.observe(resolvedEl);
+    }
+
+    if (this.mode === 'custom') {
       this.updateScrollbarSize();
     }
-  };
+
+    return resolvedEl;
+  }
+
+  private ensureResizeObserver() {
+    if (this.resizeObserver || typeof ResizeObserver === 'undefined') return;
+
+    this.resizeObserver = new ResizeObserver(() => {
+      this.updateScrollbarSize();
+    });
+  }
 
   private setupCustomScroll() {
     if (this.mode !== 'custom') {
@@ -156,16 +177,12 @@ export class QScrollable {
     }
 
     if (typeof ResizeObserver !== 'undefined') {
-      if (!this.resizeObserver) {
-        this.resizeObserver = new ResizeObserver(() => {
-          this.updateScrollbarSize();
-        });
-      }
+      this.ensureResizeObserver();
       if (this.viewportEl) {
-        this.resizeObserver.observe(this.viewportEl);
+        this.resizeObserver?.observe(this.viewportEl);
       }
       if (this.contentEl) {
-        this.resizeObserver.observe(this.contentEl);
+        this.resizeObserver?.observe(this.contentEl);
       }
     }
 
@@ -179,7 +196,7 @@ export class QScrollable {
       return;
     }
 
-    const targetEl = this.target ? document.querySelector(this.target) : this.el.parentElement;
+    const targetEl = this.resolveNativeTarget();
     if (!targetEl) {
       return;
     }
@@ -188,7 +205,7 @@ export class QScrollable {
 
     let targetId = targetEl.getAttribute('data-q-scrollable-target-id');
     if (!targetId) {
-      targetId = `q-scroll-${Math.random().toString(36).substr(2, 9)}`;
+      targetId = `q-scroll-${Math.random().toString(36).slice(2, 11)}`;
       targetEl.setAttribute('data-q-scrollable-target-id', targetId);
     }
 
@@ -196,27 +213,36 @@ export class QScrollable {
     styleEl.id = `q-style-${targetId}`;
     styleEl.textContent = `
       [data-q-scrollable-target-id="${targetId}"]::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
+        width: var(--q-scrollbar-width, 6px);
+        height: var(--q-scrollbar-width, 6px);
       }
       [data-q-scrollable-target-id="${targetId}"]::-webkit-scrollbar-track {
-        background: transparent;
+        background: var(--q-scrollbar-track-color, transparent);
       }
       [data-q-scrollable-target-id="${targetId}"]::-webkit-scrollbar-thumb {
-        background: var(--q-bg-surface-3, #4b5563);
-        border-radius: 4px;
+        background: var(--q-scrollbar-thumb-color, var(--q-border-color, #374151));
+        border-radius: var(--q-scrollbar-radius, 4px);
       }
       [data-q-scrollable-target-id="${targetId}"]::-webkit-scrollbar-thumb:hover {
-        background: var(--q-color-primary, #3b82f6);
+        background: var(--q-scrollbar-thumb-color-hover, var(--q-color-primary, #60a5fa));
       }
       [data-q-scrollable-target-id="${targetId}"] {
-        scrollbar-width: thin;
-        scrollbar-color: var(--q-bg-surface-3, #4b5563) transparent;
+        scrollbar-width: var(--q-scrollbar-width-thin, thin);
+        scrollbar-color: var(--q-scrollbar-thumb-color, var(--q-border-color, #374151)) var(--q-scrollbar-track-color, transparent);
       }
     `;
 
     targetEl.appendChild(styleEl);
     this.nativeStyleEl = styleEl;
+  }
+
+  private resolveNativeTarget(): Element | null {
+    if (!this.target) {
+      return this.el.parentElement;
+    }
+
+    const root = this.el.getRootNode() as Document | ShadowRoot;
+    return root.querySelector(this.target);
   }
 
   private removeNativeStyles() {
@@ -242,13 +268,14 @@ export class QScrollable {
     if (scrollHeight <= clientHeight) {
       this.thumbEl.style.height = '0px';
       this.trackEl.style.display = 'none';
+      this.updateScrollMetrics();
       return;
     }
 
     this.trackEl.style.display = '';
 
     const calculatedHeight = (clientHeight * clientHeight) / scrollHeight;
-    const thumbHeight = Math.max(36, calculatedHeight);
+    const thumbHeight = Math.max(QScrollable.MIN_THUMB_HEIGHT_PX, calculatedHeight);
 
     this.thumbEl.style.height = `${thumbHeight}px`;
 
@@ -269,6 +296,7 @@ export class QScrollable {
 
     const maxScrollTop = scrollHeight - clientHeight;
     if (maxScrollTop <= 0) {
+      this.updateScrollMetrics();
       return;
     }
 
@@ -276,6 +304,18 @@ export class QScrollable {
     const translateY = (scrollTop / maxScrollTop) * maxThumbTranslate;
 
     this.thumbEl.style.transform = `translateY(${translateY}px)`;
+    this.updateScrollMetrics();
+  }
+
+  private updateScrollMetrics() {
+    if (!this.viewportEl) {
+      this.scrollValueNow = 0;
+      this.scrollValueMax = 0;
+      return;
+    }
+
+    this.scrollValueNow = Math.round(this.viewportEl.scrollTop);
+    this.scrollValueMax = Math.max(0, Math.round(this.viewportEl.scrollHeight - this.viewportEl.clientHeight));
   }
 
   private handleScroll = () => {
@@ -286,6 +326,8 @@ export class QScrollable {
         clientHeight: this.viewportEl.clientHeight,
       });
     }
+
+    this.updateScrollMetrics();
 
     if (this.mode !== 'custom') {
       return;
@@ -362,12 +404,59 @@ export class QScrollable {
 
     const newScrollTop = (newTranslateY / maxThumbTranslate) * maxScrollTop;
 
-    this.viewportEl.style.scrollBehavior = 'auto';
-    this.viewportEl.scrollTop = newScrollTop;
-    this.viewportEl.style.scrollBehavior = '';
+    this.setViewportScrollTop(newScrollTop);
 
     this.updateThumbPosition();
   };
+
+  private handleThumbKeyDown = (e: KeyboardEvent) => {
+    if (!this.viewportEl) return;
+
+    const maxScrollTop = Math.max(0, this.viewportEl.scrollHeight - this.viewportEl.clientHeight);
+    const pageStep = Math.max(QScrollable.KEY_SCROLL_STEP_PX, this.viewportEl.clientHeight - QScrollable.KEY_SCROLL_STEP_PX);
+    let nextScrollTop = this.viewportEl.scrollTop;
+
+    switch (e.key) {
+      case 'ArrowDown':
+      case 'ArrowRight':
+        nextScrollTop += QScrollable.KEY_SCROLL_STEP_PX;
+        break;
+      case 'ArrowUp':
+      case 'ArrowLeft':
+        nextScrollTop -= QScrollable.KEY_SCROLL_STEP_PX;
+        break;
+      case 'PageDown':
+        nextScrollTop += pageStep;
+        break;
+      case 'PageUp':
+        nextScrollTop -= pageStep;
+        break;
+      case 'Home':
+        nextScrollTop = 0;
+        break;
+      case 'End':
+        nextScrollTop = maxScrollTop;
+        break;
+      default:
+        return;
+    }
+
+    e.preventDefault();
+    this.setViewportScrollTop(nextScrollTop);
+    this.updateThumbPosition();
+  };
+
+  private setViewportScrollTop(scrollTop: number) {
+    if (!this.viewportEl) return;
+
+    const maxScrollTop = Math.max(0, this.viewportEl.scrollHeight - this.viewportEl.clientHeight);
+    const nextScrollTop = Math.max(0, Math.min(maxScrollTop, scrollTop));
+
+    this.viewportEl.style.scrollBehavior = 'auto';
+    this.viewportEl.scrollTop = nextScrollTop;
+    this.viewportEl.style.scrollBehavior = '';
+    this.updateScrollMetrics();
+  }
 
   private handlePointerUp = (e: PointerEvent) => {
     if (!this.isDragging) {
@@ -405,11 +494,14 @@ export class QScrollable {
       >
         <div class="q-scrollable-host">
           <div
+            id={this.viewportId}
             class="q-scrollable-viewport"
             ref={this.setViewportRef}
             onScroll={this.handleScroll}
+            tabindex={0}
+            part="viewport"
           >
-            <div class="q-scrollable-content" ref={this.setContentRef}>
+            <div class="q-scrollable-content" ref={this.setContentRef} part="content">
               <slot></slot>
             </div>
           </div>
@@ -421,11 +513,22 @@ export class QScrollable {
                 'is-dragging': this.isDragging,
               }}
               ref={(el) => (this.trackEl = el as HTMLDivElement)}
+              part="track"
             >
               <div
                 class="q-scrollbar-thumb"
                 ref={(el) => (this.thumbEl = el as HTMLDivElement)}
                 onPointerDown={this.handlePointerDown}
+                onKeyDown={this.handleThumbKeyDown}
+                role="scrollbar"
+                aria-controls={this.viewportId}
+                aria-orientation="vertical"
+                aria-valuemin="0"
+                aria-valuemax={this.scrollValueMax}
+                aria-valuenow={this.scrollValueNow}
+                aria-label="Scroll content"
+                tabindex={0}
+                part="thumb"
               ></div>
             </div>
           )}
