@@ -1,7 +1,15 @@
 import { Component, Prop, Element, State, h } from '@stencil/core';
 import { getSlottedElements } from '../../../utils/dom';
 import type { QCardElevation } from './card.types';
+import { normalizeCardElevation, shouldActivateCardFromKey } from './card.utils';
 
+/**
+ * Flexible content card with optional header slot, elevation, glass, lift, and interactive button semantics.
+ * @slot header - Optional header content, hidden automatically when empty.
+ * @slot - Main card body content.
+ * @part header - Header slot container.
+ * @part body - Body slot container.
+ */
 @Component({
   tag: 'q-card',
   styleUrl: 'card.css',
@@ -11,10 +19,19 @@ export class QCard {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Element() el!: HTMLElement;
 
+  /** Visual elevation level; numeric values are accepted as legacy aliases for low, medium, and high. */
   @Prop({ reflect: true }) elevation: QCardElevation = 'medium';
+
+  /** Adds button semantics and keyboard activation to the card container. */
   @Prop({ reflect: true }) interactive: boolean = false;
+
+  /** Applies translucent glass styling without backdrop-filter. */
   @Prop({ reflect: true }) glass: boolean = false;
+
+  /** Applies a visual hover/focus lift without adding interactive semantics. */
   @Prop({ reflect: true }) lift: boolean = false;
+
+  // ========================= [2] INTERNAL STATE & REFS =========================
 
   @State() hasHeader: boolean = false;
 
@@ -37,7 +54,7 @@ export class QCard {
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
   private handleKeyDown = (e: KeyboardEvent) => {
-    if (this.interactive && (e.key === 'Enter' || e.key === ' ')) {
+    if (shouldActivateCardFromKey(this.interactive, e.key, e.target, e.currentTarget)) {
       e.preventDefault();
       (e.currentTarget as HTMLElement).click();
     }
@@ -46,11 +63,13 @@ export class QCard {
   // ===================== [6] RENDER (Visual Template Only) =====================
 
   render() {
+    const elevationClass = normalizeCardElevation(this.elevation);
+
     return (
       <div
         class={{
           'card-container': true,
-          [`elevation-${this.elevation}`]: true,
+          [`elevation-${elevationClass}`]: true,
           'is-interactive': this.interactive,
           'is-glass': this.glass,
           'has-lift': this.lift,
@@ -59,7 +78,6 @@ export class QCard {
         role={this.interactive ? 'button' : undefined}
         onKeyDown={this.interactive ? this.handleKeyDown : undefined}
       >
-
         <div
           class={{
             'card-header': true,
