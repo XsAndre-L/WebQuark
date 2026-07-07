@@ -1,39 +1,79 @@
-import { Component, Prop, Element, State, Method, Host, Event, EventEmitter, Watch, AttachInternals, h } from '@stencil/core';
+import { AttachInternals, Component, Element, Event, EventEmitter, Host, Method, Prop, State, Watch, h } from '@stencil/core';
 import { formatCode } from '../../../utils/formatter';
 import { highlight as highlightSyntax } from '../../../utils/syntax';
 
 import type { QSyntaxBoxLanguage, QSyntaxBoxVariant } from './syntax-box.types';
+import { getSyntaxBoxEditorKeyAction } from './syntax-box.utils';
 
+/**
+ * Displays and optionally edits syntax-highlighted code, with form association in editable mode.
+ * @slot - Fallback content rendered when `code` is not provided.
+ * @slot actions - Additional actions rendered in the panel header.
+ */
 @Component({
   tag: 'q-syntax-box',
   styleUrl: 'syntax-box.css',
   shadow: {
-    delegatesFocus: true
+    delegatesFocus: true,
   },
   formAssociated: true,
 })
 export class QSyntaxBox {
+  // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Element() el!: HTMLElement;
-
-  @Prop() variant: QSyntaxBoxVariant = 'panel';
-  @Prop({ reflect: true }) name?: string;
-  @Prop() language: QSyntaxBoxLanguage = 'html';
-  @Prop({ mutable: true }) code?: string;
-  @Prop({ mutable: true }) value?: string;
-  @Prop() heading?: string;
-  @Prop() copyable: boolean = false;
-  @Prop() height?: string;
-  @Prop() editable: boolean = false;
-  @Prop({ reflect: true }) disabled: boolean = false;
-  @Prop({ reflect: true }) required: boolean = false;
 
   @AttachInternals() internals!: ElementInternals;
 
+  /** Visual presentation for the code box. */
+  @Prop() variant: QSyntaxBoxVariant = 'panel';
+
+  /** Form field name used when the component is editable. */
+  @Prop({ reflect: true }) name?: string;
+
+  /** Syntax language used for highlighting and formatting. */
+  @Prop() language: QSyntaxBoxLanguage = 'html';
+
+  /** Code content to display or edit. Kept in sync with `value`; prefer `code` for domain usage. */
+  @Prop({ mutable: true }) code?: string;
+
+  /** Form value alias for `code`. Set either `code` or `value`; the component mirrors them for compatibility. */
+  @Prop({ mutable: true }) value?: string;
+
+  /** Optional header text shown in the panel variant. */
+  @Prop() heading?: string;
+
+  /** Shows a copy action in the panel header. */
+  @Prop() copyable: boolean = false;
+
+  /** Explicit content height. Panel mode defaults to 110px; plain mode defaults to auto. */
+  @Prop() height?: string;
+
+  /** Enables the editable textarea overlay. */
+  @Prop({ reflect: true }) editable: boolean = false;
+
+  /** Disables editing and panel actions. */
+  @Prop({ reflect: true }) disabled: boolean = false;
+
+  /** Marks the editable textarea as required for form validation. */
+  @Prop({ reflect: true }) required: boolean = false;
+
+  /** Emitted when editable content is committed by the native change event or by formatting. */
   @Event() qChange!: EventEmitter<string>;
+
+  /** Emitted on each editable content input and after formatting. */
   @Event() qInput!: EventEmitter<string>;
 
-  private initialValue = '';
+  // ======================== [2] INTERNAL STATE & REFS ========================
+  @State() copied: boolean = false;
 
+  @State() copyFailed: boolean = false;
+
+  private initialValue = '';
+  private copiedTimeoutId?: ReturnType<typeof setTimeout>;
+  private scrollableEl?: HTMLQScrollableElement;
+  private preEl?: HTMLPreElement;
+
+  // ========================= [3] LIFECYCLE & WATCHERS =========================
   @Watch('code')
   watchCode(newCode: string) {
     let finalCode = newCode;
@@ -97,40 +137,68 @@ export class QSyntaxBox {
     this.syncFormValue(this.code);
   }
 
+  disconnectedCallback() {
+    this.clearCopiedTimeout();
+  }
+
   formResetCallback() {
     this.code = this.initialValue;
     this.value = this.initialValue;
     this.syncFormValue(this.code);
   }
 
+  // ========================== [4] EXPOSED METHODS ==========================
+  /** Programmatically scrolls the read-only code body to the bottom when it is wrapped by q-scrollable. */
+  @Method()
+  async scrollToBottom() {
+    await this.scrollableEl?.scrollToBottom();
+  }
+
+  // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
   private syncFormValue(value: string | undefined) {
     if (!this.internals || typeof this.internals.setFormValue !== 'function') return;
     this.internals.setFormValue(this.editable ? value || '' : null);
   }
 
-  @State() copied: boolean = false;
-
-  private scrollableEl?: any;
-
-  @Method()
-  async scrollToBottom() {
-    if (this.scrollableEl && typeof this.scrollableEl.scrollToBottom === 'function') {
-      await this.scrollableEl.scrollToBottom();
+  private clearCopiedTimeout() {
+    if (this.copiedTimeoutId !== undefined) {
+      clearTimeout(this.copiedTimeoutId);
+      this.copiedTimeoutId = undefined;
     }
   }
 
-  private copyCode = () => {
-    if (this.disabled) return;
-    const codeToCopy = this.code !== undefined ? this.code : this.el.textContent || '';
-    navigator.clipboard.writeText(codeToCopy).then(() => {
-      this.copied = true;
-      setTimeout(() => {
-        this.copied = false;
-      }, 1500);
-    });
-  };
+  private scheduleCopyStateReset() {
+    this.clearCopiedTimeout();
+    this.copiedTimeoutId = setTimeout(() => {
+      this.copied = false;
+      this.copyFailed = false;
+      this.copiedTimeoutId = undefined;
+    }, 1500);
+  }
 
-  private preEl?: HTMLPreElement;
+  private copyCode = async () => {
+    if (this.disabled) return;
+
+    const codeToCopy = this.code !== undefined ? this.code : this.el.textContent || '';
+    try {
+      if (!navigator.clipboard || typeof navigator.clipboard.writeText !== 'function') {
+        throw new Error('Clipboard API unavailable');
+      }
+
+      await navigator.clipboard.writeText(codeToCopy);
+      if (!this.el.isConnected) return;
+
+      this.copied = true;
+      this.copyFailed = false;
+    } catch {
+      if (!this.el.isConnected) return;
+
+      this.copied = false;
+      this.copyFailed = true;
+    }
+
+    this.scheduleCopyStateReset();
+  };
 
   private handleScroll = (e: Event) => {
     const textarea = e.target as HTMLTextAreaElement;
@@ -155,23 +223,26 @@ export class QSyntaxBox {
   };
 
   private handleKeyDown = (ev: KeyboardEvent) => {
-    if (ev.key === 'Tab') {
-      ev.preventDefault();
-      const textarea = ev.target as HTMLTextAreaElement;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const val = textarea.value;
+    const textarea = ev.target as HTMLTextAreaElement;
+    const action = getSyntaxBoxEditorKeyAction(ev, textarea.value, textarea.selectionStart, textarea.selectionEnd);
 
-      const spaces = '  ';
-      const newValue = val.substring(0, start) + spaces + val.substring(end);
-      this.code = newValue;
-      this.value = newValue;
-      this.qInput.emit(this.code);
-
-      requestAnimationFrame(() => {
-        textarea.selectionStart = textarea.selectionEnd = start + spaces.length;
-      });
+    if (action.type === 'none') {
+      return;
     }
+
+    if (action.type === 'blur') {
+      textarea.blur();
+      return;
+    }
+
+    ev.preventDefault();
+    this.code = action.value;
+    this.value = action.value;
+    this.qInput.emit(this.code);
+
+    requestAnimationFrame(() => {
+      textarea.selectionStart = textarea.selectionEnd = action.caret;
+    });
   };
 
   private handleFormat = () => {
@@ -185,48 +256,61 @@ export class QSyntaxBox {
     }
   };
 
+  private getCopyTooltipContent() {
+    if (this.copyFailed) return 'Copy failed';
+    if (this.copied) return 'Copied!';
+    return 'Copy';
+  }
+
+  // ===================== [6] RENDER (Visual Template Only) =====================
   render() {
-    const resolvedHeight = this.height !== undefined ? this.height : (this.variant === 'panel' ? '110px' : 'auto');
+    const resolvedHeight = this.height !== undefined ? this.height : this.variant === 'panel' ? '110px' : 'auto';
     const isScrollable = resolvedHeight !== 'auto' && resolvedHeight !== '';
 
-    const content = this.code !== undefined ? (
-      this.editable ? (
-        <div class="editor-area" style={{ height: resolvedHeight }}>
-          <textarea
-            class="editor-textarea"
-            value={this.code}
-            name={this.name}
-            disabled={this.disabled}
-            required={this.required}
-            onInput={this.handleInput}
-            onChange={this.handleChange}
-            onScroll={this.handleScroll}
-            onKeyDown={this.handleKeyDown}
-          />
-          <pre class="code-body" ref={(el) => (this.preEl = el as HTMLPreElement)}>
+    const content =
+      this.code !== undefined ? (
+        this.editable ? (
+          <div class="editor-area" style={{ height: resolvedHeight }}>
+            <span id="syntax-box-keyboard-help" class="visually-hidden">
+              Press Escape to leave the code editor. Press Tab to insert two spaces.
+            </span>
+            <textarea
+              class="editor-textarea"
+              value={this.code}
+              name={this.name}
+              disabled={this.disabled}
+              required={this.required}
+              aria-describedby="syntax-box-keyboard-help"
+              onInput={this.handleInput}
+              onChange={this.handleChange}
+              onScroll={this.handleScroll}
+              onKeyDown={this.handleKeyDown}
+            />
+            <pre class="code-body" ref={el => (this.preEl = el as HTMLPreElement)}>
+              <code innerHTML={highlightSyntax(this.code, this.language)}></code>
+            </pre>
+          </div>
+        ) : (
+          <pre class="code-body">
             <code innerHTML={highlightSyntax(this.code, this.language)}></code>
           </pre>
-        </div>
+        )
       ) : (
-        <pre class="code-body">
-          <code innerHTML={highlightSyntax(this.code, this.language)}></code>
-        </pre>
-      )
-    ) : (
-      <slot></slot>
-    );
+        <slot></slot>
+      );
 
-    const bodyContent = (isScrollable && !this.editable) ? (
-      <q-scrollable height={resolvedHeight} ref={(el) => (this.scrollableEl = el)}>
-        {content}
-      </q-scrollable>
-    ) : (
-      content
-    );
+    const bodyContent =
+      isScrollable && !this.editable ? (
+        <q-scrollable height={resolvedHeight} ref={el => (this.scrollableEl = el as HTMLQScrollableElement)}>
+          {content}
+        </q-scrollable>
+      ) : (
+        content
+      );
 
     if (this.variant === 'panel') {
       return (
-        <Host class={{ 'q-syntax-box-panel': true, 'is-editable': this.editable, 'is-disabled': this.disabled }}>
+        <Host class={{ 'q-syntax-box-panel': true }}>
           <div class="panel-container">
             <div class="panel-header">
               <span>{this.heading}</span>
@@ -240,8 +324,8 @@ export class QSyntaxBox {
                 )}
                 {this.copyable && (
                   <q-button variant="ghost" size="sm" onClick={this.copyCode} disabled={this.disabled}>
-                    <q-icon slot="icon-left" lib="local" name={this.copied ? "check" : "copy"} size="sm"></q-icon>
-                    <q-tooltip slot="icon-left" position="bottom" content={this.copied ? "Copied!" : "Copy"}></q-tooltip>
+                    <q-icon slot="icon-left" lib="local" name={this.copied ? 'check' : 'copy'} size="sm"></q-icon>
+                    <q-tooltip slot="icon-left" position="bottom" content={this.getCopyTooltipContent()}></q-tooltip>
                   </q-button>
                 )}
               </div>
@@ -253,14 +337,9 @@ export class QSyntaxBox {
     }
 
     return (
-      <Host class={{ 'q-syntax-box-plain': true, 'is-editable': this.editable, 'is-disabled': this.disabled }}>
-        <div class="plain-container">
-          {bodyContent}
-        </div>
+      <Host class={{ 'q-syntax-box-plain': true }}>
+        <div class="plain-container">{bodyContent}</div>
       </Host>
     );
   }
 }
-
-
-

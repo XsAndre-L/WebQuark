@@ -791,34 +791,61 @@ export namespace Components {
          */
         "status": QStepDiagramItemStatus;
     }
+    /**
+     * Displays and optionally edits syntax-highlighted code, with form association in editable mode.
+     */
     interface QSyntaxBox {
+        /**
+          * Code content to display or edit. Kept in sync with `value`; prefer `code` for domain usage.
+         */
         "code"?: string;
         /**
+          * Shows a copy action in the panel header.
           * @default false
          */
         "copyable": boolean;
         /**
+          * Disables editing and panel actions.
           * @default false
          */
         "disabled": boolean;
         /**
+          * Enables the editable textarea overlay.
           * @default false
          */
         "editable": boolean;
+        /**
+          * Optional header text shown in the panel variant.
+         */
         "heading"?: string;
+        /**
+          * Explicit content height. Panel mode defaults to 110px; plain mode defaults to auto.
+         */
         "height"?: string;
         /**
+          * Syntax language used for highlighting and formatting.
           * @default 'html'
          */
         "language": QSyntaxBoxLanguage;
+        /**
+          * Form field name used when the component is editable.
+         */
         "name"?: string;
         /**
+          * Marks the editable textarea as required for form validation.
           * @default false
          */
         "required": boolean;
+        /**
+          * Programmatically scrolls the read-only code body to the bottom when it is wrapped by q-scrollable.
+         */
         "scrollToBottom": () => Promise<void>;
+        /**
+          * Form value alias for `code`. Set either `code` or `value`; the component mirrors them for compatibility.
+         */
         "value"?: string;
         /**
+          * Visual presentation for the code box.
           * @default 'panel'
          */
         "variant": QSyntaxBoxVariant;
@@ -1342,6 +1369,9 @@ declare global {
         "qChange": string;
         "qInput": string;
     }
+    /**
+     * Displays and optionally edits syntax-highlighted code, with form association in editable mode.
+     */
     interface HTMLQSyntaxBoxElement extends Components.QSyntaxBox, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQSyntaxBoxElementEventMap>(type: K, listener: (this: HTMLQSyntaxBoxElement, ev: QSyntaxBoxCustomEvent<HTMLQSyntaxBoxElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2277,17 +2307,26 @@ declare namespace LocalJSX {
          */
         "status"?: QStepDiagramItemStatus;
     }
+    /**
+     * Displays and optionally edits syntax-highlighted code, with form association in editable mode.
+     */
     interface QSyntaxBox {
+        /**
+          * Code content to display or edit. Kept in sync with `value`; prefer `code` for domain usage.
+         */
         "code"?: string;
         /**
+          * Shows a copy action in the panel header.
           * @default false
          */
         "copyable"?: boolean;
         /**
+          * Disables editing and panel actions.
           * @default false
          */
         "disabled"?: boolean;
         /**
+          * Enables the editable textarea overlay.
           * @default false
          */
         "editable"?: boolean;
@@ -2295,21 +2334,42 @@ declare namespace LocalJSX {
           * The `id` of a `<form>` element to associate this element with.
          */
         "form"?: string;
+        /**
+          * Optional header text shown in the panel variant.
+         */
         "heading"?: string;
+        /**
+          * Explicit content height. Panel mode defaults to 110px; plain mode defaults to auto.
+         */
         "height"?: string;
         /**
+          * Syntax language used for highlighting and formatting.
           * @default 'html'
          */
         "language"?: QSyntaxBoxLanguage;
+        /**
+          * Form field name used when the component is editable.
+         */
         "name"?: string;
+        /**
+          * Emitted when editable content is committed by the native change event or by formatting.
+         */
         "onQChange"?: (event: QSyntaxBoxCustomEvent<string>) => void;
+        /**
+          * Emitted on each editable content input and after formatting.
+         */
         "onQInput"?: (event: QSyntaxBoxCustomEvent<string>) => void;
         /**
+          * Marks the editable textarea as required for form validation.
           * @default false
          */
         "required"?: boolean;
+        /**
+          * Form value alias for `code`. Set either `code` or `value`; the component mirrors them for compatibility.
+         */
         "value"?: string;
         /**
+          * Visual presentation for the code box.
           * @default 'panel'
          */
         "variant"?: QSyntaxBoxVariant;
@@ -2754,6 +2814,9 @@ declare module "@stencil/core" {
             "q-sidepanel": LocalJSX.IntrinsicElements["q-sidepanel"] & JSXBase.HTMLAttributes<HTMLQSidepanelElement>;
             "q-step-diagram": LocalJSX.IntrinsicElements["q-step-diagram"] & JSXBase.HTMLAttributes<HTMLQStepDiagramElement>;
             "q-step-diagram-item": LocalJSX.IntrinsicElements["q-step-diagram-item"] & JSXBase.HTMLAttributes<HTMLQStepDiagramItemElement>;
+            /**
+             * Displays and optionally edits syntax-highlighted code, with form association in editable mode.
+             */
             "q-syntax-box": LocalJSX.IntrinsicElements["q-syntax-box"] & JSXBase.HTMLAttributes<HTMLQSyntaxBoxElement>;
             "q-textarea": LocalJSX.IntrinsicElements["q-textarea"] & JSXBase.HTMLAttributes<HTMLQTextareaElement>;
             /**
