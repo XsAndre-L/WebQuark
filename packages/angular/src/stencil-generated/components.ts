@@ -178,14 +178,14 @@ export declare interface QChip extends Components.QChip {
 
 @ProxyCmp({
   defineCustomElementFn: defineQCircularProgress,
-  inputs: ['indeterminate', 'label', 'size', 'value']
+  inputs: ['ariaLabel', 'indeterminate', 'label', 'size', 'value']
 })
 @Component({
   selector: 'q-circular-progress',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['indeterminate', 'label', 'size', 'value'],
+  inputs: ['ariaLabel', 'indeterminate', 'label', 'size', 'value'],
 })
 export class QCircularProgress {
   protected el: HTMLQCircularProgressElement;

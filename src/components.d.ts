@@ -213,17 +213,30 @@ export namespace Components {
          */
         "variant": QChipVariant;
     }
+    /**
+     * Circular progress indicator for determinate percentages or indeterminate loading states.
+     */
     interface QCircularProgress {
         /**
+          * Accessible name for the progressbar.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Shows a spinning indeterminate state instead of a fixed progress value.
           * @default false
          */
         "indeterminate": boolean;
+        /**
+          * Optional visible center text. Defaults to the clamped percentage.
+         */
         "label"?: string;
         /**
+          * Visual size preset for the SVG, stroke width, and label text.
           * @default 'md'
          */
         "size": QCircularProgressSize;
         /**
+          * Progress percentage from 0 to 100; values outside that range are clamped.
           * @default 0
          */
         "value": number;
@@ -1103,6 +1116,9 @@ declare global {
         prototype: HTMLQChipElement;
         new (): HTMLQChipElement;
     };
+    /**
+     * Circular progress indicator for determinate percentages or indeterminate loading states.
+     */
     interface HTMLQCircularProgressElement extends Components.QCircularProgress, HTMLStencilElement {
     }
     var HTMLQCircularProgressElement: {
@@ -1666,17 +1682,30 @@ declare namespace LocalJSX {
          */
         "variant"?: QChipVariant;
     }
+    /**
+     * Circular progress indicator for determinate percentages or indeterminate loading states.
+     */
     interface QCircularProgress {
         /**
+          * Accessible name for the progressbar.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Shows a spinning indeterminate state instead of a fixed progress value.
           * @default false
          */
         "indeterminate"?: boolean;
+        /**
+          * Optional visible center text. Defaults to the clamped percentage.
+         */
         "label"?: string;
         /**
+          * Visual size preset for the SVG, stroke width, and label text.
           * @default 'md'
          */
         "size"?: QCircularProgressSize;
         /**
+          * Progress percentage from 0 to 100; values outside that range are clamped.
           * @default 0
          */
         "value"?: number;
@@ -2544,6 +2573,7 @@ declare namespace LocalJSX {
     interface QCircularProgressAttributes {
         "value": number;
         "label": string;
+        "ariaLabel": string;
         "indeterminate": boolean;
         "size": QCircularProgressSize;
     }
@@ -2786,6 +2816,9 @@ declare module "@stencil/core" {
              * Compact label, link, filter, or removable token.
              */
             "q-chip": LocalJSX.IntrinsicElements["q-chip"] & JSXBase.HTMLAttributes<HTMLQChipElement>;
+            /**
+             * Circular progress indicator for determinate percentages or indeterminate loading states.
+             */
             "q-circular-progress": LocalJSX.IntrinsicElements["q-circular-progress"] & JSXBase.HTMLAttributes<HTMLQCircularProgressElement>;
             /**
              * Data grid with optional toolbar, search, row activation, and multi-row selection.
