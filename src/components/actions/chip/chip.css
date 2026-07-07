@@ -150,6 +150,27 @@
   border-color: var(--q-color-primary, #60a5fa);
 }
 
+.variant-success.is-selected {
+  border-color: var(--q-chip-success-selected-border-color, var(--q-color-success, #34d399));
+  color: var(--q-chip-success-selected-fg, var(--q-color-success, #34d399));
+  background: rgba(52, 211, 153, 0.16);
+  background: var(--q-chip-success-selected-bg, color-mix(in srgb, var(--q-color-success, #34d399) 16%, transparent));
+}
+
+.variant-warning.is-selected {
+  border-color: var(--q-chip-warning-selected-border-color, var(--q-color-warning, #fbbf24));
+  color: var(--q-chip-warning-selected-fg, var(--q-color-warning, #fbbf24));
+  background: rgba(251, 191, 36, 0.18);
+  background: var(--q-chip-warning-selected-bg, color-mix(in srgb, var(--q-color-warning, #fbbf24) 18%, transparent));
+}
+
+.variant-danger.is-selected {
+  border-color: var(--q-chip-danger-selected-border-color, var(--q-color-danger, #f87171));
+  color: var(--q-chip-danger-selected-fg, var(--q-color-danger, #f87171));
+  background: rgba(248, 113, 113, 0.16);
+  background: var(--q-chip-danger-selected-bg, color-mix(in srgb, var(--q-color-danger, #f87171) 16%, transparent));
+}
+
 .remove-button {
   display: inline-flex;
   align-items: center;

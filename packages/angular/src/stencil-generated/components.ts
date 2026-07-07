@@ -157,13 +157,21 @@ import type { QChipCustomEvent } from '@webquark/core/components';
 import type { QChipRemoveDetail as IQChipQChipRemoveDetail } from '@webquark/core/components';
 
 export declare interface QChip extends Components.QChip {
-
+  /**
+   * Emitted when an interactive chip is clicked.
+   */
   qClick: EventEmitter<QChipCustomEvent<MouseEvent>>;
-
+  /**
+   * Emitted when the remove button is clicked.
+   */
   qRemove: EventEmitter<QChipCustomEvent<IQChipQChipRemoveDetail>>;
-
+  /**
+   * Emitted when the interactive chip or remove button receives focus.
+   */
   qFocus: EventEmitter<QChipCustomEvent<FocusEvent>>;
-
+  /**
+   * Emitted when the interactive chip or remove button loses focus.
+   */
   qBlur: EventEmitter<QChipCustomEvent<FocusEvent>>;
 }
 

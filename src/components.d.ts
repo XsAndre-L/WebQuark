@@ -154,34 +154,61 @@ export namespace Components {
         "snapAlignment": QCarouselSnapAlignment;
         "updateLimits": () => Promise<void>;
     }
+    /**
+     * Compact label, link, filter, or removable token.
+     */
     interface QChip {
         /**
+          * Renders the whole chip as a button when no href is set. Ignored when removable.
           * @default false
          */
         "clickable": boolean;
         /**
+          * Disables interaction and removal.
           * @default false
          */
         "disabled": boolean;
+        /**
+          * Download filename or boolean download hint for link chips.
+         */
         "download"?: string;
+        /**
+          * URL to render the chip as a link. Ignored when removable to avoid nested interactive controls.
+         */
         "href"?: string;
+        /**
+          * Visible label text. Also used in qRemove detail and the remove button accessible name.
+         */
         "label"?: string;
+        /**
+          * Link rel value. Defaults to noopener noreferrer for target="_blank".
+         */
         "rel"?: string;
         /**
+          * Adds a remove button. Removable chips render as non-interactive containers to avoid nested controls.
           * @default false
          */
         "removable": boolean;
         /**
+          * Marks the chip as selected.
           * @default false
          */
         "selected": boolean;
         /**
+          * Chip size.
           * @default 'md'
          */
         "size": QChipSize;
+        /**
+          * Link target used when `href` is set.
+         */
         "target"?: QChipTarget;
+        /**
+          * Consumer-provided identifier included in qRemove detail.
+         */
         "value"?: string;
         /**
+          * Visual style of the chip.
           * @default 'neutral'
          */
         "variant": QChipVariant;
@@ -979,6 +1006,9 @@ declare global {
         "qFocus": FocusEvent;
         "qBlur": FocusEvent;
     }
+    /**
+     * Compact label, link, filter, or removable token.
+     */
     interface HTMLQChipElement extends Components.QChip, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQChipElementEventMap>(type: K, listener: (this: HTMLQChipElement, ev: QChipCustomEvent<HTMLQChipElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1466,38 +1496,77 @@ declare namespace LocalJSX {
          */
         "snapAlignment"?: QCarouselSnapAlignment;
     }
+    /**
+     * Compact label, link, filter, or removable token.
+     */
     interface QChip {
         /**
+          * Renders the whole chip as a button when no href is set. Ignored when removable.
           * @default false
          */
         "clickable"?: boolean;
         /**
+          * Disables interaction and removal.
           * @default false
          */
         "disabled"?: boolean;
+        /**
+          * Download filename or boolean download hint for link chips.
+         */
         "download"?: string;
+        /**
+          * URL to render the chip as a link. Ignored when removable to avoid nested interactive controls.
+         */
         "href"?: string;
+        /**
+          * Visible label text. Also used in qRemove detail and the remove button accessible name.
+         */
         "label"?: string;
+        /**
+          * Emitted when the interactive chip or remove button loses focus.
+         */
         "onQBlur"?: (event: QChipCustomEvent<FocusEvent>) => void;
+        /**
+          * Emitted when an interactive chip is clicked.
+         */
         "onQClick"?: (event: QChipCustomEvent<MouseEvent>) => void;
+        /**
+          * Emitted when the interactive chip or remove button receives focus.
+         */
         "onQFocus"?: (event: QChipCustomEvent<FocusEvent>) => void;
+        /**
+          * Emitted when the remove button is clicked.
+         */
         "onQRemove"?: (event: QChipCustomEvent<QChipRemoveDetail>) => void;
+        /**
+          * Link rel value. Defaults to noopener noreferrer for target="_blank".
+         */
         "rel"?: string;
         /**
+          * Adds a remove button. Removable chips render as non-interactive containers to avoid nested controls.
           * @default false
          */
         "removable"?: boolean;
         /**
+          * Marks the chip as selected.
           * @default false
          */
         "selected"?: boolean;
         /**
+          * Chip size.
           * @default 'md'
          */
         "size"?: QChipSize;
+        /**
+          * Link target used when `href` is set.
+         */
         "target"?: QChipTarget;
+        /**
+          * Consumer-provided identifier included in qRemove detail.
+         */
         "value"?: string;
         /**
+          * Visual style of the chip.
           * @default 'neutral'
          */
         "variant"?: QChipVariant;
@@ -2517,6 +2586,9 @@ declare module "@stencil/core" {
             "q-button": LocalJSX.IntrinsicElements["q-button"] & JSXBase.HTMLAttributes<HTMLQButtonElement>;
             "q-card": LocalJSX.IntrinsicElements["q-card"] & JSXBase.HTMLAttributes<HTMLQCardElement>;
             "q-carousel": LocalJSX.IntrinsicElements["q-carousel"] & JSXBase.HTMLAttributes<HTMLQCarouselElement>;
+            /**
+             * Compact label, link, filter, or removable token.
+             */
             "q-chip": LocalJSX.IntrinsicElements["q-chip"] & JSXBase.HTMLAttributes<HTMLQChipElement>;
             "q-circular-progress": LocalJSX.IntrinsicElements["q-circular-progress"] & JSXBase.HTMLAttributes<HTMLQCircularProgressElement>;
             "q-data-table": LocalJSX.IntrinsicElements["q-data-table"] & JSXBase.HTMLAttributes<HTMLQDataTableElement>;

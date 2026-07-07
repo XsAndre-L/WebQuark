@@ -7,5 +7,8 @@ export interface QChipRemoveDetail {
    * Consumer-provided identifier for the removed chip.
    */
   value?: string;
+  /**
+   * Display label of the removed chip, mirroring the label prop at removal time.
+   */
   label?: string;
 }
