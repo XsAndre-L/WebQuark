@@ -347,14 +347,14 @@ export declare interface QForm extends Components.QForm {
 
 @ProxyCmp({
   defineCustomElementFn: defineQIcon,
-  inputs: ['color', 'lib', 'localPath', 'name', 'size']
+  inputs: ['color', 'fetchTimeout', 'label', 'lib', 'libVersion', 'localPath', 'name', 'size']
 })
 @Component({
   selector: 'q-icon',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['color', 'lib', 'localPath', 'name', 'size'],
+  inputs: ['color', 'fetchTimeout', 'label', 'lib', 'libVersion', 'localPath', 'name', 'size'],
 })
 export class QIcon {
   protected el: HTMLQIconElement;

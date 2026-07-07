@@ -363,10 +363,23 @@ export namespace Components {
          */
         "color": QIconColor;
         /**
+          * Fetch timeout in milliseconds for SVG icon requests.
+          * @default 8000
+         */
+        "fetchTimeout": number;
+        /**
+          * Accessible name for meaningful icons. Icons without a label are hidden from assistive technology.
+         */
+        "label"?: string;
+        /**
           * The library to load the icon from. Options: 'lucide', 'font-awesome', 'local', or a custom base URL / template URL.
           * @default 'lucide'
          */
         "lib": QIconLibrary;
+        /**
+          * Optional version override for built-in remote icon libraries.
+         */
+        "libVersion"?: string;
         /**
           * The default path for local assets when `lib` is set to 'local'.
           * @default '/assets/icons/'
@@ -375,7 +388,7 @@ export namespace Components {
         /**
           * The name of the icon (e.g., 'settings', 'heart', or a filename like 'logo.png').
          */
-        "name": QIconName;
+        "name"?: QIconName;
         /**
           * The size of the icon. Can be a preset alias ('sm', 'md', 'lg'), a number (pixels), or any valid CSS size string (e.g., '1.5rem').
           * @default 'md'
@@ -1619,10 +1632,23 @@ declare namespace LocalJSX {
          */
         "color"?: QIconColor;
         /**
+          * Fetch timeout in milliseconds for SVG icon requests.
+          * @default 8000
+         */
+        "fetchTimeout"?: number;
+        /**
+          * Accessible name for meaningful icons. Icons without a label are hidden from assistive technology.
+         */
+        "label"?: string;
+        /**
           * The library to load the icon from. Options: 'lucide', 'font-awesome', 'local', or a custom base URL / template URL.
           * @default 'lucide'
          */
         "lib"?: QIconLibrary;
+        /**
+          * Optional version override for built-in remote icon libraries.
+         */
+        "libVersion"?: string;
         /**
           * The default path for local assets when `lib` is set to 'local'.
           * @default '/assets/icons/'
@@ -2199,9 +2225,12 @@ declare namespace LocalJSX {
     interface QIconAttributes {
         "name": QIconName;
         "lib": QIconLibrary;
-        "size": QIconSize;
+        "size": string;
         "color": QIconColor;
         "localPath": QIconLocalPath;
+        "libVersion": string;
+        "fetchTimeout": number;
+        "label": string;
     }
     interface QInputAttributes {
         "value": string;
