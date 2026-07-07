@@ -682,42 +682,60 @@ export namespace Components {
          */
         "variant": QLinkVariant;
     }
+    /**
+     * Responsive site navigation with optional brand content, actions, and mobile menu.
+     */
     interface QNavbar {
         /**
+          * Value or href of the currently active navigation item.
           * @default ''
          */
         "activeValue": string;
         /**
+          * Renders a bottom border on the navbar.
           * @default true
          */
         "bordered": boolean;
+        /**
+          * Brand text rendered inside the brand link.
+         */
         "brand"?: string;
         /**
+          * URL used by the brand link.
           * @default '/'
          */
         "brandHref": string;
         /**
+          * Uses the compact navbar height and padding.
           * @default false
          */
         "compact": boolean;
         /**
+          * Navigation items rendered in the desktop and mobile menus.
           * @default []
          */
         "items": NavbarItem[] | string;
         /**
+          * Accessible text for a logo-only brand image.
           * @default ''
          */
         "logoAlt": string;
+        /**
+          * Brand logo image URL.
+         */
         "logoSrc"?: string;
         /**
+          * Accessible label for the mobile menu toggle button.
           * @default 'Menu'
          */
         "mobileLabel": string;
         /**
+          * Keeps the navbar pinned to the top of its scroll container.
           * @default false
          */
         "sticky": boolean;
         /**
+          * Removes the navbar background when true.
           * @default false
          */
         "transparent": boolean;
@@ -1443,6 +1461,9 @@ declare global {
         "qSelect": NavbarSelectDetail;
         "qMenuToggle": boolean;
     }
+    /**
+     * Responsive site navigation with optional brand content, actions, and mobile menu.
+     */
     interface HTMLQNavbarElement extends Components.QNavbar, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQNavbarElementEventMap>(type: K, listener: (this: HTMLQNavbarElement, ev: QNavbarCustomEvent<HTMLQNavbarElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2394,44 +2415,68 @@ declare namespace LocalJSX {
          */
         "variant"?: QLinkVariant;
     }
+    /**
+     * Responsive site navigation with optional brand content, actions, and mobile menu.
+     */
     interface QNavbar {
         /**
+          * Value or href of the currently active navigation item.
           * @default ''
          */
         "activeValue"?: string;
         /**
+          * Renders a bottom border on the navbar.
           * @default true
          */
         "bordered"?: boolean;
+        /**
+          * Brand text rendered inside the brand link.
+         */
         "brand"?: string;
         /**
+          * URL used by the brand link.
           * @default '/'
          */
         "brandHref"?: string;
         /**
+          * Uses the compact navbar height and padding.
           * @default false
          */
         "compact"?: boolean;
         /**
+          * Navigation items rendered in the desktop and mobile menus.
           * @default []
          */
         "items"?: NavbarItem[] | string;
         /**
+          * Accessible text for a logo-only brand image.
           * @default ''
          */
         "logoAlt"?: string;
+        /**
+          * Brand logo image URL.
+         */
         "logoSrc"?: string;
         /**
+          * Accessible label for the mobile menu toggle button.
           * @default 'Menu'
          */
         "mobileLabel"?: string;
+        /**
+          * Emitted when the mobile menu opens or closes.
+         */
         "onQMenuToggle"?: (event: QNavbarCustomEvent<boolean>) => void;
+        /**
+          * Emitted when a navigation item is selected.
+         */
         "onQSelect"?: (event: QNavbarCustomEvent<NavbarSelectDetail>) => void;
         /**
+          * Keeps the navbar pinned to the top of its scroll container.
           * @default false
          */
         "sticky"?: boolean;
         /**
+          * Removes the navbar background when true.
           * @default false
          */
         "transparent"?: boolean;
@@ -3261,6 +3306,9 @@ declare module "@stencil/core" {
              * Inline link with disabled handling, external-link affordances, and optional icon slots.
              */
             "q-link": LocalJSX.IntrinsicElements["q-link"] & JSXBase.HTMLAttributes<HTMLQLinkElement>;
+            /**
+             * Responsive site navigation with optional brand content, actions, and mobile menu.
+             */
             "q-navbar": LocalJSX.IntrinsicElements["q-navbar"] & JSXBase.HTMLAttributes<HTMLQNavbarElement>;
             "q-panel": LocalJSX.IntrinsicElements["q-panel"] & JSXBase.HTMLAttributes<HTMLQPanelElement>;
             /**

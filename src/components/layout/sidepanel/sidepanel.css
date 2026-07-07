@@ -296,6 +296,8 @@
 }
 
 .nav-item {
+  --q-sidepanel-nav-depth-color: var(--q-sidepanel-nav-depth-primary-color, var(--q-fg-base, #f9fafb));
+
   display: flex;
   align-items: center;
   gap: 10px;
@@ -308,27 +310,33 @@
   font-size: 0.875rem;
   font-weight: 400;
   line-height: 1.4;
-  color: #9ca3af; /* static fallback */
-  color: var(--q-fg-muted, #9ca3af);
+  color: #f9fafb; /* static fallback */
+  color: var(--q-sidepanel-nav-depth-color);
   transition: background 80ms ease-out, color 80ms ease-out;
   outline: none;
   position: relative;
+}
+
+.nav-item[data-depth-tone='primary'] {
+  --q-sidepanel-nav-depth-color: var(--q-sidepanel-nav-depth-primary-color, var(--q-fg-base, #f9fafb));
+}
+
+.nav-item[data-depth-tone='secondary'] {
+  --q-sidepanel-nav-depth-color: var(--q-sidepanel-nav-depth-secondary-color, var(--q-fg-muted, #9ca3af));
 }
 
 .nav-item:hover,
 .nav-item:focus-visible {
   background: rgba(255, 255, 255, 0.05); /* static fallback */
   background: var(--q-bg-surface-2, rgba(255, 255, 255, 0.05));
-  color: #f9fafb; /* static fallback */
-  color: var(--q-fg-base, #f9fafb);
+  color: var(--q-sidepanel-nav-depth-color);
 }
 
 /* Active leaf item */
 .nav-item--active {
   background: rgba(99, 102, 241, 0.12); /* static fallback */
   background: color-mix(in srgb, var(--q-color-primary, #6366f1) 12%, transparent);
-  color: #818cf8; /* static fallback */
-  color: var(--q-color-primary, #818cf8);
+  color: var(--q-sidepanel-nav-depth-color);
   font-weight: 500;
 }
 
@@ -348,8 +356,7 @@
 .nav-item--active:focus-visible {
   background: rgba(99, 102, 241, 0.18); /* static fallback */
   background: color-mix(in srgb, var(--q-color-primary, #6366f1) 18%, transparent);
-  color: #a5b4fc; /* static fallback */
-  color: color-mix(in srgb, var(--q-color-primary, #6366f1) 80%, white);
+  color: var(--q-sidepanel-nav-depth-color);
 }
 
 /* Parent group label */
@@ -358,21 +365,19 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #6b7280; /* static fallback */
-  color: var(--q-fg-subtle, #6b7280);
+  color: var(--q-sidepanel-nav-depth-color);
 }
 
 .nav-item--parent:hover,
 .nav-item--parent:focus-visible {
-  color: #9ca3af; /* static fallback */
-  color: var(--q-fg-muted, #9ca3af);
+  color: var(--q-sidepanel-nav-depth-color);
 }
 
 /* ── Icons ───────────────────────────────────────────────────────────────── */
 
 .nav-item__icon {
   flex-shrink: 0;
-  opacity: 0.7;
+  opacity: var(--q-sidepanel-nav-icon-opacity, 1);
   transition: opacity 80ms ease-out;
 }
 

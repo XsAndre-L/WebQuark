@@ -8,6 +8,7 @@ export function renderNavItems(options: RenderNavItemsOptions): any[] {
     const hasChildren = item.children && item.children.length > 0;
     const isExpanded = expandedGroups.has(item.value);
     const isActive = !hasChildren && item.value === activeValue;
+    const depthTone = depth % 2 === 0 ? 'primary' : 'secondary';
 
     return (
       <div class="nav-item-group" key={item.value}>
@@ -17,6 +18,8 @@ export function renderNavItems(options: RenderNavItemsOptions): any[] {
             'nav-item--active': isActive,
             'nav-item--parent': hasChildren,
           }}
+          data-depth={depth}
+          data-depth-tone={depthTone}
           style={{ paddingLeft: `${16 + depth * 16}px` }}
           role="button"
           tabindex={0}
