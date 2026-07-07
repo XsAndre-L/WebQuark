@@ -755,7 +755,7 @@ export namespace Components {
         /**
           * The text content to display inside the tooltip.
          */
-        "content": string;
+        "content"?: string;
         /**
           * The delay in milliseconds before the tooltip shows up.
           * @default 200
