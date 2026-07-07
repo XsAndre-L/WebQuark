@@ -799,16 +799,22 @@ export namespace Components {
          */
         "layout": QStepDiagramLayout;
     }
+    /**
+     * Interactive step item for q-step-diagram sequences.
+     */
     interface QStepDiagramItem {
         /**
+          * Layout inherited from q-step-diagram and reflected for host styling.
           * @default 'vertical'
          */
         "layout": QStepDiagramItemLayout;
         /**
+          * Connector line style shown after the step.
           * @default 'solid'
          */
         "lineStyle": QStepDiagramItemLineStyle;
         /**
+          * Visual and semantic state of the step.
           * @default 'completed'
          */
         "status": QStepDiagramItemStatus;
@@ -1379,6 +1385,9 @@ declare global {
     interface HTMLQStepDiagramItemElementEventMap {
         "qItemClick": void;
     }
+    /**
+     * Interactive step item for q-step-diagram sequences.
+     */
     interface HTMLQStepDiagramItemElement extends Components.QStepDiagramItem, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQStepDiagramItemElementEventMap>(type: K, listener: (this: HTMLQStepDiagramItemElement, ev: QStepDiagramItemCustomEvent<HTMLQStepDiagramItemElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2342,17 +2351,26 @@ declare namespace LocalJSX {
          */
         "layout"?: QStepDiagramLayout;
     }
+    /**
+     * Interactive step item for q-step-diagram sequences.
+     */
     interface QStepDiagramItem {
         /**
+          * Layout inherited from q-step-diagram and reflected for host styling.
           * @default 'vertical'
          */
         "layout"?: QStepDiagramItemLayout;
         /**
+          * Connector line style shown after the step.
           * @default 'solid'
          */
         "lineStyle"?: QStepDiagramItemLineStyle;
+        /**
+          * Emitted when the focusable step content is clicked or activated with Enter/Space.
+         */
         "onQItemClick"?: (event: QStepDiagramItemCustomEvent<void>) => void;
         /**
+          * Visual and semantic state of the step.
           * @default 'completed'
          */
         "status"?: QStepDiagramItemStatus;
@@ -2871,6 +2889,9 @@ declare module "@stencil/core" {
              * Groups step diagram items into a vertical or horizontal sequence.
              */
             "q-step-diagram": LocalJSX.IntrinsicElements["q-step-diagram"] & JSXBase.HTMLAttributes<HTMLQStepDiagramElement>;
+            /**
+             * Interactive step item for q-step-diagram sequences.
+             */
             "q-step-diagram-item": LocalJSX.IntrinsicElements["q-step-diagram-item"] & JSXBase.HTMLAttributes<HTMLQStepDiagramItemElement>;
             /**
              * Displays and optionally edits syntax-highlighted code, with form association in editable mode.

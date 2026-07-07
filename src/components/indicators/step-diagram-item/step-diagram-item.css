@@ -35,10 +35,9 @@
   align-items: center;
   justify-content: center;
   z-index: 2;
-  cursor: pointer;
   outline: none;
-  
-  transition: all var(--q-transition-normal, 250ms ease);
+
+  transition: all var(--q-transition-normal, 250ms cubic-bezier(0.4, 0, 0.2, 1));
 }
 
 .badge-dot {
@@ -46,7 +45,7 @@
   height: 8px;
   border-radius: 50%;
   background: var(--q-color-secondary, #9ca3af);
-  transition: background var(--q-transition-normal, 250ms ease);
+  transition: background var(--q-transition-normal, 250ms cubic-bezier(0.4, 0, 0.2, 1));
 }
 
 /* Connector Line Paths */
@@ -70,7 +69,7 @@
   position: absolute;
   z-index: 1;
   border-color: var(--q-border-color, #4b5563);
-  transition: border-color var(--q-transition-normal, 250ms ease);
+  transition: border-color var(--q-transition-normal, 250ms cubic-bezier(0.4, 0, 0.2, 1));
 }
 
 /* Vertical Line path */
@@ -90,36 +89,36 @@
 }
 
 /* Line Styles Overrides */
-.line-dashed .step-connector { border-style: dashed; }
-.line-dotted .step-connector { border-style: dotted; }
-.line-none .step-connector { display: none; }
+:host([line-style="dashed"]) .step-connector { border-style: dashed; }
+:host([line-style="dotted"]) .step-connector { border-style: dotted; }
+:host([line-style="none"]) .step-connector { display: none; }
 
 /* Status Color Mappings */
 /* Completed / Success */
-.status-completed .step-badge,
-.status-success .step-badge {
+:host([status="completed"]) .step-badge,
+:host([status="success"]) .step-badge {
   background: var(--q-color-success, #34d399);
   border-color: var(--q-color-success, #34d399);
 }
-.status-completed .badge-dot,
-.status-success .badge-dot {
+:host([status="completed"]) .badge-dot,
+:host([status="success"]) .badge-dot {
   background: var(--q-bg-base, #111827);
 }
-.status-completed .step-connector,
-.status-success .step-connector {
+:host([status="completed"]) .step-connector,
+:host([status="success"]) .step-connector {
   border-color: var(--q-color-success, #34d399);
 }
 
 /* Active status GPU-friendly pulse animation (opacity/scale overlay) */
-.status-active .step-badge {
+:host([status="active"]) .step-badge {
   background: var(--q-bg-surface-2, #374151);
   border-color: var(--q-color-primary, #60a5fa);
 }
-.status-active .badge-dot {
+:host([status="active"]) .badge-dot {
   background: var(--q-color-primary, #60a5fa);
 }
 
-.status-active .step-badge::after {
+:host([status="active"]) .step-badge::after {
   content: '';
   position: absolute;
   top: -2px;
@@ -134,39 +133,39 @@
 }
 
 /* Warning */
-.status-warning .step-badge {
+:host([status="warning"]) .step-badge {
   background: var(--q-bg-surface-2, #374151);
   border-color: var(--q-color-warning, #fbbf24);
 }
-.status-warning .badge-dot {
+:host([status="warning"]) .badge-dot {
   background: var(--q-color-warning, #fbbf24);
 }
-.status-warning .step-connector {
+:host([status="warning"]) .step-connector {
   border-color: var(--q-color-warning, #fbbf24);
 }
 
 /* Danger */
-.status-danger .step-badge {
+:host([status="danger"]) .step-badge {
   background: var(--q-bg-surface-2, #374151);
   border-color: var(--q-color-danger, #ef4444);
 }
-.status-danger .badge-dot {
+:host([status="danger"]) .badge-dot {
   background: var(--q-color-danger, #ef4444);
 }
-.status-danger .step-connector {
+:host([status="danger"]) .step-connector {
   border-color: var(--q-color-danger, #ef4444);
 }
 
 /* Pending */
-.status-pending .step-badge {
+:host([status="pending"]) .step-badge {
   background: transparent;
   border-color: var(--q-border-color, #4b5563);
 }
-.status-pending .badge-dot {
+:host([status="pending"]) .badge-dot {
   background: var(--q-color-secondary, #9ca3af);
   opacity: 0.5;
 }
-.status-pending .step-connector {
+:host([status="pending"]) .step-connector {
   border-color: var(--q-border-color, #4b5563);
 }
 
@@ -175,18 +174,18 @@
   flex: 1;
   background: var(--q-bg-surface-1, #1f2937);
   border: var(--q-step-diag-border, var(--q-border, 1px solid var(--q-border-color, #4b5563)));
-  border-radius: var(--q-radius-lg, 12px);
-  padding: var(--q-padding-md, 16px);
-  margin-left: var(--q-padding-md, 16px);
+  border-radius: var(--q-radius-lg, 11px);
+  padding: var(--q-padding-md, 9px);
+  margin-left: var(--q-padding-md, 9px);
   cursor: pointer;
   outline: none;
-  
-  transition: all var(--q-transition-normal, 250ms ease);
+
+  transition: all var(--q-transition-normal, 250ms cubic-bezier(0.4, 0, 0.2, 1));
 }
 
 :host([layout="horizontal"]) .step-content {
   margin-left: 0;
-  margin-top: var(--q-padding-md, 16px);
+  margin-top: var(--q-padding-md, 9px);
   width: 100%;
 }
 
@@ -207,35 +206,35 @@
 .step-title {
   font-family: var(--q-font-family, inherit);
   font-size: var(--q-font-size-sm, 0.7rem);
-  font-weight: var(--q-font-weight-bold, 700);
+  font-weight: var(--q-font-weight-bold, 600);
   color: var(--q-color-primary, #60a5fa);
   margin-bottom: 4px;
 }
 
-.status-completed .step-title,
-.status-success .step-title {
+:host([status="completed"]) .step-title,
+:host([status="success"]) .step-title {
   color: var(--q-color-success, #34d399);
 }
 
-.status-active .step-title {
+:host([status="active"]) .step-title {
   color: var(--q-color-primary, #60a5fa);
 }
 
-.status-warning .step-title {
+:host([status="warning"]) .step-title {
   color: var(--q-color-warning, #fbbf24);
 }
 
-.status-danger .step-title {
+:host([status="danger"]) .step-title {
   color: var(--q-color-danger, #ef4444);
 }
 
-.status-pending .step-title {
+:host([status="pending"]) .step-title {
   color: var(--q-fg-muted, #9ca3af);
 }
 
 .step-body {
   font-family: var(--q-font-family, inherit);
-  font-size: var(--q-font-size-base, 1rem);
+  font-size: var(--q-font-size-base, 0.9rem);
   font-weight: var(--q-font-weight-normal, 400);
   color: var(--q-fg-base, #f9fafb);
 }
