@@ -137,28 +137,42 @@ export namespace Components {
          */
         "lift": boolean;
     }
+    /**
+     * A horizontal carousel viewport with optional arrow and dot navigation.
+     */
     interface QCarousel {
         /**
-          * @default "auto"
+          * Sets the flex-basis/width for each slotted carousel item. Use "auto" to preserve natural item sizing.
+          * @default 'auto'
          */
         "itemWidth": string;
         /**
+          * Wraps arrow and programmatic navigation from the first slide to the last, and back again.
           * @default false
          */
         "repeat": boolean;
         /**
+          * Shows previous and next arrow buttons over the carousel viewport.
           * @default false
          */
         "showArrows": boolean;
         /**
+          * Shows clickable slide indicator dots when the carousel can scroll.
           * @default false
          */
         "showIndicators": boolean;
+        /**
+          * Scrolls the carousel to a zero-based slide index.
+         */
         "slideTo": (index: number) => Promise<void>;
         /**
+          * Controls the CSS scroll-snap alignment applied to each slide.
           * @default 'start'
          */
         "snapAlignment": QCarouselSnapAlignment;
+        /**
+          * Recalculates slide offsets, scroll bounds, and navigation states.
+         */
         "updateLimits": () => Promise<void>;
     }
     /**
@@ -1202,6 +1216,9 @@ declare global {
     interface HTMLQCarouselElementEventMap {
         "qSlideChange": QCarouselSlideChangeDetail;
     }
+    /**
+     * A horizontal carousel viewport with optional arrow and dot navigation.
+     */
     interface HTMLQCarouselElement extends Components.QCarousel, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQCarouselElementEventMap>(type: K, listener: (this: HTMLQCarouselElement, ev: QCarouselCustomEvent<HTMLQCarouselElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1735,25 +1752,36 @@ declare namespace LocalJSX {
          */
         "lift"?: boolean;
     }
+    /**
+     * A horizontal carousel viewport with optional arrow and dot navigation.
+     */
     interface QCarousel {
         /**
-          * @default "auto"
+          * Sets the flex-basis/width for each slotted carousel item. Use "auto" to preserve natural item sizing.
+          * @default 'auto'
          */
         "itemWidth"?: string;
+        /**
+          * Fires when the active slide index changes.
+         */
         "onQSlideChange"?: (event: QCarouselCustomEvent<QCarouselSlideChangeDetail>) => void;
         /**
+          * Wraps arrow and programmatic navigation from the first slide to the last, and back again.
           * @default false
          */
         "repeat"?: boolean;
         /**
+          * Shows previous and next arrow buttons over the carousel viewport.
           * @default false
          */
         "showArrows"?: boolean;
         /**
+          * Shows clickable slide indicator dots when the carousel can scroll.
           * @default false
          */
         "showIndicators"?: boolean;
         /**
+          * Controls the CSS scroll-snap alignment applied to each slide.
           * @default 'start'
          */
         "snapAlignment"?: QCarouselSnapAlignment;
@@ -3136,6 +3164,9 @@ declare module "@stencil/core" {
              * Flexible content card with optional header slot, elevation, glass, lift, and interactive button semantics.
              */
             "q-card": LocalJSX.IntrinsicElements["q-card"] & JSXBase.HTMLAttributes<HTMLQCardElement>;
+            /**
+             * A horizontal carousel viewport with optional arrow and dot navigation.
+             */
             "q-carousel": LocalJSX.IntrinsicElements["q-carousel"] & JSXBase.HTMLAttributes<HTMLQCarouselElement>;
             /**
              * Compact label, link, filter, or removable token.

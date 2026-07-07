@@ -1,7 +1,13 @@
 import { Component, Prop, Element, Event, EventEmitter, State, Method, h } from '@stencil/core';
 import { getSlottedElements } from '../../../utils/dom';
 import type { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from './carousel.types';
+import { getCarouselEdgeState, resolveCarouselTargetIndex } from './carousel.utils';
 
+/**
+ * A horizontal carousel viewport with optional arrow and dot navigation.
+ *
+ * @slot - Carousel slide content.
+ */
 @Component({
   tag: 'q-carousel',
   styleUrl: 'carousel.css',
@@ -9,11 +15,20 @@ import type { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from './carou
 })
 export class QCarousel {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
+  /** Controls the CSS scroll-snap alignment applied to each slide. */
   @Prop({ reflect: true }) snapAlignment: QCarouselSnapAlignment = 'start';
+
+  /** Shows previous and next arrow buttons over the carousel viewport. */
   @Prop({ reflect: true }) showArrows: boolean = false;
+
+  /** Shows clickable slide indicator dots when the carousel can scroll. */
   @Prop({ reflect: true }) showIndicators: boolean = false;
+
+  /** Wraps arrow and programmatic navigation from the first slide to the last, and back again. */
   @Prop({ reflect: true }) repeat: boolean = false;
-  @Prop() itemWidth: string = "auto";
+
+  /** Sets the flex-basis/width for each slotted carousel item. Use "auto" to preserve natural item sizing. */
+  @Prop({ reflect: true }) itemWidth: string = 'auto';
 
   @State() activeIndex: number = 0;
   @State() maxIndex: number = 0;
@@ -21,6 +36,7 @@ export class QCarousel {
   @State() isAtStart: boolean = true;
   @State() isAtEnd: boolean = true;
 
+  /** Fires when the active slide index changes. */
   @Event() qSlideChange!: EventEmitter<QCarouselSlideChangeDetail>;
 
   @Element() el!: HTMLElement;
@@ -39,7 +55,9 @@ export class QCarousel {
   private scrollRafId?: number;
 
   private isProgrammaticScroll: boolean = false;
-  private programmaticScrollTimer?: any;
+  private programmaticScrollTimer?: ReturnType<typeof setTimeout>;
+  private activeScrollEndCleanup?: () => void;
+  private programmaticScrollToken = 0;
 
   // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
@@ -54,18 +72,20 @@ export class QCarousel {
     if (this.scrollRafId) {
       cancelAnimationFrame(this.scrollRafId);
     }
-    if (this.programmaticScrollTimer) {
-      clearTimeout(this.programmaticScrollTimer);
-    }
+    this.programmaticScrollToken += 1;
+    this.clearProgrammaticScroll();
+    this.isProgrammaticScroll = false;
   }
 
   // ============================ [4] EXPOSED METHODS ============================
 
+  /** Scrolls the carousel to a zero-based slide index. */
   @Method()
   async slideTo(index: number) {
     this.scrollToIndex(index);
   }
 
+  /** Recalculates slide offsets, scroll bounds, and navigation states. */
   @Method()
   async updateLimits() {
     this.calculateLimits();
@@ -147,21 +167,22 @@ export class QCarousel {
     this.isScrollable = scrollWidth > this.containerWidth;
     this.maxIndex = Math.max(0, this.cachedChildren.length - 1);
 
-    // Initialize start/end states on load
     const scrollLeft = this.scrollContainer.scrollLeft;
-    const startOffset = this.itemOffsets[0] || 0;
-
-    const nextAtStart = scrollLeft <= startOffset + 5;
-    const nextAtEnd = scrollLeft >= this.maxScrollLeft - 5;
-    if (this.isAtStart !== nextAtStart) {
-      this.isAtStart = nextAtStart;
-    }
-    if (this.isAtEnd !== nextAtEnd) {
-      this.isAtEnd = nextAtEnd;
-    }
-
+    this.updateEdgeState(scrollLeft);
     this.handleScroll();
   };
+
+  private updateEdgeState(scrollLeft: number) {
+    const startOffset = this.itemOffsets[0] || 0;
+    const { isAtStart, isAtEnd } = getCarouselEdgeState(scrollLeft, startOffset, this.maxScrollLeft);
+
+    if (this.isAtStart !== isAtStart) {
+      this.isAtStart = isAtStart;
+    }
+    if (this.isAtEnd !== isAtEnd) {
+      this.isAtEnd = isAtEnd;
+    }
+  }
 
   private handleScroll = () => {
     if (!this.scrollContainer || this.itemOffsets.length === 0) return;
@@ -174,16 +195,7 @@ export class QCarousel {
       if (!this.scrollContainer || this.itemOffsets.length === 0 || this.isProgrammaticScroll) return;
 
       const scrollLeft = this.scrollContainer.scrollLeft;
-      const startOffset = this.itemOffsets[0] || 0;
-
-      const nextAtStart = scrollLeft <= startOffset + 5;
-      const nextAtEnd = scrollLeft >= this.maxScrollLeft - 5;
-      if (this.isAtStart !== nextAtStart) {
-        this.isAtStart = nextAtStart;
-      }
-      if (this.isAtEnd !== nextAtEnd) {
-        this.isAtEnd = nextAtEnd;
-      }
+      this.updateEdgeState(scrollLeft);
 
       // Math alignment targets for snapping modes
       let targetScroll = scrollLeft;
@@ -226,24 +238,28 @@ export class QCarousel {
     });
   };
 
+  private clearProgrammaticScroll() {
+    if (this.activeScrollEndCleanup) {
+      this.activeScrollEndCleanup();
+      this.activeScrollEndCleanup = undefined;
+    }
+    if (this.programmaticScrollTimer) {
+      clearTimeout(this.programmaticScrollTimer);
+      this.programmaticScrollTimer = undefined;
+    }
+  }
+
   private scrollToIndex(index: number) {
     if (!this.scrollContainer || this.itemOffsets.length === 0 || this.maxIndex <= 0) return;
 
-    let targetIndex = index;
-    if (this.repeat) {
-      if (targetIndex < 0) {
-        targetIndex = this.maxIndex;
-      } else if (targetIndex > this.maxIndex) {
-        targetIndex = 0;
-      }
-    } else {
-      if (targetIndex < 0 || targetIndex > this.maxIndex) return;
-    }
+    const targetIndex = resolveCarouselTargetIndex(index, this.maxIndex, this.repeat);
+    if (targetIndex === undefined) return;
 
     if (this.itemOffsets[targetIndex] === undefined) return;
 
+    this.clearProgrammaticScroll();
     this.isProgrammaticScroll = true;
-    clearTimeout(this.programmaticScrollTimer);
+    const scrollToken = ++this.programmaticScrollToken;
 
     this.activeIndex = targetIndex;
     const children = this.cachedChildren;
@@ -260,16 +276,18 @@ export class QCarousel {
     });
 
     const onScrollEnd = () => {
+      if (scrollToken !== this.programmaticScrollToken) return;
+
+      this.clearProgrammaticScroll();
       this.isProgrammaticScroll = false;
       this.handleScroll();
-      clearTimeout(this.programmaticScrollTimer);
-      if (this.scrollContainer) {
-        this.scrollContainer.removeEventListener('scrollend', onScrollEnd);
-      }
     };
 
     if (this.scrollContainer) {
       this.scrollContainer.addEventListener('scrollend', onScrollEnd, { once: true });
+      this.activeScrollEndCleanup = () => {
+        this.scrollContainer?.removeEventListener('scrollend', onScrollEnd);
+      };
     }
 
     // 600ms safety fallback timer in case browser scrollend doesn't fire
@@ -318,28 +336,29 @@ export class QCarousel {
 
     return (
       <div class="carousel-wrapper">
-
         {/* Navigation Arrow Controls with active disabled tabIndex */}
         {this.showArrows && (
-          <button 
+          <button
             class={{ 'arrow-btn': true, 'arrow-left': true }}
             aria-disabled={isFirst ? 'true' : 'false'}
             onClick={isFirst ? undefined : this.slidePrev}
             aria-label="Previous slide"
             type="button"
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <polyline points="15 18 9 12 15 6" />
             </svg>
           </button>
         )}
 
         {/* Core Scrolling viewport container with a11y tab focus */}
-        <div 
+        <div
           class={{
             'carousel-viewport': true,
             [`snap-${this.snapAlignment}`]: this.snapAlignment !== 'none'
           }}
+          role="group"
+          aria-roledescription="carousel"
           tabindex="0"
           aria-label="Carousel content"
           onScroll={this.handleScroll}
@@ -349,32 +368,26 @@ export class QCarousel {
         </div>
 
         {this.showArrows && (
-          <button 
+          <button
             class={{ 'arrow-btn': true, 'arrow-right': true }}
             aria-disabled={isLast ? 'true' : 'false'}
             onClick={isLast ? undefined : this.slideNext}
             aria-label="Next slide"
             type="button"
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <polyline points="9 18 15 12 9 6" />
             </svg>
           </button>
         )}
 
-        {/* Carousel indicator dots with WAI-ARIA tablist roles */}
+        {/* Carousel indicator dots */}
         {this.showIndicators && this.isScrollable && this.maxIndex > 0 && (
-          <div 
-            class="carousel-indicators" 
-            role="tablist" 
-            aria-label="Carousel slides"
-            onKeyDown={this.handleIndicatorKeyDown}
-          >
+          <div class="carousel-indicators" aria-label="Carousel slide controls" onKeyDown={this.handleIndicatorKeyDown}>
             {Array.from({ length: this.maxIndex + 1 }).map((_, idx) => (
               <button
                 class={{ 'indicator-dot': true, 'is-active': idx === this.activeIndex }}
-                role="tab"
-                aria-selected={idx === this.activeIndex ? 'true' : 'false'}
+                aria-current={idx === this.activeIndex ? 'true' : undefined}
                 onClick={() => this.scrollToIndex(idx)}
                 aria-label={`Go to slide ${idx + 1}`}
                 type="button"
@@ -383,7 +396,6 @@ export class QCarousel {
             ))}
           </div>
         )}
-
       </div>
     );
   }
