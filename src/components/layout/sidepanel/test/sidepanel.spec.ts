@@ -76,6 +76,30 @@ describe('q-sidepanel', () => {
     expect(activeItem.textContent).toContain('Reports');
   });
 
+  it('exposes alternating depth tone attributes on nav items', async () => {
+    const el = await createComponent({
+      variant: 'nav',
+      items: [
+        {
+          label: 'Admin',
+          value: 'admin',
+          children: [
+            {
+              label: 'Users',
+              value: 'users',
+              children: [{ label: 'Invites', value: 'invites' }],
+            },
+          ],
+        },
+      ],
+    });
+
+    const items = Array.from(el.shadowRoot.querySelectorAll('.nav-item')) as HTMLElement[];
+
+    expect(items.map(item => item.dataset.depth)).toEqual(['0', '1', '2']);
+    expect(items.map(item => item.dataset.depthTone)).toEqual(['primary', 'secondary', 'primary']);
+  });
+
   it('preserves user-collapsed groups when items update', async () => {
     const items = [
       {

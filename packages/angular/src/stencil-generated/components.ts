@@ -526,9 +526,13 @@ import type { QNavbarCustomEvent } from '@webquark/core/components';
 import type { NavbarSelectDetail as IQNavbarNavbarSelectDetail } from '@webquark/core/components';
 
 export declare interface QNavbar extends Components.QNavbar {
-
+  /**
+   * Emitted when a navigation item is selected.
+   */
   qSelect: EventEmitter<QNavbarCustomEvent<IQNavbarNavbarSelectDetail>>;
-
+  /**
+   * Emitted when the mobile menu opens or closes.
+   */
   qMenuToggle: EventEmitter<QNavbarCustomEvent<boolean>>;
 }
 
