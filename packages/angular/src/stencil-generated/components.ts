@@ -123,7 +123,9 @@ import type { QCarouselCustomEvent } from '@webquark/core/components';
 import type { QCarouselSlideChangeDetail as IQCarouselQCarouselSlideChangeDetail } from '@webquark/core/components';
 
 export declare interface QCarousel extends Components.QCarousel {
-
+  /**
+   * Fires when the active slide index changes.
+   */
   qSlideChange: EventEmitter<QCarouselCustomEvent<IQCarouselQCarouselSlideChangeDetail>>;
 }
 
