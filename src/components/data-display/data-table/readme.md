@@ -2,6 +2,18 @@
 
 
 
+## CSS Custom Properties
+
+| Name                         | Description                                                    |
+| ---------------------------- | -------------------------------------------------------------- |
+| `--q-table-dropdown-bg`      | Background color forwarded to slotted q-dropdown controls.     |
+| `--q-table-dropdown-border`  | Border style forwarded to slotted q-dropdown controls.         |
+| `--q-table-dropdown-fg`      | Foreground color forwarded to slotted q-dropdown controls.     |
+| `--q-table-dropdown-menu-bg` | Menu background color forwarded to slotted q-dropdown controls. |
+| `--q-table-dropdown-primary` | Primary color forwarded to slotted q-dropdown controls.        |
+| `--q-table-max-height`       | Maximum height for the scrollable table area.                  |
+
+
 <!-- Auto Generated Below -->
 
 
@@ -44,18 +56,6 @@ Data grid with optional toolbar, search, row activation, and multi-row selection
 | `"filters"`      | Filter controls displayed in the left toolbar group.  |
 | `"footer"`       | Footer content rendered below the scrollable table.   |
 | `"toolbar-left"` | Content placed before the search and filters area.    |
-
-
-## CSS Custom Properties
-
-| Name                         | Description                                                   |
-| ---------------------------- | ------------------------------------------------------------- |
-| `--q-table-dropdown-bg`      | Background color forwarded to slotted q-dropdown controls.    |
-| `--q-table-dropdown-border`  | Border style forwarded to slotted q-dropdown controls.        |
-| `--q-table-dropdown-fg`      | Foreground color forwarded to slotted q-dropdown controls.    |
-| `--q-table-dropdown-menu-bg` | Menu background color forwarded to slotted q-dropdown controls. |
-| `--q-table-dropdown-primary` | Primary color forwarded to slotted q-dropdown controls.       |
-| `--q-table-max-height`       | Maximum height for the scrollable table area.                 |
 
 
 ## Dependencies
