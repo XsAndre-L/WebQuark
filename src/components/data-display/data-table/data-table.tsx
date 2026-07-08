@@ -1,13 +1,17 @@
 import { Component, Prop, Event, EventEmitter, h } from '@stencil/core';
-import type { QDataTableRowClickDetail, QDataTableSelectionChangeDetail, TableColumn } from './data-table.types';
+import type {
+  DataTableItem,
+  DataTableKey,
+  QDataTableRowClickDetail,
+  QDataTableSelectionChangeDetail,
+  TableColumn,
+} from './data-table.types';
 import {
   getHeaderLabel,
   getItemKey,
   parseDataTableColumns,
   parseDataTableItems,
   renderDataTableCell,
-  type DataTableItem,
-  type DataTableKey,
 } from './internals/data-access';
 import {
   getAllItemKeys,

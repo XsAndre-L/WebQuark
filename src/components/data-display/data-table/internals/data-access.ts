@@ -1,9 +1,6 @@
 import { safeParseJson } from '../../../../utils/utils';
 
-import type { TableColumn } from '../data-table.types';
-
-export type DataTableItem = unknown;
-export type DataTableKey = unknown;
+import type { DataTableItem, DataTableKey, TableColumn } from '../data-table.types';
 
 export function parseDataTableColumns(columns: TableColumn[] | string): TableColumn[] {
   return safeParseJson<TableColumn[]>(columns, [], 'QDataTable');
