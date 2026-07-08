@@ -1,6 +1,6 @@
 'use strict';
 
-var index = require('./index-BMvBQk7e.js');
+var index = require('./index-BjyygfwY.js');
 var dom = require('./dom-BzkcNgFy.js');
 
 function handleDrawerOpenChange(options) {

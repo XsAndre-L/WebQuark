@@ -25,12 +25,12 @@ describe('q-dialog', () => {
     document.body.innerHTML = '';
   });
 
-  it('uses blur as the default backdrop effect', async () => {
+  it('uses solid as the default backdrop effect', async () => {
     const el = await createComponent();
     const backdrop = el.shadowRoot.querySelector('.dialog-backdrop') as HTMLElement;
 
-    expect(el.backdropEffect).toBe('blur');
-    expect(backdrop.classList.contains('effect-blur')).toBe(true);
+    expect(el.backdropEffect).toBe('solid');
+    expect(backdrop.classList.contains('effect-solid')).toBe(true);
   });
 
   it('supports the solid backdrop effect for Unreal-safe rendering', async () => {
@@ -40,11 +40,11 @@ describe('q-dialog', () => {
     expect(backdrop.classList.contains('effect-solid')).toBe(true);
   });
 
-  it('falls back to blur for unknown backdrop effects', async () => {
+  it('falls back to solid for unknown backdrop effects', async () => {
     const el = await createComponent({ backdropEffect: 'invalid' });
     const backdrop = el.shadowRoot.querySelector('.dialog-backdrop') as HTMLElement;
 
-    expect(backdrop.classList.contains('effect-blur')).toBe(true);
+    expect(backdrop.classList.contains('effect-solid')).toBe(true);
   });
 
   it('wires title and message text to dialog aria attributes', async () => {

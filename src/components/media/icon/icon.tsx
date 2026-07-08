@@ -1,15 +1,10 @@
 import { Component, Prop, State, Watch, h, Host } from '@stencil/core';
 import type { QIconColor, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from './icon.types';
-
-const LUCIDE_STATIC_VERSION = '0.400.0';
-const FONTAWESOME_FREE_VERSION = '6.7.2';
-const DEFAULT_FETCH_TIMEOUT_MS = 8000;
-const BLOCKED_SVG_ELEMENTS = new Set(['script', 'foreignobject', 'iframe', 'object', 'embed', 'link', 'meta']);
-const BLOCKED_SVG_TAG_PATTERN = /<\s*(script|foreignObject|iframe|object|embed|link|meta)\b[\s\S]*?(?:<\/\s*\1\s*>|\/\s*>)/gi;
-const EVENT_HANDLER_ATTR_PATTERN = /\s+on[a-z]+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi;
-const BLOCKED_ATTR_PATTERN = /\s+(style|tabindex)\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi;
-const HREF_ATTR_PATTERN = /\s+(xlink:href|href)\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi;
-const JAVASCRIPT_ATTR_VALUE_PATTERN = /\s+[a-z_:.-]+\s*=\s*("[^"]*javascript:[^"]*"|'[^']*javascript:[^']*'|[^\s>]*javascript:[^\s>]*)/gi;
+import { DEFAULT_FETCH_TIMEOUT_MS } from './internals/constants';
+import { fetchIconSvg } from './internals/fetch-icon';
+import { sanitizeIconSvg } from './internals/sanitize-svg';
+import { getIconSizeStyle } from './internals/size';
+import { isBinaryIconUrl, resolveFetchableIconUrl, resolveIconUrl } from './internals/url';
 
 @Component({
   tag: 'q-icon',
@@ -82,125 +77,9 @@ export class QIcon {
 
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
-  private getSizeStyle(): string {
-    const s = this.size ? String(this.size).trim() : 'md';
-    if (s === 'sm') {
-      return '16px';
-    }
-    if (s === 'md') {
-      return '24px';
-    }
-    if (s === 'lg') {
-      return '32px';
-    }
-    if (/^\d+$/.test(s)) {
-      return `${s}px`;
-    }
-    return s;
-  }
-
   private get accessibleLabel(): string | undefined {
     const label = this.label?.trim();
     return label || undefined;
-  }
-
-  private getResolvedLibraryVersion(fallback: string): string {
-    const version = this.libVersion?.trim();
-    return version || fallback;
-  }
-
-  private isBinaryUrl(url: string): boolean {
-    const urlLower = url.toLowerCase();
-    const binaryExtensions = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.ico'];
-    return binaryExtensions.some(ext => urlLower.endsWith(ext));
-  }
-
-  private sanitizeSvg(svgText: string): string {
-    if (typeof DOMParser === 'undefined' || typeof XMLSerializer === 'undefined') {
-      return this.sanitizeSvgString(svgText);
-    }
-
-    const parser = new DOMParser();
-    const document = parser.parseFromString(svgText, 'image/svg+xml');
-    const parserError = document.querySelector('parsererror');
-    const svg = document.documentElement;
-
-    if (parserError || !svg || svg.tagName.toLowerCase() !== 'svg') {
-      return this.sanitizeSvgString(svgText);
-    }
-
-    const walk = (element: Element) => {
-      const tagName = element.tagName.toLowerCase();
-      if (BLOCKED_SVG_ELEMENTS.has(tagName)) {
-        element.remove();
-        return;
-      }
-
-      Array.from(element.attributes).forEach(attribute => {
-        const name = attribute.name.toLowerCase();
-        const value = attribute.value.trim().toLowerCase();
-
-        if (
-          name.startsWith('on') ||
-          name === 'style' ||
-          name === 'tabindex' ||
-          value.startsWith('javascript:') ||
-          value.includes('url(javascript:') ||
-          ((name === 'href' || name === 'xlink:href') && tagName === 'use' && !value.startsWith('#'))
-        ) {
-          element.removeAttribute(attribute.name);
-        }
-      });
-
-      Array.from(element.children).forEach(walk);
-    };
-
-    walk(svg);
-    svg.setAttribute('aria-hidden', 'true');
-    svg.setAttribute('focusable', 'false');
-
-    return new XMLSerializer().serializeToString(svg);
-  }
-
-  private sanitizeSvgString(svgText: string): string {
-    if (!/<svg[\s>]/i.test(svgText)) {
-      return '';
-    }
-
-    return svgText
-      .replace(BLOCKED_SVG_TAG_PATTERN, '')
-      .replace(EVENT_HANDLER_ATTR_PATTERN, '')
-      .replace(BLOCKED_ATTR_PATTERN, '')
-      .replace(JAVASCRIPT_ATTR_VALUE_PATTERN, '')
-      .replace(HREF_ATTR_PATTERN, (match, _name, rawValue) => {
-        const value = String(rawValue).replace(/^['"]|['"]$/g, '').trim().toLowerCase();
-        return value.startsWith('#') ? match : '';
-      })
-      .replace(/<svg\b([^>]*)>/i, (_match, attributes) => {
-        const cleanAttributes = String(attributes)
-          .replace(/\s+aria-hidden\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, '')
-          .replace(/\s+focusable\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, '');
-        return `<svg${cleanAttributes} aria-hidden="true" focusable="false">`;
-      })
-      .trim();
-  }
-
-  private async fetchSvg(url: string): Promise<string> {
-    const timeout = Number.isFinite(this.fetchTimeout) && this.fetchTimeout > 0 ? this.fetchTimeout : DEFAULT_FETCH_TIMEOUT_MS;
-    const controller = typeof AbortController !== 'undefined' ? new AbortController() : undefined;
-    const timer = controller ? setTimeout(() => controller.abort(), timeout) : undefined;
-
-    try {
-      const response = await fetch(url, controller ? { signal: controller.signal } : undefined);
-      if (!response.ok) {
-        throw new Error(`Failed to load icon SVG from ${url} (status: ${response.status})`);
-      }
-      return await response.text();
-    } finally {
-      if (timer !== undefined) {
-        clearTimeout(timer);
-      }
-    }
   }
 
   private handleImageError = () => {
@@ -218,39 +97,14 @@ export class QIcon {
       return;
     }
 
-    // Resolve URL
-    let url = '';
-    const cleanName = this.name.trim();
+    const url = resolveIconUrl({
+      name: this.name,
+      library: this.lib,
+      localPath: this.localPath,
+      libraryVersion: this.libVersion,
+    });
 
-    if (this.lib === 'lucide') {
-      const version = this.getResolvedLibraryVersion(LUCIDE_STATIC_VERSION);
-      url = `https://cdn.jsdelivr.net/npm/lucide-static@${version}/icons/${encodeURIComponent(cleanName)}.svg`;
-    } else if (this.lib === 'font-awesome' || this.lib === 'fontawesome') {
-      const version = this.getResolvedLibraryVersion(FONTAWESOME_FREE_VERSION);
-      url = `https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@${version}/svgs/solid/${encodeURIComponent(cleanName)}.svg`;
-    } else if (this.lib === 'local') {
-      let path = this.localPath || '/assets/icons/';
-      if (!path.endsWith('/')) {
-        path += '/';
-      }
-      url = `${path}${cleanName}`;
-      if (!cleanName.includes('.')) {
-        url += '.svg';
-      }
-    } else {
-      // Support custom URL templates, e.g., 'https://mycdn.com/icons/{name}.svg'
-      if (this.lib.includes('{name}')) {
-        url = this.lib.replace('{name}', cleanName);
-      } else {
-        let basePath = this.lib;
-        if (!basePath.endsWith('/')) {
-          basePath += '/';
-        }
-        url = `${basePath}${cleanName}`;
-      }
-    }
-
-    if (this.isBinaryUrl(url)) {
+    if (isBinaryIconUrl(url)) {
       if (this.fetchId === currentFetchId) {
         this.isBinary = true;
         this.resolvedUrl = url;
@@ -266,17 +120,9 @@ export class QIcon {
     }
 
     try {
-      let finalUrl = url;
-      if (typeof window !== 'undefined' && window.location && !/^https?:\/\//i.test(url) && !url.startsWith('data:')) {
-        try {
-          const base = window.location.origin && window.location.origin !== 'null' ? window.location.origin : 'http://localhost';
-          finalUrl = new URL(url, base).href;
-        } catch (_) {
-          // ignore
-        }
-      }
-      const text = await this.fetchSvg(finalUrl);
-      const sanitizedSvg = this.sanitizeSvg(text);
+      const finalUrl = resolveFetchableIconUrl(url);
+      const text = await fetchIconSvg(finalUrl, this.fetchTimeout);
+      const sanitizedSvg = sanitizeIconSvg(text);
 
       if (!sanitizedSvg) {
         throw new Error(`Failed to sanitize icon SVG from ${finalUrl}`);
@@ -297,7 +143,7 @@ export class QIcon {
   // ===================== [6] RENDER (Visual Template Only) =====================
 
   render() {
-    const sizeStyle = this.getSizeStyle();
+    const sizeStyle = getIconSizeStyle(this.size);
     const accessibleLabel = this.accessibleLabel;
     const hostStyle = {
       width: sizeStyle,

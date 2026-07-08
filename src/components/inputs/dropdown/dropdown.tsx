@@ -1,11 +1,8 @@
 import { Component, Prop, State, Event, EventEmitter, Element, AttachInternals, Watch, Listen, h } from '@stencil/core';
-import { safeParseJson } from '../../../utils/utils';
 import { safeFocus } from '../../../utils/dom';
 import type { Option, QDropdownSize } from './dropdown.types';
-
-const AVG_CHAR_WIDTH_PX = 7.2;
-const WIDTH_CHROME_PX = 38;
-const MIN_SEARCHABLE_SM_WIDTH_PX = 160;
+import { computeDropdownDynamicWidth } from './internals/width';
+import { getDropdownOptions, getFilteredOptions, getOptionLabel, getSelectedOption, getVisibleOptions } from './internals/options';
 
 /**
  * Form-associated dropdown/select control with optional search and incremental option rendering.
@@ -120,29 +117,23 @@ export class QDropdown {
   }
 
   private getOptionLabel(option: Partial<Option> | undefined): string {
-    return typeof option?.label === 'string' ? option.label : '';
+    return getOptionLabel(option);
   }
 
   private getAllOptions(): Option[] {
-    return safeParseJson<Option[]>(this.options, [], 'QDropdown').filter((opt): opt is Option => Boolean(opt) && typeof opt === 'object' && typeof opt.value === 'string');
+    return getDropdownOptions(this.options);
   }
 
   private getSelectedOption(options = this.getAllOptions()): Option | undefined {
-    return options.find(opt => opt.value === this.value);
+    return getSelectedOption(options, this.value);
   }
 
   private getFilteredOptions(): Option[] {
-    const list = this.getAllOptions();
-
-    if (this.searchable && this.searchTerm && this.searchTerm.trim() !== '') {
-      const term = this.searchTerm.toLowerCase();
-      return list.filter(opt => this.getOptionLabel(opt).toLowerCase().includes(term));
-    }
-    return list;
+    return getFilteredOptions(this.getAllOptions(), this.searchTerm, this.searchable);
   }
 
   private get parsedOptions(): Option[] {
-    return this.getFilteredOptions().slice(0, this.visibleCount);
+    return getVisibleOptions(this.getFilteredOptions(), this.visibleCount);
   }
 
   private toggleMenu = () => {
@@ -236,24 +227,14 @@ export class QDropdown {
     }
   }
 
-  private calculateWidthFromLength(labelLength: number, minWidth = 0): string {
-    const calculatedWidth = labelLength * AVG_CHAR_WIDTH_PX + WIDTH_CHROME_PX;
-    return `${Math.ceil(Math.max(minWidth, calculatedWidth))}px`;
-  }
-
   private computeDynamicWidth(allOptions: Option[], selectedOption?: Option): string | undefined {
-    if (this.size !== 'sm') return undefined;
-
-    if (this.searchable) {
-      const labelText = selectedOption ? this.getOptionLabel(selectedOption) : this.placeholder;
-      return this.calculateWidthFromLength(labelText ? labelText.length : 0, MIN_SEARCHABLE_SM_WIDTH_PX);
-    }
-
-    const lengths = allOptions.map(option => this.getOptionLabel(option).length);
-    if (this.placeholder) {
-      lengths.push(this.placeholder.length);
-    }
-    return this.calculateWidthFromLength(Math.max(...lengths, 0));
+    return computeDropdownDynamicWidth({
+      size: this.size,
+      searchable: this.searchable,
+      allOptions,
+      selectedOption,
+      placeholder: this.placeholder,
+    });
   }
 
   private handleKeyDown = (ev: KeyboardEvent) => {

@@ -7,20 +7,20 @@
 
 ## Properties
 
-| Property              | Attribute                | Description                                                                                                       | Type                          | Default          |
-| --------------------- | ------------------------ | ----------------------------------------------------------------------------------------------------------------- | ----------------------------- | ---------------- |
-| `backdropEffect`      | `backdrop-effect`        | Backdrop rendering style. The `blur` option uses backdrop-filter and is not safe for CEF/Unreal Webview contexts. | `"blur" \| "none" \| "solid"` | `'blur'`         |
-| `cancelLabel`         | `cancel-label`           | Text shown on the cancel action button.                                                                           | `string`                      | `'Cancel'`       |
-| `closeLabel`          | `close-label`            | Accessible label for the header close button.                                                                     | `string`                      | `'Close dialog'` |
-| `closeOnEsc`          | `close-on-esc`           | Allows the Escape key to cancel and close the dialog.                                                             | `boolean`                     | `true`           |
-| `closeOnOverlayClick` | `close-on-overlay-click` | Allows backdrop clicks to cancel and close the dialog.                                                            | `boolean`                     | `true`           |
-| `confirmLabel`        | `confirm-label`          | Text shown on the confirm action button.                                                                          | `string`                      | `'Confirm'`      |
-| `dialogTitle`         | `dialog-title`           | Optional title text rendered in the default dialog header.                                                        | `string`                      | `undefined`      |
-| `loading`             | `loading`                | Disables dialog actions and marks the confirm button busy.                                                        | `boolean`                     | `false`          |
-| `message`             | `message`                | Optional message text rendered in the default dialog body.                                                        | `string`                      | `undefined`      |
-| `open`                | `open`                   | Controls the dialog's visibility.                                                                                 | `boolean`                     | `false`          |
-| `showCancel`          | `show-cancel`            | Shows the cancel action button.                                                                                   | `boolean`                     | `true`           |
-| `showConfirm`         | `show-confirm`           | Shows the confirm action button.                                                                                  | `boolean`                     | `true`           |
+| Property              | Attribute                | Description                                                                                                    | Type                | Default          |
+| --------------------- | ------------------------ | -------------------------------------------------------------------------------------------------------------- | ------------------- | ---------------- |
+| `backdropEffect`      | `backdrop-effect`        | Backdrop rendering style. Solid is the default CEF/Unreal-safe dimmer; none keeps the click layer transparent. | `"none" \| "solid"` | `'solid'`        |
+| `cancelLabel`         | `cancel-label`           | Text shown on the cancel action button.                                                                        | `string`            | `'Cancel'`       |
+| `closeLabel`          | `close-label`            | Accessible label for the header close button.                                                                  | `string`            | `'Close dialog'` |
+| `closeOnEsc`          | `close-on-esc`           | Allows the Escape key to cancel and close the dialog.                                                          | `boolean`           | `true`           |
+| `closeOnOverlayClick` | `close-on-overlay-click` | Allows backdrop clicks to cancel and close the dialog.                                                         | `boolean`           | `true`           |
+| `confirmLabel`        | `confirm-label`          | Text shown on the confirm action button.                                                                       | `string`            | `'Confirm'`      |
+| `dialogTitle`         | `dialog-title`           | Optional title text rendered in the default dialog header.                                                     | `string`            | `undefined`      |
+| `loading`             | `loading`                | Disables dialog actions and marks the confirm button busy.                                                     | `boolean`           | `false`          |
+| `message`             | `message`                | Optional message text rendered in the default dialog body.                                                     | `string`            | `undefined`      |
+| `open`                | `open`                   | Controls the dialog's visibility.                                                                              | `boolean`           | `false`          |
+| `showCancel`          | `show-cancel`            | Shows the cancel action button.                                                                                | `boolean`           | `true`           |
+| `showConfirm`         | `show-confirm`           | Shows the confirm action button.                                                                               | `boolean`           | `true`           |
 
 
 ## Events

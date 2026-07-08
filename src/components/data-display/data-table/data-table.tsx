@@ -1,11 +1,22 @@
 import { Component, Prop, Event, EventEmitter, h } from '@stencil/core';
-import { safeParseJson } from '../../../utils/utils';
 import type { QDataTableRowClickDetail, QDataTableSelectionChangeDetail, TableColumn } from './data-table.types';
-
-function getNestedValue<T extends Record<string, any>>(obj: T, path: string): any {
-  if (!obj || !path) return undefined;
-  return path.split('.').reduce((acc, part) => acc && acc[part], obj);
-}
+import {
+  getHeaderLabel,
+  getItemKey,
+  parseDataTableColumns,
+  parseDataTableItems,
+  renderDataTableCell,
+  type DataTableItem,
+  type DataTableKey,
+} from './internals/data-access';
+import {
+  getAllItemKeys,
+  getSelectedItems,
+  getSelectedKeySet,
+  getSelectionState,
+  toggleSelectedKey,
+  type DataTableSelectionState,
+} from './internals/selection';
 
 /**
  * Data grid with optional toolbar, search, row activation, and multi-row selection.
@@ -32,7 +43,7 @@ export class QDataTable {
   @Prop() columns: TableColumn[] | string = [];
 
   /** Row data, or a JSON string of row data. */
-  @Prop() items: any[] | string = [];
+  @Prop() items: DataTableItem[] | string = [];
 
   /** Shows a loading state and suppresses row rendering while true. */
   @Prop() loading: boolean = false;
@@ -41,7 +52,7 @@ export class QDataTable {
   @Prop() selectable: boolean = false;
 
   /** Keys for currently selected rows. */
-  @Prop({ mutable: true }) selectedKeys: any[] = [];
+  @Prop({ mutable: true }) selectedKeys: DataTableKey[] = [];
 
   /** Row field used as the stable selection and render key. Falls back to the row index. */
   @Prop() keyField: string = 'id';
@@ -73,51 +84,32 @@ export class QDataTable {
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
   private getParsedColumns(): TableColumn[] {
-    return safeParseJson<TableColumn[]>(this.columns, [], 'QDataTable');
+    return parseDataTableColumns(this.columns);
   }
 
-  private getParsedItems(): any[] {
-    return safeParseJson<any[]>(this.items, [], 'QDataTable');
+  private getParsedItems(): DataTableItem[] {
+    return parseDataTableItems(this.items);
   }
 
-  private getItemKey(item: any, index: number): any {
-    if (item && typeof item === 'object' && this.keyField in item) {
-      return item[this.keyField];
-    }
-    return index;
+  private getItemKey(item: DataTableItem, index: number): DataTableKey {
+    return getItemKey(item, index, this.keyField);
   }
 
-  private getSelectedKeySet(): Set<any> {
-    return new Set(this.selectedKeys || []);
+  private getSelectedKeySet(): Set<DataTableKey> {
+    return getSelectedKeySet(this.selectedKeys);
   }
 
-  private getSelectedItems(items = this.getParsedItems(), selectedKeys = this.getSelectedKeySet()): any[] {
-    return items.filter((item, index) => selectedKeys.has(this.getItemKey(item, index)));
+  private getSelectedItems(items = this.getParsedItems(), selectedKeys = this.getSelectedKeySet()): DataTableItem[] {
+    return getSelectedItems(items, selectedKeys, this.keyField);
   }
 
-  private getSelectionState() {
+  private getSelectionState(): DataTableSelectionState {
     const items = this.getParsedItems();
-    if (items.length === 0) {
-      return { checked: false, indeterminate: false };
-    }
-
-    const selectedCount = this.getSelectedItems(items).length;
-    const checked = selectedCount === items.length;
-    const indeterminate = selectedCount > 0 && selectedCount < items.length;
-    return { checked, indeterminate };
+    return getSelectionState(items, this.getSelectedKeySet(), this.keyField);
   }
 
-  private toggleKeyInSelection(key: any) {
-    const currentKeys = [...(this.selectedKeys || [])];
-    const keyIndex = currentKeys.indexOf(key);
-
-    if (keyIndex > -1) {
-      currentKeys.splice(keyIndex, 1);
-    } else {
-      currentKeys.push(key);
-    }
-
-    this.selectedKeys = currentKeys;
+  private handleSelectionKeyToggle(key: DataTableKey) {
+    this.selectedKeys = toggleSelectedKey(this.selectedKeys, key);
     this.emitSelectionChange();
   }
 
@@ -127,16 +119,16 @@ export class QDataTable {
 
     if (isChecked) {
       const items = this.getParsedItems();
-      this.selectedKeys = items.map((item, index) => this.getItemKey(item, index));
+      this.selectedKeys = getAllItemKeys(items, this.keyField);
     } else {
       this.selectedKeys = [];
     }
     this.emitSelectionChange();
   }
 
-  private handleRowCheckboxChange(item: any, index: number, event: Event) {
+  private handleRowCheckboxChange(item: DataTableItem, index: number, event: Event) {
     event.stopPropagation();
-    this.toggleKeyInSelection(this.getItemKey(item, index));
+    this.handleSelectionKeyToggle(this.getItemKey(item, index));
   }
 
   private emitSelectionChange() {
@@ -147,7 +139,7 @@ export class QDataTable {
     });
   }
 
-  private handleRowClick(item: any, index: number, event: MouseEvent) {
+  private handleRowClick(item: DataTableItem, index: number, event: MouseEvent) {
     const path = event.composedPath();
     const isInteractive = path.some((target: any) => {
       if (!target || !target.tagName) return false;
@@ -168,7 +160,7 @@ export class QDataTable {
     this.qSearch.emit(this.searchValue);
   };
 
-  private handleRowKeyDown(item: any, index: number, event: KeyboardEvent) {
+  private handleRowKeyDown(item: DataTableItem, index: number, event: KeyboardEvent) {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       this.qRowClick.emit({
@@ -178,39 +170,25 @@ export class QDataTable {
       });
 
       if (this.selectable) {
-        this.toggleKeyInSelection(this.getItemKey(item, index));
+        this.handleSelectionKeyToggle(this.getItemKey(item, index));
       }
     }
   }
 
   private getHeaderLabel(column: TableColumn): string {
-    if (column.header !== undefined && column.header !== null) {
-      return column.header;
-    }
-    const key = column.key || '';
-    if (!key) return '';
-    return key.charAt(0).toUpperCase() + key.slice(1).replace(/[._]/g, ' ');
+    return getHeaderLabel(column);
   }
 
   // ===================== [6] RENDER (Visual Template Only) =====================
 
-  private renderCell(item: any, column: TableColumn) {
-    if (typeof column.render === 'function') {
-      try {
-        return column.render(item, column);
-      } catch (e) {
-        console.error('QDataTable: Render function failed', e);
-      }
-    }
+  private renderCell(item: DataTableItem, column: TableColumn) {
+    return renderDataTableCell(item, column, error => {
+      console.error('QDataTable: Render function failed', error);
+    });
+  }
 
-    const rawValue = getNestedValue(item, column.key);
-    if (rawValue === undefined || rawValue === null) {
-      return '-';
-    }
-    if (typeof rawValue === 'boolean') {
-      return String(rawValue);
-    }
-    return rawValue;
+  private getRenderKey(key: DataTableKey): string | number {
+    return typeof key === 'string' || typeof key === 'number' ? key : String(key);
   }
 
   render() {
@@ -301,7 +279,7 @@ export class QDataTable {
 
                   return (
                     <tr
-                      key={key}
+                      key={this.getRenderKey(key)}
                       class={{
                         'row-el': true,
                         'is-selected': isSelected,

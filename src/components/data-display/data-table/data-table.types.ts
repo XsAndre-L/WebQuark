@@ -1,19 +1,19 @@
-export interface TableColumn<T = any> {
+export interface TableColumn<T = unknown> {
   key: string;
   header?: string;
   width?: string;
   className?: string;
-  render?: (item: T, column: TableColumn<T>) => any;
+  render?: (item: T, column: TableColumn<T>) => unknown;
 }
 
-export interface QDataTableRowClickDetail<T = any> {
+export interface QDataTableRowClickDetail<T = unknown> {
   item: T;
   index: number;
   originalEvent: MouseEvent | KeyboardEvent;
 }
 
-export interface QDataTableSelectionChangeDetail<T = any> {
-  selectedKeys: any[];
+export interface QDataTableSelectionChangeDetail<T = unknown> {
+  selectedKeys: unknown[];
   selectedItems: T[];
 }
 
