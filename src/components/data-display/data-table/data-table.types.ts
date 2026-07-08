@@ -1,3 +1,6 @@
+export type DataTableItem = unknown;
+export type DataTableKey = unknown;
+
 export interface TableColumn<T = unknown> {
   key: string;
   header?: string;

@@ -1,4 +1,5 @@
-import { getItemKey, type DataTableItem, type DataTableKey } from './data-access';
+import type { DataTableItem, DataTableKey } from '../data-table.types';
+import { getItemKey } from './data-access';
 
 export interface DataTableSelectionState {
   checked: boolean;
