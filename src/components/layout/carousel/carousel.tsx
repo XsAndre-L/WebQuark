@@ -1,7 +1,7 @@
 import { Component, Prop, Element, Event, EventEmitter, State, Method, h } from '@stencil/core';
 import { getSlottedElements } from '../../../utils/dom';
 import type { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from './carousel.types';
-import { getCarouselEdgeState, resolveCarouselTargetIndex } from './carousel.utils';
+import { getCarouselEdgeState, getCarouselMetrics, getClosestCarouselIndex, resolveCarouselTargetIndex } from './internals/metrics';
 
 /**
  * A horizontal carousel viewport with optional arrow and dot navigation.
@@ -156,16 +156,13 @@ export class QCarousel {
   private calculateLimits = () => {
     if (!this.scrollContainer) return;
 
-    // Cache element offsets and sizes to prevent high-frequency layout reflows (OSR safe)
-    this.itemOffsets = this.cachedChildren.map(child => child.offsetLeft - this.scrollContainer!.offsetLeft);
-    this.itemWidths = this.cachedChildren.map(child => child.clientWidth);
-    this.containerWidth = this.scrollContainer.clientWidth;
-
-    const scrollWidth = this.scrollContainer.scrollWidth;
-    this.maxScrollLeft = Math.max(0, scrollWidth - this.containerWidth);
-
-    this.isScrollable = scrollWidth > this.containerWidth;
-    this.maxIndex = Math.max(0, this.cachedChildren.length - 1);
+    const metrics = getCarouselMetrics(this.scrollContainer, this.cachedChildren);
+    this.itemOffsets = metrics.itemOffsets;
+    this.itemWidths = metrics.itemWidths;
+    this.containerWidth = metrics.containerWidth;
+    this.maxScrollLeft = metrics.maxScrollLeft;
+    this.isScrollable = metrics.isScrollable;
+    this.maxIndex = metrics.maxIndex;
 
     const scrollLeft = this.scrollContainer.scrollLeft;
     this.updateEdgeState(scrollLeft);
@@ -197,32 +194,12 @@ export class QCarousel {
       const scrollLeft = this.scrollContainer.scrollLeft;
       this.updateEdgeState(scrollLeft);
 
-      // Math alignment targets for snapping modes
-      let targetScroll = scrollLeft;
-      if (this.snapAlignment === 'center') {
-        targetScroll = scrollLeft + this.containerWidth / 2;
-      } else if (this.snapAlignment === 'end') {
-        targetScroll = scrollLeft + this.containerWidth;
-      }
-
-      // Find closest cached offset
-      let closestIndex = 0;
-      let minDiff = Infinity;
-
-      this.itemOffsets.forEach((offset, index) => {
-        let comparisonOffset = offset;
-        const itemWidth = this.itemWidths[index] || 0;
-        if (this.snapAlignment === 'center') {
-          comparisonOffset = offset + itemWidth / 2;
-        } else if (this.snapAlignment === 'end') {
-          comparisonOffset = offset + itemWidth;
-        }
-
-        const diff = Math.abs(comparisonOffset - targetScroll);
-        if (diff < minDiff) {
-          minDiff = diff;
-          closestIndex = index;
-        }
+      const closestIndex = getClosestCarouselIndex({
+        scrollLeft,
+        itemOffsets: this.itemOffsets,
+        itemWidths: this.itemWidths,
+        containerWidth: this.containerWidth,
+        snapAlignment: this.snapAlignment,
       });
 
       if (this.activeIndex !== closestIndex) {

@@ -1,2 +1,2 @@
-export type QDialogBackdropEffect = 'blur' | 'solid' | 'none';
+export type QDialogBackdropEffect = 'solid' | 'none';
 

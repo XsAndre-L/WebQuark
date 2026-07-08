@@ -1,0 +1,3 @@
+export const LUCIDE_STATIC_VERSION = '0.400.0';
+export const FONTAWESOME_FREE_VERSION = '6.7.2';
+export const DEFAULT_FETCH_TIMEOUT_MS = 8000;

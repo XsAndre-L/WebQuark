@@ -8,7 +8,7 @@ This document catalogs all the CSS custom properties (variables) available in We
 > [!IMPORTANT]
 > **Unreal Engine Webview & WebUI Compatibility**:
 > In Unreal Engine (CEF/WebUI) environments, standard browser Off-Screen Rendering (OSR) is used to draw the browser interface to a 3D texture. OSR environments **cannot capture back-buffer pixels to apply real-time blurs**, which makes CSS `backdrop-filter: blur()` completely fail or glitch (rendering as fully transparent or black boxes).
-> To prevent invisible panels or broken layouts inside Unreal, WebQuark components provide high-opacity solid fallbacks such as `--q-bg-glass` and `--q-bg-overlay`. For `q-dialog`, keep the default `backdrop-effect="blur"` in normal browsers and use `backdrop-effect="solid"` inside Unreal/CEF.
+> To prevent invisible panels or broken layouts inside Unreal, WebQuark components use high-opacity solid overlays such as `--q-bg-glass` and `--q-bg-overlay`. `q-dialog` defaults to `backdrop-effect="solid"` and does not ship a blur backdrop mode.
 
 ### 🌑 Default Dark Theme Palette
 ![WebQuark Default Dark Theme Color Palette](file:///C:/Users/ahlou/.gemini/antigravity/brain/41286b01-1e59-4481-a407-e7f283b1c70f/default_dark_theme_palette_1781198853550.png)
@@ -67,14 +67,12 @@ Defines the canvas background, card faces, and hierarchical container backdrops 
 
 ---
 
-## 3. Glassmorphism & Shadows
-Controls the premium visual effects (blur intensity, shadows, and reflection glow).
+## 3. OSR-Safe Glass Surfaces & Shadows
+Controls translucent surface colors, shadows, and reflection glow without backdrop filters.
 
 | Variable Name | Default Value | Description |
 | :--- | :--- | :--- |
-| `--q-glass-blur` | `12px` | Shared blur length token used by blur-capable effects. Use component-level safe modes for Unreal/CEF. |
-| `--q-dialog-backdrop-bg` | `var(--q-bg-overlay, rgba(0, 0, 0, 0.85))` | Dialog backdrop background for the default blur effect. |
-| `--q-dialog-backdrop-filter` | `blur(var(--q-glass-blur, 12px))` | Dialog backdrop filter when `backdrop-effect="blur"`. |
+| `--q-dialog-backdrop-bg` | `var(--q-bg-overlay, rgba(0, 0, 0, 0.85))` | Dialog backdrop background. |
 | `--q-dialog-backdrop-solid-bg` | `var(--q-bg-overlay, rgba(0, 0, 0, 0.85))` | Dialog backdrop background when `backdrop-effect="solid"`. |
 | `--q-shadow-low` | `0 2px 4px rgba(0,0,0,0.05)` | Elevation low shadow. |
 | `--q-shadow-medium` | `0 8px 16px rgba(0,0,0,0.08)` | Elevation medium shadow. |

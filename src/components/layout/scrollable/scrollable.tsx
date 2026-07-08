@@ -1,6 +1,8 @@
 import { Component, Prop, Element, Event, EventEmitter, State, Watch, Method, Host, h } from '@stencil/core';
 
 import type { QScrollableEventDetail, QScrollableMode } from './scrollable.types';
+import { clampScrollTop, getKeyboardScrollTarget, getScrollMetrics, getThumbLayout } from './internals/metrics';
+import { buildNativeScrollbarStyle, ensureNativeScrollTargetId, removeNativeScrollTargetId, resolveNativeScrollTarget } from './internals/native-scrollbar';
 
 let scrollableIds = 0;
 
@@ -196,53 +198,21 @@ export class QScrollable {
       return;
     }
 
-    const targetEl = this.resolveNativeTarget();
+    const targetEl = resolveNativeScrollTarget(this.el, this.target);
     if (!targetEl) {
       return;
     }
 
     this.activeTargetEl = targetEl;
 
-    let targetId = targetEl.getAttribute('data-q-scrollable-target-id');
-    if (!targetId) {
-      targetId = `q-scroll-${Math.random().toString(36).slice(2, 11)}`;
-      targetEl.setAttribute('data-q-scrollable-target-id', targetId);
-    }
+    const targetId = ensureNativeScrollTargetId(targetEl);
 
     const styleEl = document.createElement('style');
     styleEl.id = `q-style-${targetId}`;
-    styleEl.textContent = `
-      [data-q-scrollable-target-id="${targetId}"]::-webkit-scrollbar {
-        width: var(--q-scrollbar-width, 6px);
-        height: var(--q-scrollbar-width, 6px);
-      }
-      [data-q-scrollable-target-id="${targetId}"]::-webkit-scrollbar-track {
-        background: var(--q-scrollbar-track-color, transparent);
-      }
-      [data-q-scrollable-target-id="${targetId}"]::-webkit-scrollbar-thumb {
-        background: var(--q-scrollbar-thumb-color, var(--q-border-color, #374151));
-        border-radius: var(--q-scrollbar-radius, 4px);
-      }
-      [data-q-scrollable-target-id="${targetId}"]::-webkit-scrollbar-thumb:hover {
-        background: var(--q-scrollbar-thumb-color-hover, var(--q-color-primary, #60a5fa));
-      }
-      [data-q-scrollable-target-id="${targetId}"] {
-        scrollbar-width: var(--q-scrollbar-width-thin, thin);
-        scrollbar-color: var(--q-scrollbar-thumb-color, var(--q-border-color, #374151)) var(--q-scrollbar-track-color, transparent);
-      }
-    `;
+    styleEl.textContent = buildNativeScrollbarStyle(targetId);
 
     targetEl.appendChild(styleEl);
     this.nativeStyleEl = styleEl;
-  }
-
-  private resolveNativeTarget(): Element | null {
-    if (!this.target) {
-      return this.el.parentElement;
-    }
-
-    const root = this.el.getRootNode() as Document | ShadowRoot;
-    return root.querySelector(this.target);
   }
 
   private removeNativeStyles() {
@@ -252,7 +222,7 @@ export class QScrollable {
     this.nativeStyleEl = undefined;
 
     if (this.activeTargetEl) {
-      this.activeTargetEl.removeAttribute('data-q-scrollable-target-id');
+      removeNativeScrollTargetId(this.activeTargetEl);
       this.activeTargetEl = undefined;
     }
   }
@@ -262,10 +232,15 @@ export class QScrollable {
       return;
     }
 
-    const clientHeight = this.viewportEl.clientHeight;
-    const scrollHeight = this.viewportEl.scrollHeight;
+    const metrics = getScrollMetrics(this.viewportEl);
+    const layout = getThumbLayout({
+      metrics,
+      trackHeight: this.trackEl.clientHeight,
+      thumbHeight: this.thumbEl.clientHeight,
+      minThumbHeight: QScrollable.MIN_THUMB_HEIGHT_PX,
+    });
 
-    if (scrollHeight <= clientHeight) {
+    if (!layout.isScrollable) {
       this.thumbEl.style.height = '0px';
       this.trackEl.style.display = 'none';
       this.updateScrollMetrics();
@@ -273,12 +248,7 @@ export class QScrollable {
     }
 
     this.trackEl.style.display = '';
-
-    const calculatedHeight = (clientHeight * clientHeight) / scrollHeight;
-    const thumbHeight = Math.max(QScrollable.MIN_THUMB_HEIGHT_PX, calculatedHeight);
-
-    this.thumbEl.style.height = `${thumbHeight}px`;
-
+    this.thumbEl.style.height = `${layout.height}px`;
     this.updateThumbPosition();
   }
 
@@ -287,35 +257,27 @@ export class QScrollable {
       return;
     }
 
-    const scrollTop = this.viewportEl.scrollTop;
-    const scrollHeight = this.viewportEl.scrollHeight;
-    const clientHeight = this.viewportEl.clientHeight;
+    const metrics = getScrollMetrics(this.viewportEl);
+    const layout = getThumbLayout({
+      metrics,
+      trackHeight: this.trackEl.clientHeight,
+      thumbHeight: this.thumbEl.clientHeight,
+      minThumbHeight: QScrollable.MIN_THUMB_HEIGHT_PX,
+    });
 
-    const trackHeight = this.trackEl.clientHeight;
-    const thumbHeight = this.thumbEl.clientHeight;
-
-    const maxScrollTop = scrollHeight - clientHeight;
-    if (maxScrollTop <= 0) {
+    if (!layout.isScrollable) {
       this.updateScrollMetrics();
       return;
     }
 
-    const maxThumbTranslate = trackHeight - thumbHeight;
-    const translateY = (scrollTop / maxScrollTop) * maxThumbTranslate;
-
-    this.thumbEl.style.transform = `translateY(${translateY}px)`;
+    this.thumbEl.style.transform = `translateY(${layout.translateY}px)`;
     this.updateScrollMetrics();
   }
 
   private updateScrollMetrics() {
-    if (!this.viewportEl) {
-      this.scrollValueNow = 0;
-      this.scrollValueMax = 0;
-      return;
-    }
-
-    this.scrollValueNow = Math.round(this.viewportEl.scrollTop);
-    this.scrollValueMax = Math.max(0, Math.round(this.viewportEl.scrollHeight - this.viewportEl.clientHeight));
+    const metrics = getScrollMetrics(this.viewportEl);
+    this.scrollValueNow = Math.round(metrics.scrollTop);
+    this.scrollValueMax = Math.round(metrics.maxScrollTop);
   }
 
   private handleScroll = () => {
@@ -386,23 +348,18 @@ export class QScrollable {
       return;
     }
 
+    const metrics = getScrollMetrics(this.viewportEl);
     const deltaY = e.clientY - this.dragStartY;
-    const clientHeight = this.viewportEl.clientHeight;
-    const scrollHeight = this.viewportEl.scrollHeight;
-    const trackHeight = this.trackEl.clientHeight;
-    const thumbHeight = this.thumbEl.clientHeight;
+    const maxThumbTranslate = this.trackEl.clientHeight - this.thumbEl.clientHeight;
 
-    const maxScrollTop = scrollHeight - clientHeight;
-    const maxThumbTranslate = trackHeight - thumbHeight;
-
-    if (maxThumbTranslate <= 0) {
+    if (maxThumbTranslate <= 0 || metrics.maxScrollTop <= 0) {
       return;
     }
 
-    const startTranslateY = (this.dragStartScrollTop / maxScrollTop) * maxThumbTranslate;
+    const startTranslateY = (this.dragStartScrollTop / metrics.maxScrollTop) * maxThumbTranslate;
     const newTranslateY = Math.max(0, Math.min(maxThumbTranslate, startTranslateY + deltaY));
 
-    const newScrollTop = (newTranslateY / maxThumbTranslate) * maxScrollTop;
+    const newScrollTop = (newTranslateY / maxThumbTranslate) * metrics.maxScrollTop;
 
     this.setViewportScrollTop(newScrollTop);
 
@@ -412,34 +369,16 @@ export class QScrollable {
   private handleThumbKeyDown = (e: KeyboardEvent) => {
     if (!this.viewportEl) return;
 
-    const maxScrollTop = Math.max(0, this.viewportEl.scrollHeight - this.viewportEl.clientHeight);
-    const pageStep = Math.max(QScrollable.KEY_SCROLL_STEP_PX, this.viewportEl.clientHeight - QScrollable.KEY_SCROLL_STEP_PX);
-    let nextScrollTop = this.viewportEl.scrollTop;
+    const metrics = getScrollMetrics(this.viewportEl);
+    const nextScrollTop = getKeyboardScrollTarget({
+      key: e.key,
+      scrollTop: metrics.scrollTop,
+      clientHeight: metrics.clientHeight,
+      maxScrollTop: metrics.maxScrollTop,
+      step: QScrollable.KEY_SCROLL_STEP_PX,
+    });
 
-    switch (e.key) {
-      case 'ArrowDown':
-      case 'ArrowRight':
-        nextScrollTop += QScrollable.KEY_SCROLL_STEP_PX;
-        break;
-      case 'ArrowUp':
-      case 'ArrowLeft':
-        nextScrollTop -= QScrollable.KEY_SCROLL_STEP_PX;
-        break;
-      case 'PageDown':
-        nextScrollTop += pageStep;
-        break;
-      case 'PageUp':
-        nextScrollTop -= pageStep;
-        break;
-      case 'Home':
-        nextScrollTop = 0;
-        break;
-      case 'End':
-        nextScrollTop = maxScrollTop;
-        break;
-      default:
-        return;
-    }
+    if (nextScrollTop === undefined) return;
 
     e.preventDefault();
     this.setViewportScrollTop(nextScrollTop);
@@ -449,8 +388,7 @@ export class QScrollable {
   private setViewportScrollTop(scrollTop: number) {
     if (!this.viewportEl) return;
 
-    const maxScrollTop = Math.max(0, this.viewportEl.scrollHeight - this.viewportEl.clientHeight);
-    const nextScrollTop = Math.max(0, Math.min(maxScrollTop, scrollTop));
+    const nextScrollTop = clampScrollTop(scrollTop, getScrollMetrics(this.viewportEl));
 
     this.viewportEl.style.scrollBehavior = 'auto';
     this.viewportEl.scrollTop = nextScrollTop;

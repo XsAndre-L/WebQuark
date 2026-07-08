@@ -1,6 +1,14 @@
 import { Component, Prop, Event, EventEmitter, Watch, Listen, State, Method, h } from '@stencil/core';
-import { handleTabTrap, waitForTransitionEnd, focusFirstElement, safeFocus, getDeepActiveElement } from '../../../utils/dom';
+import { handleTabTrap, focusFirstElement, getDeepActiveElement } from '../../../utils/dom';
 import type { QDialogBackdropEffect } from './dialog.types';
+import { resolveDialogBackdropEffect } from './internals/backdrop';
+import {
+  cancelDialogOpenAnimation,
+  clearDialogTransitionWait,
+  closeDialogAfterTransition,
+  scheduleDialogOpenAnimation,
+  type DialogLifecycleState,
+} from './internals/lifecycle';
 
 let dialogId = 0;
 
@@ -45,9 +53,9 @@ export class QDialog {
   @Prop() showConfirm: boolean = true;
 
   /**
-   * Backdrop rendering style. The `blur` option uses backdrop-filter and is not safe for CEF/Unreal Webview contexts.
+   * Backdrop rendering style. Solid is the default CEF/Unreal-safe dimmer; none keeps the click layer transparent.
    */
-  @Prop({ attribute: 'backdrop-effect', reflect: true }) backdropEffect: QDialogBackdropEffect = 'blur';
+  @Prop({ attribute: 'backdrop-effect', reflect: true }) backdropEffect: QDialogBackdropEffect = 'solid';
 
   /** Emitted when the confirm action is activated. */
   @Event() qConfirm!: EventEmitter<void>;
@@ -67,9 +75,7 @@ export class QDialog {
 
   private previousActiveElement: HTMLElement | null = null;
   private readonly dialogId = ++dialogId;
-  private openAnimationFrame?: number;
-  private openSecondAnimationFrame?: number;
-  private transitionCleanup?: () => void;
+  private lifecycleState: DialogLifecycleState = {};
 
   // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
@@ -99,10 +105,16 @@ export class QDialog {
       this.cancelOpenAnimation();
       this.isAnimatedOpen = false;
       if (this.dialogEl) {
-        this.waitForDialogTransition(() => {
-          this.isVisible = false;
-          safeFocus(this.previousActiveElement);
-          this.previousActiveElement = null;
+        closeDialogAfterTransition({
+          state: this.lifecycleState,
+          dialogEl: this.dialogEl,
+          previousActiveElement: this.previousActiveElement,
+          setVisible: visible => {
+            this.isVisible = visible;
+          },
+          setPreviousActiveElement: element => {
+            this.previousActiveElement = element;
+          },
         });
       } else {
         this.isVisible = false;
@@ -189,65 +201,26 @@ export class QDialog {
   }
 
   private scheduleOpenAnimation() {
-    this.cancelOpenAnimation();
-    this.clearTransitionWait();
-
-    this.openAnimationFrame = requestAnimationFrame(() => {
-      this.openAnimationFrame = undefined;
-      this.openSecondAnimationFrame = requestAnimationFrame(() => {
-        this.openSecondAnimationFrame = undefined;
-        if (!this.open) return;
-
-        this.isAnimatedOpen = true;
-        this.waitForDialogTransition(() => {
-          if (this.open) {
-            focusFirstElement(this.dialogEl);
-          }
-        });
-      });
+    scheduleDialogOpenAnimation({
+      state: this.lifecycleState,
+      dialogEl: this.dialogEl,
+      isOpen: () => this.open,
+      setAnimatedOpen: open => {
+        this.isAnimatedOpen = open;
+      },
     });
   }
 
   private cancelOpenAnimation() {
-    if (this.openAnimationFrame !== undefined) {
-      cancelAnimationFrame(this.openAnimationFrame);
-      this.openAnimationFrame = undefined;
-    }
-
-    if (this.openSecondAnimationFrame !== undefined) {
-      cancelAnimationFrame(this.openSecondAnimationFrame);
-      this.openSecondAnimationFrame = undefined;
-    }
-  }
-
-  private waitForDialogTransition(callback: () => void) {
-    if (!this.dialogEl) {
-      callback();
-      return;
-    }
-
-    this.clearTransitionWait();
-    this.transitionCleanup = waitForTransitionEnd(this.dialogEl, () => {
-      this.transitionCleanup = undefined;
-      callback();
-    });
+    cancelDialogOpenAnimation(this.lifecycleState);
   }
 
   private clearTransitionWait() {
-    if (this.transitionCleanup) {
-      this.transitionCleanup();
-      this.transitionCleanup = undefined;
-    }
+    clearDialogTransitionWait(this.lifecycleState);
   }
 
   private getResolvedBackdropEffect(): QDialogBackdropEffect {
-    switch (this.backdropEffect) {
-      case 'solid':
-      case 'none':
-        return this.backdropEffect;
-      default:
-        return 'blur';
-    }
+    return resolveDialogBackdropEffect(this.backdropEffect);
   }
 
   // ===================== [6] RENDER (Visual Template Only) =====================

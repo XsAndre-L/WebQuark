@@ -1,6 +1,17 @@
 import { Component, Prop, State, Event, EventEmitter, h, Watch } from '@stencil/core';
 
 import type { QQuantitySelectorVariant } from './quantity-selector.types';
+import {
+  clampQuantityValue,
+  getQuantityInputCharCount,
+  hasQuantityBound,
+  isWithinQuantityBounds,
+  parseQuantityInput,
+  reconcileQuantityInput,
+  sanitizeQuantityInput,
+  stepQuantityValue,
+  toFiniteQuantity,
+} from './internals/number-value';
 
 /**
  * Numeric quantity control with increment/decrement buttons and a bounded editable value.
@@ -60,47 +71,19 @@ export class QQuantitySelector {
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
   private getCalculatedWidth(): string {
-    const hasMin = this.min !== undefined && this.min !== null;
-    const hasMax = this.max !== undefined && this.max !== null;
-
-    let charCount = 3;
-
-    if (hasMin || hasMax) {
-      charCount = Math.max(
-        3,
-        this.min?.toString().length ?? 0,
-        this.max?.toString().length ?? 0
-      );
-    } else {
-      charCount = Math.max(3, this.value?.toString().length ?? 0);
-    }
-
+    const charCount = getQuantityInputCharCount(this.value, { min: this.min, max: this.max });
     return `calc(${charCount} * var(--q-quantity-selector-char-width, 1ch) + var(--q-quantity-selector-input-padding, 16px))`;
   }
 
   private increment = () => {
-    const current = Number.isFinite(this.value) ? this.value : 0;
-    let next = current + this.step;
-    if (this.max !== undefined && this.max !== null) {
-      next = Math.min(this.max, next);
-    }
-    if (this.min !== undefined && this.min !== null) {
-      next = Math.max(this.min, next);
-    }
+    const next = stepQuantityValue(this.value, this.step, 1, { min: this.min, max: this.max });
     this.value = next;
     this.inputValue = String(next);
     this.qChange.emit(this.value);
   };
 
   private decrement = () => {
-    const current = Number.isFinite(this.value) ? this.value : 0;
-    let next = current - this.step;
-    if (this.min !== undefined && this.min !== null) {
-      next = Math.max(this.min, next);
-    }
-    if (this.max !== undefined && this.max !== null) {
-      next = Math.min(this.max, next);
-    }
+    const next = stepQuantityValue(this.value, this.step, -1, { min: this.min, max: this.max });
     this.value = next;
     this.inputValue = String(next);
     this.qChange.emit(this.value);
@@ -108,36 +91,16 @@ export class QQuantitySelector {
 
   private handleInput = (ev: Event) => {
     const target = ev.target as HTMLInputElement;
-    let val = target.value;
-
-    // Sanitize input to only allow numbers, minus sign, and decimal point
-    val = val.replace(/[^0-9.-]/g, '');
-
-    // Handle minus sign position
-    if (val.startsWith('-')) {
-      val = '-' + val.slice(1).replace(/-/g, '');
-    } else {
-      val = val.replace(/-/g, '');
-    }
-
-    // Handle decimal points
-    const parts = val.split('.');
-    if (parts.length > 2) {
-      val = parts[0] + '.' + parts.slice(1).join('');
-    }
+    const val = sanitizeQuantityInput(target.value);
 
     target.value = val;
     this.inputValue = val;
 
-    const parsed = parseFloat(val);
-    if (!isNaN(parsed)) {
-      const isAboveMin = this.min === undefined || this.min === null || parsed >= this.min;
-      const isBelowMax = this.max === undefined || this.max === null || parsed <= this.max;
-      if (isAboveMin && isBelowMax) {
-        if (this.value !== parsed) {
-          this.value = parsed;
-          this.qChange.emit(this.value);
-        }
+    const parsed = parseQuantityInput(val);
+    if (parsed !== undefined && isWithinQuantityBounds(parsed, { min: this.min, max: this.max })) {
+      if (this.value !== parsed) {
+        this.value = parsed;
+        this.qChange.emit(this.value);
       }
     }
   };
@@ -166,39 +129,21 @@ export class QQuantitySelector {
     } else if (ev.key === 'ArrowDown') {
       ev.preventDefault();
       this.decrement();
-    } else if (ev.key === 'Home' && this.min !== undefined && this.min !== null) {
+    } else if (ev.key === 'Home' && hasQuantityBound(this.min)) {
       ev.preventDefault();
-      this.value = this.min;
-      this.inputValue = String(this.min);
+      this.value = clampQuantityValue(this.min, { min: this.min, max: this.max });
+      this.inputValue = String(this.value);
       this.qChange.emit(this.value);
-    } else if (ev.key === 'End' && this.max !== undefined && this.max !== null) {
+    } else if (ev.key === 'End' && hasQuantityBound(this.max)) {
       ev.preventDefault();
-      this.value = this.max;
-      this.inputValue = String(this.max);
+      this.value = clampQuantityValue(this.max, { min: this.min, max: this.max });
+      this.inputValue = String(this.value);
       this.qChange.emit(this.value);
     }
   };
 
   private reconcileValue() {
-    let parsed = parseFloat(this.inputValue);
-    if (isNaN(parsed)) {
-      if (this.min !== undefined && this.min !== null) {
-        parsed = this.min;
-      } else if (this.max !== undefined && this.max !== null) {
-        parsed = Math.min(0, this.max);
-      } else {
-        parsed = 0;
-      }
-    }
-
-    let clamped = parsed;
-    if (this.min !== undefined && this.min !== null) {
-      clamped = Math.max(this.min, clamped);
-    }
-    if (this.max !== undefined && this.max !== null) {
-      clamped = Math.min(this.max, clamped);
-    }
-
+    const clamped = reconcileQuantityInput(this.inputValue, { min: this.min, max: this.max });
     this.inputValue = String(clamped);
     if (this.value !== clamped) {
       this.value = clamped;
@@ -209,9 +154,10 @@ export class QQuantitySelector {
   // ===================== [6] RENDER (Visual Template Only) =====================
 
   render() {
+    const finiteValue = toFiniteQuantity(this.value);
     const hasFiniteValue = Number.isFinite(this.value);
-    const isMinDisabled = hasFiniteValue && this.min !== undefined && this.min !== null && this.value <= this.min;
-    const isMaxDisabled = hasFiniteValue && this.max !== undefined && this.max !== null && this.value >= this.max;
+    const isMinDisabled = hasFiniteValue && hasQuantityBound(this.min) && finiteValue <= this.min;
+    const isMaxDisabled = hasFiniteValue && hasQuantityBound(this.max) && finiteValue >= this.max;
 
     const decBtn = (
       <button type="button" class="quantity-btn quantity-btn-decrement" onClick={this.decrement} disabled={isMinDisabled} aria-label="Decrement quantity">
@@ -252,8 +198,8 @@ export class QQuantitySelector {
           onKeyDown={this.handleKeyDown}
           role="spinbutton"
           aria-valuenow={hasFiniteValue ? String(this.value) : undefined}
-          aria-valuemin={this.min !== undefined && this.min !== null ? String(this.min) : undefined}
-          aria-valuemax={this.max !== undefined && this.max !== null ? String(this.max) : undefined}
+          aria-valuemin={hasQuantityBound(this.min) ? String(this.min) : undefined}
+          aria-valuemax={hasQuantityBound(this.max) ? String(this.max) : undefined}
           aria-label="Quantity"
           style={{ width: calculatedWidth }}
           part="input"

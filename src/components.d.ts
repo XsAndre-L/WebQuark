@@ -11,6 +11,7 @@ import { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components
 import { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/actions/chip/chip.types";
 import { QCircularProgressSize } from "./components/indicators/circular-progress/circular-progress.types";
 import { QDataTableRowClickDetail, QDataTableSelectionChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
+import { DataTableItem, DataTableKey } from "./components/data-display/data-table/internals/data-access";
 import { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
 import { Option, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
 import { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/layout/form/form.types";
@@ -36,6 +37,7 @@ export { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components
 export { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/actions/chip/chip.types";
 export { QCircularProgressSize } from "./components/indicators/circular-progress/circular-progress.types";
 export { QDataTableRowClickDetail, QDataTableSelectionChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
+export { DataTableItem, DataTableKey } from "./components/data-display/data-table/internals/data-access";
 export { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
 export { Option, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
 export { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/layout/form/form.types";
@@ -281,7 +283,7 @@ export namespace Components {
           * Row data, or a JSON string of row data.
           * @default []
          */
-        "items": any[] | string;
+        "items": DataTableItem[] | string;
         /**
           * Row field used as the stable selection and render key. Falls back to the row index.
           * @default 'id'
@@ -311,7 +313,7 @@ export namespace Components {
           * Keys for currently selected rows.
           * @default []
          */
-        "selectedKeys": any[];
+        "selectedKeys": DataTableKey[];
         /**
           * Shows the built-in toolbar search input.
           * @default false
@@ -329,8 +331,8 @@ export namespace Components {
     }
     interface QDialog {
         /**
-          * Backdrop rendering style. The `blur` option uses backdrop-filter and is not safe for CEF/Unreal Webview contexts.
-          * @default 'blur'
+          * Backdrop rendering style. Solid is the default CEF/Unreal-safe dimmer; none keeps the click layer transparent.
+          * @default 'solid'
          */
         "backdropEffect": QDialogBackdropEffect;
         /**
@@ -1995,7 +1997,7 @@ declare namespace LocalJSX {
           * Row data, or a JSON string of row data.
           * @default []
          */
-        "items"?: any[] | string;
+        "items"?: DataTableItem[] | string;
         /**
           * Row field used as the stable selection and render key. Falls back to the row index.
           * @default 'id'
@@ -2037,7 +2039,7 @@ declare namespace LocalJSX {
           * Keys for currently selected rows.
           * @default []
          */
-        "selectedKeys"?: any[];
+        "selectedKeys"?: DataTableKey[];
         /**
           * Shows the built-in toolbar search input.
           * @default false
@@ -2055,8 +2057,8 @@ declare namespace LocalJSX {
     }
     interface QDialog {
         /**
-          * Backdrop rendering style. The `blur` option uses backdrop-filter and is not safe for CEF/Unreal Webview contexts.
-          * @default 'blur'
+          * Backdrop rendering style. Solid is the default CEF/Unreal-safe dimmer; none keeps the click layer transparent.
+          * @default 'solid'
          */
         "backdropEffect"?: QDialogBackdropEffect;
         /**
@@ -3087,7 +3089,7 @@ declare namespace LocalJSX {
     }
     interface QDataTableAttributes {
         "columns": TableColumn[] | string;
-        "items": any[] | string;
+        "items": DataTableItem[] | string;
         "loading": boolean;
         "selectable": boolean;
         "keyField": string;

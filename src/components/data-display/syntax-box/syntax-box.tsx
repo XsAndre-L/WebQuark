@@ -3,7 +3,9 @@ import { formatCode } from '../../../utils/formatter';
 import { highlight as highlightSyntax } from '../../../utils/syntax';
 
 import type { QSyntaxBoxLanguage, QSyntaxBoxVariant } from './syntax-box.types';
-import { getSyntaxBoxEditorKeyAction } from './syntax-box.utils';
+import { getSyntaxBoxCopyText, writeClipboardText } from './internals/clipboard';
+import { getSyntaxBoxEditorKeyAction } from './internals/editor-key-action';
+import { normalizeSyntaxBoxValue, resolveInitialSyntaxBoxValue } from './internals/value-sync';
 
 /**
  * Displays and optionally edits syntax-highlighted code, with form association in editable mode.
@@ -76,16 +78,16 @@ export class QSyntaxBox {
   // ========================= [3] LIFECYCLE & WATCHERS =========================
   @Watch('code')
   watchCode(newCode: string) {
-    let finalCode = newCode;
     const textarea = this.el.shadowRoot?.querySelector('textarea');
     const isFocused = textarea && this.el.shadowRoot?.activeElement === textarea;
+    const finalCode = normalizeSyntaxBoxValue(newCode, {
+      editable: this.editable,
+      language: this.language,
+      shouldFormat: !isFocused,
+    });
 
-    if (this.editable && newCode && !isFocused) {
-      const formatted = formatCode(newCode, this.language);
-      if (formatted !== newCode) {
-        finalCode = formatted;
-        this.code = formatted;
-      }
+    if (finalCode !== newCode) {
+      this.code = finalCode;
     }
 
     if (this.value !== finalCode) {
@@ -96,16 +98,16 @@ export class QSyntaxBox {
 
   @Watch('value')
   watchValue(newValue: string) {
-    let finalVal = newValue;
     const textarea = this.el.shadowRoot?.querySelector('textarea');
     const isFocused = textarea && this.el.shadowRoot?.activeElement === textarea;
+    const finalVal = normalizeSyntaxBoxValue(newValue, {
+      editable: this.editable,
+      language: this.language,
+      shouldFormat: !isFocused,
+    });
 
-    if (this.editable && newValue && !isFocused) {
-      const formatted = formatCode(newValue, this.language);
-      if (formatted !== newValue) {
-        finalVal = formatted;
-        this.value = formatted;
-      }
+    if (finalVal !== newValue) {
+      this.value = finalVal;
     }
 
     if (this.code !== finalVal) {
@@ -121,19 +123,16 @@ export class QSyntaxBox {
   }
 
   componentWillLoad() {
-    if (this.value !== undefined && this.code === undefined) {
-      this.code = this.value;
-    } else if (this.code !== undefined && this.value === undefined) {
-      this.value = this.code;
-    }
+    const initial = resolveInitialSyntaxBoxValue({
+      code: this.code,
+      value: this.value,
+      editable: this.editable,
+      language: this.language,
+    });
 
-    if (this.editable && this.code) {
-      const formatted = formatCode(this.code, this.language);
-      this.code = formatted;
-      this.value = formatted;
-    }
-
-    this.initialValue = this.code || '';
+    this.code = initial.code;
+    this.value = initial.value;
+    this.initialValue = initial.initialValue;
     this.syncFormValue(this.code);
   }
 
@@ -179,13 +178,9 @@ export class QSyntaxBox {
   private copyCode = async () => {
     if (this.disabled) return;
 
-    const codeToCopy = this.code !== undefined ? this.code : this.el.textContent || '';
+    const codeToCopy = getSyntaxBoxCopyText(this.code, this.el.textContent);
     try {
-      if (!navigator.clipboard || typeof navigator.clipboard.writeText !== 'function') {
-        throw new Error('Clipboard API unavailable');
-      }
-
-      await navigator.clipboard.writeText(codeToCopy);
+      await writeClipboardText(codeToCopy);
       if (!this.el.isConnected) return;
 
       this.copied = true;

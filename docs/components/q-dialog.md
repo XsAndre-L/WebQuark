@@ -13,7 +13,7 @@ The `<q-dialog>` is a customizable modal dialog component. It handles overlays, 
 | `message` | `message` | `string` | `undefined` | Body message string displayed in the default body slot. |
 | `closeOnEsc` | `close-on-esc` | `boolean` | `true` | When `true`, pressing the `Escape` key automatically cancels and closes the dialog. |
 | `closeOnOverlayClick`| `close-on-overlay-click` | `boolean` | `true` | When `true`, clicking the backdrop overlay cancels and closes the dialog. |
-| `backdropEffect` | `backdrop-effect` | `'blur' \| 'solid' \| 'none'` | `'blur'` | Controls the backdrop rendering mode. Use `solid` for Unreal/CEF-safe overlays. |
+| `backdropEffect` | `backdrop-effect` | `'solid' \| 'none'` | `'solid'` | Controls the backdrop rendering mode. Solid is Unreal/CEF-safe by default. |
 | `loading` | `loading` | `boolean` | `false` | When `true`, disables buttons and overlays a loading spinner on the confirm button. |
 | `confirmLabel` | `confirm-label` | `string` | `'Confirm'` | Text label for the confirmation button. |
 | `cancelLabel` | `cancel-label` | `string` | `'Cancel'` | Text label for the cancellation button. |
@@ -80,7 +80,6 @@ Below is the complete list of styling tokens mapped to the component's internal 
 | Variable Name | Default Value | Purpose |
 | :--- | :--- | :--- |
 | `--q-bg-overlay` | `rgba(0, 0, 0, 0.85)` | Backdrop mask background color. |
-| `--q-glass-blur` | `12px` | Backdrop blur filter strength (See Compatibility warnings). |
 | `--q-bg-surface-1` | `#1f2937` | Background color for header, footer, and close button hover. |
 | `--q-bg-base` | `#111827` | Background color for default body content. |
 | `--q-border` | `1px solid var(--q-border-color, #374151)` | Outline border style for modal panels. |
@@ -197,7 +196,7 @@ export class QDialog {
 ## 8. Unreal Engine / Webview Compatibility Notes
 
 *   **No Native `<dialog>` Element**: Standard HTML `<dialog>` elements suffer from centering overlays, bounds calculations, and click handling glitches in OSR, frequently causing rendering lockups or black screens. `<q-dialog>` constructs a custom Shadow DOM overlay with standard absolute `div` layers.
-*   **Backdrop Effect Control**: `backdrop-effect="blur"` is the default for standard browser UI. In Unreal/CEF Off-Screen Rendering, use `backdrop-effect="solid"` so the overlay uses a high-opacity color without `backdrop-filter`. `backdrop-effect="none"` keeps the invisible click layer but removes visual dimming.
+*   **Backdrop Effect Control**: `backdrop-effect="solid"` is the default and uses a high-opacity color without `backdrop-filter`. `backdrop-effect="none"` keeps the invisible click layer but removes visual dimming.
 *   **WAI-ARIA Focus Loop Bridge**: Employs built-in tab trapping that handles focus restrictions inside the active modal container. This ensures key inputs correct register on CEF interfaces without keyboard bridge focus failures.
 
 ---
