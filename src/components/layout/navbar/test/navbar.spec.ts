@@ -30,6 +30,40 @@ describe('q-navbar', () => {
     expect(el.shadowRoot.textContent).toContain('Docs');
   });
 
+  it('renders configured item icons', async () => {
+    const el = await createComponent({
+      items: [{ label: 'Home', value: 'home', icon: 'house', iconSize: 26 }],
+    });
+
+    const icon = el.shadowRoot.querySelector('.desktop-nav .nav-item q-icon') as HTMLElement;
+    expect(icon).toBeTruthy();
+    expect(icon.getAttribute('name')).toBe('house');
+    expect(icon.getAttribute('lib')).toBe('lucide');
+    expect(icon.getAttribute('size')).toBe('26');
+  });
+
+  it('supports icon-only navigation items with an accessible label', async () => {
+    const el = await createComponent({
+      items: [{ label: 'Home', value: 'home', icon: 'house', iconOnly: true }],
+    });
+
+    const item = el.shadowRoot.querySelector('.desktop-nav .nav-item') as HTMLElement;
+    const label = item.querySelector('.nav-item__label') as HTMLElement;
+
+    expect(item.classList.contains('is-icon-only')).toBe(true);
+    expect(item.getAttribute('aria-label')).toBe('Home');
+    expect(label.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  it('reflects inline mobile mode for non-collapsing navigation', async () => {
+    const el = await createComponent({
+      mobileMode: 'inline',
+      items: [{ label: 'Home', value: 'home', icon: 'house', iconOnly: true }],
+    });
+
+    expect(el.getAttribute('mobile-mode')).toBe('inline');
+  });
+
   it('emits qSelect when an item is clicked', async () => {
     const el = await createComponent({
       items: [{ label: 'Docs', value: 'docs' }],

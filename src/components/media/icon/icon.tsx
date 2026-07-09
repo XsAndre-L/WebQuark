@@ -1,4 +1,4 @@
-import { Component, Prop, State, Watch, h, Host } from '@stencil/core';
+import { Component, Element, Prop, State, Watch, h } from '@stencil/core';
 import type { QIconColor, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from './icon.types';
 import { DEFAULT_FETCH_TIMEOUT_MS } from './internals/constants';
 import { fetchIconSvg } from './internals/fetch-icon';
@@ -13,6 +13,8 @@ import { isBinaryIconUrl, resolveFetchableIconUrl, resolveIconUrl } from './inte
 })
 export class QIcon {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
+  @Element() el!: HTMLElement;
+
   /**
    * The name of the icon (e.g., 'settings', 'heart', or a filename like 'logo.png').
    */
@@ -75,6 +77,22 @@ export class QIcon {
     await this.loadIcon();
   }
 
+  componentWillRender() {
+    this.syncHostState();
+  }
+
+  componentDidRender() {
+    this.syncHostState();
+  }
+
+  componentDidLoad() {
+    this.syncHostState();
+  }
+
+  componentDidUpdate() {
+    this.syncHostState();
+  }
+
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
   private get accessibleLabel(): string | undefined {
@@ -84,16 +102,43 @@ export class QIcon {
 
   private handleImageError = () => {
     this.hasError = true;
+    this.syncHostState();
   };
+
+  private syncHostState() {
+    if (!this.el) return;
+
+    const sizeStyle = getIconSizeStyle(this.size);
+    const accessibleLabel = this.accessibleLabel;
+
+    this.el.style.width = sizeStyle;
+    this.el.style.height = sizeStyle;
+    this.el.style.color = this.color;
+    this.el.classList.toggle('q-icon-error', this.hasError);
+    this.el.classList.toggle('q-icon-binary', !this.hasError && this.isBinary);
+    this.el.classList.toggle('q-icon-svg', !this.hasError && !this.isBinary);
+
+    if (accessibleLabel) {
+      this.el.setAttribute('role', 'img');
+      this.el.setAttribute('aria-label', accessibleLabel);
+      this.el.setAttribute('aria-hidden', 'false');
+    } else {
+      this.el.removeAttribute('role');
+      this.el.removeAttribute('aria-label');
+      this.el.setAttribute('aria-hidden', 'true');
+    }
+  }
 
   private async loadIcon() {
     const currentFetchId = ++this.fetchId;
     this.hasError = false;
+    this.syncHostState();
 
     if (!this.name) {
       this.svgContent = '';
       this.resolvedUrl = '';
       this.isBinary = false;
+      this.syncHostState();
       return;
     }
 
@@ -106,18 +151,20 @@ export class QIcon {
 
     if (isBinaryIconUrl(url)) {
       if (this.fetchId === currentFetchId) {
-        this.isBinary = true;
-        this.resolvedUrl = url;
-        this.svgContent = '';
-      }
-      return;
-    }
+            this.isBinary = true;
+            this.resolvedUrl = url;
+            this.svgContent = '';
+            this.syncHostState();
+          }
+          return;
+        }
 
     // Otherwise, fetch SVG inline
-    if (this.fetchId === currentFetchId) {
-      this.isBinary = false;
-      this.resolvedUrl = '';
-    }
+        if (this.fetchId === currentFetchId) {
+          this.isBinary = false;
+          this.resolvedUrl = '';
+          this.syncHostState();
+        }
 
     try {
       const finalUrl = resolveFetchableIconUrl(url);
@@ -128,84 +175,52 @@ export class QIcon {
         throw new Error(`Failed to sanitize icon SVG from ${finalUrl}`);
       }
 
-      if (this.fetchId === currentFetchId) {
-        this.svgContent = sanitizedSvg;
+        if (this.fetchId === currentFetchId) {
+          this.svgContent = sanitizedSvg;
+          this.syncHostState();
+        }
+      } catch (error) {
+        console.error(error);
+        if (this.fetchId === currentFetchId) {
+          this.hasError = true;
+          this.svgContent = '';
+          this.syncHostState();
+        }
       }
-    } catch (error) {
-      console.error(error);
-      if (this.fetchId === currentFetchId) {
-        this.hasError = true;
-        this.svgContent = '';
-      }
-    }
   }
 
   // ===================== [6] RENDER (Visual Template Only) =====================
 
   render() {
-    const sizeStyle = getIconSizeStyle(this.size);
-    const accessibleLabel = this.accessibleLabel;
-    const hostStyle = {
-      width: sizeStyle,
-      height: sizeStyle,
-      color: this.color,
-    };
-
     if (this.hasError) {
       return (
-        <Host
-          style={hostStyle}
-          class="q-icon-error"
-          role={accessibleLabel ? 'img' : undefined}
-          aria-label={accessibleLabel}
-          aria-hidden={accessibleLabel ? 'false' : 'true'}
-        >
-          <div class="icon-fallback" part="fallback">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false">
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-              <line x1="9" y1="9" x2="15" y2="15" />
-              <line x1="15" y1="9" x2="9" y2="15" />
-            </svg>
-          </div>
-        </Host>
+        <div class="icon-fallback" part="fallback">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" focusable="false">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+            <line x1="9" y1="9" x2="15" y2="15" />
+            <line x1="15" y1="9" x2="9" y2="15" />
+          </svg>
+        </div>
       );
     }
 
     if (this.isBinary) {
       return (
-        <Host
-          style={hostStyle}
-          class="q-icon-binary"
-          role={accessibleLabel ? 'img' : undefined}
-          aria-label={accessibleLabel}
-          aria-hidden={accessibleLabel ? 'false' : 'true'}
-        >
-          <img
-            src={this.resolvedUrl}
-            alt=""
-            aria-hidden="true"
-            part="image"
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'contain',
-            }}
-            onError={this.handleImageError}
-          />
-        </Host>
+        <img
+          src={this.resolvedUrl}
+          alt=""
+          aria-hidden="true"
+          part="image"
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'contain',
+          }}
+          onError={this.handleImageError}
+        />
       );
     }
 
-    return (
-      <Host
-        style={hostStyle}
-        class="q-icon-svg"
-        role={accessibleLabel ? 'img' : undefined}
-        aria-label={accessibleLabel}
-        aria-hidden={accessibleLabel ? 'false' : 'true'}
-      >
-        <div class="svg-container" part="svg" innerHTML={this.svgContent} />
-      </Host>
-    );
+    return <div class="svg-container" part="svg" innerHTML={this.svgContent} />;
   }
 }

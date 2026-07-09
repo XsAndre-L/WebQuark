@@ -17,7 +17,7 @@ import { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QForm
 import { QIconColor, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
 import { QInputSize, QInputType } from "./components/inputs/input/input.types";
 import { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
-import { NavbarItem, NavbarSelectDetail } from "./components/layout/navbar/navbar.types";
+import { NavbarItem, NavbarSelectDetail, QNavbarMobileMode } from "./components/layout/navbar/navbar.types";
 import { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
 import { QQuantitySelectorVariant } from "./components/inputs/quantity-selector/quantity-selector.types";
 import { QReelLayout } from "./components/media/reel/reel.types";
@@ -42,7 +42,7 @@ export { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QForm
 export { QIconColor, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
 export { QInputSize, QInputType } from "./components/inputs/input/input.types";
 export { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
-export { NavbarItem, NavbarSelectDetail } from "./components/layout/navbar/navbar.types";
+export { NavbarItem, NavbarSelectDetail, QNavbarMobileMode } from "./components/layout/navbar/navbar.types";
 export { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
 export { QQuantitySelectorVariant } from "./components/inputs/quantity-selector/quantity-selector.types";
 export { QReelLayout } from "./components/media/reel/reel.types";
@@ -757,6 +757,11 @@ export namespace Components {
           * @default 'Menu'
          */
         "mobileLabel": string;
+        /**
+          * Controls whether mobile widths collapse items into a menu or keep them inline.
+          * @default 'menu'
+         */
+        "mobileMode": QNavbarMobileMode;
         /**
           * Keeps the navbar pinned to the top of its scroll container.
           * @default false
@@ -2562,6 +2567,11 @@ declare namespace LocalJSX {
          */
         "mobileLabel"?: string;
         /**
+          * Controls whether mobile widths collapse items into a menu or keep them inline.
+          * @default 'menu'
+         */
+        "mobileMode"?: QNavbarMobileMode;
+        /**
           * Emitted when the mobile menu opens or closes.
          */
         "onQMenuToggle"?: (event: QNavbarCustomEvent<boolean>) => void;
@@ -3252,6 +3262,7 @@ declare namespace LocalJSX {
         "items": NavbarItem[] | string;
         "activeValue": string;
         "mobileLabel": string;
+        "mobileMode": QNavbarMobileMode;
         "sticky": boolean;
         "compact": boolean;
         "transparent": boolean;

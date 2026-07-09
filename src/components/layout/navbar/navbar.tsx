@@ -1,6 +1,6 @@
 import { Component, Element, Event, EventEmitter, Prop, State, h } from '@stencil/core';
 import { safeParseJson } from '../../../utils/utils';
-import type { NavbarItem, NavbarSelectDetail } from './navbar.types';
+import type { NavbarItem, NavbarSelectDetail, QNavbarMobileMode } from './navbar.types';
 
 let navbarIds = 0;
 
@@ -48,6 +48,9 @@ export class QNavbar {
 
   /** Accessible label for the mobile menu toggle button. */
   @Prop() mobileLabel: string = 'Menu';
+
+  /** Controls whether mobile widths collapse items into a menu or keep them inline. */
+  @Prop({ reflect: true }) mobileMode: QNavbarMobileMode = 'menu';
 
   /** Keeps the navbar pinned to the top of its scroll container. */
   @Prop({ reflect: true }) sticky: boolean = false;
@@ -154,6 +157,27 @@ export class QNavbar {
     this.handleMenuClose();
   };
 
+  private setIconAttribute(el: HTMLElement, name: string, value?: string | number) {
+    if (value === undefined || value === null || value === '') {
+      el.removeAttribute(name);
+      return;
+    }
+
+    const nextValue = String(value);
+    if (el.getAttribute(name) !== nextValue) {
+      el.setAttribute(name, nextValue);
+    }
+  }
+
+  private syncIconAttributes = (el: HTMLElement | undefined, item: NavbarItem) => {
+    if (!el || !item.icon) return;
+
+    this.setIconAttribute(el, 'name', item.icon);
+    this.setIconAttribute(el, 'lib', item.iconLib || 'lucide');
+    this.setIconAttribute(el, 'size', item.iconSize || 'sm');
+    this.setIconAttribute(el, 'local-path', item.iconLocalPath);
+  };
+
   // ===================== [6] RENDER (Visual Template Only) =====================
 
   private renderBrand() {
@@ -174,11 +198,29 @@ export class QNavbar {
 
   private renderNavItem(item: NavbarItem) {
     const active = item.active || (!!this.activeValue && (item.value === this.activeValue || item.href === this.activeValue));
+    const iconOnly = !!item.iconOnly && !!item.icon;
+    const accessibleLabel = iconOnly ? item.ariaLabel || item.label : undefined;
     const classes = {
       'nav-item': true,
       'is-active': active,
       'is-disabled': !!item.disabled,
+      'is-icon-only': iconOnly,
     };
+    const content = [
+      item.icon && (
+        <q-icon
+          class="nav-item__icon"
+          name={item.icon}
+          lib={item.iconLib || 'lucide'}
+          localPath={item.iconLocalPath}
+          size={item.iconSize || 'sm'}
+          ref={(el) => this.syncIconAttributes(el, item)}
+        />
+      ),
+      <span class="nav-item__label" aria-hidden={iconOnly ? 'true' : undefined}>
+        {item.label}
+      </span>,
+    ];
 
     if (item.href) {
       return (
@@ -189,9 +231,10 @@ export class QNavbar {
           rel={item.target === '_blank' ? 'noopener noreferrer' : undefined}
           aria-current={active ? 'page' : undefined}
           aria-disabled={item.disabled ? 'true' : 'false'}
+          aria-label={accessibleLabel}
           onClick={(ev) => this.handleItemClick(item, ev)}
         >
-          {item.label}
+          {content}
         </a>
       );
     }
@@ -202,9 +245,10 @@ export class QNavbar {
         type="button"
         disabled={item.disabled}
         aria-current={active ? 'page' : undefined}
+        aria-label={accessibleLabel}
         onClick={(ev) => this.handleItemClick(item, ev)}
       >
-        {item.label}
+        {content}
       </button>
     );
   }

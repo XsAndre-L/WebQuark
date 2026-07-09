@@ -513,14 +513,14 @@ export declare interface QLink extends Components.QLink {
 
 @ProxyCmp({
   defineCustomElementFn: defineQNavbar,
-  inputs: ['activeValue', 'bordered', 'brand', 'brandHref', 'compact', 'items', 'logoAlt', 'logoSrc', 'mobileLabel', 'sticky', 'transparent']
+  inputs: ['activeValue', 'bordered', 'brand', 'brandHref', 'compact', 'items', 'logoAlt', 'logoSrc', 'mobileLabel', 'mobileMode', 'sticky', 'transparent']
 })
 @Component({
   selector: 'q-navbar',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['activeValue', 'bordered', 'brand', 'brandHref', 'compact', 'items', 'logoAlt', 'logoSrc', 'mobileLabel', 'sticky', 'transparent'],
+  inputs: ['activeValue', 'bordered', 'brand', 'brandHref', 'compact', 'items', 'logoAlt', 'logoSrc', 'mobileLabel', 'mobileMode', 'sticky', 'transparent'],
   outputs: ['qSelect', 'qMenuToggle'],
 })
 export class QNavbar {
