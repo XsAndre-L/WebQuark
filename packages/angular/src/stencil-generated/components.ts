@@ -203,21 +203,23 @@ export declare interface QCircularProgress extends Components.QCircularProgress 
 
 @ProxyCmp({
   defineCustomElementFn: defineQDataTable,
-  inputs: ['columns', 'items', 'keyField', 'loading', 'searchPlaceholder', 'searchValue', 'selectable', 'selectedKeys', 'showSearch', 'showToolbar', 'toolbarTitle']
+  inputs: ['columns', 'items', 'keyField', 'loading', 'rowActions', 'searchPlaceholder', 'searchValue', 'selectable', 'selectedKeys', 'showSearch', 'showToolbar', 'sortColumn', 'sortDirection', 'sortMode', 'sortable', 'toolbarTitle']
 })
 @Component({
   selector: 'q-data-table',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['columns', 'items', 'keyField', 'loading', 'searchPlaceholder', 'searchValue', 'selectable', 'selectedKeys', 'showSearch', 'showToolbar', 'toolbarTitle'],
-  outputs: ['qRowClick', 'qSelectionChange', 'qSearch'],
+  inputs: ['columns', 'items', 'keyField', 'loading', 'rowActions', 'searchPlaceholder', 'searchValue', 'selectable', 'selectedKeys', 'showSearch', 'showToolbar', 'sortColumn', 'sortDirection', 'sortMode', 'sortable', 'toolbarTitle'],
+  outputs: ['qRowClick', 'qRowAction', 'qSelectionChange', 'qSearch', 'qSortChange'],
 })
 export class QDataTable {
   protected el: HTMLQDataTableElement;
   @Output() qRowClick = new EventEmitter<QDataTableCustomEvent<IQDataTableQDataTableRowClickDetail>>();
+  @Output() qRowAction = new EventEmitter<QDataTableCustomEvent<IQDataTableQDataTableRowActionDetail>>();
   @Output() qSelectionChange = new EventEmitter<QDataTableCustomEvent<IQDataTableQDataTableSelectionChangeDetail>>();
   @Output() qSearch = new EventEmitter<QDataTableCustomEvent<string>>();
+  @Output() qSortChange = new EventEmitter<QDataTableCustomEvent<IQDataTableQDataTableSortChangeDetail>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -227,13 +229,19 @@ export class QDataTable {
 
 import type { QDataTableCustomEvent } from '@webquark/core/components';
 import type { QDataTableRowClickDetail as IQDataTableQDataTableRowClickDetail } from '@webquark/core/components';
+import type { QDataTableRowActionDetail as IQDataTableQDataTableRowActionDetail } from '@webquark/core/components';
 import type { QDataTableSelectionChangeDetail as IQDataTableQDataTableSelectionChangeDetail } from '@webquark/core/components';
+import type { QDataTableSortChangeDetail as IQDataTableQDataTableSortChangeDetail } from '@webquark/core/components';
 
 export declare interface QDataTable extends Components.QDataTable {
   /**
    * Emitted when a non-interactive row area is clicked or activated with the keyboard.
    */
   qRowClick: EventEmitter<QDataTableCustomEvent<IQDataTableQDataTableRowClickDetail>>;
+  /**
+   * Emitted when a row action button is clicked.
+   */
+  qRowAction: EventEmitter<QDataTableCustomEvent<IQDataTableQDataTableRowActionDetail>>;
   /**
    * Emitted when selected rows change.
    */
@@ -242,6 +250,10 @@ export declare interface QDataTable extends Components.QDataTable {
    * Emitted when the built-in search input value changes.
    */
   qSearch: EventEmitter<QDataTableCustomEvent<string>>;
+  /**
+   * Emitted when a sortable column header changes sort state.
+   */
+  qSortChange: EventEmitter<QDataTableCustomEvent<IQDataTableQDataTableSortChangeDetail>>;
 }
 
 

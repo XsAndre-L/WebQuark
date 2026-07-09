@@ -1,6 +1,6 @@
 import { safeParseJson } from '../../../../utils/utils';
 
-import type { DataTableItem, DataTableKey, TableColumn } from '../data-table.types';
+import type { DataTableItem, DataTableKey, DataTableRowAction, TableColumn } from '../data-table.types';
 
 export function parseDataTableColumns(columns: TableColumn[] | string): TableColumn[] {
   return safeParseJson<TableColumn[]>(columns, [], 'QDataTable');
@@ -8,6 +8,10 @@ export function parseDataTableColumns(columns: TableColumn[] | string): TableCol
 
 export function parseDataTableItems(items: DataTableItem[] | string): DataTableItem[] {
   return safeParseJson<DataTableItem[]>(items, [], 'QDataTable');
+}
+
+export function parseDataTableRowActions(rowActions: DataTableRowAction[] | string): DataTableRowAction[] {
+  return safeParseJson<DataTableRowAction[]>(rowActions, [], 'QDataTable');
 }
 
 export function isRecord(value: unknown): value is Record<PropertyKey, unknown> {

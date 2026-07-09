@@ -1,6 +1,7 @@
 import { h } from '@stencil/core';
 
-import type { DataTableItem, TableColumn } from '../data-table.types';
+import type { DataTableItem, DataTableRowAction, TableColumn } from '../data-table.types';
+import { renderDataTableRowActions } from './render-row-actions';
 import type { DataTableModel, DataTableRowModel } from './table-model';
 
 export interface RenderDataTableBodyOptions {
@@ -9,6 +10,7 @@ export interface RenderDataTableBodyOptions {
   onRowClick: (item: DataTableItem, index: number, event: MouseEvent) => void;
   onRowKeyDown: (item: DataTableItem, index: number, event: KeyboardEvent) => void;
   onRowCheckboxChange: (item: DataTableItem, index: number, event: Event) => void;
+  onRowAction: (item: DataTableItem, index: number, action: DataTableRowAction, event: MouseEvent) => void;
   renderCell: (item: DataTableItem, column: TableColumn) => unknown;
 }
 
@@ -70,6 +72,10 @@ function renderDataTableRow(row: DataTableRowModel, options: RenderDataTableBody
           {options.renderCell(row.item, column)}
         </td>
       ))}
+      {renderDataTableRowActions({
+        actions: model.rowActions,
+        onRowAction: (action, event) => options.onRowAction(row.item, row.index, action, event),
+      })}
     </tr>
   );
 }

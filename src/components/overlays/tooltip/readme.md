@@ -18,11 +18,13 @@
 
 ### Used by
 
+ - [q-data-table](../../data-display/data-table)
  - [q-syntax-box](../../data-display/syntax-box)
 
 ### Graph
 ```mermaid
 graph TD;
+  q-data-table --> q-tooltip
   q-syntax-box --> q-tooltip
   style q-tooltip fill:#f9f,stroke:#333,stroke-width:4px
 ```

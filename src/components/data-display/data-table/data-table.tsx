@@ -2,8 +2,13 @@ import { Component, Prop, Event, EventEmitter, h } from '@stencil/core';
 import type {
   DataTableItem,
   DataTableKey,
+  DataTableRowAction,
+  DataTableSortDirection,
+  DataTableSortMode,
+  QDataTableRowActionDetail,
   QDataTableRowClickDetail,
   QDataTableSelectionChangeDetail,
+  QDataTableSortChangeDetail,
   TableColumn,
 } from './data-table.types';
 import { getItemKey, parseDataTableItems, renderDataTableCell } from './internals/data-access';
@@ -40,6 +45,9 @@ export class QDataTable {
   /** Row data, or a JSON string of row data. */
   @Prop() items: DataTableItem[] | string = [];
 
+  /** Optional row-level actions rendered as trailing icon buttons. */
+  @Prop() rowActions: DataTableRowAction[] | string = [];
+
   /** Shows a loading state and suppresses row rendering while true. */
   @Prop() loading: boolean = false;
 
@@ -51,6 +59,18 @@ export class QDataTable {
 
   /** Row field used as the stable selection and render key. Falls back to the row index. */
   @Prop() keyField: string = 'id';
+
+  /** Enables sortable column headers. Columns can override this with their own sortable setting. */
+  @Prop() sortable: boolean = false;
+
+  /** Sorting behavior: 'table' sorts provided items locally, while 'external' only emits sort changes. */
+  @Prop() sortMode: DataTableSortMode = 'table';
+
+  /** Currently sorted column key. */
+  @Prop({ mutable: true }) sortColumn?: string;
+
+  /** Current sort direction for the sorted column. */
+  @Prop({ mutable: true }) sortDirection?: DataTableSortDirection;
 
   /** Shows the optional toolbar above the table. */
   @Prop() showToolbar: boolean = false;
@@ -70,11 +90,17 @@ export class QDataTable {
   /** Emitted when a non-interactive row area is clicked or activated with the keyboard. */
   @Event() qRowClick!: EventEmitter<QDataTableRowClickDetail>;
 
+  /** Emitted when a row action button is clicked. */
+  @Event() qRowAction!: EventEmitter<QDataTableRowActionDetail>;
+
   /** Emitted when selected rows change. */
   @Event() qSelectionChange!: EventEmitter<QDataTableSelectionChangeDetail>;
 
   /** Emitted when the built-in search input value changes. */
   @Event() qSearch!: EventEmitter<string>;
+
+  /** Emitted when a sortable column header changes sort state. */
+  @Event() qSortChange!: EventEmitter<QDataTableSortChangeDetail>;
 
   private getParsedItems(): DataTableItem[] {
     return parseDataTableItems(this.items);
@@ -129,10 +155,38 @@ export class QDataTable {
     });
   }
 
+  private handleRowAction(item: DataTableItem, index: number, action: DataTableRowAction, event: MouseEvent) {
+    event.stopPropagation();
+    this.qRowAction.emit({
+      action,
+      item,
+      index,
+      originalEvent: event,
+    });
+  }
+
   private handleSearchInput = (event: CustomEvent<string>) => {
     this.searchValue = event.detail;
     this.qSearch.emit(this.searchValue);
   };
+
+  private handleSortToggle = (column: TableColumn) => {
+    const nextDirection = this.getNextSortDirection(column.key);
+
+    this.sortColumn = nextDirection ? column.key : undefined;
+    this.sortDirection = nextDirection;
+    this.qSortChange.emit({
+      columnKey: this.sortColumn,
+      direction: this.sortDirection,
+    });
+  };
+
+  private getNextSortDirection(columnKey: string): DataTableSortDirection | undefined {
+    if (this.sortColumn !== columnKey) return 'asc';
+    if (this.sortDirection === 'asc') return 'desc';
+    if (this.sortDirection === 'desc') return undefined;
+    return 'asc';
+  }
 
   private handleRowKeyDown(item: DataTableItem, index: number, event: KeyboardEvent) {
     if (event.key === 'Enter' || event.key === ' ') {
@@ -159,9 +213,14 @@ export class QDataTable {
     const model = getDataTableModel({
       columns: this.columns,
       items: this.items,
+      rowActions: this.rowActions,
       selectedKeys: this.selectedKeys,
       selectable: this.selectable,
       keyField: this.keyField,
+      sortable: this.sortable,
+      sortMode: this.sortMode,
+      sortColumn: this.sortColumn,
+      sortDirection: this.sortDirection,
     });
 
     return (
@@ -179,6 +238,7 @@ export class QDataTable {
             {renderDataTableHead({
               model,
               onSelectAllChange: event => this.handleSelectAllChange(event),
+              onSortToggle: column => this.handleSortToggle(column),
             })}
             {renderDataTableBody({
               model,
@@ -186,6 +246,7 @@ export class QDataTable {
               onRowClick: (item, index, event) => this.handleRowClick(item, index, event),
               onRowKeyDown: (item, index, event) => this.handleRowKeyDown(item, index, event),
               onRowCheckboxChange: (item, index, event) => this.handleRowCheckboxChange(item, index, event),
+              onRowAction: (item, index, action, event) => this.handleRowAction(item, index, action, event),
               renderCell: (item, column) => this.renderCell(item, column),
             })}
           </table>
