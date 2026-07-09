@@ -298,6 +298,11 @@ export namespace Components {
          */
         "rowActions": DataTableRowAction[] | string;
         /**
+          * Enables full-row click and keyboard activation.
+          * @default true
+         */
+        "rowClickable": boolean;
+        /**
           * Placeholder text for the built-in search input.
           * @default 'Search...'
          */
@@ -2057,6 +2062,11 @@ declare namespace LocalJSX {
          */
         "rowActions"?: DataTableRowAction[] | string;
         /**
+          * Enables full-row click and keyboard activation.
+          * @default true
+         */
+        "rowClickable"?: boolean;
+        /**
           * Placeholder text for the built-in search input.
           * @default 'Search...'
          */
@@ -3145,6 +3155,7 @@ declare namespace LocalJSX {
         "columns": TableColumn[] | string;
         "items": DataTableItem[] | string;
         "rowActions": DataTableRowAction[] | string;
+        "rowClickable": boolean;
         "loading": boolean;
         "selectable": boolean;
         "keyField": string;

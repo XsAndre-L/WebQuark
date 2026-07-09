@@ -48,13 +48,14 @@ function renderDataTableRow(row: DataTableRowModel, options: RenderDataTableBody
       key={row.renderKey}
       class={{
         'row-el': true,
+        'is-clickable': model.rowClickable,
         'is-selected': row.selected,
       }}
-      tabindex="0"
+      tabindex={model.rowClickable ? '0' : undefined}
       role="row"
       aria-selected={row.selected ? 'true' : 'false'}
-      onClick={event => options.onRowClick(row.item, row.index, event)}
-      onKeyDown={event => options.onRowKeyDown(row.item, row.index, event)}
+      onClick={model.rowClickable ? event => options.onRowClick(row.item, row.index, event) : undefined}
+      onKeyDown={model.rowClickable ? event => options.onRowKeyDown(row.item, row.index, event) : undefined}
     >
       {model.selectable && (
         <td class="cell-selection" role="gridcell">
@@ -74,6 +75,8 @@ function renderDataTableRow(row: DataTableRowModel, options: RenderDataTableBody
       ))}
       {renderDataTableRowActions({
         actions: model.rowActions,
+        item: row.item,
+        index: row.index,
         onRowAction: (action, event) => options.onRowAction(row.item, row.index, action, event),
       })}
     </tr>
