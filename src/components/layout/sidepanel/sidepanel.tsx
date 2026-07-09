@@ -14,6 +14,8 @@ import type {
   SidepanelItem,
 } from './sidepanel.types';
 
+const DEFAULT_COLLAPSE_LABEL = 'Toggle sidebar';
+
 @Component({
   tag: 'q-sidepanel',
   styleUrl: 'sidepanel.css',
@@ -51,8 +53,8 @@ export class QSidepanel {
   @Prop() collapseControl: QSidepanelCollapseControl = 'none';
   /** Visual behavior while collapsed: 'rail' shrinks to an icon-only rail, 'hidden' collapses to near-zero width. Reflected so light-DOM consumers can style slotted header/footer content differently per mode (e.g. q-sidepanel[collapsed][collapse-mode="rail"]). */
   @Prop({ reflect: true }) collapseMode: QSidepanelCollapseMode = 'rail';
-  /** Accessible label for the built-in collapse control (aria-label/title). */
-  @Prop() collapseLabel: string = 'Toggle sidebar';
+  /** Accessible label override for the built-in collapse control (aria-label/title). */
+  @Prop() collapseLabel: string = DEFAULT_COLLAPSE_LABEL;
 
   // ── Events ────────────────────────────────────────────────────────────────
   /** Emitted when the drawer is requested to close. */
@@ -62,9 +64,11 @@ export class QSidepanel {
   /** Fires whenever the BUILT-IN collapse control toggles collapsed. Does not fire when a consumer sets [collapsed] externally themselves. */
   @Event() qCollapsedChange!: EventEmitter<QSidepanelCollapsedChangeDetail>;
 
-  // ── Internal drawer state ─────────────────────────────────────────────────
+  // ── Internal state ────────────────────────────────────────────────────────
   @State() isVisible: boolean = false;
   @State() isAnimatedOpen: boolean = false;
+  @State() hasHeaderContent: boolean = false;
+  @State() hasFooterContent: boolean = false;
 
   // ── Internal nav state ────────────────────────────────────────────────────
   @State() expandedGroups: Set<string> = new Set();
@@ -85,6 +89,8 @@ export class QSidepanel {
     // Drawer mode
     this.isVisible = this.open;
     this.isAnimatedOpen = this.open;
+    this.hasHeaderContent = this.hasSlotContent('header');
+    this.hasFooterContent = this.hasSlotContent('footer');
 
     // Nav mode
     if (this.expanded) {
@@ -164,6 +170,14 @@ export class QSidepanel {
     this.qCollapsedChange.emit({ collapsed: next });
   };
 
+  private handleHeaderSlotChange = (event: Event) => {
+    this.hasHeaderContent = this.slotHasAssignedContent(event.target as HTMLSlotElement);
+  };
+
+  private handleFooterSlotChange = (event: Event) => {
+    this.hasFooterContent = this.slotHasAssignedContent(event.target as HTMLSlotElement);
+  };
+
   private clearDrawerOpenCleanup() {
     if (this.drawerOpenCleanup) {
       this.drawerOpenCleanup();
@@ -185,8 +199,24 @@ export class QSidepanel {
     return values;
   }
 
-  private hasNamedSlot(name: string): boolean {
-    return this.host.querySelector(`[slot="${name}"]`) !== null;
+  private hasSlotContent(name: string): boolean {
+    return Array.from(this.host.childNodes).some((node) => {
+      if (node.nodeType !== 1 || (node as HTMLElement).slot !== name) {
+        return false;
+      }
+
+      return true;
+    });
+  }
+
+  private slotHasAssignedContent(slot: HTMLSlotElement): boolean {
+    return slot.assignedNodes({ flatten: true }).some((node) => {
+      if (node.nodeType === 1) {
+        return true;
+      }
+
+      return node.nodeType === 3 && Boolean(node.textContent?.trim());
+    });
   }
 
   // ===================== [6] RENDER (Visual Template Only) =====================
@@ -194,18 +224,30 @@ export class QSidepanel {
   private getCollapseIconName(): string {
     switch (this.side) {
       case 'right':
-        return this.collapsed ? 'chevron-left' : 'chevron-right';
+        return this.collapsed ? 'panel-right-open' : 'panel-right-close';
       case 'top':
-        return this.collapsed ? 'chevron-down' : 'chevron-up';
+        return this.collapsed ? 'panel-top-open' : 'panel-top-close';
       case 'bottom':
-        return this.collapsed ? 'chevron-up' : 'chevron-down';
+        return this.collapsed ? 'panel-bottom-open' : 'panel-bottom-close';
       case 'left':
       default:
-        return this.collapsed ? 'chevron-right' : 'chevron-left';
+        return this.collapsed ? 'panel-left-open' : 'panel-left-close';
     }
   }
 
+  private getCollapseControlLabel(): string {
+    const label = this.collapseLabel.trim();
+
+    if (label && label !== DEFAULT_COLLAPSE_LABEL) {
+      return label;
+    }
+
+    return this.collapsed ? 'Expand sidebar' : 'Collapse sidebar';
+  }
+
   private renderCollapseControl(placement: QSidepanelCollapseControl) {
+    const collapseControlLabel = this.getCollapseControlLabel();
+
     return (
       <button
         type="button"
@@ -214,8 +256,8 @@ export class QSidepanel {
           [`collapse-control--${placement}`]: true,
         }}
         part="collapse-control"
-        aria-label={this.collapseLabel}
-        title={this.collapseLabel}
+        aria-label={collapseControlLabel}
+        title={collapseControlLabel}
         aria-expanded={String(!this.collapsed)}
         onClick={this.handleCollapseToggle}
       >
@@ -233,10 +275,8 @@ export class QSidepanel {
       const isCollapseActive = this.collapsible;
       const isCollapsed = isCollapseActive && this.collapsed;
       const isHiddenCollapsed = isCollapsed && this.collapseMode === 'hidden';
-      const hasHeader = this.hasNamedSlot('header');
-      const hasFooter = this.hasNamedSlot('footer');
-      const showHeader = hasHeader || (isCollapseActive && this.collapseControl === 'header');
-      const showFooter = hasFooter || (isCollapseActive && this.collapseControl === 'footer');
+      const showHeader = this.hasHeaderContent || (isCollapseActive && this.collapseControl === 'header');
+      const showFooter = this.hasFooterContent || (isCollapseActive && this.collapseControl === 'footer');
 
       const navClasses = {
         'nav-sidebar': true,
@@ -247,18 +287,22 @@ export class QSidepanel {
 
       return (
         <div class={navClasses} role="navigation" aria-label="Sidebar navigation">
-          {showHeader && (
-            <div class="nav-header" part="header">
-              {/* aria-hidden lives on this inner wrapper (not nav-header itself) so the
-                  built-in collapse-control button below -- which stays visually/keyboard
-                  reachable in collapse-mode="hidden" via the CSS override -- is never pulled
-                  out of the accessibility tree by an aria-hidden ancestor. */}
-              <span aria-hidden={isHiddenCollapsed ? 'true' : undefined}>
-                <slot name="header" />
-              </span>
-              {isCollapseActive && this.collapseControl === 'header' && this.renderCollapseControl('header')}
-            </div>
-          )}
+          <div
+            class={{
+              'nav-header': true,
+              'is-hidden': !showHeader,
+            }}
+            part="header"
+          >
+            {/* aria-hidden lives on this inner wrapper (not nav-header itself) so the
+                built-in collapse-control button below -- which stays visually/keyboard
+                reachable in collapse-mode="hidden" via the CSS override -- is never pulled
+                out of the accessibility tree by an aria-hidden ancestor. */}
+            <span aria-hidden={isHiddenCollapsed ? 'true' : undefined}>
+              <slot name="header" onSlotchange={this.handleHeaderSlotChange} />
+            </span>
+            {isCollapseActive && this.collapseControl === 'header' && this.renderCollapseControl('header')}
+          </div>
 
           <div class="nav-body" part="body" aria-hidden={isHiddenCollapsed ? 'true' : undefined}>
             {renderNavItems({
@@ -269,14 +313,18 @@ export class QSidepanel {
             })}
           </div>
 
-          {showFooter && (
-            <div class="nav-footer" part="footer">
-              <span aria-hidden={isHiddenCollapsed ? 'true' : undefined}>
-                <slot name="footer" />
-              </span>
-              {isCollapseActive && this.collapseControl === 'footer' && this.renderCollapseControl('footer')}
-            </div>
-          )}
+          <div
+            class={{
+              'nav-footer': true,
+              'is-hidden': !showFooter,
+            }}
+            part="footer"
+          >
+            <span aria-hidden={isHiddenCollapsed ? 'true' : undefined}>
+              <slot name="footer" onSlotchange={this.handleFooterSlotChange} />
+            </span>
+            {isCollapseActive && this.collapseControl === 'footer' && this.renderCollapseControl('footer')}
+          </div>
 
           {isCollapseActive && this.collapseControl === 'edge' && this.renderCollapseControl('edge')}
         </div>
@@ -292,16 +340,28 @@ export class QSidepanel {
           }}
           part="panel"
         >
-          <div class="panel-header" part="header">
-            <slot name="header" />
+          <div
+            class={{
+              'panel-header': true,
+              'is-hidden': !this.hasHeaderContent,
+            }}
+            part="header"
+          >
+            <slot name="header" onSlotchange={this.handleHeaderSlotChange} />
           </div>
 
           <div class="panel-body" part="body">
             <slot />
           </div>
 
-          <div class="panel-footer" part="footer">
-            <slot name="footer" />
+          <div
+            class={{
+              'panel-footer': true,
+              'is-hidden': !this.hasFooterContent,
+            }}
+            part="footer"
+          >
+            <slot name="footer" onSlotchange={this.handleFooterSlotChange} />
           </div>
         </div>
       );
@@ -337,12 +397,28 @@ export class QSidepanel {
           aria-hidden={this.open ? 'false' : 'true'}
           tabindex="-1"
         >
-          <div class="drawer-header" part="header">
-            <slot name="header" />
+          <div
+            class={{
+              'drawer-header': true,
+              'is-hidden': !this.hasHeaderContent,
+            }}
+            part="header"
+          >
+            <slot name="header" onSlotchange={this.handleHeaderSlotChange} />
           </div>
 
           <div class="drawer-body" part="body">
             <slot />
+          </div>
+
+          <div
+            class={{
+              'drawer-footer': true,
+              'is-hidden': !this.hasFooterContent,
+            }}
+            part="footer"
+          >
+            <slot name="footer" onSlotchange={this.handleFooterSlotChange} />
           </div>
         </div>
       </div>
