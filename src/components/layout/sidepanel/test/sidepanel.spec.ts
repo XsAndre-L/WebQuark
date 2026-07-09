@@ -76,14 +76,17 @@ describe('q-sidepanel', () => {
     expect(activeItem.textContent).toContain('Reports');
   });
 
-  it('does not render empty nav header or footer regions', async () => {
+  it('keeps empty nav header and footer regions hidden', async () => {
     const el = await createComponent({
       variant: 'nav',
       items: [{ label: 'Reports', value: 'reports' }],
     });
 
-    expect(el.shadowRoot.querySelector('.nav-header')).toBeNull();
-    expect(el.shadowRoot.querySelector('.nav-footer')).toBeNull();
+    const header = el.shadowRoot.querySelector('.nav-header') as HTMLElement;
+    const footer = el.shadowRoot.querySelector('.nav-footer') as HTMLElement;
+
+    expect(header.classList.contains('is-hidden')).toBe(true);
+    expect(footer.classList.contains('is-hidden')).toBe(true);
   });
 
   it('renders nav footer when footer content is slotted', async () => {
@@ -193,11 +196,20 @@ describe('q-sidepanel', () => {
     el.addEventListener('qCollapsedChange', collapsedHandler);
 
     const control = el.shadowRoot.querySelector('.collapse-control') as HTMLButtonElement;
+    const icon = control.querySelector('q-icon') as HTMLElement;
+
+    expect(control.getAttribute('aria-label')).toBe('Collapse sidebar');
+    expect(control.getAttribute('title')).toBe('Collapse sidebar');
+    expect(icon.getAttribute('name')).toBe('panel-right-close');
+
     control.click();
     await wait();
 
     expect(el.collapsed).toBe(true);
     expect(collapsedHandler).toHaveBeenCalledTimes(1);
     expect(collapsedHandler.mock.calls[0][0].detail.collapsed).toBe(true);
+    expect(control.getAttribute('aria-label')).toBe('Expand sidebar');
+    expect(control.getAttribute('title')).toBe('Expand sidebar');
+    expect((control.querySelector('q-icon') as HTMLElement).getAttribute('name')).toBe('panel-right-open');
   });
 });

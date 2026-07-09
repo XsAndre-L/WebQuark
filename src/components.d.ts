@@ -902,7 +902,7 @@ export namespace Components {
          */
         "collapseControl": QSidepanelCollapseControl;
         /**
-          * Accessible label for the built-in collapse control (aria-label/title).
+          * Accessible label override for the built-in collapse control (aria-label/title).
           * @default 'Toggle sidebar'
          */
         "collapseLabel": string;
@@ -2734,7 +2734,7 @@ declare namespace LocalJSX {
          */
         "collapseControl"?: QSidepanelCollapseControl;
         /**
-          * Accessible label for the built-in collapse control (aria-label/title).
+          * Accessible label override for the built-in collapse control (aria-label/title).
           * @default 'Toggle sidebar'
          */
         "collapseLabel"?: string;
