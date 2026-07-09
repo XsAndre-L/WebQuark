@@ -5,7 +5,7 @@ export interface SidepanelItem {
   children?: SidepanelItem[];
 }
 
-export type QSidepanelVariant = 'drawer' | 'nav';
+export type QSidepanelVariant = 'drawer' | 'nav' | 'panel';
 export type QSidepanelSide = 'left' | 'right' | 'top' | 'bottom';
 export type QSidepanelMode = 'flat' | 'grouped' | 'tree';
 export type QSidepanelCollapseControl = 'none' | 'header' | 'footer' | 'edge';

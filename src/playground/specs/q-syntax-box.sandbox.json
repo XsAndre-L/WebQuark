@@ -107,7 +107,7 @@
         "height": "auto"
       },
       "slots": {
-        "default": ".demo-class {\n  display: flex;\n  color: var(--q-primary-color, #007bff);\n  font-size: 1.2rem;\n}"
+        "default": ".demo-class {\n  display: flex;\n  color: var(--q-color-primary);\n  font-size: 1.2rem;\n}"
       }
     },
     {

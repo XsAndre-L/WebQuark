@@ -76,6 +76,55 @@ describe('q-sidepanel', () => {
     expect(activeItem.textContent).toContain('Reports');
   });
 
+  it('does not render empty nav header or footer regions', async () => {
+    const el = await createComponent({
+      variant: 'nav',
+      items: [{ label: 'Reports', value: 'reports' }],
+    });
+
+    expect(el.shadowRoot.querySelector('.nav-header')).toBeNull();
+    expect(el.shadowRoot.querySelector('.nav-footer')).toBeNull();
+  });
+
+  it('renders nav footer when footer content is slotted', async () => {
+    const el = document.createElement('q-sidepanel');
+    Object.assign(el, {
+      variant: 'nav',
+      items: [{ label: 'Reports', value: 'reports' }],
+    });
+
+    const footer = document.createElement('div');
+    footer.setAttribute('slot', 'footer');
+    footer.textContent = 'Footer action';
+    el.appendChild(footer);
+    document.body.appendChild(el);
+
+    if (typeof (el as any).componentOnReady === 'function') {
+      await (el as any).componentOnReady();
+    } else {
+      await wait(50);
+    }
+
+    const slot = el.shadowRoot?.querySelector('.nav-footer slot[name="footer"]') as HTMLSlotElement;
+
+    expect(el.shadowRoot?.querySelector('.nav-footer')).toBeTruthy();
+    expect(slot.assignedElements()).toContain(footer);
+  });
+
+  it('renders persistent panel mode with slotted content and no drawer backdrop', async () => {
+    const el = await createComponent({ variant: 'panel', side: 'right' });
+    const content = document.createElement('span');
+    content.textContent = 'Panel content';
+    el.appendChild(content);
+    await wait();
+
+    const slot = el.shadowRoot.querySelector('.panel-body slot') as HTMLSlotElement;
+
+    expect(el.shadowRoot.querySelector('.panel-shell')).toBeTruthy();
+    expect(el.shadowRoot.querySelector('.sidepanel-backdrop')).toBeNull();
+    expect(slot.assignedNodes()).toContain(content);
+  });
+
   it('exposes alternating depth tone attributes on nav items', async () => {
     const el = await createComponent({
       variant: 'nav',

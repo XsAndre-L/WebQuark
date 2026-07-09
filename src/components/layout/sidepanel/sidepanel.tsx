@@ -1,4 +1,4 @@
-import { Component, Prop, Event, EventEmitter, Watch, Listen, State, h } from '@stencil/core';
+import { Component, Prop, Event, EventEmitter, Watch, Listen, State, Element, h } from '@stencil/core';
 import { focusFirstElement, handleTabTrap } from '../../../utils/dom';
 import { handleDrawerOpenChange } from './internals/drawer';
 import { seedExpandedGroups, toggleGroup } from './internals/groups';
@@ -22,7 +22,7 @@ import type {
 export class QSidepanel {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   // ── Shared ────────────────────────────────────────────────────────────────
-  /** 'drawer' = slide-in overlay, 'nav' = fixed navigation sidebar */
+  /** 'drawer' = slide-in overlay, 'nav' = fixed navigation sidebar, 'panel' = persistent slotted side panel */
   @Prop({ reflect: true }) variant: QSidepanelVariant = 'nav';
 
   // ── Drawer-mode props ─────────────────────────────────────────────────────
@@ -68,6 +68,8 @@ export class QSidepanel {
 
   // ── Internal nav state ────────────────────────────────────────────────────
   @State() expandedGroups: Set<string> = new Set();
+
+  @Element() host!: HTMLElement;
 
   private drawerEl?: HTMLDivElement;
 
@@ -183,6 +185,10 @@ export class QSidepanel {
     return values;
   }
 
+  private hasNamedSlot(name: string): boolean {
+    return this.host.querySelector(`[slot="${name}"]`) !== null;
+  }
+
   // ===================== [6] RENDER (Visual Template Only) =====================
 
   private getCollapseIconName(): string {
@@ -219,10 +225,18 @@ export class QSidepanel {
   }
 
   render() {
+    const customSizeStyle = {
+      '--q-panel-width': this.panelSize,
+    };
+
     if (this.variant === 'nav') {
       const isCollapseActive = this.collapsible;
       const isCollapsed = isCollapseActive && this.collapsed;
       const isHiddenCollapsed = isCollapsed && this.collapseMode === 'hidden';
+      const hasHeader = this.hasNamedSlot('header');
+      const hasFooter = this.hasNamedSlot('footer');
+      const showHeader = hasHeader || (isCollapseActive && this.collapseControl === 'header');
+      const showFooter = hasFooter || (isCollapseActive && this.collapseControl === 'footer');
 
       const navClasses = {
         'nav-sidebar': true,
@@ -233,16 +247,18 @@ export class QSidepanel {
 
       return (
         <div class={navClasses} role="navigation" aria-label="Sidebar navigation">
-          <div class="nav-header" part="header">
-            {/* aria-hidden lives on this inner wrapper (not nav-header itself) so the
-                built-in collapse-control button below -- which stays visually/keyboard
-                reachable in collapse-mode="hidden" via the CSS override -- is never pulled
-                out of the accessibility tree by an aria-hidden ancestor. */}
-            <span aria-hidden={isHiddenCollapsed ? 'true' : undefined}>
-              <slot name="header" />
-            </span>
-            {isCollapseActive && this.collapseControl === 'header' && this.renderCollapseControl('header')}
-          </div>
+          {showHeader && (
+            <div class="nav-header" part="header">
+              {/* aria-hidden lives on this inner wrapper (not nav-header itself) so the
+                  built-in collapse-control button below -- which stays visually/keyboard
+                  reachable in collapse-mode="hidden" via the CSS override -- is never pulled
+                  out of the accessibility tree by an aria-hidden ancestor. */}
+              <span aria-hidden={isHiddenCollapsed ? 'true' : undefined}>
+                <slot name="header" />
+              </span>
+              {isCollapseActive && this.collapseControl === 'header' && this.renderCollapseControl('header')}
+            </div>
+          )}
 
           <div class="nav-body" part="body" aria-hidden={isHiddenCollapsed ? 'true' : undefined}>
             {renderNavItems({
@@ -253,14 +269,40 @@ export class QSidepanel {
             })}
           </div>
 
-          <div class="nav-footer" part="footer">
-            <span aria-hidden={isHiddenCollapsed ? 'true' : undefined}>
-              <slot name="footer" />
-            </span>
-            {isCollapseActive && this.collapseControl === 'footer' && this.renderCollapseControl('footer')}
-          </div>
+          {showFooter && (
+            <div class="nav-footer" part="footer">
+              <span aria-hidden={isHiddenCollapsed ? 'true' : undefined}>
+                <slot name="footer" />
+              </span>
+              {isCollapseActive && this.collapseControl === 'footer' && this.renderCollapseControl('footer')}
+            </div>
+          )}
 
           {isCollapseActive && this.collapseControl === 'edge' && this.renderCollapseControl('edge')}
+        </div>
+      );
+    }
+
+    if (this.variant === 'panel') {
+      return (
+        <div
+          class={{
+            'panel-shell': true,
+            [`panel-side-${this.side}`]: true,
+          }}
+          part="panel"
+        >
+          <div class="panel-header" part="header">
+            <slot name="header" />
+          </div>
+
+          <div class="panel-body" part="body">
+            <slot />
+          </div>
+
+          <div class="panel-footer" part="footer">
+            <slot name="footer" />
+          </div>
         </div>
       );
     }
@@ -271,10 +313,6 @@ export class QSidepanel {
       'is-open': this.isAnimatedOpen,
       'is-visible': this.isVisible,
       [`side-${this.side}`]: true,
-    };
-
-    const customSizeStyle = {
-      '--q-panel-width': this.panelSize,
     };
 
     return (

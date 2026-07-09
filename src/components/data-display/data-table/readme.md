@@ -62,14 +62,14 @@ Data grid with optional toolbar, search, row activation, and multi-row selection
 
 ### Depends on
 
-- [q-input](../../inputs/input)
 - [q-circular-progress](../../indicators/circular-progress)
+- [q-input](../../inputs/input)
 
 ### Graph
 ```mermaid
 graph TD;
-  q-data-table --> q-input
   q-data-table --> q-circular-progress
+  q-data-table --> q-input
   style q-data-table fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

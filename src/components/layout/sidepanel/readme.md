@@ -22,7 +22,7 @@ In `nav` variant, set `collapsible` to enable a collapsed state (`rail` or `hidd
 | `panelSize`       | `panel-size`       | Width or height depending on `side` (drawer mode only)                                                                                                                                                                                                          | `string`                                   | `'320px'`          |
 | `side`            | `side`             | Edge the drawer opens from.                                                                                                                                                                                                                                     | `"bottom" \| "left" \| "right" \| "top"`   | `'right'`          |
 | `value`           | `value`            | Active leaf item value.                                                                                                                                                                                                                                         | `string`                                   | `''`               |
-| `variant`         | `variant`          | 'drawer' = slide-in overlay, 'nav' = fixed navigation sidebar                                                                                                                                                                                                   | `"drawer" \| "nav"`                        | `'nav'`            |
+| `variant`         | `variant`          | 'drawer' = slide-in overlay, 'nav' = fixed navigation sidebar, 'panel' = persistent slotted side panel                                                                                                                                                          | `"drawer" \| "nav" \| "panel"`             | `'nav'`            |
 
 
 ## Events
@@ -44,6 +44,7 @@ In `nav` variant, set `collapsible` to enable a collapsed state (`rail` or `hidd
 | `"drawer"`           |             |
 | `"footer"`           |             |
 | `"header"`           |             |
+| `"panel"`            |             |
 
 
 ## Dependencies

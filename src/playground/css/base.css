@@ -1,31 +1,8 @@
-:root {
-  /* Playground shell local variables (custom navy theme for the dashboard) */
-  --bg-app: #0b0f19;
-  --bg-sidebar: #111827;
-  --bg-surface: #1e293b;
-  --border-color: rgba(255, 255, 255, 0.08);
-  --text-main: #f3f4f6;
-  --text-muted: var(--q-fg-muted);
-  --primary: var(--q-color-primary);
-  --accent-glow: rgba(59, 130, 246, 0.15);
-  --shadow-main: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-[data-theme='light'] {
-  /* Playground shell local variables for light mode */
-  --bg-app: #f3f4f6;
-  --bg-sidebar: #ffffff;
-  --bg-surface: #e5e7eb;
-  --border-color: rgba(0, 0, 0, 0.08);
-  --text-main: #1f2937;
-  --accent-glow: rgba(37, 99, 235, 0.1);
-}
-
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--bg-app);
-  color: var(--text-main);
+  background-color: var(--q-bg-base);
+  color: var(--q-fg-base);
   font-family: var(--q-font-family);
   height: 100vh;
   display: flex;
@@ -111,18 +88,18 @@ q-scrollable {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--q-bg-surface-3, #4b5563);
-  border-radius: 4px;
+  background: var(--q-scrollbar-thumb-color);
+  border-radius: var(--q-scrollbar-radius);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--q-color-primary, #60a5fa);
+  background: var(--q-scrollbar-thumb-color-hover);
 }
 
 /* Firefox Support */
 * {
-  scrollbar-width: thin;
-  scrollbar-color: var(--q-bg-surface-3, #4b5563) transparent;
+  scrollbar-width: var(--q-scrollbar-width-thin);
+  scrollbar-color: var(--q-scrollbar-thumb-color) var(--q-scrollbar-track-color);
 }
 
 /* Global Shell Layouts */
@@ -139,7 +116,7 @@ q-scrollable {
   display: flex;
   flex-direction: column;
   min-width: 0;
-  background: var(--bg-app);
+  background: var(--q-bg-base);
   overflow: hidden;
   height: 100%;
 }
