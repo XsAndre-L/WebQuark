@@ -33,6 +33,7 @@
 ### Used by
 
  - [q-data-table](../../data-display/data-table)
+ - [q-navbar](../../layout/navbar)
  - [q-sidepanel](../../layout/sidepanel)
  - [q-syntax-box](../../data-display/syntax-box)
 
@@ -40,6 +41,7 @@
 ```mermaid
 graph TD;
   q-data-table --> q-icon
+  q-navbar --> q-icon
   q-sidepanel --> q-icon
   q-syntax-box --> q-icon
   style q-icon fill:#f9f,stroke:#333,stroke-width:4px
