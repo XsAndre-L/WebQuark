@@ -1,6 +1,6 @@
 .event-log-container {
-  background: #0d1117;
-  border: 1px solid #21262d;
+  background: var(--q-bg-surface-1);
+  border: var(--q-border);
   border-radius: var(--q-radius-lg);
   overflow: hidden;
   height: 100%;
@@ -12,16 +12,16 @@
   justify-content: space-between;
   align-items: center;
   padding: 8px 16px;
-  background: #161b22;
-  border-bottom: 1px solid #21262d;
+  background: var(--q-bg-surface-2);
+  border-bottom: var(--q-border);
   font-size: 0.8rem;
-  color: #8b949e;
+  color: var(--q-fg-muted);
 }
 
 .clear-log-btn {
   background: transparent;
-  border: 1px solid #30363d;
-  color: #c9d1d9;
+  border: var(--q-border);
+  color: var(--q-fg-base);
   border-radius: 4px;
   padding: 2px 6px;
   font-size: 0.75rem;
@@ -29,7 +29,7 @@
 }
 
 .clear-log-btn:hover {
-  background: #30363d;
+  background: var(--q-btn-hover-overlay);
 }
 
 .event-log-body {
@@ -43,16 +43,16 @@
 }
 
 .log-placeholder {
-  color: #57606a;
+  color: var(--q-fg-muted);
   font-style: italic;
 }
 
 .log-item {
-  color: #57ab5a;
+  color: var(--q-color-success);
   word-break: break-all;
 }
 
 .log-item-time {
-  color: #8b949e;
+  color: var(--q-fg-muted);
   margin-right: 8px;
 }

@@ -41,8 +41,8 @@
 
 /* Glassmorphism support without backdrop-filter to prevent OSR crashes */
 .card-container.is-glass {
-  background: rgba(31, 41, 55, 0.85);
-  background: var(--q-bg-glass, rgba(31, 41, 55, 0.85));
+  background: rgba(25, 36, 59, 0.85);
+  background: var(--q-bg-glass, rgba(25, 36, 59, 0.85));
 }
 
 /* Elevation Levels */

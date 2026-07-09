@@ -928,7 +928,7 @@ export namespace Components {
          */
         "value": string;
         /**
-          * 'drawer' = slide-in overlay, 'nav' = fixed navigation sidebar
+          * 'drawer' = slide-in overlay, 'nav' = fixed navigation sidebar, 'panel' = persistent slotted side panel
           * @default 'nav'
          */
         "variant": QSidepanelVariant;
@@ -2734,7 +2734,7 @@ declare namespace LocalJSX {
          */
         "value"?: string;
         /**
-          * 'drawer' = slide-in overlay, 'nav' = fixed navigation sidebar
+          * 'drawer' = slide-in overlay, 'nav' = fixed navigation sidebar, 'panel' = persistent slotted side panel
           * @default 'nav'
          */
         "variant"?: QSidepanelVariant;

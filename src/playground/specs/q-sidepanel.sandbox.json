@@ -61,7 +61,7 @@
   "slots": {
     "default": {
       "type": "html",
-      "default": "<div style=\"display: flex; flex-direction: column; gap: 16px;\">\n  <p style=\"margin:0;font-size:0.9rem;color:var(--text-muted)\">Configure and customize dashboard system profile attributes.</p>\n  <q-input label=\"Profile Alias\" placeholder=\"e.g. My Workspace Profile\"></q-input>\n  <q-button id=\"closePanelBtn\" variant=\"primary\">Save Configuration</q-button>\n</div>",
+      "default": "<div style=\"display: flex; flex-direction: column; gap: 16px;\">\n  <p style=\"margin:0;font-size:0.9rem;color:var(--q-fg-muted)\">Configure and customize dashboard system profile attributes.</p>\n  <q-input label=\"Profile Alias\" placeholder=\"e.g. My Workspace Profile\"></q-input>\n  <q-button id=\"closePanelBtn\" variant=\"primary\">Save Configuration</q-button>\n</div>",
       "desc": "Inner drawer content block (drawer mode)"
     },
     "header": {
@@ -140,7 +140,7 @@
         "open": false
       },
       "slots": {
-        "default": "<div style=\"height:1200px;background:linear-gradient(to bottom, var(--primary) 0%, var(--q-color-success) 100%);padding:20px;border-radius:8px;color:#fff;font-weight:bold\">\n  Scrollable Panel Height Content\n</div>"
+        "default": "<div style=\"height:1200px;background:linear-gradient(to bottom, var(--q-color-primary) 0%, var(--q-color-success) 100%);padding:20px;border-radius:8px;color:var(--q-bg-base);font-weight:bold\">\n  Scrollable Panel Height Content\n</div>"
       }
     }
   ]
