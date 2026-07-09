@@ -206,6 +206,7 @@ describe('q-data-table', () => {
 
     const firstRowActionButtons = el.shadowRoot.querySelectorAll('.cell-actions')[0].querySelectorAll('q-button');
     expect(firstRowActionButtons).toHaveLength(2);
+    expect((firstRowActionButtons[0] as any).variant).toBe('text');
     expect((firstRowActionButtons[0] as any).ariaLabel).toBe('Edit user');
     expect((firstRowActionButtons[0].querySelector('q-icon') as any)?.name).toBe('pencil');
     expect((firstRowActionButtons[0].querySelector('q-tooltip') as any)?.content).toBe('Edit user');
@@ -222,6 +223,57 @@ describe('q-data-table', () => {
     el.remove();
   });
 
+  it('supports disabling row actions per row', async () => {
+    const rowActions = [
+      { key: 'edit', icon: 'pencil', tooltip: 'Edit user', disabled: (item: any) => item.id === 1 },
+    ];
+    const el = await createComponent({ columns, items, rowActions });
+    const rowActionHandler = vi.fn();
+    el.addEventListener('qRowAction', rowActionHandler);
+
+    const actionButtons = el.shadowRoot.querySelectorAll('.cell-actions q-button');
+    expect((actionButtons[0] as any).disabled).toBe(true);
+    expect((actionButtons[1] as any).disabled).toBe(false);
+
+    actionButtons[0].dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+    await new Promise(resolve => setTimeout(resolve, 10));
+    expect(rowActionHandler).not.toHaveBeenCalled();
+
+    actionButtons[1].dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+    await new Promise(resolve => setTimeout(resolve, 10));
+    expect(rowActionHandler).toHaveBeenCalledTimes(1);
+    expect(rowActionHandler.mock.calls[0][0].detail.item.name).toBe('Beta');
+    el.remove();
+  });
+
+  it('disables row activation while keeping row actions available when rowClickable is false', async () => {
+    const rowActions = [{ key: 'edit', icon: 'pencil', tooltip: 'Edit user' }];
+    const el = await createComponent({ columns, items, rowActions, rowClickable: false });
+    const rowActionHandler = vi.fn();
+    const rowClickHandler = vi.fn();
+    el.addEventListener('qRowAction', rowActionHandler);
+    el.addEventListener('qRowClick', rowClickHandler);
+
+    const firstRow = el.shadowRoot.querySelector('tbody tr') as HTMLTableRowElement;
+    expect(firstRow.classList.contains('row-el')).toBe(true);
+    expect(firstRow.classList.contains('is-clickable')).toBe(false);
+    expect(firstRow.getAttribute('tabindex')).toBeNull();
+
+    firstRow.querySelector('td:not(.cell-actions)')?.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+    firstRow.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, composed: true }));
+    await new Promise(resolve => setTimeout(resolve, 10));
+
+    expect(rowClickHandler).not.toHaveBeenCalled();
+
+    firstRow.querySelector('.cell-actions q-button')?.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+    await new Promise(resolve => setTimeout(resolve, 10));
+
+    expect(rowActionHandler).toHaveBeenCalledTimes(1);
+    expect(rowActionHandler.mock.calls[0][0].detail.action).toEqual(rowActions[0]);
+    expect(rowClickHandler).not.toHaveBeenCalled();
+    el.remove();
+  });
+
   it('emits row clicks from cells but ignores nested interactive targets', async () => {
     const el = await createComponent({
       columns: [{ key: 'name', header: 'Name', render: (item: any) => h(item.name === 'Alpha' ? 'button' : 'span', {}, item.name) }],
@@ -232,6 +284,8 @@ describe('q-data-table', () => {
 
     const firstRow = el.shadowRoot.querySelector('tbody tr') as HTMLTableRowElement;
     const secondRowCell = el.shadowRoot.querySelectorAll('tbody td')[1] as HTMLTableCellElement;
+    expect(firstRow.classList.contains('is-clickable')).toBe(true);
+    expect(firstRow.getAttribute('tabindex')).toBe('0');
     firstRow.querySelector('button')?.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
     secondRowCell.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
     await new Promise(resolve => setTimeout(resolve, 10));

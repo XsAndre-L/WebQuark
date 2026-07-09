@@ -203,14 +203,14 @@ export declare interface QCircularProgress extends Components.QCircularProgress 
 
 @ProxyCmp({
   defineCustomElementFn: defineQDataTable,
-  inputs: ['columns', 'items', 'keyField', 'loading', 'rowActions', 'searchPlaceholder', 'searchValue', 'selectable', 'selectedKeys', 'showSearch', 'showToolbar', 'sortColumn', 'sortDirection', 'sortMode', 'sortable', 'toolbarTitle']
+  inputs: ['columns', 'items', 'keyField', 'loading', 'rowActions', 'rowClickable', 'searchPlaceholder', 'searchValue', 'selectable', 'selectedKeys', 'showSearch', 'showToolbar', 'sortColumn', 'sortDirection', 'sortMode', 'sortable', 'toolbarTitle']
 })
 @Component({
   selector: 'q-data-table',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['columns', 'items', 'keyField', 'loading', 'rowActions', 'searchPlaceholder', 'searchValue', 'selectable', 'selectedKeys', 'showSearch', 'showToolbar', 'sortColumn', 'sortDirection', 'sortMode', 'sortable', 'toolbarTitle'],
+  inputs: ['columns', 'items', 'keyField', 'loading', 'rowActions', 'rowClickable', 'searchPlaceholder', 'searchValue', 'selectable', 'selectedKeys', 'showSearch', 'showToolbar', 'sortColumn', 'sortDirection', 'sortMode', 'sortable', 'toolbarTitle'],
   outputs: ['qRowClick', 'qRowAction', 'qSelectionChange', 'qSearch', 'qSortChange'],
 })
 export class QDataTable {

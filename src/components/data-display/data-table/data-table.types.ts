@@ -13,10 +13,11 @@ export interface TableColumn<T = unknown> {
   render?: (item: T, column: TableColumn<T>) => unknown;
 }
 
-export interface DataTableRowAction {
+export interface DataTableRowAction<T = unknown> {
   key: string;
   icon: string;
   tooltip: string;
+  disabled?: boolean | ((item: T, index: number, action: DataTableRowAction<T>) => boolean);
 }
 
 export interface QDataTableRowClickDetail<T = unknown> {

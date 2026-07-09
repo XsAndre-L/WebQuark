@@ -48,6 +48,9 @@ export class QDataTable {
   /** Optional row-level actions rendered as trailing icon buttons. */
   @Prop() rowActions: DataTableRowAction[] | string = [];
 
+  /** Enables full-row click and keyboard activation. */
+  @Prop() rowClickable: boolean = true;
+
   /** Shows a loading state and suppresses row rendering while true. */
   @Prop() loading: boolean = false;
 
@@ -146,6 +149,7 @@ export class QDataTable {
   }
 
   private handleRowClick(item: DataTableItem, index: number, event: MouseEvent) {
+    if (!this.rowClickable) return;
     if (isInteractiveDataTableTarget(event)) return;
 
     this.qRowClick.emit({
@@ -189,6 +193,8 @@ export class QDataTable {
   }
 
   private handleRowKeyDown(item: DataTableItem, index: number, event: KeyboardEvent) {
+    if (!this.rowClickable) return;
+
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       this.qRowClick.emit({
@@ -214,6 +220,7 @@ export class QDataTable {
       columns: this.columns,
       items: this.items,
       rowActions: this.rowActions,
+      rowClickable: this.rowClickable,
       selectedKeys: this.selectedKeys,
       selectable: this.selectable,
       keyField: this.keyField,

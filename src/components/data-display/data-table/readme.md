@@ -23,24 +23,25 @@ Data grid with optional toolbar, search, row activation, and multi-row selection
 
 ## Properties
 
-| Property            | Attribute            | Description                                                                                       | Type                               | Default       |
-| ------------------- | -------------------- | ------------------------------------------------------------------------------------------------- | ---------------------------------- | ------------- |
-| `columns`           | `columns`            | Column definitions, or a JSON string of column definitions.                                       | `TableColumn<unknown>[] \| string` | `[]`          |
-| `items`             | `items`              | Row data, or a JSON string of row data.                                                           | `string \| unknown[]`              | `[]`          |
-| `keyField`          | `key-field`          | Row field used as the stable selection and render key. Falls back to the row index.               | `string`                           | `'id'`        |
-| `loading`           | `loading`            | Shows a loading state and suppresses row rendering while true.                                    | `boolean`                          | `false`       |
-| `rowActions`        | `row-actions`        | Optional row-level actions rendered as trailing icon buttons.                                     | `DataTableRowAction[] \| string`   | `[]`          |
-| `searchPlaceholder` | `search-placeholder` | Placeholder text for the built-in search input.                                                   | `string`                           | `'Search...'` |
-| `searchValue`       | `search-value`       | Current search input value.                                                                       | `string`                           | `''`          |
-| `selectable`        | `selectable`         | Enables row selection checkboxes and selection state.                                             | `boolean`                          | `false`       |
-| `selectedKeys`      | --                   | Keys for currently selected rows.                                                                 | `unknown[]`                        | `[]`          |
-| `showSearch`        | `show-search`        | Shows the built-in toolbar search input.                                                          | `boolean`                          | `false`       |
-| `showToolbar`       | `show-toolbar`       | Shows the optional toolbar above the table.                                                       | `boolean`                          | `false`       |
-| `sortColumn`        | `sort-column`        | Currently sorted column key.                                                                      | `string`                           | `undefined`   |
-| `sortDirection`     | `sort-direction`     | Current sort direction for the sorted column.                                                     | `"asc" \| "desc"`                  | `undefined`   |
-| `sortMode`          | `sort-mode`          | Sorting behavior: 'table' sorts provided items locally, while 'external' only emits sort changes. | `"external" \| "table"`            | `'table'`     |
-| `sortable`          | `sortable`           | Enables sortable column headers. Columns can override this with their own sortable setting.       | `boolean`                          | `false`       |
-| `toolbarTitle`      | `toolbar-title`      | Title text rendered in the toolbar.                                                               | `string`                           | `undefined`   |
+| Property            | Attribute            | Description                                                                                       | Type                                      | Default       |
+| ------------------- | -------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------- | ------------- |
+| `columns`           | `columns`            | Column definitions, or a JSON string of column definitions.                                       | `TableColumn<unknown>[] \| string`        | `[]`          |
+| `items`             | `items`              | Row data, or a JSON string of row data.                                                           | `string \| unknown[]`                     | `[]`          |
+| `keyField`          | `key-field`          | Row field used as the stable selection and render key. Falls back to the row index.               | `string`                                  | `'id'`        |
+| `loading`           | `loading`            | Shows a loading state and suppresses row rendering while true.                                    | `boolean`                                 | `false`       |
+| `rowActions`        | `row-actions`        | Optional row-level actions rendered as trailing icon buttons.                                     | `DataTableRowAction<unknown>[] \| string` | `[]`          |
+| `rowClickable`      | `row-clickable`      | Enables full-row click and keyboard activation.                                                   | `boolean`                                 | `true`        |
+| `searchPlaceholder` | `search-placeholder` | Placeholder text for the built-in search input.                                                   | `string`                                  | `'Search...'` |
+| `searchValue`       | `search-value`       | Current search input value.                                                                       | `string`                                  | `''`          |
+| `selectable`        | `selectable`         | Enables row selection checkboxes and selection state.                                             | `boolean`                                 | `false`       |
+| `selectedKeys`      | --                   | Keys for currently selected rows.                                                                 | `unknown[]`                               | `[]`          |
+| `showSearch`        | `show-search`        | Shows the built-in toolbar search input.                                                          | `boolean`                                 | `false`       |
+| `showToolbar`       | `show-toolbar`       | Shows the optional toolbar above the table.                                                       | `boolean`                                 | `false`       |
+| `sortColumn`        | `sort-column`        | Currently sorted column key.                                                                      | `string`                                  | `undefined`   |
+| `sortDirection`     | `sort-direction`     | Current sort direction for the sorted column.                                                     | `"asc" \| "desc"`                         | `undefined`   |
+| `sortMode`          | `sort-mode`          | Sorting behavior: 'table' sorts provided items locally, while 'external' only emits sort changes. | `"external" \| "table"`                   | `'table'`     |
+| `sortable`          | `sortable`           | Enables sortable column headers. Columns can override this with their own sortable setting.       | `boolean`                                 | `false`       |
+| `toolbarTitle`      | `toolbar-title`      | Title text rendered in the toolbar.                                                               | `string`                                  | `undefined`   |
 
 
 ## Events

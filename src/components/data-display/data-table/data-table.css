@@ -226,10 +226,13 @@ th {
 
 .row-el {
   background: transparent;
-  cursor: pointer;
   outline: none;
   border-bottom: 1px solid var(--q-border-color, #374151);
   transition: background var(--q-transition-fast, 150ms ease);
+}
+
+.row-el.is-clickable {
+  cursor: pointer;
 }
 
 .row-el:last-child {
@@ -240,7 +243,7 @@ th {
   background: var(--q-bg-surface-1, #1f2937);
 }
 
-.row-el:focus-visible {
+.row-el.is-clickable:focus-visible {
   outline: var(--q-focus-ring, 2px solid var(--q-color-primary, #60a5fa));
   outline-offset: -2px;
 }

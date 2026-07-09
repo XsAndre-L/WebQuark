@@ -29,6 +29,7 @@ export interface DataTableModel {
   rows: DataTableRowModel[];
   rowActions: DataTableRowAction[];
   hasRowActions: boolean;
+  rowClickable: boolean;
   selectionState: DataTableSelectionState;
   columnSpan: number;
   selectable: boolean;
@@ -41,6 +42,7 @@ export interface GetDataTableModelOptions {
   columns: TableColumn[] | string;
   items: DataTableItem[] | string;
   rowActions: DataTableRowAction[] | string;
+  rowClickable: boolean;
   selectedKeys: readonly DataTableKey[] | undefined;
   selectable: boolean;
   keyField: string;
@@ -75,6 +77,7 @@ export function getDataTableModel(options: GetDataTableModelOptions): DataTableM
     rows,
     rowActions,
     hasRowActions,
+    rowClickable: options.rowClickable,
     selectionState: getSelectionState(items, selectedKeySet, options.keyField),
     columnSpan: columns.length + (options.selectable ? 1 : 0) + (hasRowActions ? 1 : 0) || 1,
     selectable: options.selectable,
