@@ -43,11 +43,13 @@
 
 ### Used by
 
+ - [q-data-table](../../data-display/data-table)
  - [q-syntax-box](../../data-display/syntax-box)
 
 ### Graph
 ```mermaid
 graph TD;
+  q-data-table --> q-button
   q-syntax-box --> q-button
   style q-button fill:#f9f,stroke:#333,stroke-width:4px
 ```

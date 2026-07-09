@@ -10,7 +10,7 @@ import { QCardElevation } from "./components/layout/card/card.types";
 import { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/layout/carousel/carousel.types";
 import { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/actions/chip/chip.types";
 import { QCircularProgressSize } from "./components/indicators/circular-progress/circular-progress.types";
-import { DataTableItem, DataTableKey, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
+import { DataTableItem, DataTableKey, DataTableRowAction, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
 import { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
 import { Option, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
 import { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/layout/form/form.types";
@@ -35,7 +35,7 @@ export { QCardElevation } from "./components/layout/card/card.types";
 export { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/layout/carousel/carousel.types";
 export { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/actions/chip/chip.types";
 export { QCircularProgressSize } from "./components/indicators/circular-progress/circular-progress.types";
-export { DataTableItem, DataTableKey, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
+export { DataTableItem, DataTableKey, DataTableRowAction, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
 export { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
 export { Option, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
 export { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/layout/form/form.types";
@@ -293,6 +293,11 @@ export namespace Components {
          */
         "loading": boolean;
         /**
+          * Optional row-level actions rendered as trailing icon buttons.
+          * @default []
+         */
+        "rowActions": DataTableRowAction[] | string;
+        /**
           * Placeholder text for the built-in search input.
           * @default 'Search...'
          */
@@ -322,6 +327,24 @@ export namespace Components {
           * @default false
          */
         "showToolbar": boolean;
+        /**
+          * Currently sorted column key.
+         */
+        "sortColumn"?: string;
+        /**
+          * Current sort direction for the sorted column.
+         */
+        "sortDirection"?: DataTableSortDirection;
+        /**
+          * Sorting behavior: 'table' sorts provided items locally, while 'external' only emits sort changes.
+          * @default 'table'
+         */
+        "sortMode": DataTableSortMode;
+        /**
+          * Enables sortable column headers. Columns can override this with their own sortable setting.
+          * @default false
+         */
+        "sortable": boolean;
         /**
           * Title text rendered in the toolbar.
          */
@@ -1342,8 +1365,10 @@ declare global {
     };
     interface HTMLQDataTableElementEventMap {
         "qRowClick": QDataTableRowClickDetail;
+        "qRowAction": QDataTableRowActionDetail;
         "qSelectionChange": QDataTableSelectionChangeDetail;
         "qSearch": string;
+        "qSortChange": QDataTableSortChangeDetail;
     }
     /**
      * Data grid with optional toolbar, search, row activation, and multi-row selection.
@@ -2007,6 +2032,10 @@ declare namespace LocalJSX {
          */
         "loading"?: boolean;
         /**
+          * Emitted when a row action button is clicked.
+         */
+        "onQRowAction"?: (event: QDataTableCustomEvent<QDataTableRowActionDetail>) => void;
+        /**
           * Emitted when a non-interactive row area is clicked or activated with the keyboard.
          */
         "onQRowClick"?: (event: QDataTableCustomEvent<QDataTableRowClickDetail>) => void;
@@ -2018,6 +2047,15 @@ declare namespace LocalJSX {
           * Emitted when selected rows change.
          */
         "onQSelectionChange"?: (event: QDataTableCustomEvent<QDataTableSelectionChangeDetail>) => void;
+        /**
+          * Emitted when a sortable column header changes sort state.
+         */
+        "onQSortChange"?: (event: QDataTableCustomEvent<QDataTableSortChangeDetail>) => void;
+        /**
+          * Optional row-level actions rendered as trailing icon buttons.
+          * @default []
+         */
+        "rowActions"?: DataTableRowAction[] | string;
         /**
           * Placeholder text for the built-in search input.
           * @default 'Search...'
@@ -2048,6 +2086,24 @@ declare namespace LocalJSX {
           * @default false
          */
         "showToolbar"?: boolean;
+        /**
+          * Currently sorted column key.
+         */
+        "sortColumn"?: string;
+        /**
+          * Current sort direction for the sorted column.
+         */
+        "sortDirection"?: DataTableSortDirection;
+        /**
+          * Sorting behavior: 'table' sorts provided items locally, while 'external' only emits sort changes.
+          * @default 'table'
+         */
+        "sortMode"?: DataTableSortMode;
+        /**
+          * Enables sortable column headers. Columns can override this with their own sortable setting.
+          * @default false
+         */
+        "sortable"?: boolean;
         /**
           * Title text rendered in the toolbar.
          */
@@ -3088,9 +3144,14 @@ declare namespace LocalJSX {
     interface QDataTableAttributes {
         "columns": TableColumn[] | string;
         "items": DataTableItem[] | string;
+        "rowActions": DataTableRowAction[] | string;
         "loading": boolean;
         "selectable": boolean;
         "keyField": string;
+        "sortable": boolean;
+        "sortMode": DataTableSortMode;
+        "sortColumn": string;
+        "sortDirection": DataTableSortDirection;
         "showToolbar": boolean;
         "toolbarTitle": string;
         "showSearch": boolean;

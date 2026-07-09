@@ -18,6 +18,18 @@ describe('q-data-table', () => {
     return el;
   }
 
+  function getFirstColumnText(el: any): string[] {
+    return Array.from(el.shadowRoot.querySelectorAll('tbody tr')).map((row: any) =>
+      row.querySelector('td:not(.cell-selection):not(.cell-actions)')?.textContent?.trim()
+    );
+  }
+
+  async function clickFirstSortButton(el: any) {
+    const button = el.shadowRoot.querySelector('.column-sort-button') as HTMLButtonElement;
+    button.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+    await new Promise(resolve => setTimeout(resolve, 10));
+  }
+
   const columns = [{ key: 'name', header: 'Name' }];
   const items = [
     { id: 1, name: 'Alpha' },
@@ -57,6 +69,102 @@ describe('q-data-table', () => {
     el.remove();
   });
 
+  it('does not render the row actions column when rowActions is empty', async () => {
+    const el = await createComponent({ columns, items });
+
+    expect(el.shadowRoot.querySelector('.col-actions')).toBeNull();
+    expect(el.shadowRoot.querySelector('.cell-actions')).toBeNull();
+    expect(el.shadowRoot.querySelectorAll('thead th')).toHaveLength(1);
+    expect(el.shadowRoot.querySelectorAll('tbody td')).toHaveLength(2);
+    el.remove();
+  });
+
+  it('does not render sort controls unless sorting is enabled', async () => {
+    const el = await createComponent({ columns, items });
+
+    expect(el.shadowRoot.querySelector('.column-sort-button')).toBeNull();
+    expect(el.shadowRoot.querySelector('thead th')?.getAttribute('aria-sort')).toBeNull();
+    expect(getFirstColumnText(el)).toEqual(['Alpha', 'Beta']);
+    el.remove();
+  });
+
+  it('sorts rows in table mode and cycles ascending, descending, and cleared states', async () => {
+    const unorderedItems = [
+      { id: 1, name: 'Beta' },
+      { id: 2, name: 'Alpha' },
+      { id: 3, name: 'Gamma' },
+    ];
+    const el = await createComponent({ columns, items: unorderedItems, sortable: true });
+    const handler = vi.fn();
+    el.addEventListener('qSortChange', handler);
+
+    await clickFirstSortButton(el);
+    expect(getFirstColumnText(el)).toEqual(['Alpha', 'Beta', 'Gamma']);
+    expect((el as any).sortColumn).toBe('name');
+    expect((el as any).sortDirection).toBe('asc');
+    expect(el.shadowRoot.querySelector('thead th')?.getAttribute('aria-sort')).toBe('ascending');
+    expect(handler.mock.calls[0][0].detail).toMatchObject({ columnKey: 'name', direction: 'asc' });
+
+    await clickFirstSortButton(el);
+    expect(getFirstColumnText(el)).toEqual(['Gamma', 'Beta', 'Alpha']);
+    expect((el as any).sortDirection).toBe('desc');
+    expect(el.shadowRoot.querySelector('thead th')?.getAttribute('aria-sort')).toBe('descending');
+    expect(handler.mock.calls[1][0].detail).toMatchObject({ columnKey: 'name', direction: 'desc' });
+
+    await clickFirstSortButton(el);
+    expect(getFirstColumnText(el)).toEqual(['Beta', 'Alpha', 'Gamma']);
+    expect((el as any).sortColumn).toBeUndefined();
+    expect((el as any).sortDirection).toBeUndefined();
+    expect(el.shadowRoot.querySelector('thead th')?.getAttribute('aria-sort')).toBe('none');
+    expect(handler.mock.calls[2][0].detail.columnKey).toBeUndefined();
+    expect(handler.mock.calls[2][0].detail.direction).toBeUndefined();
+    el.remove();
+  });
+
+  it('emits sort changes without reordering rows in external sort mode', async () => {
+    const unorderedItems = [
+      { id: 1, name: 'Beta' },
+      { id: 2, name: 'Alpha' },
+      { id: 3, name: 'Gamma' },
+    ];
+    const el = await createComponent({ columns, items: unorderedItems, sortable: true, sortMode: 'external' });
+    const handler = vi.fn();
+    el.addEventListener('qSortChange', handler);
+
+    await clickFirstSortButton(el);
+
+    expect(getFirstColumnText(el)).toEqual(['Beta', 'Alpha', 'Gamma']);
+    expect((el as any).sortColumn).toBe('name');
+    expect((el as any).sortDirection).toBe('asc');
+    expect(handler).toHaveBeenCalledTimes(1);
+    expect(handler.mock.calls[0][0].detail).toMatchObject({ columnKey: 'name', direction: 'asc' });
+    el.remove();
+  });
+
+  it('supports per-column sortable opt-in and opt-out', async () => {
+    const optInEl = await createComponent({
+      columns: [
+        { key: 'name', header: 'Name', sortable: true },
+        { key: 'id', header: 'ID' },
+      ],
+      items,
+    });
+    expect(optInEl.shadowRoot.querySelectorAll('.column-sort-button')).toHaveLength(1);
+    optInEl.remove();
+
+    const optOutEl = await createComponent({
+      columns: [
+        { key: 'name', header: 'Name', sortable: false },
+        { key: 'id', header: 'ID' },
+      ],
+      items,
+      sortable: true,
+    });
+    expect(optOutEl.shadowRoot.querySelectorAll('.column-sort-button')).toHaveLength(1);
+    expect(optOutEl.shadowRoot.querySelector('.column-sort-button')?.textContent?.trim()).toContain('ID');
+    optOutEl.remove();
+  });
+
   it('selects and deselects all rows from the header checkbox', async () => {
     const el = await createComponent({ columns, items, selectable: true });
     const handler = vi.fn();
@@ -78,6 +186,39 @@ describe('q-data-table', () => {
     expect(handler).toHaveBeenCalledTimes(2);
     expect(handler.mock.calls[1][0].detail.selectedKeys).toEqual([]);
     expect(handler.mock.calls[1][0].detail.selectedItems).toEqual([]);
+    el.remove();
+  });
+
+  it('renders row action buttons and emits qRowAction without emitting qRowClick', async () => {
+    const rowActions = [
+      { key: 'edit', icon: 'pencil', tooltip: 'Edit user' },
+      { key: 'delete', icon: 'trash-2', tooltip: 'Delete user' },
+    ];
+    const el = await createComponent({ columns, items, rowActions });
+    const rowActionHandler = vi.fn();
+    const rowClickHandler = vi.fn();
+    el.addEventListener('qRowAction', rowActionHandler);
+    el.addEventListener('qRowClick', rowClickHandler);
+
+    expect(el.shadowRoot.querySelector('.col-actions')?.textContent?.trim()).toBe('');
+    expect(el.shadowRoot.querySelector('.col-actions')?.getAttribute('aria-label')).toBe('Row actions');
+    expect(el.shadowRoot.querySelectorAll('.cell-actions')).toHaveLength(2);
+
+    const firstRowActionButtons = el.shadowRoot.querySelectorAll('.cell-actions')[0].querySelectorAll('q-button');
+    expect(firstRowActionButtons).toHaveLength(2);
+    expect((firstRowActionButtons[0] as any).ariaLabel).toBe('Edit user');
+    expect((firstRowActionButtons[0].querySelector('q-icon') as any)?.name).toBe('pencil');
+    expect((firstRowActionButtons[0].querySelector('q-tooltip') as any)?.content).toBe('Edit user');
+
+    firstRowActionButtons[1].dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+    await new Promise(resolve => setTimeout(resolve, 10));
+
+    expect(rowActionHandler).toHaveBeenCalledTimes(1);
+    expect(rowActionHandler.mock.calls[0][0].detail.action).toEqual(rowActions[1]);
+    expect(rowActionHandler.mock.calls[0][0].detail.item.name).toBe('Alpha');
+    expect(rowActionHandler.mock.calls[0][0].detail.index).toBe(0);
+    expect(rowActionHandler.mock.calls[0][0].detail.originalEvent).toBeInstanceOf(MouseEvent);
+    expect(rowClickHandler).not.toHaveBeenCalled();
     el.remove();
   });
 

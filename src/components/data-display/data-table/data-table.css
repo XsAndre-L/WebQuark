@@ -78,6 +78,71 @@ th {
   user-select: none;
 }
 
+.column-sort-button {
+  appearance: none;
+  border: 0;
+  border-radius: var(--q-radius-sm, 4px);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  text-align: inherit;
+  outline: none;
+}
+
+.column-sort-button:hover {
+  color: var(--q-fg-base, #f9fafb);
+}
+
+.column-sort-button:focus-visible {
+  outline: var(--q-focus-ring, 2px solid var(--q-color-primary, #60a5fa));
+  outline-offset: 2px;
+}
+
+.column-sort-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sort-indicator {
+  display: inline-flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--q-fg-muted, #9ca3af);
+  line-height: 1;
+}
+
+.sort-arrow {
+  display: flex;
+  height: 8px;
+  opacity: 0.35;
+  transition: color var(--q-transition-fast, 150ms ease), opacity var(--q-transition-fast, 150ms ease);
+}
+
+.is-sortable:hover .sort-arrow {
+  opacity: 0.55;
+}
+
+.sort-arrow.is-active,
+.is-sortable:hover .sort-arrow.is-active {
+  color: var(--q-color-primary, #60a5fa);
+  opacity: 1;
+}
+
 /* Toolbar Styling */
 .table-toolbar {
   display: flex;
@@ -126,6 +191,20 @@ th {
   width: 48px;
   text-align: center;
   padding-right: 0;
+}
+
+.col-actions,
+.cell-actions {
+  width: 1%;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.row-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
 }
 
 .checkbox-input {
