@@ -5,9 +5,52 @@
   z-index: var(--q-navbar-z-index, 100);
 }
 
-:host([sticky]) {
+:host([edge='top']) {
+  --q-navbar-edge-padding: max(0px, env(safe-area-inset-top, 0px)) 24px 0;
+  --q-navbar-edge-compact-padding: max(0px, env(safe-area-inset-top, 0px)) 16px 0;
+  --q-navbar-edge-mobile-padding: max(0px, env(safe-area-inset-top, 0px)) 16px 0;
+}
+
+:host([edge='bottom']) {
+  --q-navbar-edge-padding: 0 24px max(0px, env(safe-area-inset-bottom, 0px));
+  --q-navbar-edge-compact-padding: 0 16px max(0px, env(safe-area-inset-bottom, 0px));
+  --q-navbar-edge-mobile-padding: 0 16px max(0px, env(safe-area-inset-bottom, 0px));
+}
+
+:host([edge='left']),
+:host([edge='right']) {
+  width: auto;
+  height: 100%;
+}
+
+:host([edge='left']) {
+  --q-navbar-edge-padding: 16px 16px 16px max(16px, env(safe-area-inset-left, 0px));
+  --q-navbar-edge-compact-padding: 12px 12px 12px max(12px, env(safe-area-inset-left, 0px));
+}
+
+:host([edge='right']) {
+  --q-navbar-edge-padding: 16px max(16px, env(safe-area-inset-right, 0px)) 16px 16px;
+  --q-navbar-edge-compact-padding: 12px max(12px, env(safe-area-inset-right, 0px)) 12px 12px;
+}
+
+:host([sticky][edge='top']) {
   position: sticky;
   top: 0;
+}
+
+:host([sticky][edge='right']) {
+  position: sticky;
+  right: 0;
+}
+
+:host([sticky][edge='bottom']) {
+  position: sticky;
+  bottom: 0;
+}
+
+:host([sticky][edge='left']) {
+  position: sticky;
+  left: 0;
 }
 
 .navbar {
@@ -18,12 +61,29 @@
   box-sizing: border-box;
 }
 
+:host([edge='left']) .navbar,
+:host([edge='right']) .navbar {
+  height: 100%;
+}
+
 .navbar.is-transparent {
   background: transparent;
 }
 
-.navbar.is-bordered {
+:host([edge='top']) .navbar.is-bordered {
   border-bottom: var(--q-navbar-border, 1px solid var(--q-border-color, #374151));
+}
+
+:host([edge='right']) .navbar.is-bordered {
+  border-left: var(--q-navbar-border, 1px solid var(--q-border-color, #374151));
+}
+
+:host([edge='bottom']) .navbar.is-bordered {
+  border-top: var(--q-navbar-border, 1px solid var(--q-border-color, #374151));
+}
+
+:host([edge='left']) .navbar.is-bordered {
+  border-right: var(--q-navbar-border, 1px solid var(--q-border-color, #374151));
 }
 
 .navbar-row {
@@ -31,13 +91,28 @@
   align-items: center;
   gap: var(--q-navbar-gap, 20px);
   min-height: var(--q-navbar-height, 64px);
-  padding: var(--q-navbar-padding, 0 24px);
+  padding: var(--q-navbar-padding, var(--q-navbar-edge-padding, 0 24px));
   box-sizing: border-box;
 }
 
 .is-compact .navbar-row {
   min-height: var(--q-navbar-compact-height, 52px);
-  padding: var(--q-navbar-compact-padding, 0 16px);
+  padding: var(--q-navbar-compact-padding, var(--q-navbar-edge-compact-padding, 0 16px));
+}
+
+:host([edge='left']) .navbar-row,
+:host([edge='right']) .navbar-row {
+  flex-direction: column;
+  align-items: stretch;
+  width: var(--q-navbar-width, 240px);
+  height: 100%;
+  min-height: 0;
+}
+
+:host([edge='left']) .is-compact .navbar-row,
+:host([edge='right']) .is-compact .navbar-row {
+  width: var(--q-navbar-compact-width, 200px);
+  min-height: 0;
 }
 
 .brand-link {
@@ -135,6 +210,41 @@
   flex: 0 0 auto;
 }
 
+:host([edge='left']) .brand-link,
+:host([edge='right']) .brand-link,
+:host([edge='left']) .desktop-nav,
+:host([edge='right']) .desktop-nav,
+:host([edge='left']) .desktop-actions,
+:host([edge='right']) .desktop-actions {
+  width: 100%;
+}
+
+:host([edge='left']) .desktop-nav,
+:host([edge='right']) .desktop-nav,
+:host([edge='left']) .desktop-actions,
+:host([edge='right']) .desktop-actions {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+:host([edge='left']) .desktop-actions,
+:host([edge='right']) .desktop-actions {
+  justify-content: flex-end;
+}
+
+:host([edge='left']) .nav-item,
+:host([edge='right']) .nav-item {
+  width: 100%;
+  justify-content: flex-start;
+}
+
+:host([edge='left']) .nav-item.is-icon-only,
+:host([edge='right']) .nav-item.is-icon-only {
+  width: var(--q-navbar-item-icon-only-size, 40px);
+  align-self: center;
+  justify-content: center;
+}
+
 .nav-item__label {
   min-width: 0;
   overflow: hidden;
@@ -180,28 +290,46 @@
 }
 
 @media (max-width: 720px) {
-  .desktop-nav,
-  .desktop-actions {
+  :host([edge='top']) .desktop-nav,
+  :host([edge='top']) .desktop-actions,
+  :host([edge='bottom']) .desktop-nav,
+  :host([edge='bottom']) .desktop-actions {
     display: none;
   }
 
-  .navbar-row {
+  :host([edge='top']) .navbar-row,
+  :host([edge='bottom']) .navbar-row {
     justify-content: space-between;
-    padding: var(--q-navbar-mobile-padding, 0 16px);
+    padding: var(--q-navbar-mobile-padding, var(--q-navbar-edge-mobile-padding, 0 16px));
   }
 
-  .menu-button {
+  :host([edge='top']) .menu-button,
+  :host([edge='bottom']) .menu-button {
     display: inline-flex;
   }
 
-  .mobile-panel {
+  :host([edge='top']) .mobile-panel,
+  :host([edge='bottom']) .mobile-panel {
     display: none;
     padding: var(--q-navbar-mobile-panel-padding, 8px 16px 16px);
-    border-top: var(--q-navbar-border, 1px solid var(--q-border-color, #374151));
     background: var(--q-navbar-mobile-bg, var(--q-navbar-bg, var(--q-bg-surface-1, #1f2937)));
   }
 
-  .navbar.is-open .mobile-panel {
+  :host([edge='top']) .mobile-panel {
+    border-top: var(--q-navbar-border, 1px solid var(--q-border-color, #374151));
+  }
+
+  :host([edge='bottom']) .navbar {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+
+  :host([edge='bottom']) .mobile-panel {
+    border-bottom: var(--q-navbar-border, 1px solid var(--q-border-color, #374151));
+  }
+
+  :host([edge='top']) .navbar.is-open .mobile-panel,
+  :host([edge='bottom']) .navbar.is-open .mobile-panel {
     display: block;
   }
 
@@ -221,12 +349,15 @@
     width: 100%;
   }
 
-  :host([mobile-mode='inline']) .desktop-nav {
+  :host([edge='top'][mobile-mode='inline']) .desktop-nav,
+  :host([edge='bottom'][mobile-mode='inline']) .desktop-nav {
     display: flex;
   }
 
-  :host([mobile-mode='inline']) .menu-button,
-  :host([mobile-mode='inline']) .mobile-panel {
+  :host([edge='top'][mobile-mode='inline']) .menu-button,
+  :host([edge='top'][mobile-mode='inline']) .mobile-panel,
+  :host([edge='bottom'][mobile-mode='inline']) .menu-button,
+  :host([edge='bottom'][mobile-mode='inline']) .mobile-panel {
     display: none;
   }
 }

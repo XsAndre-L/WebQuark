@@ -1,18 +1,18 @@
 import { Component, Element, Event, EventEmitter, Prop, State, h } from '@stencil/core';
 import { safeParseJson } from '../../../utils/utils';
-import type { NavbarItem, NavbarSelectDetail, QNavbarMobileMode } from './navbar.types';
+import type { NavbarItem, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode } from './navbar.types';
 
 let navbarIds = 0;
 
 /**
- * Responsive site navigation with optional brand content, actions, and mobile menu.
+ * Edge-aware site navigation with optional brand content, actions, and mobile menu.
  *
  * @slot brand - Custom brand link content.
  * @slot nav - Custom desktop navigation content.
  * @slot actions - Desktop action controls.
  * @slot mobile-nav - Custom mobile navigation content.
  * @slot mobile-actions - Mobile action controls.
- * @part navbar - Header container.
+ * @part navbar - Navbar container.
  * @part brand - Brand link.
  * @part nav - Desktop navigation container.
  * @part actions - Desktop action container.
@@ -49,10 +49,13 @@ export class QNavbar {
   /** Accessible label for the mobile menu toggle button. */
   @Prop() mobileLabel: string = 'Menu';
 
+  /** Edge the navbar is arranged against. */
+  @Prop({ reflect: true }) edge: QNavbarEdge = 'top';
+
   /** Controls whether mobile widths collapse items into a menu or keep them inline. */
   @Prop({ reflect: true }) mobileMode: QNavbarMobileMode = 'menu';
 
-  /** Keeps the navbar pinned to the top of its scroll container. */
+  /** Keeps the navbar pinned to its configured edge. */
   @Prop({ reflect: true }) sticky: boolean = false;
 
   /** Uses the compact navbar height and padding. */
@@ -61,7 +64,7 @@ export class QNavbar {
   /** Removes the navbar background when true. */
   @Prop({ reflect: true }) transparent: boolean = false;
 
-  /** Renders a bottom border on the navbar. */
+  /** Renders a border along the inward-facing edge. */
   @Prop({ reflect: true }) bordered: boolean = true;
 
   /** Emitted when a navigation item is selected. */
@@ -261,7 +264,7 @@ export class QNavbar {
     const hasItems = this.parsedItems.length > 0;
 
     return (
-      <header
+      <div
         class={{
           'navbar': true,
           'is-open': this.menuOpen,
@@ -309,7 +312,7 @@ export class QNavbar {
             <slot name="mobile-actions" />
           </div>
         </div>
-      </header>
+      </div>
     );
   }
 }

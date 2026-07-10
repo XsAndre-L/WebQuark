@@ -37,6 +37,7 @@ import { QSyntaxBox as QSyntaxBoxElement, defineCustomElement as defineQSyntaxBo
 import { QTextarea as QTextareaElement, defineCustomElement as defineQTextarea } from "@webquark/core/dist/components/q-textarea.js";
 import { QThumbnail as QThumbnailElement, defineCustomElement as defineQThumbnail } from "@webquark/core/dist/components/q-thumbnail.js";
 import { QToggle as QToggleElement, defineCustomElement as defineQToggle } from "@webquark/core/dist/components/q-toggle.js";
+import { QToolbar as QToolbarElement, defineCustomElement as defineQToolbar } from "@webquark/core/dist/components/q-toolbar.js";
 import { QTooltip as QTooltipElement, defineCustomElement as defineQTooltip } from "@webquark/core/dist/components/q-tooltip.js";
 
 export type QButtonEvents = {
@@ -435,6 +436,17 @@ export const QToggle: StencilReactComponent<QToggleElement, QToggleEvents, Compo
         onQClick: 'qClick'
     } as QToggleEvents,
     defineCustomElement: defineQToggle
+});
+
+export type QToolbarEvents = NonNullable<unknown>;
+
+export const QToolbar: StencilReactComponent<QToolbarElement, QToolbarEvents, Components.QToolbar> = /*@__PURE__*/ createComponent<QToolbarElement, QToolbarEvents, Components.QToolbar>({
+    tagName: 'q-toolbar',
+    elementClass: QToolbarElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: {} as QToolbarEvents,
+    defineCustomElement: defineQToolbar
 });
 
 export type QTooltipEvents = NonNullable<unknown>;

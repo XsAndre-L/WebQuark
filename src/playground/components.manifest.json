@@ -22,6 +22,7 @@
   { "tag": "q-panel",             "name": "Panel",             "category": "layout" },
   { "tag": "q-scrollable",        "name": "Scrollable",        "category": "layout" },
   { "tag": "q-sidepanel",         "name": "Sidepanel",         "category": "layout" },
+  { "tag": "q-toolbar",           "name": "Toolbar",           "category": "layout" },
 
   { "tag": "q-icon",              "name": "Icon",              "category": "media" },
   { "tag": "q-reel",              "name": "Reel",              "category": "media" },

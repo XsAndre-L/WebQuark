@@ -5,7 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
+import { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
 import { QCardElevation } from "./components/layout/card/card.types";
 import { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/layout/carousel/carousel.types";
 import { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/actions/chip/chip.types";
@@ -17,7 +17,7 @@ import { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QForm
 import { QIconColor, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
 import { QInputSize, QInputType } from "./components/inputs/input/input.types";
 import { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
-import { NavbarItem, NavbarSelectDetail, QNavbarMobileMode } from "./components/layout/navbar/navbar.types";
+import { NavbarItem, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode } from "./components/layout/navbar/navbar.types";
 import { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
 import { QQuantitySelectorVariant } from "./components/inputs/quantity-selector/quantity-selector.types";
 import { QReelLayout } from "./components/media/reel/reel.types";
@@ -29,8 +29,9 @@ import { QSyntaxBoxLanguage, QSyntaxBoxVariant } from "./components/data-display
 import { QTextareaResizeMode } from "./components/inputs/textarea/textarea.types";
 import { QThumbnailMaximizeDetail } from "./components/media/thumbnail/thumbnail.types";
 import { QToggleSize, QToggleType } from "./components/inputs/toggle/toggle.types";
+import { QToolbarEdge } from "./components/layout/toolbar/toolbar.types";
 import { QTooltipPosition } from "./components/overlays/tooltip/tooltip.types";
-export { QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
+export { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
 export { QCardElevation } from "./components/layout/card/card.types";
 export { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/layout/carousel/carousel.types";
 export { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/actions/chip/chip.types";
@@ -42,7 +43,7 @@ export { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QForm
 export { QIconColor, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
 export { QInputSize, QInputType } from "./components/inputs/input/input.types";
 export { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
-export { NavbarItem, NavbarSelectDetail, QNavbarMobileMode } from "./components/layout/navbar/navbar.types";
+export { NavbarItem, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode } from "./components/layout/navbar/navbar.types";
 export { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
 export { QQuantitySelectorVariant } from "./components/inputs/quantity-selector/quantity-selector.types";
 export { QReelLayout } from "./components/media/reel/reel.types";
@@ -54,6 +55,7 @@ export { QSyntaxBoxLanguage, QSyntaxBoxVariant } from "./components/data-display
 export { QTextareaResizeMode } from "./components/inputs/textarea/textarea.types";
 export { QThumbnailMaximizeDetail } from "./components/media/thumbnail/thumbnail.types";
 export { QToggleSize, QToggleType } from "./components/inputs/toggle/toggle.types";
+export { QToolbarEdge } from "./components/layout/toolbar/toolbar.types";
 export { QTooltipPosition } from "./components/overlays/tooltip/tooltip.types";
 export namespace Components {
     interface QButton {
@@ -84,6 +86,11 @@ export namespace Components {
          */
         "iconOnly"?: boolean;
         /**
+          * Controls whether icon and label content flow inline or stack vertically.
+          * @default 'inline'
+         */
+        "layout": QButtonLayout;
+        /**
           * Shows a spinner and suppresses interaction while work is in progress.
           * @default false
          */
@@ -92,6 +99,11 @@ export namespace Components {
           * Link rel value. Defaults to noopener noreferrer for target="_blank".
          */
         "rel"?: string;
+        /**
+          * Controls the button outline and fixed circular presentation.
+          * @default 'default'
+         */
+        "shape": QButtonShape;
         /**
           * Button size.
           * @default 'md'
@@ -711,7 +723,7 @@ export namespace Components {
         "variant": QLinkVariant;
     }
     /**
-     * Responsive site navigation with optional brand content, actions, and mobile menu.
+     * Edge-aware site navigation with optional brand content, actions, and mobile menu.
      */
     interface QNavbar {
         /**
@@ -720,7 +732,7 @@ export namespace Components {
          */
         "activeValue": string;
         /**
-          * Renders a bottom border on the navbar.
+          * Renders a border along the inward-facing edge.
           * @default true
          */
         "bordered": boolean;
@@ -738,6 +750,11 @@ export namespace Components {
           * @default false
          */
         "compact": boolean;
+        /**
+          * Edge the navbar is arranged against.
+          * @default 'top'
+         */
+        "edge": QNavbarEdge;
         /**
           * Navigation items rendered in the desktop and mobile menus.
           * @default []
@@ -763,7 +780,7 @@ export namespace Components {
          */
         "mobileMode": QNavbarMobileMode;
         /**
-          * Keeps the navbar pinned to the top of its scroll container.
+          * Keeps the navbar pinned to its configured edge.
           * @default false
          */
         "sticky": boolean;
@@ -1199,6 +1216,40 @@ export namespace Components {
          */
         "type": QToggleType;
     }
+    /**
+     * Customizable edge toolbar with consumer-owned start, content, and end regions.
+     */
+    interface QToolbar {
+        /**
+          * Accessible label for the toolbar content group.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Renders a border along the inward-facing edge.
+          * @default false
+         */
+        "bordered": boolean;
+        /**
+          * Uses a reduced toolbar size and padding.
+          * @default false
+         */
+        "compact": boolean;
+        /**
+          * Edge the toolbar is arranged against.
+          * @default 'top'
+         */
+        "edge": QToolbarEdge;
+        /**
+          * Keeps the toolbar pinned to its configured edge.
+          * @default false
+         */
+        "sticky": boolean;
+        /**
+          * Removes the toolbar background.
+          * @default false
+         */
+        "transparent": boolean;
+    }
     interface QTooltip {
         /**
           * The text content to display inside the tooltip.
@@ -1524,7 +1575,7 @@ declare global {
         "qMenuToggle": boolean;
     }
     /**
-     * Responsive site navigation with optional brand content, actions, and mobile menu.
+     * Edge-aware site navigation with optional brand content, actions, and mobile menu.
      */
     interface HTMLQNavbarElement extends Components.QNavbar, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQNavbarElementEventMap>(type: K, listener: (this: HTMLQNavbarElement, ev: QNavbarCustomEvent<HTMLQNavbarElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1746,6 +1797,15 @@ declare global {
         prototype: HTMLQToggleElement;
         new (): HTMLQToggleElement;
     };
+    /**
+     * Customizable edge toolbar with consumer-owned start, content, and end regions.
+     */
+    interface HTMLQToolbarElement extends Components.QToolbar, HTMLStencilElement {
+    }
+    var HTMLQToolbarElement: {
+        prototype: HTMLQToolbarElement;
+        new (): HTMLQToolbarElement;
+    };
     interface HTMLQTooltipElement extends Components.QTooltip, HTMLStencilElement {
     }
     var HTMLQTooltipElement: {
@@ -1777,6 +1837,7 @@ declare global {
         "q-textarea": HTMLQTextareaElement;
         "q-thumbnail": HTMLQThumbnailElement;
         "q-toggle": HTMLQToggleElement;
+        "q-toolbar": HTMLQToolbarElement;
         "q-tooltip": HTMLQTooltipElement;
     }
 }
@@ -1809,6 +1870,11 @@ declare namespace LocalJSX {
          */
         "iconOnly"?: boolean;
         /**
+          * Controls whether icon and label content flow inline or stack vertically.
+          * @default 'inline'
+         */
+        "layout"?: QButtonLayout;
+        /**
           * Shows a spinner and suppresses interaction while work is in progress.
           * @default false
          */
@@ -1829,6 +1895,11 @@ declare namespace LocalJSX {
           * Link rel value. Defaults to noopener noreferrer for target="_blank".
          */
         "rel"?: string;
+        /**
+          * Controls the button outline and fixed circular presentation.
+          * @default 'default'
+         */
+        "shape"?: QButtonShape;
         /**
           * Button size.
           * @default 'md'
@@ -2520,7 +2591,7 @@ declare namespace LocalJSX {
         "variant"?: QLinkVariant;
     }
     /**
-     * Responsive site navigation with optional brand content, actions, and mobile menu.
+     * Edge-aware site navigation with optional brand content, actions, and mobile menu.
      */
     interface QNavbar {
         /**
@@ -2529,7 +2600,7 @@ declare namespace LocalJSX {
          */
         "activeValue"?: string;
         /**
-          * Renders a bottom border on the navbar.
+          * Renders a border along the inward-facing edge.
           * @default true
          */
         "bordered"?: boolean;
@@ -2547,6 +2618,11 @@ declare namespace LocalJSX {
           * @default false
          */
         "compact"?: boolean;
+        /**
+          * Edge the navbar is arranged against.
+          * @default 'top'
+         */
+        "edge"?: QNavbarEdge;
         /**
           * Navigation items rendered in the desktop and mobile menus.
           * @default []
@@ -2580,7 +2656,7 @@ declare namespace LocalJSX {
          */
         "onQSelect"?: (event: QNavbarCustomEvent<NavbarSelectDetail>) => void;
         /**
-          * Keeps the navbar pinned to the top of its scroll container.
+          * Keeps the navbar pinned to its configured edge.
           * @default false
          */
         "sticky"?: boolean;
@@ -3096,6 +3172,40 @@ declare namespace LocalJSX {
          */
         "type"?: QToggleType;
     }
+    /**
+     * Customizable edge toolbar with consumer-owned start, content, and end regions.
+     */
+    interface QToolbar {
+        /**
+          * Accessible label for the toolbar content group.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Renders a border along the inward-facing edge.
+          * @default false
+         */
+        "bordered"?: boolean;
+        /**
+          * Uses a reduced toolbar size and padding.
+          * @default false
+         */
+        "compact"?: boolean;
+        /**
+          * Edge the toolbar is arranged against.
+          * @default 'top'
+         */
+        "edge"?: QToolbarEdge;
+        /**
+          * Keeps the toolbar pinned to its configured edge.
+          * @default false
+         */
+        "sticky"?: boolean;
+        /**
+          * Removes the toolbar background.
+          * @default false
+         */
+        "transparent"?: boolean;
+    }
     interface QTooltip {
         /**
           * The text content to display inside the tooltip.
@@ -3116,6 +3226,8 @@ declare namespace LocalJSX {
     interface QButtonAttributes {
         "variant": QButtonVariant;
         "size": QButtonSize;
+        "shape": QButtonShape;
+        "layout": QButtonLayout;
         "disabled": boolean;
         "loading": boolean;
         "type": QButtonType;
@@ -3262,6 +3374,7 @@ declare namespace LocalJSX {
         "items": NavbarItem[] | string;
         "activeValue": string;
         "mobileLabel": string;
+        "edge": QNavbarEdge;
         "mobileMode": QNavbarMobileMode;
         "sticky": boolean;
         "compact": boolean;
@@ -3363,6 +3476,14 @@ declare namespace LocalJSX {
         "required": boolean;
         "error": string;
     }
+    interface QToolbarAttributes {
+        "edge": QToolbarEdge;
+        "sticky": boolean;
+        "compact": boolean;
+        "transparent": boolean;
+        "bordered": boolean;
+        "ariaLabel": string;
+    }
     interface QTooltipAttributes {
         "content": string;
         "position": QTooltipPosition;
@@ -3394,6 +3515,7 @@ declare namespace LocalJSX {
         "q-textarea": Omit<QTextarea, keyof QTextareaAttributes> & { [K in keyof QTextarea & keyof QTextareaAttributes]?: QTextarea[K] } & { [K in keyof QTextarea & keyof QTextareaAttributes as `attr:${K}`]?: QTextareaAttributes[K] } & { [K in keyof QTextarea & keyof QTextareaAttributes as `prop:${K}`]?: QTextarea[K] };
         "q-thumbnail": Omit<QThumbnail, keyof QThumbnailAttributes> & { [K in keyof QThumbnail & keyof QThumbnailAttributes]?: QThumbnail[K] } & { [K in keyof QThumbnail & keyof QThumbnailAttributes as `attr:${K}`]?: QThumbnailAttributes[K] } & { [K in keyof QThumbnail & keyof QThumbnailAttributes as `prop:${K}`]?: QThumbnail[K] };
         "q-toggle": Omit<QToggle, keyof QToggleAttributes> & { [K in keyof QToggle & keyof QToggleAttributes]?: QToggle[K] } & { [K in keyof QToggle & keyof QToggleAttributes as `attr:${K}`]?: QToggleAttributes[K] } & { [K in keyof QToggle & keyof QToggleAttributes as `prop:${K}`]?: QToggle[K] };
+        "q-toolbar": Omit<QToolbar, keyof QToolbarAttributes> & { [K in keyof QToolbar & keyof QToolbarAttributes]?: QToolbar[K] } & { [K in keyof QToolbar & keyof QToolbarAttributes as `attr:${K}`]?: QToolbarAttributes[K] } & { [K in keyof QToolbar & keyof QToolbarAttributes as `prop:${K}`]?: QToolbar[K] };
         "q-tooltip": Omit<QTooltip, keyof QTooltipAttributes> & { [K in keyof QTooltip & keyof QTooltipAttributes]?: QTooltip[K] } & { [K in keyof QTooltip & keyof QTooltipAttributes as `attr:${K}`]?: QTooltipAttributes[K] } & { [K in keyof QTooltip & keyof QTooltipAttributes as `prop:${K}`]?: QTooltip[K] };
     }
 }
@@ -3447,7 +3569,7 @@ declare module "@stencil/core" {
              */
             "q-link": LocalJSX.IntrinsicElements["q-link"] & JSXBase.HTMLAttributes<HTMLQLinkElement>;
             /**
-             * Responsive site navigation with optional brand content, actions, and mobile menu.
+             * Edge-aware site navigation with optional brand content, actions, and mobile menu.
              */
             "q-navbar": LocalJSX.IntrinsicElements["q-navbar"] & JSXBase.HTMLAttributes<HTMLQNavbarElement>;
             /**
@@ -3488,6 +3610,10 @@ declare module "@stencil/core" {
              * Form-associated switch or checkbox toggle control.
              */
             "q-toggle": LocalJSX.IntrinsicElements["q-toggle"] & JSXBase.HTMLAttributes<HTMLQToggleElement>;
+            /**
+             * Customizable edge toolbar with consumer-owned start, content, and end regions.
+             */
+            "q-toolbar": LocalJSX.IntrinsicElements["q-toolbar"] & JSXBase.HTMLAttributes<HTMLQToolbarElement>;
             "q-tooltip": LocalJSX.IntrinsicElements["q-tooltip"] & JSXBase.HTMLAttributes<HTMLQTooltipElement>;
         }
     }

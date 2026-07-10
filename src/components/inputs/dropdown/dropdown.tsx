@@ -6,6 +6,7 @@ import { getDropdownOptions, getFilteredOptions, getOptionLabel, getSelectedOpti
 
 /**
  * Form-associated dropdown/select control with optional search and incremental option rendering.
+ * @slot icon-left - Optional leading content rendered inside the trigger.
  * @part label - Optional field label.
  * @part trigger - Button that opens the option menu.
  * @part menu - Floating option menu.
@@ -401,8 +402,11 @@ export class QDropdown {
           aria-controls={this.isOpen ? 'q-field-menu' : undefined}
           aria-activedescendant={this.isOpen && this.focusedIndex >= 0 ? `q-field-item-${this.focusedIndex}` : undefined}
         >
-          <span class={{ 'trigger-text': true, 'is-placeholder': !hasSelection }}>
-            {displayLabel}
+          <span class="trigger-content">
+            <slot name="icon-left" />
+            <span class={{ 'trigger-text': true, 'is-placeholder': !hasSelection }}>
+              {displayLabel}
+            </span>
           </span>
           <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="6 9 12 15 18 9" />

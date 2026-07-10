@@ -60,6 +60,23 @@
   padding: var(--q-btn-icon-padding-lg, 9px);
 }
 
+/* Shape and content layout */
+.btn.shape-pill {
+  border-radius: 999px;
+}
+
+.btn.shape-circle {
+  width: var(--q-btn-circle-size, 120px);
+  height: var(--q-btn-circle-size, 120px);
+  padding: var(--q-btn-circle-padding, 12px);
+  border-radius: 50%;
+}
+
+.btn.layout-stacked .btn-content-wrap {
+  flex-direction: column;
+  gap: var(--q-btn-stacked-gap, 8px);
+}
+
 /* Theme Variants */
 /* Primary */
 .variant-primary {
