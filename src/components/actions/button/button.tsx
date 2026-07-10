@@ -1,5 +1,5 @@
 import { Component, Prop, Element, State, Event, EventEmitter, h } from '@stencil/core';
-import type { QButtonSize, QButtonType, QButtonVariant } from './button.types';
+import type { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant } from './button.types';
 
 @Component({
   tag: 'q-button',
@@ -16,6 +16,10 @@ export class QButton {
   @Prop() variant: QButtonVariant = 'primary';
   /** Button size. */
   @Prop() size: QButtonSize = 'md';
+  /** Controls the button outline and fixed circular presentation. */
+  @Prop({ reflect: true }) shape: QButtonShape = 'default';
+  /** Controls whether icon and label content flow inline or stack vertically. */
+  @Prop({ reflect: true }) layout: QButtonLayout = 'inline';
   /** Disables interaction and marks the control as unavailable. */
   @Prop({ reflect: true }) disabled: boolean = false;
   /** Shows a spinner and suppresses interaction while work is in progress. */
@@ -101,6 +105,8 @@ export class QButton {
       'btn': true,
       [`variant-${this.variant}`]: true,
       [`size-${this.size}`]: true,
+      [`shape-${this.shape}`]: true,
+      [`layout-${this.layout}`]: true,
       'is-disabled': isBtnDisabled,
       'is-expanded': this.expand,
       'is-icon-only': isIcon,

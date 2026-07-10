@@ -5,11 +5,12 @@
     "brand": { "type": "string", "default": "WebQuark", "desc": "Brand text" },
     "brandHref": { "type": "string", "default": "/", "desc": "Brand link target" },
     "activeValue": { "type": "string", "default": "docs", "desc": "Active item value or href" },
+    "edge": { "type": "select", "default": "top", "options": ["top", "right", "bottom", "left"], "desc": "Edge and orientation" },
     "mobileMode": { "type": "select", "default": "menu", "options": ["menu", "inline"], "desc": "Mobile item behavior" },
-    "sticky": { "type": "boolean", "default": false, "desc": "Pins the navbar to the top" },
+    "sticky": { "type": "boolean", "default": false, "desc": "Pins the navbar to its edge" },
     "compact": { "type": "boolean", "default": false, "desc": "Reduces navbar height" },
     "transparent": { "type": "boolean", "default": false, "desc": "Removes the default background" },
-    "bordered": { "type": "boolean", "default": true, "desc": "Shows a bottom border" },
+    "bordered": { "type": "boolean", "default": true, "desc": "Shows an inward-facing border" },
     "items": { "type": "json", "default": "[{\"label\":\"Docs\",\"value\":\"docs\",\"href\":\"/docs\",\"icon\":\"book-open\"},{\"label\":\"Components\",\"value\":\"components\",\"href\":\"/components\",\"icon\":\"blocks\"},{\"label\":\"Blog\",\"value\":\"blog\",\"href\":\"/blog\",\"icon\":\"newspaper\"}]", "desc": "Navigation item array" }
   },
   "slots": {
@@ -20,6 +21,7 @@
     { "name": "Default Navbar", "props": { "brand": "WebQuark" } },
     { "name": "Compact Sticky", "props": { "brand": "Docs", "compact": true, "sticky": true } },
     { "name": "Transparent", "props": { "brand": "Landing", "transparent": true, "bordered": false } },
+    { "name": "Bottom Navigation", "props": { "brand": "", "edge": "bottom", "activeValue": "home", "mobileMode": "inline", "items": "[{\"label\":\"Home\",\"value\":\"home\",\"icon\":\"house\",\"iconOnly\":true},{\"label\":\"Messages\",\"value\":\"messages\",\"icon\":\"message-circle\",\"iconOnly\":true},{\"label\":\"Tasks\",\"value\":\"tasks\",\"icon\":\"clipboard-list\",\"iconOnly\":true}]" } },
     { "name": "Icon Only", "props": { "brand": "Mobile", "activeValue": "home", "mobileMode": "inline", "items": "[{\"label\":\"Home\",\"value\":\"home\",\"icon\":\"house\",\"iconOnly\":true},{\"label\":\"Messages\",\"value\":\"messages\",\"icon\":\"message-circle\",\"iconOnly\":true},{\"label\":\"Tasks\",\"value\":\"tasks\",\"icon\":\"clipboard-list\",\"iconOnly\":true}]" } }
   ],
   "edgeCases": [

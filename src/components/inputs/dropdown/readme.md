@@ -34,6 +34,13 @@ Form-associated dropdown/select control with optional search and incremental opt
 | `qSelect` | Emitted with the selected option object when selection changes. | `CustomEvent<Option>`     |
 
 
+## Slots
+
+| Slot          | Description                                           |
+| ------------- | ----------------------------------------------------- |
+| `"icon-left"` | Optional leading content rendered inside the trigger. |
+
+
 ## Shadow Parts
 
 | Part        | Description                        |

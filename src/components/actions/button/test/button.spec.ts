@@ -88,6 +88,15 @@ describe('q-button', () => {
     el.remove();
   });
 
+  it('applies circular shape and stacked content classes', async () => {
+    const el = await createComponent({ shape: 'circle', layout: 'stacked' });
+    const button = el.shadowRoot.querySelector('.btn') as HTMLButtonElement;
+
+    expect(button.classList.contains('shape-circle')).toBe(true);
+    expect(button.classList.contains('layout-stacked')).toBe(true);
+    el.remove();
+  });
+
   it('emits focus and blur events from the inner button', async () => {
     const el = await createComponent();
     const focusHandler = vi.fn();

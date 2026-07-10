@@ -92,4 +92,19 @@ describe('q-dropdown', () => {
     expect(el.value).toBe('alpha');
     el.remove();
   });
+
+  it('renders leading trigger content through the icon-left slot', async () => {
+    const el = document.createElement('q-dropdown') as any;
+    const icon = document.createElement('span');
+    icon.setAttribute('slot', 'icon-left');
+    el.appendChild(icon);
+    document.body.appendChild(el);
+    await el.componentOnReady();
+
+    const slot = el.shadowRoot.querySelector('slot[name="icon-left"]') as HTMLSlotElement;
+
+    expect(slot).toBeTruthy();
+    expect(slot.assignedElements()).toContain(icon);
+    el.remove();
+  });
 });

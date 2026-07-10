@@ -64,6 +64,15 @@ describe('q-navbar', () => {
     expect(el.getAttribute('mobile-mode')).toBe('inline');
   });
 
+  it('reflects the configured navbar edge', async () => {
+    const el = await createComponent({
+      edge: 'bottom',
+      items: [{ label: 'Home', value: 'home' }],
+    });
+
+    expect(el.getAttribute('edge')).toBe('bottom');
+  });
+
   it('emits qSelect when an item is clicked', async () => {
     const el = await createComponent({
       items: [{ label: 'Docs', value: 'docs' }],

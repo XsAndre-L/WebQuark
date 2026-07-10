@@ -30,17 +30,18 @@ import { defineCustomElement as defineQSyntaxBox } from '@webquark/core/componen
 import { defineCustomElement as defineQTextarea } from '@webquark/core/components/q-textarea.js';
 import { defineCustomElement as defineQThumbnail } from '@webquark/core/components/q-thumbnail.js';
 import { defineCustomElement as defineQToggle } from '@webquark/core/components/q-toggle.js';
+import { defineCustomElement as defineQToolbar } from '@webquark/core/components/q-toolbar.js';
 import { defineCustomElement as defineQTooltip } from '@webquark/core/components/q-tooltip.js';
 @ProxyCmp({
   defineCustomElementFn: defineQButton,
-  inputs: ['ariaLabel', 'disabled', 'download', 'expand', 'href', 'iconOnly', 'loading', 'rel', 'size', 'target', 'type', 'variant']
+  inputs: ['ariaLabel', 'disabled', 'download', 'expand', 'href', 'iconOnly', 'layout', 'loading', 'rel', 'shape', 'size', 'target', 'type', 'variant']
 })
 @Component({
   selector: 'q-button',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['ariaLabel', 'disabled', 'download', 'expand', 'href', 'iconOnly', 'loading', 'rel', 'size', 'target', 'type', 'variant'],
+  inputs: ['ariaLabel', 'disabled', 'download', 'expand', 'href', 'iconOnly', 'layout', 'loading', 'rel', 'shape', 'size', 'target', 'type', 'variant'],
   outputs: ['qClick', 'qFocus', 'qBlur'],
 })
 export class QButton {
@@ -513,14 +514,14 @@ export declare interface QLink extends Components.QLink {
 
 @ProxyCmp({
   defineCustomElementFn: defineQNavbar,
-  inputs: ['activeValue', 'bordered', 'brand', 'brandHref', 'compact', 'items', 'logoAlt', 'logoSrc', 'mobileLabel', 'mobileMode', 'sticky', 'transparent']
+  inputs: ['activeValue', 'bordered', 'brand', 'brandHref', 'compact', 'edge', 'items', 'logoAlt', 'logoSrc', 'mobileLabel', 'mobileMode', 'sticky', 'transparent']
 })
 @Component({
   selector: 'q-navbar',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['activeValue', 'bordered', 'brand', 'brandHref', 'compact', 'items', 'logoAlt', 'logoSrc', 'mobileLabel', 'mobileMode', 'sticky', 'transparent'],
+  inputs: ['activeValue', 'bordered', 'brand', 'brandHref', 'compact', 'edge', 'items', 'logoAlt', 'logoSrc', 'mobileLabel', 'mobileMode', 'sticky', 'transparent'],
   outputs: ['qSelect', 'qMenuToggle'],
 })
 export class QNavbar {
@@ -959,6 +960,29 @@ export declare interface QToggle extends Components.QToggle {
    */
   qClick: EventEmitter<QToggleCustomEvent<MouseEvent>>;
 }
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineQToolbar,
+  inputs: ['ariaLabel', 'bordered', 'compact', 'edge', 'sticky', 'transparent']
+})
+@Component({
+  selector: 'q-toolbar',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['ariaLabel', 'bordered', 'compact', 'edge', 'sticky', 'transparent'],
+})
+export class QToolbar {
+  protected el: HTMLQToolbarElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface QToolbar extends Components.QToolbar {}
 
 
 @ProxyCmp({
