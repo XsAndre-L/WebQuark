@@ -177,7 +177,7 @@
   gap: 4px;
 }
 
-.btn.is-icon-only .btn-label {
+.btn.is-icon-only .btn-label:not(.has-default-slot-icon) {
   display: none;
 }
 
