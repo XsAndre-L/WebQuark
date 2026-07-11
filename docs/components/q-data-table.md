@@ -1,5 +1,7 @@
 # 🧩 Component Specification: `q-data-table`
 
+> Contract note: see [Current public contracts](./current-contracts.md#q-data-table) and the [generated API](../../src/components/data-display/data-table/readme.md) for the complete current surface. Generated API wins if an older design note below differs.
+
 The `<q-data-table>` is a robust data grid component designed for rendering large tabular datasets. It supports row selection, inline search, custom column templates, loading overlays, empty states, and standard navigation layouts. It is fully optimized for performant keyboard accessibility and rendering inside Unreal Engine CEF webviews.
 
 ---
@@ -107,150 +109,9 @@ Below is the complete list of styling tokens mapped to the component's internal 
 
 ---
 
-## 7. HTML/TSX Structure (Shadow DOM Layout)
+## 7. Implementation source
 
-```tsx
-@Component({
-  tag: 'q-data-table',
-  styleUrl: 'q-data-table.css',
-  shadow: true,
-})
-export class QDataTable {
-  @Element() el!: HTMLElement;
-
-  @Prop() columns: TableColumn[] | string = [];
-  @Prop() items: any[] | string = [];
-  @Prop() loading: boolean = false;
-  @Prop() selectable: boolean = false;
-  @Prop({ mutable: true }) selectedKeys: any[] = [];
-  @Prop() keyField: string = 'id';
-  @Prop() showToolbar: boolean = false;
-  @Prop() toolbarTitle?: string;
-  @Prop() showSearch: boolean = false;
-  @Prop() searchPlaceholder: string = 'Search...';
-  @Prop({ mutable: true }) searchValue: string = '';
-
-  @Event() qRowClick!: EventEmitter<{ item: any; index: number; originalEvent: MouseEvent | KeyboardEvent }>;
-  @Event() qSelectionChange!: EventEmitter<{ selectedKeys: any[]; selectedItems: any[] }>;
-  @Event() qSearch!: EventEmitter<string>;
-
-  render() {
-    const columns = this.getParsedColumns();
-    const items = this.getParsedItems();
-    const { checked, indeterminate } = this.getSelectionState();
-    const currentKeys = this.selectedKeys || [];
-
-    return (
-      <div class="table-container" role="grid">
-        {this.showToolbar && (
-          <div class="table-toolbar">
-            <div class="toolbar-left">
-              {this.toolbarTitle && <span class="toolbar-title">{this.toolbarTitle}</span>}
-              <slot name="toolbar-left" />
-              {this.showSearch && (
-                <q-input
-                  class="search-input"
-                  placeholder={this.searchPlaceholder}
-                  value={this.searchValue}
-                  onQInput={this.handleSearchInput}
-                  size="sm"
-                >
-                  <svg slot="prefix" class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="11" cy="11" r="8" />
-                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                  </svg>
-                </q-input>
-              )}
-              <slot name="filters" />
-            </div>
-            <div class="toolbar-right">
-              <slot name="actions" />
-            </div>
-          </div>
-        )}
-        <div class="table-scroll-area">
-          <table class="table-el">
-            <thead>
-              <tr role="row">
-                {this.selectable && (
-                  <th class="col-selection" role="columnheader">
-                    <input
-                      type="checkbox"
-                      class="checkbox-input"
-                      checked={checked}
-                      ref={el => { if (el) el.indeterminate = indeterminate; }}
-                      onChange={e => this.toggleAllSelection(e)}
-                      aria-label="Select all rows"
-                    />
-                  </th>
-                )}
-                {columns.map(col => (
-                  <th style={col.width ? { width: col.width } : {}} class={col.className || ''} role="columnheader">
-                    {this.getHeaderLabel(col)}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {this.loading ? (
-                <tr role="row">
-                  <td colSpan={columns.length + (this.selectable ? 1 : 0)} class="loading-placeholder-cell" role="gridcell" />
-                </tr>
-              ) : items.length === 0 ? (
-                <tr role="row">
-                  <td colSpan={columns.length + (this.selectable ? 1 : 0)} class="empty-cell" role="gridcell">
-                    <slot name="empty">No data available</slot>
-                  </td>
-                </tr>
-              ) : (
-                items.map((item, index) => {
-                  const key = this.getItemKey(item, index);
-                  const isSelected = currentKeys.includes(key);
-
-                  return (
-                    <tr
-                      key={key}
-                      class={{ 'row-el': true, 'is-selected': isSelected }}
-                      tabindex="0"
-                      role="row"
-                      aria-selected={isSelected ? 'true' : 'false'}
-                      onClick={e => this.handleRowClick(item, index, e)}
-                      onKeyDown={e => this.handleRowKeyDown(item, index, e)}
-                    >
-                      {this.selectable && (
-                        <td class="cell-selection" role="gridcell">
-                          <input
-                            type="checkbox"
-                            class="checkbox-input"
-                            checked={isSelected}
-                            onChange={e => this.toggleRowSelection(item, index, e)}
-                            aria-label={`Select row ${index + 1}`}
-                          />
-                        </td>
-                      )}
-                      {columns.map(col => (
-                        <td class={col.className || ''} role="gridcell">
-                          {this.renderCell(item, col)}
-                        </td>
-                      ))}
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-          {this.loading && (
-            <div class="table-loading-overlay">
-              <q-circular-progress indeterminate={true} size="sm" />
-            </div>
-          )}
-        </div>
-        <slot name="footer" />
-      </div>
-    );
-  }
-}
-```
+The implementation is intentionally not duplicated in this guide. Use the generated API linked at the top of the page for the canonical public contract and the component's TypeScript source for implementation details. This avoids stale source snapshots in authored documentation.
 
 ---
 
@@ -287,10 +148,10 @@ export class QDataTable {
 ```html
 <q-data-table 
   id="devices-grid" 
-  show-toolbar="true" 
+  show-toolbar
   toolbar-title="Connected Devices" 
-  show-search="true" 
-  selectable="true"
+  show-search
+  selectable
 ></q-data-table>
 
 <script>

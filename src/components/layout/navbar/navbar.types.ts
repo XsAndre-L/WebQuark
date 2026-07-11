@@ -19,6 +19,9 @@ export interface NavbarItem {
   ariaLabel?: string;
 }
 
+/** A concise navigation label/value or a fully configured navigation item. */
+export type NavbarItemInput = NavbarItem | string;
+
 export interface NavbarSelectDetail {
   value: string;
   label: string;

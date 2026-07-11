@@ -12,10 +12,25 @@ import type {
   QSidepanelSide,
   QSidepanelVariant,
   SidepanelItem,
+  SidepanelItemInput,
 } from './sidepanel.types';
+import { getSidepanelItems } from './sidepanel.utils';
 
 const DEFAULT_COLLAPSE_LABEL = 'Toggle sidebar';
 
+/**
+ * Drawer, persistent panel, or hierarchical navigation side panel.
+ * @slot - Main content used by drawer and panel variants.
+ * @slot header - Header content for all variants.
+ * @slot footer - Footer content for all variants.
+ * @part backdrop - Drawer backdrop click target.
+ * @part drawer - Drawer dialog surface.
+ * @part panel - Persistent panel surface.
+ * @part header - Header region.
+ * @part body - Body or navigation region.
+ * @part footer - Footer region.
+ * @part collapse-control - Built-in navigation collapse button.
+ */
 @Component({
   tag: 'q-sidepanel',
   styleUrl: 'sidepanel.css',
@@ -37,7 +52,9 @@ export class QSidepanel {
 
   // ── Nav-mode props ────────────────────────────────────────────────────────
   /** Navigation items rendered in nav mode. */
-  @Prop() items: SidepanelItem[] = [];
+  @Prop() items: SidepanelItemInput[] = [];
+  /** Accessible name for the rendered navigation, panel, or drawer region. */
+  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
   /** Active leaf item value. */
   @Prop({ reflect: true }) value: string = '';
   /** Item display mode: flat list, one-level groups, or deep tree */
@@ -72,6 +89,7 @@ export class QSidepanel {
 
   // ── Internal nav state ────────────────────────────────────────────────────
   @State() expandedGroups: Set<string> = new Set();
+  @State() normalizedItems: SidepanelItem[] = [];
 
   @Element() host!: HTMLElement;
 
@@ -93,8 +111,9 @@ export class QSidepanel {
     this.hasFooterContent = this.hasSlotContent('footer');
 
     // Nav mode
+    this.normalizedItems = getSidepanelItems(this.items);
     if (this.expanded) {
-      seedExpandedGroups(this.items, this.expandedGroups);
+      seedExpandedGroups(this.normalizedItems, this.expandedGroups);
     }
   }
 
@@ -124,14 +143,16 @@ export class QSidepanel {
 
   @Watch('items')
   handleItemsChange() {
+    this.normalizedItems = getSidepanelItems(this.items);
+
     if (this.expanded && !this.hasUserToggledGroups) {
       const newSet = new Set<string>();
-      seedExpandedGroups(this.items, newSet);
+      seedExpandedGroups(this.normalizedItems, newSet);
       this.expandedGroups = newSet;
       return;
     }
 
-    const groupValues = this.getGroupValues(this.items);
+    const groupValues = this.getGroupValues(this.normalizedItems);
     this.expandedGroups = new Set(Array.from(this.expandedGroups).filter(value => groupValues.has(value)));
   }
 
@@ -158,7 +179,7 @@ export class QSidepanel {
   private handleNavItemClick = (item: SidepanelItem) => {
     if (item.children && item.children.length > 0) {
       this.hasUserToggledGroups = true;
-      this.expandedGroups = toggleGroup(this.items, this.expandedGroups, this.accordion, item.value);
+      this.expandedGroups = toggleGroup(this.normalizedItems, this.expandedGroups, this.accordion, item.value);
     } else {
       this.qSelect.emit({ value: item.value, label: item.label, item });
     }
@@ -270,6 +291,7 @@ export class QSidepanel {
     const customSizeStyle = {
       '--q-panel-width': this.panelSize,
     };
+    const ariaLabel = this.ariaLabel?.trim() || undefined;
 
     if (this.variant === 'nav') {
       const isCollapseActive = this.collapsible;
@@ -286,7 +308,7 @@ export class QSidepanel {
       };
 
       return (
-        <div class={navClasses} role="navigation" aria-label="Sidebar navigation">
+        <div class={navClasses} role="navigation" aria-label={ariaLabel || 'Sidebar navigation'}>
           <div
             class={{
               'nav-header': true,
@@ -306,7 +328,7 @@ export class QSidepanel {
 
           <div class="nav-body" part="body" aria-hidden={isHiddenCollapsed ? 'true' : undefined}>
             {renderNavItems({
-              items: this.items,
+              items: this.normalizedItems,
               expandedGroups: this.expandedGroups,
               activeValue: this.value,
               onItemClick: this.handleNavItemClick,
@@ -339,6 +361,8 @@ export class QSidepanel {
             [`panel-side-${this.side}`]: true,
           }}
           part="panel"
+          role={ariaLabel ? 'region' : undefined}
+          aria-label={ariaLabel}
         >
           <div
             class={{
@@ -393,6 +417,7 @@ export class QSidepanel {
           style={customSizeStyle}
           part="drawer"
           role="dialog"
+          aria-label={ariaLabel}
           aria-modal="true"
           aria-hidden={this.open ? 'false' : 'true'}
           tabindex="-1"

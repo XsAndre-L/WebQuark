@@ -13,6 +13,7 @@ Form-associated textarea with optional auto-grow behavior and validation messagi
 
 | Property       | Attribute       | Description                                                                                  | Type                            | Default     |
 | -------------- | --------------- | -------------------------------------------------------------------------------------------- | ------------------------------- | ----------- |
+| `ariaLabel`    | `aria-label`    | Accessible name for the native textarea when a visible label is not used.                    | `string`                        | `undefined` |
 | `autoGrow`     | `auto-grow`     | Enables automatic height growth when resizeMode is auto.                                     | `boolean`                       | `true`      |
 | `disabled`     | `disabled`      | Disables textarea interaction.                                                               | `boolean`                       | `false`     |
 | `error`        | `error`         | Validation error text or error-state flag.                                                   | `string`                        | `undefined` |

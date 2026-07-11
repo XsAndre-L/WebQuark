@@ -1,5 +1,7 @@
 # 🧩 Component Specification: `q-scrollable`
 
+> Contract note: see [Current public contracts](./current-contracts.md#q-scrollable) and the [generated API](../../src/components/layout/scrollable/readme.md) for the complete current surface. Generated API wins if an older design note below differs.
+
 The `<q-scrollable>` is a layout wrapper component that provides highly customizable scrollbars. It supports two modes: a custom-styled, overlay scrollbar (custom mode) and native scrollbar overrides (native mode). It includes pointer drag listeners, scroll progress tracking, auto-hide dynamics, and mobile touch responsive fallbacks, making it perfect for Unreal Engine CEF layouts.
 
 ---
@@ -69,69 +71,9 @@ Below is the complete list of styling tokens mapped to the component's internal 
 
 ---
 
-## 7. HTML/TSX Structure (Shadow DOM Layout)
+## 7. Implementation source
 
-```tsx
-@Component({
-  tag: 'q-scrollable',
-  styleUrl: 'q-scrollable.css',
-  shadow: true,
-})
-export class QScrollable {
-  @Element() el!: HTMLElement;
-
-  @Prop({ reflect: true }) height: string = '100%';
-  @Prop({ reflect: true }) maxHeight: string = '';
-  @Prop({ reflect: true }) autoHide: boolean = true;
-  @Prop({ reflect: true }) nativeOnMobile: boolean = true;
-  @Prop({ reflect: true }) mode: 'custom' | 'native' = 'custom';
-  @Prop({ reflect: true }) target: string = '';
-
-  @Event() qScroll!: EventEmitter<{ scrollTop: number; scrollHeight: number; clientHeight: number }>;
-
-  @State() isScrolling: boolean = false;
-  @State() isDragging: boolean = false;
-
-  render() {
-    const hostStyle = {
-      height: this.height,
-      maxHeight: this.maxHeight || undefined,
-    };
-
-    return (
-      <Host
-        class={{ 'is-scrolling': this.isScrolling, 'is-dragging': this.isDragging }}
-        style={hostStyle}
-      >
-        <div class="q-scrollable-host">
-          <div
-            class="q-scrollable-viewport"
-            ref={(el) => (this.viewportEl = el as HTMLDivElement)}
-            onScroll={this.handleScroll}
-          >
-            <div class="q-scrollable-content" ref={(el) => (this.contentEl = el as HTMLDivElement)}>
-              <slot />
-            </div>
-          </div>
-
-          {this.mode === 'custom' && (
-            <div
-              class={{ 'q-scrollbar-track': true, 'is-dragging': this.isDragging }}
-              ref={(el) => (this.trackEl = el as HTMLDivElement)}
-            >
-              <div
-                class="q-scrollbar-thumb"
-                ref={(el) => (this.thumbEl = el as HTMLDivElement)}
-                onPointerDown={this.handlePointerDown}
-              />
-            </div>
-          )}
-        </div>
-      </Host>
-    );
-  }
-}
-```
+The implementation is intentionally not duplicated in this guide. Use the generated API linked at the top of the page for the canonical public contract and the component's TypeScript source for implementation details. This avoids stale source snapshots in authored documentation.
 
 ---
 
@@ -148,7 +90,7 @@ export class QScrollable {
 
 ### Custom Scrollbar Wrapper
 ```html
-<q-scrollable height="300px" auto-hide="true">
+<q-scrollable height="300px">
   <div style="padding: 20px;">
     <h2>Long Document Title</h2>
     <p>Paragraph 1...</p>

@@ -7,6 +7,10 @@ import type { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from './
  * @slot - Chip label text. If using this for visible text on a removable chip, also set `label` for the remove button accessible name.
  * @slot icon-left - Content placed before the label.
  * @slot icon-right - Content placed after the label.
+ * @part chip - Root chip element.
+ * @part label - Chip label wrapper.
+ * @part remove-button - Remove action button.
+ * @part remove-icon - Remove action icon.
  */
 @Component({
   tag: 'q-chip',

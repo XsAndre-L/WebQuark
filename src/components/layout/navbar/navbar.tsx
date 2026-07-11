@@ -1,6 +1,6 @@
 import { Component, Element, Event, EventEmitter, Prop, State, h } from '@stencil/core';
-import { safeParseJson } from '../../../utils/utils';
-import type { NavbarItem, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode } from './navbar.types';
+import type { NavbarItem, NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode } from './navbar.types';
+import { getNavbarItems } from './navbar.utils';
 
 let navbarIds = 0;
 
@@ -40,8 +40,11 @@ export class QNavbar {
   /** URL used by the brand link. */
   @Prop() brandHref: string = '/';
 
-  /** Navigation items rendered in the desktop and mobile menus. */
-  @Prop() items: NavbarItem[] | string = [];
+  /** Navigation items; strings use the same text for label and value, while objects enable links, icons, and state. */
+  @Prop() items: NavbarItemInput[] | string = [];
+
+  /** Accessible name for the desktop and mobile navigation regions. */
+  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
 
   /** Value or href of the currently active navigation item. */
   @Prop() activeValue: string = '';
@@ -89,7 +92,7 @@ export class QNavbar {
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
   private get parsedItems(): NavbarItem[] {
-    return safeParseJson<NavbarItem[]>(this.items, [], 'QNavbar');
+    return getNavbarItems(this.items);
   }
 
   private handleMenuToggle = () => {
@@ -256,12 +259,14 @@ export class QNavbar {
     );
   }
 
-  private renderNavItems() {
-    return this.parsedItems.map((item) => this.renderNavItem(item));
+  private renderNavItems(items: NavbarItem[]) {
+    return items.map((item) => this.renderNavItem(item));
   }
 
   render() {
-    const hasItems = this.parsedItems.length > 0;
+    const items = this.parsedItems;
+    const hasItems = items.length > 0;
+    const ariaLabel = this.ariaLabel?.trim() || undefined;
 
     return (
       <div
@@ -278,8 +283,8 @@ export class QNavbar {
         <div class="navbar-row">
           {this.renderBrand()}
 
-          <nav class="desktop-nav" aria-label="Primary navigation" part="nav">
-            {hasItems && this.renderNavItems()}
+          <nav class="desktop-nav" aria-label={ariaLabel || 'Primary navigation'} part="nav">
+            {hasItems && this.renderNavItems(items)}
             <slot name="nav" />
           </nav>
 
@@ -304,8 +309,8 @@ export class QNavbar {
         </div>
 
         <div id={this.mobilePanelId} class="mobile-panel" part="mobile-panel">
-          <nav class="mobile-nav" aria-label="Mobile navigation">
-            {hasItems && this.renderNavItems()}
+          <nav class="mobile-nav" aria-label={ariaLabel || 'Mobile navigation'}>
+            {hasItems && this.renderNavItems(items)}
             <slot name="mobile-nav" />
           </nav>
           <div class="mobile-actions">

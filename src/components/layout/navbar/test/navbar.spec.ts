@@ -30,6 +30,26 @@ describe('q-navbar', () => {
     expect(el.shadowRoot.textContent).toContain('Docs');
   });
 
+  it('normalizes string items into matching labels and values', async () => {
+    const el = await createComponent({ items: ['Home', 'Docs'] });
+    const handler = vi.fn();
+    el.addEventListener('qSelect', handler);
+
+    const items = Array.from(el.shadowRoot.querySelectorAll('.desktop-nav .nav-item')) as HTMLElement[];
+    items[1].click();
+    await waitForUpdate();
+
+    expect(items.map(item => item.textContent?.trim())).toEqual(['Home', 'Docs']);
+    expect(handler.mock.calls[0][0].detail.value).toBe('Docs');
+  });
+
+  it('uses a custom aria-label for both responsive navigation regions', async () => {
+    const el = await createComponent({ ariaLabel: 'Product sections' });
+    const navs = Array.from(el.shadowRoot.querySelectorAll('nav')) as HTMLElement[];
+
+    expect(navs.map(nav => nav.getAttribute('aria-label'))).toEqual(['Product sections', 'Product sections']);
+  });
+
   it('renders configured item icons', async () => {
     const el = await createComponent({
       items: [{ label: 'Home', value: 'home', icon: 'house', iconSize: 26 }],

@@ -1,4 +1,6 @@
-# 🧩 Component Specification: `q-reel` & `q-thumbnail`
+# 🧩 Component Specification: `q-reel`
+
+> Contract note: see [Current public contracts](./current-contracts.md#q-reel), the [generated API](../../src/components/media/reel/readme.md), and the separate [q-thumbnail guide](./q-thumbnail.md). Generated API wins if an older design note below differs.
 
 The `<q-reel>` and `<q-thumbnail>` components collaborate to create a premium, modular media showcase grid or horizontal gallery (carousel) that supports a built-in media viewer (lightbox). It is specifically optimized to avoid rendering bugs inside Unreal Engine's Off-Screen Rendering (OSR) environments.
 
@@ -100,163 +102,9 @@ Below is the complete list of styling tokens mapped to the component's internal 
 
 ---
 
-## 7. HTML/TSX Structure (Shadow DOM Layout)
+## 7. Implementation source
 
-### A. Parent Container: `<q-reel>`
-```tsx
-@Component({
-  tag: 'q-reel',
-  styleUrl: 'q-reel.css',
-  shadow: true,
-})
-export class QReel {
-  @Prop() layout: 'grid' | 'carousel' = 'grid';
-  @Prop() lightbox: boolean = true;
-
-  @State() activeMedia: { src: string; label?: string; video: boolean; alt: string; triggerEl?: HTMLElement } | null = null;
-
-  @Event() qLightboxOpen: EventEmitter<void>;
-  @Event() qLightboxClose: EventEmitter<void>;
-
-  render() {
-    const thumbnails = this.getThumbnails();
-    const currentIdx = this.activeMedia && this.activeMedia.triggerEl 
-      ? thumbnails.indexOf(this.activeMedia.triggerEl) 
-      : -1;
-    const hasPrev = currentIdx > 0;
-    const hasNext = currentIdx !== -1 && currentIdx < thumbnails.length - 1;
-
-    return (
-      <div 
-        class={{
-          'reel-container': true,
-          [`layout-${this.layout}`]: true
-        }}
-      >
-        <slot />
-
-        {/* Custom Lightbox Overlay */}
-        {this.activeMedia && (
-          <div 
-            class="lightbox-overlay" 
-            onClick={this.closeLightbox}
-            onKeyDown={this.handleKeyDown}
-            role="dialog"
-            aria-modal="true"
-            aria-label={this.activeMedia.label || 'Media Viewer'}
-          >
-            <button 
-              class="lightbox-close" 
-              onClick={this.closeLightbox} 
-              aria-label="Close viewer"
-              ref={(el) => (this.closeButtonRef = el)}
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-
-            {hasPrev && (
-              <button 
-                class="lightbox-prev" 
-                onClick={(e) => { e.stopPropagation(); this.navigateMedia(currentIdx - 1); }} 
-                aria-label="Previous media"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="15 18 9 12 15 6" />
-                </svg>
-              </button>
-            )}
-
-            {hasNext && (
-              <button 
-                class="lightbox-next" 
-                onClick={(e) => { e.stopPropagation(); this.navigateMedia(currentIdx + 1); }} 
-                aria-label="Next media"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="9 18 15 12 9 6" />
-                </svg>
-              </button>
-            )}
-
-            <div class="lightbox-content" onClick={(e) => e.stopPropagation()}>
-              {this.activeMedia.video ? (
-                <video class="lightbox-media" src={this.activeMedia.src} controls autoplay loop />
-              ) : (
-                <img class="lightbox-media" src={this.activeMedia.src} alt={this.activeMedia.alt} />
-              )}
-              
-              {this.activeMedia.label && (
-                <div class="lightbox-caption">
-                  {this.activeMedia.label}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
-}
-```
-
-### B. Child Item: `<q-thumbnail>`
-```tsx
-@Component({
-  tag: 'q-thumbnail',
-  styleUrl: 'q-thumbnail.css',
-  shadow: true,
-})
-export class QThumbnail {
-  @Prop() src: string = "";
-  @Prop({ reflect: true }) video: boolean = false;
-  @Prop() label?: string;
-  @Prop() alt: string = "";
-  @Prop({ reflect: true }) highlighted: boolean = false;
-
-  @Element() el!: HTMLElement;
-
-  @Event() qMaximize: EventEmitter<{ src: string; label?: string; video: boolean; alt: string; triggerEl: HTMLElement }>;
-
-  render() {
-    return (
-      <div 
-        class={{
-          'thumb-wrapper': true,
-          'is-highlighted': this.highlighted,
-          'is-video': this.video
-        }}
-        onClick={this.handleTrigger}
-        role="button"
-        tabindex="0"
-        aria-label={this.label || this.alt || 'Media item'}
-        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') this.handleTrigger(e); }}
-      >
-        <div class="thumb-media-container">
-          <img class="thumb-image" src={this.src} alt={this.alt} loading="lazy" />
-          
-          {this.video && (
-            <div class="video-play-indicator">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <polygon points="5 3 19 12 5 21 5 3" />
-              </svg>
-            </div>
-          )}
-        </div>
-
-        {this.label && (
-          <div class="thumb-caption">
-            <span class="caption-text">{this.label}</span>
-          </div>
-        )}
-        <slot />
-      </div>
-    );
-  }
-}
-```
+The implementation is intentionally not duplicated in this guide. Use the generated API linked at the top of the page for the canonical public contract and the component's TypeScript source for implementation details. This avoids stale source snapshots in authored documentation.
 
 ---
 
@@ -274,10 +122,10 @@ export class QThumbnail {
 
 ### Basic Media Grid Layout
 ```html
-<q-reel layout="grid" lightbox="true">
+<q-reel layout="grid">
   <q-thumbnail src="/media/img1.jpg" alt="First scene description" label="Introduction Scene"></q-thumbnail>
-  <q-thumbnail src="/media/video1.mp4" video="true" alt="Cinematic trailer" label="Cinematic Trailer"></q-thumbnail>
-  <q-thumbnail src="/media/img2.jpg" alt="Final artwork" label="Ending Screen" highlighted="true"></q-thumbnail>
+  <q-thumbnail src="/media/video1.mp4" video alt="Cinematic trailer" label="Cinematic Trailer"></q-thumbnail>
+  <q-thumbnail src="/media/img2.jpg" alt="Final artwork" label="Ending Screen" highlighted></q-thumbnail>
 </q-reel>
 ```
 

@@ -1,5 +1,7 @@
 # 🧩 Component Specification: `q-sidepanel`
 
+> Contract note: see [Current public contracts](./current-contracts.md#q-sidepanel) and the [generated API](../../src/components/layout/sidepanel/readme.md) for the complete current surface. Generated API wins if an older design note below differs.
+
 The `<q-sidepanel>` is a customizable sidebar component. It supports two primary modes: a slide-out overlay drawer (drawer mode) and a fixed navigation sidebar (nav mode). It uses standard 2D translation transforms, thin layout structures, and lightweight backdrops to remain completely glitch-free inside Unreal Engine's Off-Screen Rendering (OSR) browser context.
 
 ---
@@ -8,11 +10,12 @@ The `<q-sidepanel>` is a customizable sidebar component. It supports two primary
 
 | Property | Attribute | Type | Default | Description |
 | :--- | :--- | :--- | :--- | :--- |
-| `variant` | `variant` | `"drawer" \| "nav"` | `'nav'` | Selects behavior: `'drawer'` = slide-in overlay, `'nav'` = fixed navigation sidebar. |
+| `variant` | `variant` | `"drawer" \| "nav" \| "panel"` | `'nav'` | Selects overlay drawer, fixed navigation, or persistent slotted panel behavior. |
 | `open` | `open` | `boolean` | `false` | Controls drawer open/close state (drawer mode only). |
 | `side` | `side` | `"bottom" \| "left" \| "right" \| "top"` | `'right'` | Screen edge the drawer slides from (drawer mode only). |
 | `panelSize` | `panel-size` | `string` | `'320px'` | Panel dimension – width or height depending on `side` (drawer mode only). |
-| `items` | -- | `SidepanelItem[]` | `[]` | Navigation item tree passed programmatically (nav mode only). |
+| `items` | -- | `(SidepanelItem \| string)[]` | `[]` | Navigation entries passed programmatically. Strings use the same label and value. |
+| `ariaLabel` | `aria-label` | `string` | `undefined` | Accessible name for the navigation, panel region, or drawer dialog. |
 | `value` | `value` | `string` | `''` | Value of the currently active/selected item (nav mode only). |
 | `mode` | `mode` | `"flat" \| "grouped" \| "tree"` | `'flat'` | Display mode for items: flat list, one-level groups, or deep tree. |
 | `expanded` | `expanded` | `boolean` | `true` | Whether all parent groups start expanded on first render (nav mode only). |
@@ -26,6 +29,12 @@ export interface SidepanelItem {
   icon?: string;
   children?: SidepanelItem[];
 }
+```
+
+For a flat navigation list, the concise form is enough:
+
+```js
+sidepanel.items = ['Home', 'Reports', 'Settings'];
 ```
 
 ---
@@ -94,84 +103,9 @@ Below is the complete list of styling tokens mapped to the component's internal 
 
 ---
 
-## 7. HTML/TSX Structure (Shadow DOM Layout)
+## 7. Implementation source
 
-```tsx
-@Component({
-  tag: 'q-sidepanel',
-  styleUrl: 'q-sidepanel.css',
-  shadow: true,
-})
-export class QSidepanel {
-  @Element() el!: HTMLElement;
-
-  @Prop({ reflect: true }) variant: 'drawer' | 'nav' = 'nav';
-  @Prop({ reflect: true }) open: boolean = false;
-  @Prop({ reflect: true }) side: 'left' | 'right' | 'top' | 'bottom' = 'right';
-  @Prop() panelSize: string = '320px';
-  @Prop() items: SidepanelItem[] = [];
-  @Prop({ reflect: true }) value: string = '';
-  @Prop() mode: 'flat' | 'grouped' | 'tree' = 'flat';
-  @Prop() expanded: boolean = true;
-  @Prop() accordion: boolean = false;
-
-  @State() isVisible: boolean = false;
-  @State() isAnimatedOpen: boolean = false;
-  @State() expandedGroups: Set<string> = new Set();
-
-  render() {
-    if (this.variant === 'nav') {
-      return (
-        <div class="nav-sidebar" role="navigation" aria-label="Sidebar navigation">
-          <div class="nav-header" part="header">
-            <slot name="header" />
-          </div>
-          <div class="nav-body" role="menu" part="body">
-            {this.renderNavItems(this.items)}
-          </div>
-          <div class="nav-footer" part="footer">
-            <slot name="footer" />
-          </div>
-        </div>
-      );
-    }
-
-    const classes = {
-      'sidepanel-wrapper': true,
-      'is-open': this.isAnimatedOpen,
-      'is-visible': this.isVisible,
-      [`side-${this.side}`]: true,
-    };
-
-    const customSizeStyle = {
-      '--q-panel-width': this.panelSize,
-    };
-
-    return (
-      <div class={classes} onKeyDown={this.handleKeyDown} inert={!this.open ? true : undefined}>
-        <div class="sidepanel-backdrop" onClick={this.handleClose} part="backdrop" />
-        <div 
-          ref={(el) => (this.drawerEl = el)}
-          class="sidepanel-drawer" 
-          style={customSizeStyle}
-          part="drawer"
-          role="dialog"
-          aria-modal="true"
-          aria-hidden={this.open ? 'false' : 'true'}
-          tabindex="-1"
-        >
-          <div class="drawer-header" part="header">
-            <slot name="header" />
-          </div>
-          <div class="drawer-body" part="body">
-            <slot />
-          </div>
-        </div>
-      </div>
-    );
-  }
-}
-```
+The implementation is intentionally not duplicated in this guide. Use the generated API linked at the top of the page for the canonical public contract and the component's TypeScript source for implementation details. This avoids stale source snapshots in authored documentation.
 
 ---
 

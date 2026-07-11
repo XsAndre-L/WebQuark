@@ -1,5 +1,7 @@
 # 🧩 Component Specification: `q-button`
 
+> Contract note: see [Current public contracts](./current-contracts.md#q-button) and the [generated API](../../src/components/actions/button/readme.md) for the complete current surface. Generated API wins if an older design note below differs.
+
 The `<q-button>` is a highly customizable interactive button element. It encapsulates focus, hover, active-press transitions, and layout presets inside its Shadow DOM. Depending on its properties, it dynamically compiles to either a native `<button>` or a semantic HTML `<a>` anchor link.
 
 ---
@@ -10,6 +12,7 @@ The `<q-button>` is a highly customizable interactive button element. It encapsu
 | :--- | :--- | :--- | :--- | :--- |
 | `variant` | `variant` | `"danger" \| "ghost" \| "primary" \| "secondary" \| "success" \| "text"` | `'primary'` | The visual category/theme style of the button. |
 | `size` | `size` | `"lg" \| "md" \| "sm"` | `'md'` | Height and padding layout scale. |
+| `icon` | `icon` | `string` | `undefined` | Lucide icon shorthand rendered before the label. Assigned `icon-left` content replaces it. |
 | `disabled` | `disabled` | `boolean` | `false` | Disables user interactions and applies a grayed out visual state. |
 | `loading` | `loading` | `boolean` | `false` | Disables button and overlays a rotating loading spinner while hiding standard text. |
 | `type` | `type` | `"button" \| "reset" \| "submit"` | `'button'` | Standard HTML form button behavior (only used if `href` is not set). |
@@ -18,6 +21,7 @@ The `<q-button>` is a highly customizable interactive button element. It encapsu
 | `target` | `target` | `string` | `undefined` | Link target scope (e.g., `'_blank'`). Only used with `href`. |
 | `download` | `download` | `string` | `undefined` | Triggers a file download. Only used with `href`. |
 | `iconOnly` | `icon-only` | `boolean` | `undefined` | Forces the button to use icon-only padding and sizing overrides. If undefined, it auto-detects based on slotted children. |
+| `ariaLabel` | `aria-label` | `string` | `undefined` | Accessible name forwarded to the native control. Required when the button has only an icon. |
 
 ---
 
@@ -106,91 +110,9 @@ Below is the complete list of styling tokens mapped to the component's internal 
 
 ---
 
-## 7. HTML/TSX Structure (Shadow DOM Layout)
+## 7. Implementation source
 
-```tsx
-@Component({
-  tag: 'q-button',
-  styleUrl: 'q-button.css',
-  shadow: {
-    delegatesFocus: true
-  },
-})
-export class QButton {
-  @Element() el!: HTMLElement;
-
-  @Prop() variant: 'primary' | 'secondary' | 'success' | 'danger' | 'ghost' | 'text' = 'primary';
-  @Prop() size: 'sm' | 'md' | 'lg' = 'md';
-  @Prop({ reflect: true }) disabled: boolean = false;
-  @Prop({ reflect: true }) loading: boolean = false;
-  @Prop() type: 'button' | 'submit' | 'reset' = 'button';
-  @Prop({ reflect: true }) expand: boolean = false;
-  @Prop() href?: string;
-  @Prop() target?: string;
-  @Prop() download?: string;
-  @Prop({ reflect: true }) iconOnly?: boolean;
-
-  @State() autoIconOnly: boolean = false;
-  @State() hasDefaultContent: boolean = false;
-
-  @Event() qClick!: EventEmitter<MouseEvent>;
-
-  render() {
-    const isLink = this.href !== undefined && this.href !== null && this.href.trim() !== "";
-    const isBtnDisabled = this.disabled || this.loading;
-    const isIcon = this.iconOnly !== undefined ? this.iconOnly : this.autoIconOnly;
-    
-    const classes = {
-      'btn': true,
-      [`variant-${this.variant}`]: true,
-      [`size-${this.size}`]: true,
-      'is-loading': this.loading,
-      'is-disabled': isBtnDisabled,
-      'is-expanded': this.expand,
-      'is-icon-only': isIcon
-    };
-
-    const innerContent = [
-      this.loading && <div class="btn-spinner" part="spinner" />,
-      <span class="btn-content-wrap" style={{ visibility: this.loading ? 'hidden' : 'visible' }}>
-        <slot name="icon-left" onSlotchange={this.handleSlotChange} />
-        {this.hasDefaultContent && (
-          <span class="btn-label"><slot onSlotchange={this.handleSlotChange} /></span>
-        )}
-        <slot name="icon-right" onSlotchange={this.handleSlotChange} />
-      </span>
-    ];
-
-    if (isLink) {
-      return (
-        <a
-          class={classes}
-          href={this.href}
-          target={this.target}
-          download={this.download}
-          tabindex={isBtnDisabled ? -1 : undefined}
-          aria-disabled={isBtnDisabled ? 'true' : 'false'}
-          onClick={this.handleClick}
-        >
-          {innerContent}
-        </a>
-      );
-    }
-
-    return (
-      <button
-        class={classes}
-        type={this.type}
-        disabled={isBtnDisabled}
-        aria-busy={this.loading ? 'true' : 'false'}
-        onClick={this.handleClick}
-      >
-        {innerContent}
-      </button>
-    );
-  }
-}
-```
+The implementation is intentionally not duplicated in this guide. Use the generated API linked at the top of the page for the canonical public contract and the component's TypeScript source for implementation details. This avoids stale source snapshots in authored documentation.
 
 ---
 
@@ -210,11 +132,22 @@ export class QButton {
 <q-button variant="primary" size="md">Save Changes</q-button>
 ```
 
-### Button with Left Icon
+### Button with an Icon
 ```html
-<q-button variant="secondary" size="md">
-  <span slot="icon-left">💾</span>
-  Save
+<q-button icon="save">Save</q-button>
+```
+
+Visible text names the button naturally, so it is not copied into `aria-label`. For an icon-only button, provide the name explicitly:
+
+```html
+<q-button icon="trash-2" aria-label="Delete item"></q-button>
+```
+
+Use the existing slots for a different icon library, custom sizing, or a trailing icon:
+
+```html
+<q-button aria-label="Save">
+  <q-icon slot="icon-left" lib="local" name="save"></q-icon>
 </q-button>
 ```
 

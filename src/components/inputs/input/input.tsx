@@ -39,6 +39,9 @@ export class QInput {
   /** Optional label rendered above the input. */
   @Prop() label?: string;
 
+  /** Accessible name for the native input when a visible label is not used. */
+  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+
   /** Disables input interaction. */
   @Prop({ reflect: true }) disabled: boolean = false;
 
@@ -288,6 +291,7 @@ export class QInput {
     const hasNumericValue = this.type === 'number' && !isNaN(numericValue);
     const isMinDisabled = hasNumericValue && this.min !== undefined && this.min !== null && numericValue <= this.min;
     const isMaxDisabled = hasNumericValue && this.max !== undefined && this.max !== null && numericValue >= this.max;
+    const ariaLabel = this.ariaLabel?.trim() || undefined;
 
     return (
       <div 
@@ -348,6 +352,7 @@ export class QInput {
             aria-valuemax={this.type === 'number' && this.max !== undefined && this.max !== null ? String(this.max) : undefined}
             aria-invalid={hasError ? 'true' : 'false'}
             aria-describedby={hasError ? 'q-field-error' : undefined}
+            aria-label={ariaLabel}
           />
 
           {this.type === 'number' && !this.disabled && (

@@ -12,6 +12,20 @@ import {
 
 let dialogId = 0;
 
+/**
+ * Modal confirmation or message dialog with focus trapping and safe solid backdrops.
+ * @slot - Custom dialog body content.
+ * @slot header - Custom header content. Provide an accessible name when replacing `dialogTitle`.
+ * @slot footer - Custom action content. Consumers own disabled/loading behavior for slotted controls.
+ * @part backdrop - Backdrop click target.
+ * @part modal - Dialog surface.
+ * @part header - Header region.
+ * @part body - Body region.
+ * @part footer - Footer region.
+ * @part close-btn - Header close button.
+ * @part cancel-btn - Default cancel button.
+ * @part confirm-btn - Default confirm button.
+ */
 @Component({
   tag: 'q-dialog',
   styleUrl: 'dialog.css',
@@ -24,6 +38,9 @@ export class QDialog {
 
   /** Optional title text rendered in the default dialog header. */
   @Prop() dialogTitle?: string;
+
+  /** Accessible name for the dialog, especially when using a custom header without dialogTitle. */
+  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
 
   /** Optional message text rendered in the default dialog body. */
   @Prop() message?: string;
@@ -227,6 +244,7 @@ export class QDialog {
 
   render() {
     const titleText = this.dialogTitle;
+    const ariaLabel = this.ariaLabel?.trim() || undefined;
 
     const classes = {
       'dialog-wrapper': true,
@@ -260,7 +278,8 @@ export class QDialog {
           role="dialog"
           aria-modal="true"
           aria-hidden={this.open ? 'false' : 'true'}
-          aria-labelledby={titleText ? this.titleId : undefined}
+          aria-label={ariaLabel}
+          aria-labelledby={!ariaLabel && titleText ? this.titleId : undefined}
           aria-describedby={this.message ? this.descriptionId : undefined}
           tabindex="-1"
         >

@@ -7,6 +7,10 @@ import type { QReelLayout } from './reel.types';
 const LIGHTBOX_FOCUS_DELAY_MS = 50;
 type QReelThumbnailElement = HTMLElement & Pick<QThumbnailMaximizeDetail, 'src' | 'label' | 'video' | 'alt'>;
 
+/**
+ * Gallery layout for q-thumbnail children with an optional modal lightbox.
+ * @slot - One or more q-thumbnail elements.
+ */
 @Component({
   tag: 'q-reel',
   styleUrl: 'reel.css',

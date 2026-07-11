@@ -5,6 +5,9 @@ export interface SidepanelItem {
   children?: SidepanelItem[];
 }
 
+/** A concise navigation label/value or a fully configured (optionally nested) item. */
+export type SidepanelItemInput = SidepanelItem | string;
+
 export type QSidepanelVariant = 'drawer' | 'nav' | 'panel';
 export type QSidepanelSide = 'left' | 'right' | 'top' | 'bottom';
 export type QSidepanelMode = 'flat' | 'grouped' | 'tree';

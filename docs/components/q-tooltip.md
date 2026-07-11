@@ -1,5 +1,7 @@
 # 🧩 Component Specification: `q-tooltip`
 
+> Contract note: see [Current public contracts](./current-contracts.md#q-tooltip) and the [generated API](../../src/components/overlays/tooltip/readme.md) for the complete current surface. Generated API wins if an older design note below differs.
+
 The `<q-tooltip>` is a floating informational tooltip bubble that attaches to its parent trigger element. It calculates screen positioning dynamically on hover or focus, supporting top, bottom, left, and right placements, and automatically hides on view scroll or resize to prevent rendering orphans.
 
 ---
@@ -58,41 +60,9 @@ None
 
 ---
 
-## 7. HTML/TSX Structure (Shadow DOM Layout)
+## 7. Implementation source
 
-```tsx
-@Component({
-  tag: 'q-tooltip',
-  styleUrl: 'q-tooltip.css',
-  shadow: true,
-})
-export class QTooltip {
-  @Element() el: HTMLElement;
-
-  @Prop() content: string;
-  @Prop() position: 'top' | 'bottom' | 'left' | 'right' = 'top';
-  @Prop() delay: number = 200;
-
-  @State() visible: boolean = false;
-
-  render() {
-    return (
-      <Host
-        class={{
-          'is-visible': this.visible,
-        }}
-        position={this.position}
-        aria-hidden="true"
-        role="tooltip"
-      >
-        <div class="tooltip-bubble">
-          {this.content || <slot></slot>}
-        </div>
-      </Host>
-    );
-  }
-}
-```
+The implementation is intentionally not duplicated in this guide. Use the generated API linked at the top of the page for the canonical public contract and the component's TypeScript source for implementation details. This avoids stale source snapshots in authored documentation.
 
 ---
 

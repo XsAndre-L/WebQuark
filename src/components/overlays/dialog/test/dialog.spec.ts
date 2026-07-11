@@ -59,6 +59,14 @@ describe('q-dialog', () => {
     expect(modal.getAttribute('aria-describedby')).toBe(message.id);
   });
 
+  it('uses an explicit aria-label instead of aria-labelledby', async () => {
+    const el = await createComponent({ dialogTitle: 'Visible title', ariaLabel: 'Account confirmation' });
+    const modal = el.shadowRoot.querySelector('.dialog-modal') as HTMLElement;
+
+    expect(modal.getAttribute('aria-label')).toBe('Account confirmation');
+    expect(modal.hasAttribute('aria-labelledby')).toBe(false);
+  });
+
   it('uses closeLabel for the close button accessible name', async () => {
     const el = await createComponent({ closeLabel: 'Close confirmation' });
     const closeButton = el.shadowRoot.querySelector('.dialog-close-btn') as HTMLButtonElement;

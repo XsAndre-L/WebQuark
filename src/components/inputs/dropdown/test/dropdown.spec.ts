@@ -93,6 +93,32 @@ describe('q-dropdown', () => {
     el.remove();
   });
 
+  it('normalizes string options into matching labels and values', async () => {
+    const el = await createComponent({ options: ['Alpha', 'Beta'] });
+    const selectHandler = vi.fn();
+    el.addEventListener('qSelect', selectHandler);
+
+    (el.shadowRoot.querySelector('.dropdown-trigger') as HTMLElement).click();
+    await wait(20);
+    (el.shadowRoot.querySelectorAll('.menu-item')[1] as HTMLElement).click();
+    await wait(20);
+
+    expect(el.value).toBe('Beta');
+    expect(selectHandler.mock.calls[0][0].detail).toEqual({ label: 'Beta', value: 'Beta' });
+    el.remove();
+  });
+
+  it('forwards aria-label to the trigger and option list', async () => {
+    const el = await createComponent({ options, ariaLabel: 'Project' });
+    const trigger = el.shadowRoot.querySelector('.dropdown-trigger') as HTMLElement;
+    trigger.click();
+    await wait(20);
+
+    expect(trigger.getAttribute('aria-label')).toBe('Project');
+    expect(el.shadowRoot.querySelector('[role="listbox"]').getAttribute('aria-label')).toBe('Project');
+    el.remove();
+  });
+
   it('renders leading trigger content through the icon-left slot', async () => {
     const el = document.createElement('q-dropdown') as any;
     const icon = document.createElement('span');

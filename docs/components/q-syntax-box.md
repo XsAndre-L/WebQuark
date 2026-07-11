@@ -1,5 +1,7 @@
 # 🧩 Component Specification: `q-syntax-box`
 
+> Contract note: see [Current public contracts](./current-contracts.md#q-syntax-box) and the [generated API](../../src/components/data-display/syntax-box/readme.md) for the complete current surface. Generated API wins if an older design note below differs.
+
 The `<q-syntax-box>` is a custom syntax highlighting code viewer block component. It supports HTML, CSS, JavaScript, and JSON highlighting out of the box. It features panel (header + scroll viewport) and plain formats, a clipboard copy mechanism, custom scroll heights, and slotted header action spaces.
 
 ---
@@ -67,87 +69,9 @@ None
 
 ---
 
-## 7. HTML/TSX Structure (Shadow DOM Layout)
+## 7. Implementation source
 
-```tsx
-@Component({
-  tag: 'q-syntax-box',
-  styleUrl: 'q-syntax-box.css',
-  shadow: true,
-})
-export class QSyntaxBox {
-  @Element() el!: HTMLElement;
-
-  @Prop() variant: 'panel' | 'plain' = 'panel';
-  @Prop() language: 'html' | 'javascript' | 'css' | 'json' = 'html';
-  @Prop() code?: string;
-  @Prop() heading?: string;
-  @Prop() copyable: boolean = false;
-  @Prop() height?: string;
-
-  @State() copied: boolean = false;
-
-  private scrollableEl?: any;
-
-  @Method()
-  async scrollToBottom() {
-    if (this.scrollableEl && typeof this.scrollableEl.scrollToBottom === 'function') {
-      await this.scrollableEl.scrollToBottom();
-    }
-  }
-
-  render() {
-    const resolvedHeight = this.height !== undefined ? this.height : (this.variant === 'panel' ? '110px' : 'auto');
-    const isScrollable = resolvedHeight !== 'auto' && resolvedHeight !== '';
-
-    const content = this.code !== undefined ? (
-      <pre class="code-body">
-        <code innerHTML={this.highlight(this.code, this.language)}></code>
-      </pre>
-    ) : (
-      <slot></slot>
-    );
-
-    const bodyContent = isScrollable ? (
-      <q-scrollable height={resolvedHeight} ref={(el) => (this.scrollableEl = el)}>
-        {content}
-      </q-scrollable>
-    ) : (
-      content
-    );
-
-    if (this.variant === 'panel') {
-      return (
-        <Host class="q-syntax-box-panel">
-          <div class="panel-container">
-            <div class="panel-header">
-              <span>{this.heading}</span>
-              <div class="panel-actions">
-                <slot name="actions"></slot>
-                {this.copyable && (
-                  <q-button variant="ghost" size="sm" onClick={this.copyCode}>
-                    <q-icon name={this.copied ? "check" : "copy"} size="sm"></q-icon>
-                    <q-tooltip content={this.copied ? "Copied!" : "Copy"}></q-tooltip>
-                  </q-button>
-                )}
-              </div>
-            </div>
-            {bodyContent}
-          </div>
-        </Host>
-      );
-    }
-
-    return (
-      <Host class="q-syntax-box-plain">
-        <div class="plain-container">
-          {bodyContent}
-        </div>
-      </Host>
-    );
-  }
-}
-```
+The implementation is intentionally not duplicated in this guide. Use the generated API linked at the top of the page for the canonical public contract and the component's TypeScript source for implementation details. This avoids stale source snapshots in authored documentation.
 
 ---
 
@@ -168,7 +92,7 @@ export class QSyntaxBox {
   variant="panel" 
   language="html" 
   heading="index.html" 
-  copyable="true" 
+  copyable
   code='<div class="header">
   <h1>Welcome to WebQuark!</h1>
 </div>'>

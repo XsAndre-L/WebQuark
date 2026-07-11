@@ -1,6 +1,16 @@
-import { Component, Prop, Element, State, Event, EventEmitter, h } from '@stencil/core';
+import { Build, Component, Prop, Element, State, Event, EventEmitter, Watch, h } from '@stencil/core';
+import type { QIconName } from '../../media/icon/icon.types';
 import type { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant } from './button.types';
+import { shouldWarnForMissingButtonAccessibleName } from './button.utils';
 
+/**
+ * Action button that renders a native button or anchor according to `href`.
+ * @slot - Button label content.
+ * @slot icon-left - Content placed before the label.
+ * @slot icon-right - Content placed after the label.
+ * @part icon - Leading q-icon rendered by the `icon` shorthand.
+ * @part spinner - Loading spinner shown while `loading` is true.
+ */
 @Component({
   tag: 'q-button',
   styleUrl: 'button.css',
@@ -16,6 +26,8 @@ export class QButton {
   @Prop() variant: QButtonVariant = 'primary';
   /** Button size. */
   @Prop() size: QButtonSize = 'md';
+  /** Lucide icon name rendered before the label. Use the icon slots for other libraries or custom markup. */
+  @Prop() icon?: QIconName;
   /** Controls the button outline and fixed circular presentation. */
   @Prop({ reflect: true }) shape: QButtonShape = 'default';
   /** Controls whether icon and label content flow inline or stack vertically. */
@@ -39,7 +51,7 @@ export class QButton {
   /** Renders compact icon-only spacing. When unset, this is auto-detected from slotted icon content. */
   @Prop({ reflect: true }) iconOnly?: boolean;
   /** Accessible label forwarded to the inner button or anchor. Required for icon-only buttons. */
-  @Prop() ariaLabel?: string;
+  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
 
   /** Emitted on click, unless disabled or loading. */
   @Event() qClick!: EventEmitter<MouseEvent>;
@@ -52,17 +64,32 @@ export class QButton {
 
   @State() autoIconOnly: boolean = false;
 
+  private hasWarnedMissingAccessibleName = false;
+
   // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
   componentWillLoad() {
     this.checkIconOnly();
   }
 
+  componentDidLoad() {
+    this.warnForMissingAccessibleName();
+  }
+
+  @Watch('icon')
+  @Watch('iconOnly')
+  @Watch('ariaLabel')
+  handleIconAccessibilityChange() {
+    this.checkIconOnly();
+    this.warnForMissingAccessibleName();
+  }
+
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
   private checkIconOnly = () => {
-    const text = this.el.textContent ? this.el.textContent.trim() : '';
-    const hasIcon = this.el.querySelector('q-icon') !== null ||
+    const text = this.getVisibleText();
+    const hasIcon = this.hasShortcutIcon() ||
+                    this.el.querySelector('q-icon') !== null ||
                     this.el.querySelector('[slot="icon-left"]') !== null ||
                     this.el.querySelector('[slot="icon-right"]') !== null;
     this.autoIconOnly = text === '' && hasIcon;
@@ -70,7 +97,51 @@ export class QButton {
 
   private handleSlotChange = () => {
     this.checkIconOnly();
+    this.warnForMissingAccessibleName();
   };
+
+  private getVisibleText(): string {
+    return Array.from(this.el.childNodes)
+      .filter(node => {
+        if (node.nodeType !== 1) return true;
+        const slot = (node as HTMLElement).slot;
+        return slot !== 'icon-left' && slot !== 'icon-right';
+      })
+      .map(node => node.textContent || '')
+      .join('')
+      .trim();
+  }
+
+  private getShortcutIcon(): QIconName | undefined {
+    const icon = this.icon?.trim();
+    return icon || undefined;
+  }
+
+  private hasShortcutIcon(): boolean {
+    return this.getShortcutIcon() !== undefined;
+  }
+
+  private hasIconContent(): boolean {
+    return this.hasShortcutIcon() ||
+      this.el.querySelector('q-icon') !== null ||
+      this.el.querySelector('[slot="icon-left"]') !== null ||
+      this.el.querySelector('[slot="icon-right"]') !== null;
+  }
+
+  private warnForMissingAccessibleName() {
+    if (!Build.isDev) return;
+
+    if (shouldWarnForMissingButtonAccessibleName({
+      ariaLabel: this.ariaLabel,
+      iconOnly: this.iconOnly,
+      hasVisibleText: this.getVisibleText() !== '',
+      hasIcon: this.hasIconContent(),
+      hasWarned: this.hasWarnedMissingAccessibleName,
+    })) {
+      this.hasWarnedMissingAccessibleName = true;
+      console.warn('QButton: Icon-only buttons require visible text or aria-label.', this.el);
+    }
+  }
 
   private handleClick = (e: MouseEvent) => {
     if (this.disabled || this.loading) {
@@ -100,6 +171,8 @@ export class QButton {
     const isLink = this.href !== undefined && this.href !== null && this.href !== '';
     const isBtnDisabled = this.disabled || this.loading;
     const isIcon = this.iconOnly !== undefined ? this.iconOnly : this.autoIconOnly;
+    const shortcutIcon = this.getShortcutIcon();
+    const ariaLabel = this.ariaLabel?.trim() || undefined;
 
     const classes = {
       'btn': true,
@@ -115,7 +188,9 @@ export class QButton {
     const innerContent = [
       this.loading && <div class="btn-spinner" part="spinner" />,
       <span class="btn-content-wrap" style={{ visibility: this.loading ? 'hidden' : 'visible' }}>
-        <slot name="icon-left" onSlotchange={this.handleSlotChange} />
+        <slot name="icon-left" onSlotchange={this.handleSlotChange}>
+          {shortcutIcon && <q-icon name={shortcutIcon} size={this.size} part="icon" />}
+        </slot>
         <span class="btn-label"><slot onSlotchange={this.handleSlotChange} /></span>
         <slot name="icon-right" onSlotchange={this.handleSlotChange} />
       </span>
@@ -132,7 +207,7 @@ export class QButton {
           tabindex={isBtnDisabled ? -1 : undefined}
           aria-disabled={isBtnDisabled ? 'true' : 'false'}
           aria-busy={this.loading ? 'true' : 'false'}
-          aria-label={this.ariaLabel}
+          aria-label={ariaLabel}
           onClick={this.handleClick}
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}
@@ -148,7 +223,7 @@ export class QButton {
         type={this.type}
         disabled={isBtnDisabled}
         aria-busy={this.loading ? 'true' : 'false'}
-        aria-label={this.ariaLabel}
+        aria-label={ariaLabel}
         onClick={this.handleClick}
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
