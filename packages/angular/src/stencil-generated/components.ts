@@ -552,14 +552,14 @@ export declare interface QNavbar extends Components.QNavbar {
 
 @ProxyCmp({
   defineCustomElementFn: defineQPanel,
-  inputs: ['ariaLabel', 'fullHeight', 'padding', 'scrollable', 'stickyFooter', 'stickyHeader', 'variant']
+  inputs: ['ariaLabel', 'fullHeight', 'noBorders', 'padding', 'scrollable', 'stickyFooter', 'stickyHeader', 'variant']
 })
 @Component({
   selector: 'q-panel',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['ariaLabel', 'fullHeight', 'padding', 'scrollable', 'stickyFooter', 'stickyHeader', 'variant'],
+  inputs: ['ariaLabel', 'fullHeight', 'noBorders', 'padding', 'scrollable', 'stickyFooter', 'stickyHeader', 'variant'],
 })
 export class QPanel {
   protected el: HTMLQPanelElement;

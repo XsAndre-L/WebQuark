@@ -128,6 +128,10 @@ export class QButton {
       this.el.querySelector('[slot="icon-right"]') !== null;
   }
 
+  private hasDefaultSlotIcon(): boolean {
+    return this.el.querySelector('q-icon:not([slot])') !== null;
+  }
+
   private warnForMissingAccessibleName() {
     if (!Build.isDev) return;
 
@@ -173,6 +177,7 @@ export class QButton {
     const isIcon = this.iconOnly !== undefined ? this.iconOnly : this.autoIconOnly;
     const shortcutIcon = this.getShortcutIcon();
     const ariaLabel = this.ariaLabel?.trim() || undefined;
+    const hasDefaultSlotIcon = this.hasDefaultSlotIcon();
 
     const classes = {
       'btn': true,
@@ -191,7 +196,9 @@ export class QButton {
         <slot name="icon-left" onSlotchange={this.handleSlotChange}>
           {shortcutIcon && <q-icon name={shortcutIcon} size={this.size} part="icon" />}
         </slot>
-        <span class="btn-label"><slot onSlotchange={this.handleSlotChange} /></span>
+        <span class={{ 'btn-label': true, 'has-default-slot-icon': hasDefaultSlotIcon }}>
+          <slot onSlotchange={this.handleSlotChange} />
+        </span>
         <slot name="icon-right" onSlotchange={this.handleSlotChange} />
       </span>
     ];

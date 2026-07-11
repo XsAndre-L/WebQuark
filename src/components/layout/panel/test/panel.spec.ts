@@ -34,8 +34,20 @@ describe('q-panel', () => {
 
   it('renders body content', async () => {
     const el = await createComponent({}, '<p>Panel body</p>');
+    const panel = el.shadowRoot.querySelector('.panel') as HTMLElement;
+
     expect(el.shadowRoot.querySelector('.panel-body')).not.toBeNull();
+    expect(el.variant).toBe('bordered');
+    expect(panel.classList.contains('variant-bordered')).toBe(true);
     expect(el.textContent).toContain('Panel body');
+  });
+
+  it('supports removing the default border', async () => {
+    const el = await createComponent({ noBorders: true });
+    const panel = el.shadowRoot.querySelector('.panel') as HTMLElement;
+
+    expect(el.hasAttribute('no-borders')).toBe(true);
+    expect(panel.classList.contains('has-no-borders')).toBe(true);
   });
 
   it('reveals the header and footer slots when provided', async () => {

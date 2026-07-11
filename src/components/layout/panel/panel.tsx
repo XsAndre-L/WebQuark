@@ -24,7 +24,10 @@ export class QPanel {
   @Element() el!: HTMLElement;
 
   /** Visual treatment for the panel container. */
-  @Prop({ reflect: true }) variant: QPanelVariant = 'surface';
+  @Prop({ reflect: true }) variant: QPanelVariant = 'bordered';
+
+  /** Removes the panel border while preserving the selected variant's other styling. */
+  @Prop({ reflect: true }) noBorders: boolean = false;
 
   /** Padding density applied to the body region. */
   @Prop({ reflect: true }) padding: QPanelPadding = 'md';
@@ -78,6 +81,7 @@ export class QPanel {
         class={{
           'panel': true,
           [`variant-${this.variant}`]: true,
+          'has-no-borders': this.noBorders,
           [`padding-${this.padding}`]: true,
           'is-scrollable': this.scrollable,
           'is-full-height': this.fullHeight,

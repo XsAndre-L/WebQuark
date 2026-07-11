@@ -88,6 +88,19 @@ describe('q-button', () => {
     el.remove();
   });
 
+  it('does not hide an unslotted icon when icon-only mode is auto-detected', async () => {
+    const icon = document.createElement('q-icon');
+    const el = await createComponentWithChild({}, icon);
+    await (icon as any).componentOnReady();
+    const button = el.shadowRoot.querySelector('.btn') as HTMLButtonElement;
+    const label = el.shadowRoot.querySelector('.btn-label') as HTMLElement;
+
+    expect(button.classList.contains('is-icon-only')).toBe(true);
+    expect(label.classList.contains('has-default-slot-icon')).toBe(true);
+    expect(getComputedStyle(label).display).not.toBe('none');
+    el.remove();
+  });
+
   it('renders the icon shorthand with the button size', async () => {
     const el = await createComponent({ icon: 'save', size: 'lg', ariaLabel: 'Save' });
     const icon = el.shadowRoot.querySelector('q-icon[part="icon"]') as any;

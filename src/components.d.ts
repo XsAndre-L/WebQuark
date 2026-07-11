@@ -833,6 +833,11 @@ export namespace Components {
          */
         "fullHeight": boolean;
         /**
+          * Removes the panel border while preserving the selected variant's other styling.
+          * @default false
+         */
+        "noBorders": boolean;
+        /**
           * Padding density applied to the body region.
           * @default 'md'
          */
@@ -854,7 +859,7 @@ export namespace Components {
         "stickyHeader": boolean;
         /**
           * Visual treatment for the panel container.
-          * @default 'surface'
+          * @default 'bordered'
          */
         "variant": QPanelVariant;
     }
@@ -2773,6 +2778,11 @@ declare namespace LocalJSX {
          */
         "fullHeight"?: boolean;
         /**
+          * Removes the panel border while preserving the selected variant's other styling.
+          * @default false
+         */
+        "noBorders"?: boolean;
+        /**
           * Padding density applied to the body region.
           * @default 'md'
          */
@@ -2794,7 +2804,7 @@ declare namespace LocalJSX {
         "stickyHeader"?: boolean;
         /**
           * Visual treatment for the panel container.
-          * @default 'surface'
+          * @default 'bordered'
          */
         "variant"?: QPanelVariant;
     }
@@ -3498,6 +3508,7 @@ declare namespace LocalJSX {
     }
     interface QPanelAttributes {
         "variant": QPanelVariant;
+        "noBorders": boolean;
         "padding": QPanelPadding;
         "scrollable": boolean;
         "fullHeight": boolean;
