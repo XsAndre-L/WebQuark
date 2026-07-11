@@ -76,6 +76,29 @@ describe('q-sidepanel', () => {
     expect(activeItem.textContent).toContain('Reports');
   });
 
+  it('normalizes string navigation items into matching labels and values', async () => {
+    const el = await createComponent({ variant: 'nav', items: ['Home', 'Reports'] });
+    const handler = vi.fn();
+    el.addEventListener('qSelect', handler);
+
+    const items = Array.from(el.shadowRoot.querySelectorAll('.nav-item')) as HTMLElement[];
+    items[1].click();
+    await wait();
+
+    expect(items.map(item => item.textContent?.trim())).toEqual(['Home', 'Reports']);
+    expect(handler.mock.calls[0][0].detail.value).toBe('Reports');
+  });
+
+  it('forwards aria-label to navigation, panel, and drawer regions', async () => {
+    const nav = await createComponent({ variant: 'nav', ariaLabel: 'Account sections' });
+    const panel = await createComponent({ variant: 'panel', ariaLabel: 'Filters' });
+    const drawer = await createComponent({ variant: 'drawer', ariaLabel: 'Cart' });
+
+    expect(nav.shadowRoot.querySelector('[role="navigation"]').getAttribute('aria-label')).toBe('Account sections');
+    expect(panel.shadowRoot.querySelector('[role="region"]').getAttribute('aria-label')).toBe('Filters');
+    expect(drawer.shadowRoot.querySelector('[role="dialog"]').getAttribute('aria-label')).toBe('Cart');
+  });
+
   it('keeps empty nav header and footer regions hidden', async () => {
     const el = await createComponent({
       variant: 'nav',
@@ -200,7 +223,7 @@ describe('q-sidepanel', () => {
 
     expect(control.getAttribute('aria-label')).toBe('Collapse sidebar');
     expect(control.getAttribute('title')).toBe('Collapse sidebar');
-    expect(icon.getAttribute('name')).toBe('panel-right-close');
+    expect((icon as any).name).toBe('panel-right-close');
 
     control.click();
     await wait();
@@ -210,6 +233,6 @@ describe('q-sidepanel', () => {
     expect(collapsedHandler.mock.calls[0][0].detail.collapsed).toBe(true);
     expect(control.getAttribute('aria-label')).toBe('Expand sidebar');
     expect(control.getAttribute('title')).toBe('Expand sidebar');
-    expect((control.querySelector('q-icon') as HTMLElement).getAttribute('name')).toBe('panel-right-open');
+    expect((control.querySelector('q-icon') as any).name).toBe('panel-right-open');
   });
 });

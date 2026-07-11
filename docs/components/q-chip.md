@@ -1,5 +1,7 @@
 # q-chip
 
+> Contract note: see [Current public contracts](./current-contracts.md#q-chip) and the [generated API](../../src/components/actions/chip/readme.md) for the complete current surface. Generated API wins if an older design note below differs.
+
 `q-chip` is a compact UI primitive for filters, quick navigation, tags, and low-emphasis status labels.
 
 Use it when the control should read as a small piece of metadata or a scoped filter. Use `q-button` for primary commands and `q-link` for inline text links.

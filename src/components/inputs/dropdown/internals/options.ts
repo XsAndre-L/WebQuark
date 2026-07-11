@@ -1,15 +1,24 @@
 import { safeParseJson } from '../../../../utils/utils';
 
-import type { Option } from '../dropdown.types';
+import type { DropdownOptionInput, Option } from '../dropdown.types';
 
 export function getOptionLabel(option: Partial<Option> | undefined): string {
   return typeof option?.label === 'string' ? option.label : '';
 }
 
-export function getDropdownOptions(options: Option[] | string): Option[] {
-  return safeParseJson<Option[]>(options, [], 'QDropdown').filter((option): option is Option =>
-    Boolean(option) && typeof option === 'object' && typeof option.value === 'string'
-  );
+export function getDropdownOptions(options: DropdownOptionInput[] | string): Option[] {
+  return safeParseJson<DropdownOptionInput[]>(options, [], 'QDropdown').flatMap((option): Option[] => {
+    if (typeof option === 'string') {
+      const value = option.trim();
+      return value ? [{ label: value, value }] : [];
+    }
+
+    if (option && typeof option === 'object' && typeof option.value === 'string') {
+      return [{ ...option, label: getOptionLabel(option) }];
+    }
+
+    return [];
+  });
 }
 
 export function getSelectedOption(options: readonly Option[], value: string): Option | undefined {

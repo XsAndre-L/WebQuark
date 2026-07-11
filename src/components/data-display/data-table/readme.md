@@ -84,6 +84,7 @@ graph TD;
   q-data-table --> q-icon
   q-data-table --> q-tooltip
   q-data-table --> q-input
+  q-button --> q-icon
   style q-data-table fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

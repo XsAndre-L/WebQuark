@@ -42,6 +42,11 @@
       "default": "320px",
       "desc": "Panel dimension — width or height depending on side (drawer mode only)"
     },
+    "ariaLabel": {
+      "type": "string",
+      "default": "",
+      "desc": "Accessible name for the navigation, panel, or drawer region"
+    },
     "accordion": {
       "type": "boolean",
       "default": false,

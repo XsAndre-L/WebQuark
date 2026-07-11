@@ -1,5 +1,7 @@
 # 🧩 Component Specification: `q-toggle`
 
+> Contract note: see [Current public contracts](./current-contracts.md#q-toggle) and the [generated API](../../src/components/inputs/toggle/readme.md) for the complete current surface. Generated API wins if an older design note below differs.
+
 The `<q-toggle>` is a stateful interactive toggle control that renders either as a custom sliding switch track or a validation check box. It supports text label slotting, custom checkmark icons, validation error messages, and form association. It is built to optimize rendering in offscreen environments.
 
 ---
@@ -77,103 +79,9 @@ The `<q-toggle>` is a stateful interactive toggle control that renders either as
 
 ---
 
-## 7. HTML/TSX Structure (Shadow DOM Layout)
+## 7. Implementation source
 
-```tsx
-@Component({
-  tag: 'q-toggle',
-  styleUrl: 'q-toggle.css',
-  shadow: true,
-  formAssociated: true
-})
-export class QToggle {
-  @Element() el!: HTMLElement;
-
-  @Prop({ mutable: true, reflect: true }) checked: boolean = false;
-  @Prop() size: 'sm' | 'md' | 'lg' = 'md';
-  @Prop() type: 'switch' | 'checkbox' = 'switch';
-  @Prop() label?: string;
-  @Prop({ reflect: true }) disabled: boolean = false;
-  @Prop({ reflect: true }) required: boolean = false;
-  @Prop() error?: string;
-
-  @State() hasCheckedIcon: boolean = false;
-  @State() hasUncheckedIcon: boolean = false;
-  @State() hasDefaultSlot: boolean = false;
-
-  @AttachInternals() internals!: ElementInternals;
-
-  render() {
-    const hasLabel = this.label !== undefined && this.label !== '';
-    const showLabel = hasLabel || this.hasDefaultSlot;
-    const hasError = this.error !== undefined && this.error.length > 0;
-
-    return (
-      <div class="toggle-container">
-        <div
-          class={{
-            'toggle-wrapper': true,
-            'is-checked': this.checked,
-            'is-disabled': this.disabled,
-            'is-required': this.required,
-            'has-error': hasError,
-            [`type-${this.type}`]: true,
-            [`size-${this.size}`]: true,
-          }}
-          role="checkbox"
-          aria-checked={this.checked ? 'true' : 'false'}
-          aria-disabled={this.disabled ? 'true' : 'false'}
-          aria-required={this.required ? 'true' : 'false'}
-          aria-invalid={hasError ? 'true' : 'false'}
-          aria-describedby={hasError ? 'toggle-error-msg' : undefined}
-          tabindex={this.disabled ? -1 : 0}
-          onClick={this.handleClick}
-          onKeyDown={this.handleKeyDown}
-        >
-          <div class="toggle-control" part="control">
-            {this.type === 'switch' ? (
-              <div class="switch-track" part="track">
-                <div class="switch-thumb" part="thumb" />
-              </div>
-            ) : (
-              <div class="checkbox-box" part="box">
-                <span class={{ 'icon-wrap': true, 'is-hidden': !this.checked }} part="icon-checked">
-                  <slot name="checked-icon" onSlotchange={this.handleSlotChange}>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="default-check-icon">
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                  </slot>
-                </span>
-                <span class={{ 'icon-wrap': true, 'is-hidden': this.checked }} part="icon-unchecked">
-                  <slot name="unchecked-icon" onSlotchange={this.handleSlotChange} />
-                </span>
-              </div>
-            )}
-          </div>
-
-          <span
-            class={{
-              'toggle-label-text': true,
-              'is-hidden': !showLabel
-            }}
-            part="label"
-          >
-            <slot onSlotchange={this.handleSlotChange}>
-              {this.label}
-            </slot>
-          </span>
-        </div>
-
-        {hasError && (
-          <span id="toggle-error-msg" class="error-msg" part="error-msg">
-            {this.error}
-          </span>
-        )}
-      </div>
-    );
-  }
-}
-```
+The implementation is intentionally not duplicated in this guide. Use the generated API linked at the top of the page for the canonical public contract and the component's TypeScript source for implementation details. This avoids stale source snapshots in authored documentation.
 
 ---
 
@@ -190,12 +98,12 @@ export class QToggle {
 
 ### Example 1: Standard Toggle Switch
 ```html
-<q-toggle label="Enable Notifications" checked="true"></q-toggle>
+<q-toggle label="Enable Notifications" checked></q-toggle>
 ```
 
 ### Example 2: Checkbox Toggle Mode
 ```html
-<q-toggle type="checkbox" label="Accept terms and conditions" required="true"></q-toggle>
+<q-toggle type="checkbox" label="Accept terms and conditions" required></q-toggle>
 ```
 
 ### Example 3: Small and Large Size Layouts

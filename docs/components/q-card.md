@@ -1,5 +1,7 @@
 # 🧩 Component Specification: `q-card`
 
+> Contract note: see [Current public contracts](./current-contracts.md#q-card) and the [generated API](../../src/components/layout/card/readme.md) for the complete current surface. Generated API wins if an older design note below differs.
+
 The `<q-card>` is a layout container panel that encapsulates visual styling (backgrounds, borders, shadows, and hover dynamics) inside its Shadow DOM. It is designed to host any custom content dynamically via slots.
 
 ---
@@ -88,56 +90,9 @@ Below is the complete list of styling tokens mapped to the component's internal 
 
 ---
 
-## 7. HTML/TSX Structure (Shadow DOM Layout)
+## 7. Implementation source
 
-```tsx
-@Component({
-  tag: 'q-card',
-  styleUrl: 'q-card.css',
-  shadow: true,
-})
-export class QCard {
-  @Element() el!: HTMLElement;
-
-  @Prop({ reflect: true }) elevation: 'low' | 'medium' | 'high' | 1 | 2 | 3 = 'medium';
-  @Prop({ reflect: true }) interactive: boolean = false;
-  @Prop({ reflect: true }) glass: boolean = false;
-  @Prop({ reflect: true }) lift: boolean = false;
-
-  @State() hasHeader: boolean = false;
-
-  render() {
-    return (
-      <div
-        class={{
-          'card-container': true,
-          [`elevation-${this.elevation}`]: true,
-          'is-interactive': this.interactive,
-          'is-glass': this.glass,
-          'has-lift': this.lift,
-        }}
-        tabindex={this.interactive ? 0 : undefined}
-        role={this.interactive ? 'button' : undefined}
-        onKeyDown={this.interactive ? this.handleKeyDown : undefined}
-      >
-        <div
-          class={{
-            'card-header': true,
-            'is-hidden': !this.hasHeader,
-          }}
-          part="header"
-        >
-          <slot name="header" onSlotchange={this.checkHeaderSlot} />
-        </div>
-
-        <div class="card-body" part="body">
-          <slot />
-        </div>
-      </div>
-    );
-  }
-}
-```
+The implementation is intentionally not duplicated in this guide. Use the generated API linked at the top of the page for the canonical public contract and the component's TypeScript source for implementation details. This avoids stale source snapshots in authored documentation.
 
 ---
 
@@ -162,7 +117,7 @@ export class QCard {
 
 ### Interactive Action Card
 ```html
-<q-card interactive="true" elevation="medium" id="btn-card">
+<q-card interactive elevation="medium" id="btn-card">
   <h3 slot="header">Launch Application</h3>
   <p>Click here to start the deployment pipeline dashboard tool.</p>
 </q-card>
@@ -176,7 +131,7 @@ export class QCard {
 
 ### Lift-Only Product Card
 ```html
-<q-card lift="true" elevation="high">
+<q-card lift elevation="high">
   <img src="/assets/preview.jpg" alt="Preview" style="width: 100%; border-radius: 8px;" />
   <h3>Modern Workspace</h3>
   <p>Standard developer workspace workspace configuration.</p>

@@ -34,14 +34,14 @@ import { defineCustomElement as defineQToolbar } from '@webquark/core/components
 import { defineCustomElement as defineQTooltip } from '@webquark/core/components/q-tooltip.js';
 @ProxyCmp({
   defineCustomElementFn: defineQButton,
-  inputs: ['ariaLabel', 'disabled', 'download', 'expand', 'href', 'iconOnly', 'layout', 'loading', 'rel', 'shape', 'size', 'target', 'type', 'variant']
+  inputs: ['ariaLabel', 'disabled', 'download', 'expand', 'href', 'icon', 'iconOnly', 'layout', 'loading', 'rel', 'shape', 'size', 'target', 'type', 'variant']
 })
 @Component({
   selector: 'q-button',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['ariaLabel', 'disabled', 'download', 'expand', 'href', 'iconOnly', 'layout', 'loading', 'rel', 'shape', 'size', 'target', 'type', 'variant'],
+  inputs: ['ariaLabel', 'disabled', 'download', 'expand', 'href', 'icon', 'iconOnly', 'layout', 'loading', 'rel', 'shape', 'size', 'target', 'type', 'variant'],
   outputs: ['qClick', 'qFocus', 'qBlur'],
 })
 export class QButton {
@@ -260,7 +260,7 @@ export declare interface QDataTable extends Components.QDataTable {
 
 @ProxyCmp({
   defineCustomElementFn: defineQDialog,
-  inputs: ['backdropEffect', 'cancelLabel', 'closeLabel', 'closeOnEsc', 'closeOnOverlayClick', 'confirmLabel', 'dialogTitle', 'loading', 'message', 'open', 'showCancel', 'showConfirm'],
+  inputs: ['ariaLabel', 'backdropEffect', 'cancelLabel', 'closeLabel', 'closeOnEsc', 'closeOnOverlayClick', 'confirmLabel', 'dialogTitle', 'loading', 'message', 'open', 'showCancel', 'showConfirm'],
   methods: ['show', 'close', 'confirm', 'cancel']
 })
 @Component({
@@ -268,7 +268,7 @@ export declare interface QDataTable extends Components.QDataTable {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['backdropEffect', 'cancelLabel', 'closeLabel', 'closeOnEsc', 'closeOnOverlayClick', 'confirmLabel', 'dialogTitle', 'loading', 'message', 'open', 'showCancel', 'showConfirm'],
+  inputs: ['ariaLabel', 'backdropEffect', 'cancelLabel', 'closeLabel', 'closeOnEsc', 'closeOnOverlayClick', 'confirmLabel', 'dialogTitle', 'loading', 'message', 'open', 'showCancel', 'showConfirm'],
   outputs: ['qConfirm', 'qCancel', 'qClose'],
 })
 export class QDialog {
@@ -303,14 +303,14 @@ export declare interface QDialog extends Components.QDialog {
 
 @ProxyCmp({
   defineCustomElementFn: defineQDropdown,
-  inputs: ['disabled', 'label', 'name', 'options', 'placeholder', 'searchable', 'size', 'value']
+  inputs: ['ariaLabel', 'disabled', 'label', 'name', 'options', 'placeholder', 'searchable', 'size', 'value']
 })
 @Component({
   selector: 'q-dropdown',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'label', 'name', 'options', 'placeholder', 'searchable', 'size', 'value'],
+  inputs: ['ariaLabel', 'disabled', 'label', 'name', 'options', 'placeholder', 'searchable', 'size', 'value'],
   outputs: ['qChange', 'qSelect', 'qFocus', 'qBlur', 'qClick'],
 })
 export class QDropdown {
@@ -419,7 +419,7 @@ export declare interface QIcon extends Components.QIcon {}
 
 @ProxyCmp({
   defineCustomElementFn: defineQInput,
-  inputs: ['clearable', 'disabled', 'error', 'errorMessage', 'label', 'max', 'min', 'name', 'placeholder', 'required', 'size', 'step', 'type', 'value'],
+  inputs: ['ariaLabel', 'clearable', 'disabled', 'error', 'errorMessage', 'label', 'max', 'min', 'name', 'placeholder', 'required', 'size', 'step', 'type', 'value'],
   methods: ['focusElement', 'clearValue']
 })
 @Component({
@@ -427,7 +427,7 @@ export declare interface QIcon extends Components.QIcon {}
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['clearable', 'disabled', 'error', 'errorMessage', 'label', 'max', 'min', 'name', 'placeholder', 'required', 'size', 'step', 'type', 'value'],
+  inputs: ['ariaLabel', 'clearable', 'disabled', 'error', 'errorMessage', 'label', 'max', 'min', 'name', 'placeholder', 'required', 'size', 'step', 'type', 'value'],
   outputs: ['qChange', 'qInput', 'qBlur', 'qFocus', 'qClick'],
 })
 export class QInput {
@@ -514,14 +514,14 @@ export declare interface QLink extends Components.QLink {
 
 @ProxyCmp({
   defineCustomElementFn: defineQNavbar,
-  inputs: ['activeValue', 'bordered', 'brand', 'brandHref', 'compact', 'edge', 'items', 'logoAlt', 'logoSrc', 'mobileLabel', 'mobileMode', 'sticky', 'transparent']
+  inputs: ['activeValue', 'ariaLabel', 'bordered', 'brand', 'brandHref', 'compact', 'edge', 'items', 'logoAlt', 'logoSrc', 'mobileLabel', 'mobileMode', 'sticky', 'transparent']
 })
 @Component({
   selector: 'q-navbar',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['activeValue', 'bordered', 'brand', 'brandHref', 'compact', 'edge', 'items', 'logoAlt', 'logoSrc', 'mobileLabel', 'mobileMode', 'sticky', 'transparent'],
+  inputs: ['activeValue', 'ariaLabel', 'bordered', 'brand', 'brandHref', 'compact', 'edge', 'items', 'logoAlt', 'logoSrc', 'mobileLabel', 'mobileMode', 'sticky', 'transparent'],
   outputs: ['qSelect', 'qMenuToggle'],
 })
 export class QNavbar {
@@ -693,14 +693,14 @@ export declare interface QScrollable extends Components.QScrollable {
 
 @ProxyCmp({
   defineCustomElementFn: defineQSidepanel,
-  inputs: ['accordion', 'collapseControl', 'collapseLabel', 'collapseMode', 'collapsed', 'collapsible', 'expanded', 'items', 'mode', 'open', 'panelSize', 'side', 'value', 'variant']
+  inputs: ['accordion', 'ariaLabel', 'collapseControl', 'collapseLabel', 'collapseMode', 'collapsed', 'collapsible', 'expanded', 'items', 'mode', 'open', 'panelSize', 'side', 'value', 'variant']
 })
 @Component({
   selector: 'q-sidepanel',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['accordion', 'collapseControl', 'collapseLabel', 'collapseMode', 'collapsed', 'collapsible', 'expanded', 'items', 'mode', 'open', 'panelSize', 'side', 'value', 'variant'],
+  inputs: ['accordion', 'ariaLabel', 'collapseControl', 'collapseLabel', 'collapseMode', 'collapsed', 'collapsible', 'expanded', 'items', 'mode', 'open', 'panelSize', 'side', 'value', 'variant'],
   outputs: ['qClose', 'qSelect', 'qCollapsedChange'],
 })
 export class QSidepanel {
@@ -830,7 +830,7 @@ export declare interface QSyntaxBox extends Components.QSyntaxBox {
 
 @ProxyCmp({
   defineCustomElementFn: defineQTextarea,
-  inputs: ['autoGrow', 'disabled', 'error', 'errorMessage', 'label', 'name', 'placeholder', 'required', 'resizeMode', 'rows', 'value'],
+  inputs: ['ariaLabel', 'autoGrow', 'disabled', 'error', 'errorMessage', 'label', 'name', 'placeholder', 'required', 'resizeMode', 'rows', 'value'],
   methods: ['focusElement', 'adjustHeight']
 })
 @Component({
@@ -838,7 +838,7 @@ export declare interface QSyntaxBox extends Components.QSyntaxBox {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['autoGrow', 'disabled', 'error', 'errorMessage', 'label', 'name', 'placeholder', 'required', 'resizeMode', 'rows', 'value'],
+  inputs: ['ariaLabel', 'autoGrow', 'disabled', 'error', 'errorMessage', 'label', 'name', 'placeholder', 'required', 'resizeMode', 'rows', 'value'],
   outputs: ['qChange', 'qInput', 'qBlur', 'qFocus', 'qClick'],
 })
 export class QTextarea {

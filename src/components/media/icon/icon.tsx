@@ -6,6 +6,12 @@ import { sanitizeIconSvg } from './internals/sanitize-svg';
 import { getIconSizeStyle } from './internals/size';
 import { isBinaryIconUrl, resolveFetchableIconUrl, resolveIconUrl } from './internals/url';
 
+/**
+ * Remote, local, or binary icon renderer with SVG sanitization.
+ * @part svg - Container for a sanitized inline SVG.
+ * @part image - Native image used for binary icon assets.
+ * @part fallback - Error fallback shown when an icon cannot load.
+ */
 @Component({
   tag: 'q-icon',
   styleUrl: 'icon.css',

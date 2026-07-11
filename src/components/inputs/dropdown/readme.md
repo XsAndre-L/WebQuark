@@ -11,16 +11,17 @@ Form-associated dropdown/select control with optional search and incremental opt
 
 ## Properties
 
-| Property      | Attribute     | Description                                                                       | Type                   | Default                 |
-| ------------- | ------------- | --------------------------------------------------------------------------------- | ---------------------- | ----------------------- |
-| `disabled`    | `disabled`    | Disables the trigger and prevents selection changes.                              | `boolean`              | `false`                 |
-| `label`       | `label`       | Optional label rendered above the trigger.                                        | `string`               | `undefined`             |
-| `name`        | `name`        | Form field name.                                                                  | `string`               | `undefined`             |
-| `options`     | `options`     | Options to render; accepts an array or a JSON string of { label, value } objects. | `Option[] \| string`   | `[]`                    |
-| `placeholder` | `placeholder` | Placeholder text shown when no option is selected.                                | `string`               | `'Select an option...'` |
-| `searchable`  | `searchable`  | Shows a search input inside the menu.                                             | `boolean`              | `false`                 |
-| `size`        | `size`        | Visual size preset.                                                               | `"lg" \| "md" \| "sm"` | `'md'`                  |
-| `value`       | `value`       | Selected option value.                                                            | `string`               | `''`                    |
+| Property      | Attribute     | Description                                                                                            | Type                              | Default                 |
+| ------------- | ------------- | ------------------------------------------------------------------------------------------------------ | --------------------------------- | ----------------------- |
+| `ariaLabel`   | `aria-label`  | Accessible name for the trigger and option list when no visible label is available.                    | `string`                          | `undefined`             |
+| `disabled`    | `disabled`    | Disables the trigger and prevents selection changes.                                                   | `boolean`                         | `false`                 |
+| `label`       | `label`       | Optional label rendered above the trigger.                                                             | `string`                          | `undefined`             |
+| `name`        | `name`        | Form field name.                                                                                       | `string`                          | `undefined`             |
+| `options`     | `options`     | Options to render; strings use the same text for label and value, while objects allow separate values. | `DropdownOptionInput[] \| string` | `[]`                    |
+| `placeholder` | `placeholder` | Placeholder text shown when no option is selected.                                                     | `string`                          | `'Select an option...'` |
+| `searchable`  | `searchable`  | Shows a search input inside the menu.                                                                  | `boolean`                         | `false`                 |
+| `size`        | `size`        | Visual size preset.                                                                                    | `"lg" \| "md" \| "sm"`            | `'md'`                  |
+| `value`       | `value`       | Selected option value.                                                                                 | `string`                          | `''`                    |
 
 
 ## Events

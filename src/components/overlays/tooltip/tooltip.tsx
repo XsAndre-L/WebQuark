@@ -7,6 +7,10 @@ import { addTooltipScrollListeners, removeTooltipScrollListeners } from './inter
 
 let tooltipId = 0;
 
+/**
+ * Non-interactive tooltip attached to its immediate parent element.
+ * @slot - Tooltip content used when `content` is not supplied.
+ */
 @Component({
   tag: 'q-tooltip',
   styleUrl: 'tooltip.css',

@@ -1,6 +1,6 @@
 import { Component, Prop, State, Event, EventEmitter, Element, AttachInternals, Watch, Listen, h } from '@stencil/core';
 import { safeFocus } from '../../../utils/dom';
-import type { Option, QDropdownSize } from './dropdown.types';
+import type { DropdownOptionInput, Option, QDropdownSize } from './dropdown.types';
 import { computeDropdownDynamicWidth } from './internals/width';
 import { getDropdownOptions, getFilteredOptions, getOptionLabel, getSelectedOption, getVisibleOptions } from './internals/options';
 
@@ -30,11 +30,14 @@ export class QDropdown {
   /** Optional label rendered above the trigger. */
   @Prop() label?: string;
 
+  /** Accessible name for the trigger and option list when no visible label is available. */
+  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+
   /** Placeholder text shown when no option is selected. */
   @Prop() placeholder: string = 'Select an option...';
 
-  /** Options to render; accepts an array or a JSON string of { label, value } objects. */
-  @Prop() options: Option[] | string = [];
+  /** Options to render; strings use the same text for label and value, while objects allow separate values. */
+  @Prop() options: DropdownOptionInput[] | string = [];
 
   /** Disables the trigger and prevents selection changes. */
   @Prop({ reflect: true }) disabled: boolean = false;
@@ -367,6 +370,7 @@ export class QDropdown {
     const displayLabel = selectedOption && selectedLabel ? selectedLabel : this.placeholder;
     const hasSelection = selectedOption !== undefined;
     const dynamicWidth = this.computeDynamicWidth(allOptions, selectedOption);
+    const ariaLabel = this.ariaLabel?.trim() || undefined;
 
     return (
       <div 
@@ -398,6 +402,7 @@ export class QDropdown {
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}
           aria-haspopup="listbox"
+          aria-label={ariaLabel}
           aria-expanded={this.isOpen ? 'true' : 'false'}
           aria-controls={this.isOpen ? 'q-field-menu' : undefined}
           aria-activedescendant={this.isOpen && this.focusedIndex >= 0 ? `q-field-item-${this.focusedIndex}` : undefined}
@@ -420,7 +425,7 @@ export class QDropdown {
             class="dropdown-menu" 
             part="menu" 
             role="listbox"
-            aria-label={this.label || 'Options'}
+            aria-label={ariaLabel || this.label || 'Options'}
           >
             {this.searchable && (
               <div class="dropdown-search-container">

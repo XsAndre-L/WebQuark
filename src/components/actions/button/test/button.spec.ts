@@ -88,6 +88,41 @@ describe('q-button', () => {
     el.remove();
   });
 
+  it('renders the icon shorthand with the button size', async () => {
+    const el = await createComponent({ icon: 'save', size: 'lg', ariaLabel: 'Save' });
+    const icon = el.shadowRoot.querySelector('q-icon[part="icon"]') as any;
+
+    expect(icon).toBeTruthy();
+    expect(icon.name).toBe('save');
+    expect(icon.size).toBe('lg');
+    expect(el.shadowRoot.querySelector('.btn').classList.contains('is-icon-only')).toBe(true);
+    el.remove();
+  });
+
+  it('lets assigned icon-left content replace the shorthand fallback', async () => {
+    const customIcon = document.createElement('span');
+    customIcon.setAttribute('slot', 'icon-left');
+    const el = await createComponentWithChild({ icon: 'save' }, customIcon);
+    const slot = el.shadowRoot.querySelector('slot[name="icon-left"]') as HTMLSlotElement;
+
+    expect(slot.assignedElements()).toHaveLength(1);
+    expect(slot.assignedElements()[0]).toBe(customIcon);
+    el.remove();
+  });
+
+  it('uses visible text as the accessible name without adding aria-label', async () => {
+    const el = document.createElement('q-button') as any;
+    el.icon = 'save';
+    el.textContent = 'Save';
+    document.body.appendChild(el);
+    await el.componentOnReady();
+
+    const button = el.shadowRoot.querySelector('button') as HTMLButtonElement;
+    expect(button.classList.contains('is-icon-only')).toBe(false);
+    expect(button.hasAttribute('aria-label')).toBe(false);
+    el.remove();
+  });
+
   it('applies circular shape and stacked content classes', async () => {
     const el = await createComponent({ shape: 'circle', layout: 'stacked' });
     const button = el.shadowRoot.querySelector('.btn') as HTMLButtonElement;

@@ -1,5 +1,7 @@
 # 🧩 Component Specification: `q-dialog`
 
+> Contract note: see [Current public contracts](./current-contracts.md#q-dialog) and the [generated API](../../src/components/overlays/dialog/readme.md) for the complete current surface. Generated API wins if an older design note below differs.
+
 The `<q-dialog>` is a customizable modal dialog component. It handles overlays, keyboard tab trapping, focus management, confirmation states, and responsive entry animations. To ensure compatibility with Unreal Engine's Webview plugins, it avoids native `<dialog>` constructs in favor of robust custom Shadow DOM containers.
 
 ---
@@ -10,6 +12,7 @@ The `<q-dialog>` is a customizable modal dialog component. It handles overlays, 
 | :--- | :--- | :--- | :--- | :--- |
 | `open` | `open` | `boolean` | `false` | Controls the open/close state of the dialog (reflected, mutable). |
 | `dialogTitle` | `dialog-title` | `string` | `undefined` | Header title string displayed in the default header slot. |
+| `ariaLabel` | `aria-label` | `string` | `undefined` | Explicit dialog name, useful with a custom header; it takes precedence over `dialogTitle` for naming. |
 | `message` | `message` | `string` | `undefined` | Body message string displayed in the default body slot. |
 | `closeOnEsc` | `close-on-esc` | `boolean` | `true` | When `true`, pressing the `Escape` key automatically cancels and closes the dialog. |
 | `closeOnOverlayClick`| `close-on-overlay-click` | `boolean` | `true` | When `true`, clicking the backdrop overlay cancels and closes the dialog. |
@@ -96,100 +99,9 @@ Below is the complete list of styling tokens mapped to the component's internal 
 
 ---
 
-## 7. HTML/TSX Structure (Shadow DOM Layout)
+## 7. Implementation source
 
-```tsx
-@Component({
-  tag: 'q-dialog',
-  styleUrl: 'q-dialog.css',
-  shadow: true,
-})
-export class QDialog {
-  @Element() el!: HTMLElement;
-
-  @Prop({ reflect: true, mutable: true }) open: boolean = false;
-  @Prop() dialogTitle?: string;
-  @Prop() message?: string;
-  @Prop() closeOnEsc: boolean = true;
-  @Prop() closeOnOverlayClick: boolean = true;
-  @Prop() loading: boolean = false;
-  @Prop() confirmLabel: string = 'Confirm';
-  @Prop() cancelLabel: string = 'Cancel';
-  @Prop() showCancel: boolean = true;
-  @Prop() showConfirm: boolean = true;
-
-  @Event() qConfirm!: EventEmitter<void>;
-  @Event() qCancel!: EventEmitter<void>;
-  @Event() qClose!: EventEmitter<void>;
-
-  @State() isVisible: boolean = false;
-  @State() isAnimatedOpen: boolean = false;
-
-  render() {
-    const classes = {
-      'dialog-wrapper': true,
-      'is-open': this.isAnimatedOpen,
-      'is-visible': this.isVisible,
-    };
-
-    return (
-      <div class={classes} onKeyDown={this.handleKeyDown} inert={!this.open ? true : undefined}>
-        {/* Backdrop Mask */}
-        <div class="dialog-backdrop" onClick={this.handleBackdropClick} part="backdrop" />
-
-        {/* Modal Box */}
-        <div 
-          ref={el => (this.dialogEl = el)}
-          class="dialog-modal" 
-          part="modal" 
-          role="dialog" 
-          aria-modal="true" 
-          aria-hidden={this.open ? 'false' : 'true'}
-          tabindex="-1"
-        >
-          {/* Header */}
-          <header class="dialog-header" part="header">
-            <slot name="header">
-              {this.dialogTitle && <h2 class="dialog-title">{this.dialogTitle}</h2>}
-            </slot>
-            <button class="dialog-close-btn" onClick={this.handleCloseButton} aria-label="Close dialog" disabled={this.loading} part="close-btn">
-              <svg class="close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-          </header>
-
-          {/* Body */}
-          <div class="dialog-body" part="body">
-            <slot>
-              {this.message && <p class="dialog-message">{this.message}</p>}
-            </slot>
-          </div>
-
-          {/* Footer */}
-          <footer class="dialog-footer" part="footer">
-            <slot name="footer">
-              <div class="dialog-actions">
-                {this.showCancel && (
-                  <button class="btn-cancel" onClick={this.handleCancel} disabled={this.loading} part="cancel-btn">
-                    {this.cancelLabel}
-                  </button>
-                )}
-                {this.showConfirm && (
-                  <button class="btn-confirm" onClick={this.handleConfirm} disabled={this.loading} aria-busy={this.loading ? 'true' : 'false'} part="confirm-btn">
-                    {this.loading && <span class="spinner-el" />}
-                    <span class="btn-label">{this.confirmLabel}</span>
-                  </button>
-                )}
-              </div>
-            </slot>
-          </footer>
-        </div>
-      </div>
-    );
-  }
-}
-```
+The implementation is intentionally not duplicated in this guide. Use the generated API linked at the top of the page for the canonical public contract and the component's TypeScript source for implementation details. This avoids stale source snapshots in authored documentation.
 
 ---
 
