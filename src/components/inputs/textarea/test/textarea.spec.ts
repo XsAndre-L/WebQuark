@@ -63,6 +63,14 @@ describe('q-textarea', () => {
     el.remove();
   });
 
+  it('prefers an explicit aria-label over the placeholder fallback', async () => {
+    const el = await createComponent({ ariaLabel: 'Private notes', placeholder: 'Enter notes' });
+    const textarea = el.shadowRoot.querySelector('textarea') as HTMLTextAreaElement;
+
+    expect(textarea.getAttribute('aria-label')).toBe('Private notes');
+    el.remove();
+  });
+
   it('emits input change focus blur and click events', async () => {
     const el = await createComponent({ value: 'old' });
     const inputHandler = vi.fn();

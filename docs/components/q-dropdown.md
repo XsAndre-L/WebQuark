@@ -1,5 +1,7 @@
 # 🧩 Component Specification: `q-dropdown`
 
+> Contract note: see [Current public contracts](./current-contracts.md#q-dropdown) and the [generated API](../../src/components/inputs/dropdown/readme.md) for the complete current surface. Generated API wins if an older design note below differs.
+
 The `<q-dropdown>` is a custom select dropdown menu. It allows selecting from a structured list of option objects. To render correctly in Unreal Engine's Off-Screen Rendering (OSR) environment, it avoids native HTML select overlays, drawing the menu layout directly inside the Webview canvas using custom Shadow DOM elements. It supports keyboard navigation, search filtering, dynamic sizing, and infinite scroll pagination.
 
 ---
@@ -10,8 +12,9 @@ The `<q-dropdown>` is a custom select dropdown menu. It allows selecting from a 
 | :--- | :--- | :--- | :--- | :--- |
 | `value` | `value` | `string` | `""` | The value of the currently selected option. Mutable. |
 | `label` | `label` | `string` | `undefined` | Header label text displayed above the dropdown container. |
+| `ariaLabel` | `aria-label` | `string` | `undefined` | Accessible name forwarded to the trigger and option list. |
 | `placeholder` | `placeholder` | `string` | `"Select an option..."` | Helper text displayed in the trigger box when no option is selected. |
-| `options` | `options` | `Option[] \| string` | `[]` | Array of selectable options: `Option { label: string; value: string; }` or a JSON string. |
+| `options` | `options` | `(Option \| string)[] \| string` | `[]` | Strings use the same label and value; objects allow separate values. The attribute accepts JSON. |
 | `disabled` | `disabled` | `boolean` | `false` | Reflects disabled state. Locks interactions and dropdown toggle. |
 | `size` | `size` | `"lg" \| "md" \| "sm"` | `'md'` | Reflects the component layout size variant. |
 | `searchable` | `searchable` | `boolean` | `false` | Enables an input search box inside the dropdown menu to filter options. |
@@ -89,141 +92,9 @@ None
 
 ---
 
-## 7. HTML/TSX Structure (Shadow DOM Layout)
+## 7. Implementation source
 
-```tsx
-export interface Option {
-  label: string;
-  value: string;
-}
-
-@Component({
-  tag: 'q-dropdown',
-  styleUrl: 'q-dropdown.css',
-  shadow: {
-    delegatesFocus: true
-  },
-  formAssociated: true
-})
-export class QDropdown {
-  @Prop({ mutable: true }) value: string = "";
-  @Prop() label?: string;
-  @Prop() placeholder: string = "Select an option...";
-  @Prop() options: Option[] | string = [];
-  @Prop({ reflect: true }) disabled: boolean = false;
-  @Prop({ reflect: true }) size: 'sm' | 'md' | 'lg' = 'md';
-  @Prop() searchable: boolean = false;
-
-  @State() isOpen: boolean = false;
-  @State() focusedIndex: number = -1;
-  @State() searchTerm: string = "";
-  @State() visibleCount: number = 20;
-  @State() isScrollingLoading: boolean = false;
-
-  @AttachInternals() internals!: ElementInternals;
-
-  private triggerEl?: HTMLButtonElement;
-  private searchInputEl?: HTMLInputElement;
-
-  render() {
-    const opts = this.parsedOptions;
-    const selectedOption = this.parsedOptions.find(opt => opt.value === this.value);
-    const displayLabel = selectedOption ? selectedOption.label : this.placeholder;
-    const hasSelection = selectedOption !== undefined;
-
-    return (
-      <div 
-        class={{
-          'dropdown-wrapper': true,
-          'is-open': this.isOpen,
-          'is-disabled': this.disabled,
-          [`size-${this.size}`]: true
-        }}
-        onKeyDown={this.handleKeyDown}
-      >
-        {this.label && (
-          <label class="dropdown-label" htmlFor="q-field" part="label">
-            {this.label}
-          </label>
-        )}
-
-        <button
-          ref={(el) => (this.triggerEl = el)}
-          id="q-field"
-          class="dropdown-trigger"
-          part="trigger"
-          type="button"
-          disabled={this.disabled}
-          onClick={this.toggleMenu}
-          aria-haspopup="listbox"
-          aria-expanded={this.isOpen ? 'true' : 'false'}
-          aria-controls={this.isOpen ? 'q-field-menu' : undefined}
-          aria-activedescendant={this.isOpen && this.focusedIndex >= 0 ? `q-field-item-${this.focusedIndex}` : undefined}
-        >
-          <span class={{ 'trigger-text': true, 'is-placeholder': !hasSelection }}>
-            {displayLabel}
-          </span>
-          <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </button>
-
-        {this.isOpen && (
-          <div 
-            id="q-field-menu"
-            class="dropdown-menu" 
-            part="menu" 
-            role="listbox"
-            aria-label={this.label || 'Options'}
-          >
-            {this.searchable && (
-              <div class="dropdown-search-container">
-                <input
-                  ref={(el) => (this.searchInputEl = el)}
-                  type="text"
-                  class="dropdown-search-input"
-                  placeholder="Search..."
-                  value={this.searchTerm}
-                  onInput={this.handleSearchInput}
-                />
-              </div>
-            )}
-            <ul class="dropdown-items-list" onScroll={this.handleScroll}>
-              {opts.length === 0 ? (
-                <li class="menu-item is-empty">No matches found</li>
-              ) : (
-                opts.map((option, index) => (
-                  <li
-                    id={`q-field-item-${index}`}
-                    class={{
-                      'menu-item': true,
-                      'is-selected': option.value === this.value,
-                      'is-focused': index === this.focusedIndex
-                    }}
-                    tabindex={index === this.focusedIndex ? 0 : -1}
-                    part={`item ${option.value === this.value ? 'selected-item' : ''} ${index === this.focusedIndex ? 'focused-item' : ''}`}
-                    role="option"
-                    aria-selected={option.value === this.value ? 'true' : 'false'}
-                    onClick={() => this.handleSelect(option)}
-                  >
-                    {option.label}
-                  </li>
-                ))
-              )}
-              {this.isScrollingLoading && (
-                <li class="menu-item is-loading-more">
-                  <span class="spinner-circle"></span>
-                  <span>Loading...</span>
-                </li>
-              )}
-            </ul>
-          </div>
-        )}
-      </div>
-    );
-  }
-}
-```
+The implementation is intentionally not duplicated in this guide. Use the generated API linked at the top of the page for the canonical public contract and the component's TypeScript source for implementation details. This avoids stale source snapshots in authored documentation.
 
 ---
 
@@ -256,11 +127,20 @@ export class QDropdown {
 </script>
 ```
 
+For simple options, use strings; each string becomes both the visible label and emitted value:
+
+```html
+<q-dropdown id="status" label="Status"></q-dropdown>
+<script>
+  document.getElementById('status').options = ['Draft', 'Published', 'Archived'];
+</script>
+```
+
 ### Example 2: Searchable Dropdown with inline JSON string options
 ```html
 <q-dropdown 
   label="Select Language" 
-  searchable="true" 
+  searchable
   options='[{"label":"English","value":"EN"},{"label":"Spanish","value":"ES"},{"label":"French","value":"FR"},{"label":"Japanese","value":"JA"}]'
   value="EN">
 </q-dropdown>

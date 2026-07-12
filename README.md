@@ -56,6 +56,19 @@ webquark/ (Root)
 
 ---
 
+## 📚 Documentation
+
+* [Component index and documentation standard](docs/components/README.md)
+* [Current public contracts for all 26 components](docs/components/current-contracts.md)
+* [Component implementation status](docs/components.md)
+* [Theme variables](docs/theme_variables.md)
+* [Unreal Engine / CEF compatibility](docs/unreal_compatibility.md)
+* [Full UX, DX, accessibility, and optimization audit (2026-07-11)](docs/component-audit-2026-07-11.md)
+
+Generated API references live beside each component implementation under `src/components/**/readme.md` and are refreshed by `bun run build`.
+
+---
+
 ## 🧪 WebQuark Component Sandbox
 
 WebQuark includes a built-in interactive sandbox playground where you can preview components, inspect their layout behaviors, and test theme design variables in real-time.

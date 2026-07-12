@@ -26,7 +26,12 @@ export class PropertiesPanel extends HTMLElement {
     );
 
     this.panel = (
-      <aside class="properties-panel" id="propertiesPanel">
+      <q-sidepanel
+        class="properties-panel"
+        id="propertiesPanel"
+        variant="panel"
+        side="right"
+      >
         <q-scrollable height="100%">
           <div class="properties-scroll-content">
             <div class="properties-panel-header">
@@ -49,7 +54,7 @@ export class PropertiesPanel extends HTMLElement {
             </div>
           </div>
         </q-scrollable>
-      </aside>
+      </q-sidepanel>
     );
 
     this.appendChild(toggleBtn);

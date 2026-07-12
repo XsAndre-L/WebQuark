@@ -92,4 +92,86 @@ describe('q-dropdown', () => {
     expect(el.value).toBe('alpha');
     el.remove();
   });
+
+  it('emits external search terms without filtering the supplied page locally', async () => {
+    const el = await createComponent({ searchable: true, externalSearch: true, options });
+    const searchHandler = vi.fn();
+    el.addEventListener('qSearch', searchHandler);
+
+    (el.shadowRoot.querySelector('.dropdown-trigger') as HTMLElement).click();
+    await wait(20);
+
+    const search = el.shadowRoot.querySelector('.dropdown-search-input') as HTMLInputElement;
+    search.value = 'alp';
+    search.dispatchEvent(new Event('input', { bubbles: true }));
+    await wait(20);
+
+    const items = Array.from(el.shadowRoot.querySelectorAll('.menu-item')) as HTMLElement[];
+    expect(items.map(item => item.textContent?.trim())).toEqual(['Alpha', 'Beta']);
+    expect(searchHandler).toHaveBeenCalledTimes(1);
+    expect(searchHandler.mock.calls[0][0].detail).toBe('alp');
+    el.remove();
+  });
+
+  it('requests the next external page when the option list reaches the bottom', async () => {
+    const el = await createComponent({ externalSearch: true, hasMore: true, options });
+    const loadMoreHandler = vi.fn();
+    el.addEventListener('qLoadMore', loadMoreHandler);
+
+    (el.shadowRoot.querySelector('.dropdown-trigger') as HTMLElement).click();
+    await wait(20);
+
+    const list = el.shadowRoot.querySelector('.dropdown-items-list') as HTMLElement;
+    Object.defineProperties(list, {
+      scrollHeight: { value: 400, configurable: true },
+      clientHeight: { value: 200, configurable: true }
+    });
+    list.scrollTop = 200;
+    list.dispatchEvent(new Event('scroll', { bubbles: true }));
+    await wait(20);
+
+    expect(loadMoreHandler).toHaveBeenCalledTimes(1);
+    el.remove();
+  });
+
+  it('normalizes string options into matching labels and values', async () => {
+    const el = await createComponent({ options: ['Alpha', 'Beta'] });
+    const selectHandler = vi.fn();
+    el.addEventListener('qSelect', selectHandler);
+
+    (el.shadowRoot.querySelector('.dropdown-trigger') as HTMLElement).click();
+    await wait(20);
+    (el.shadowRoot.querySelectorAll('.menu-item')[1] as HTMLElement).click();
+    await wait(20);
+
+    expect(el.value).toBe('Beta');
+    expect(selectHandler.mock.calls[0][0].detail).toEqual({ label: 'Beta', value: 'Beta' });
+    el.remove();
+  });
+
+  it('forwards aria-label to the trigger and option list', async () => {
+    const el = await createComponent({ options, ariaLabel: 'Project' });
+    const trigger = el.shadowRoot.querySelector('.dropdown-trigger') as HTMLElement;
+    trigger.click();
+    await wait(20);
+
+    expect(trigger.getAttribute('aria-label')).toBe('Project');
+    expect(el.shadowRoot.querySelector('[role="listbox"]').getAttribute('aria-label')).toBe('Project');
+    el.remove();
+  });
+
+  it('renders leading trigger content through the icon-left slot', async () => {
+    const el = document.createElement('q-dropdown') as any;
+    const icon = document.createElement('span');
+    icon.setAttribute('slot', 'icon-left');
+    el.appendChild(icon);
+    document.body.appendChild(el);
+    await el.componentOnReady();
+
+    const slot = el.shadowRoot.querySelector('slot[name="icon-left"]') as HTMLSlotElement;
+
+    expect(slot).toBeTruthy();
+    expect(slot.assignedElements()).toContain(icon);
+    el.remove();
+  });
 });

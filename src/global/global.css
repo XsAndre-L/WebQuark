@@ -13,12 +13,14 @@
   --q-color-danger: #f87171; /* Bright red for dark mode contrast */
 
   /* Hierarchical Surfaces & Backgrounds */
-  --q-bg-base: #111827; /* Lowest canvas / viewport */
-  --q-bg-surface-1: #1f2937; /* Sidebar / Panel panels */
-  --q-bg-surface-2: #374151; /* Cards / Nested elements */
-  --q-bg-surface-3: #4b5563; /* Popovers / Floating dialogs */
-  --q-bg-card: var(--q-bg-surface-1);
-  --q-bg-glass: rgba(31, 41, 55, 0.85); /* Translucent dark glass (OSR / Unreal safe opacity) */
+  --q-bg-base: #0b0f19; /* Lowest canvas / viewport */
+  --q-bg-surface-1: #111827; /* Sidebar / primary panels */
+  --q-bg-surface-2: #19243b; /* Cards / nested panels */
+  --q-bg-surface-3: #22304d; /* Popovers / raised controls */
+  --q-bg-surface-4: #2c3a58; /* Strong raised surfaces */
+  --q-bg-surface-5: #374761; /* Highest contrast neutral surface */
+  --q-bg-card: var(--q-bg-surface-2);
+  --q-bg-glass: rgba(25, 36, 59, 0.85); /* Translucent dark glass (OSR / Unreal safe opacity) */
   --q-bg-overlay: rgba(0, 0, 0, 0.85); /* OSR safe overlay backdrop dimmer */
 
   --q-fg-base: #f9fafb; /* Off-white text */
@@ -176,6 +178,11 @@
   --q-sidepanel-bg: var(--q-bg-surface-1);
   --q-sidepanel-border: var(--q-border);
   --q-sidepanel-shadow: var(--q-shadow-high);
+  --q-sidepanel-panel-width: 320px;
+  --q-sidepanel-panel-padding: var(--q-padding-lg);
+  --q-sidepanel-panel-header-padding: var(--q-padding-lg);
+  --q-sidepanel-panel-footer-padding: var(--q-padding-lg);
+  --q-sidepanel-panel-section-border: var(--q-border);
 
   /* Scrollbars */
   --q-scrollbar-width: 6px;
@@ -201,16 +208,19 @@
 
     /* Surfaces */
     --q-bg-base: #ffffff; /* Pure white background */
-    --q-bg-surface-1: #f3f4f6; /* Light grey sidebar panels */
-    --q-bg-surface-2: #e5e7eb; /* Nested card panels */
-    --q-bg-surface-3: #d1d5db; /* Floating tooltips / popovers */
-    --q-bg-card: var(--q-bg-surface-1);
+    --q-bg-surface-1: #f0f3f9; /* Sidebar / primary panels */
+    --q-bg-surface-2: #dee5f2; /* Cards / nested panels */
+    --q-bg-surface-3: #c7d1e6; /* Popovers / raised controls */
+    --q-bg-surface-4: #aab8d5; /* Strong raised surfaces */
+    --q-bg-surface-5: #8b9dc1; /* Highest contrast neutral surface */
+    --q-bg-card: var(--q-bg-surface-2);
     --q-bg-glass: rgba(255, 255, 255, 0.85); /* OSR / Unreal safe opacity override */
     --q-bg-overlay: rgba(0, 0, 0, 0.6);
 
     --q-fg-base: #1f2937; /* Dark text */
     --q-fg-muted: #4b5563; /* Muted text/icons (Light Mode) */
     --q-border-color: #e5e7eb; /* Light grey borders */
+    --q-sidepanel-bg: var(--q-bg-surface-1);
 
     /* Shadows & Glows */
     --q-shadow-low: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -234,16 +244,19 @@
 
   /* Surfaces */
   --q-bg-base: #ffffff;
-  --q-bg-surface-1: #f3f4f6;
-  --q-bg-surface-2: #e5e7eb;
-  --q-bg-surface-3: #d1d5db;
-  --q-bg-card: var(--q-bg-surface-1);
+  --q-bg-surface-1: #f0f3f9;
+  --q-bg-surface-2: #dee5f2;
+  --q-bg-surface-3: #c7d1e6;
+  --q-bg-surface-4: #aab8d5;
+  --q-bg-surface-5: #8b9dc1;
+  --q-bg-card: var(--q-bg-surface-2);
   --q-bg-glass: rgba(255, 255, 255, 0.85); /* OSR / Unreal safe opacity override */
   --q-bg-overlay: rgba(0, 0, 0, 0.6);
 
   --q-fg-base: #1f2937;
   --q-fg-muted: #4b5563;
   --q-border-color: #e5e7eb;
+  --q-sidepanel-bg: var(--q-bg-surface-1);
 
   /* Shadows & Glows */
   --q-shadow-low: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -263,17 +276,20 @@
   --q-color-warning: #fbbf24;
   --q-color-danger: #f87171;
 
-  --q-bg-base: #111827;
-  --q-bg-surface-1: #1f2937;
-  --q-bg-surface-2: #374151;
-  --q-bg-surface-3: #4b5563;
-  --q-bg-card: var(--q-bg-surface-1);
-  --q-bg-glass: rgba(31, 41, 55, 0.85);
+  --q-bg-base: #0b0f19;
+  --q-bg-surface-1: #111827;
+  --q-bg-surface-2: #19243b;
+  --q-bg-surface-3: #22304d;
+  --q-bg-surface-4: #2c3a58;
+  --q-bg-surface-5: #374761;
+  --q-bg-card: var(--q-bg-surface-2);
+  --q-bg-glass: rgba(25, 36, 59, 0.85);
   --q-bg-overlay: rgba(0, 0, 0, 0.85);
 
   --q-fg-base: #f9fafb;
   --q-fg-muted: #9ca3af;
   --q-border-color: #374151;
+  --q-sidepanel-bg: var(--q-bg-surface-1);
 
   --q-shadow-low: 0 2px 4px rgba(0, 0, 0, 0.2);
   --q-shadow-medium: 0 8px 16px rgba(0, 0, 0, 0.3);

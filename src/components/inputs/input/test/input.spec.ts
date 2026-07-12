@@ -160,6 +160,14 @@ describe('q-input', () => {
     el.remove();
   });
 
+  it('forwards aria-label to the native input', async () => {
+    const el = await createComponent({ ariaLabel: 'Search products' });
+    const input = el.shadowRoot.querySelector('input') as HTMLInputElement;
+
+    expect(input.getAttribute('aria-label')).toBe('Search products');
+    el.remove();
+  });
+
   it('restores the initial value on form reset', async () => {
     const form = document.createElement('form');
     const el = document.createElement('q-input') as any;

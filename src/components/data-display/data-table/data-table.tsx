@@ -2,25 +2,23 @@ import { Component, Prop, Event, EventEmitter, h } from '@stencil/core';
 import type {
   DataTableItem,
   DataTableKey,
+  DataTableRowAction,
+  DataTableRowGrouper,
+  DataTableSortDirection,
+  DataTableSortMode,
+  QDataTableRowActionDetail,
   QDataTableRowClickDetail,
   QDataTableSelectionChangeDetail,
+  QDataTableSortChangeDetail,
   TableColumn,
 } from './data-table.types';
-import {
-  getHeaderLabel,
-  getItemKey,
-  parseDataTableColumns,
-  parseDataTableItems,
-  renderDataTableCell,
-} from './internals/data-access';
-import {
-  getAllItemKeys,
-  getSelectedItems,
-  getSelectedKeySet,
-  getSelectionState,
-  toggleSelectedKey,
-  type DataTableSelectionState,
-} from './internals/selection';
+import { getItemKey, parseDataTableItems, renderDataTableCell } from './internals/data-access';
+import { renderDataTableBody } from './internals/render-table-body';
+import { renderDataTableHead } from './internals/render-table-head';
+import { renderDataTableToolbar } from './internals/render-toolbar';
+import { isInteractiveDataTableTarget } from './internals/row-events';
+import { getDataTableModel } from './internals/table-model';
+import { getAllItemKeys, getSelectedItems, toggleSelectedKey } from './internals/selection';
 
 /**
  * Data grid with optional toolbar, search, row activation, and multi-row selection.
@@ -30,6 +28,10 @@ import {
  * @slot empty - Empty-state content shown when no rows are available.
  * @slot footer - Footer content rendered below the scrollable table.
  * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
+ * @cssprop --q-table-group-bg - Background color for row-group divider rows.
+ * @cssprop --q-table-group-fg - Text color for row-group divider rows.
+ * @cssprop --q-table-group-border - Border color for row-group divider rows.
+ * @cssprop --q-table-group-padding - Padding for row-group divider cells.
  * @cssprop --q-table-dropdown-bg - Background color forwarded to slotted q-dropdown controls.
  * @cssprop --q-table-dropdown-menu-bg - Menu background color forwarded to slotted q-dropdown controls.
  * @cssprop --q-table-dropdown-border - Border style forwarded to slotted q-dropdown controls.
@@ -42,12 +44,23 @@ import {
   shadow: true,
 })
 export class QDataTable {
-  // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   /** Column definitions, or a JSON string of column definitions. */
   @Prop() columns: TableColumn[] | string = [];
 
   /** Row data, or a JSON string of row data. */
   @Prop() items: DataTableItem[] | string = [];
+
+  /** Optional row-level actions rendered as trailing icon buttons. */
+  @Prop() rowActions: DataTableRowAction[] | string = [];
+
+  /** Enables full-row click and keyboard activation. */
+  @Prop() rowClickable: boolean = true;
+
+  /**
+   * Optional property-only callback that groups consecutive rendered rows.
+   * A divider is inserted whenever the returned group key changes.
+   */
+  @Prop() rowGroup?: DataTableRowGrouper;
 
   /** Shows a loading state and suppresses row rendering while true. */
   @Prop() loading: boolean = false;
@@ -60,6 +73,18 @@ export class QDataTable {
 
   /** Row field used as the stable selection and render key. Falls back to the row index. */
   @Prop() keyField: string = 'id';
+
+  /** Enables sortable column headers. Columns can override this with their own sortable setting. */
+  @Prop() sortable: boolean = false;
+
+  /** Sorting behavior: 'table' sorts provided items locally, while 'external' only emits sort changes. */
+  @Prop() sortMode: DataTableSortMode = 'table';
+
+  /** Currently sorted column key. */
+  @Prop({ mutable: true }) sortColumn?: string;
+
+  /** Current sort direction for the sorted column. */
+  @Prop({ mutable: true }) sortDirection?: DataTableSortDirection;
 
   /** Shows the optional toolbar above the table. */
   @Prop() showToolbar: boolean = false;
@@ -79,17 +104,17 @@ export class QDataTable {
   /** Emitted when a non-interactive row area is clicked or activated with the keyboard. */
   @Event() qRowClick!: EventEmitter<QDataTableRowClickDetail>;
 
+  /** Emitted when a row action button is clicked. */
+  @Event() qRowAction!: EventEmitter<QDataTableRowActionDetail>;
+
   /** Emitted when selected rows change. */
   @Event() qSelectionChange!: EventEmitter<QDataTableSelectionChangeDetail>;
 
   /** Emitted when the built-in search input value changes. */
   @Event() qSearch!: EventEmitter<string>;
 
-  // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
-
-  private getParsedColumns(): TableColumn[] {
-    return parseDataTableColumns(this.columns);
-  }
+  /** Emitted when a sortable column header changes sort state. */
+  @Event() qSortChange!: EventEmitter<QDataTableSortChangeDetail>;
 
   private getParsedItems(): DataTableItem[] {
     return parseDataTableItems(this.items);
@@ -99,17 +124,8 @@ export class QDataTable {
     return getItemKey(item, index, this.keyField);
   }
 
-  private getSelectedKeySet(): Set<DataTableKey> {
-    return getSelectedKeySet(this.selectedKeys);
-  }
-
-  private getSelectedItems(items = this.getParsedItems(), selectedKeys = this.getSelectedKeySet()): DataTableItem[] {
+  private getSelectedItems(items = this.getParsedItems(), selectedKeys = new Set(this.selectedKeys || [])): DataTableItem[] {
     return getSelectedItems(items, selectedKeys, this.keyField);
-  }
-
-  private getSelectionState(): DataTableSelectionState {
-    const items = this.getParsedItems();
-    return getSelectionState(items, this.getSelectedKeySet(), this.keyField);
   }
 
   private handleSelectionKeyToggle(key: DataTableKey) {
@@ -144,15 +160,20 @@ export class QDataTable {
   }
 
   private handleRowClick(item: DataTableItem, index: number, event: MouseEvent) {
-    const path = event.composedPath();
-    const isInteractive = path.some((target: any) => {
-      if (!target || !target.tagName) return false;
-      const tagName = target.tagName.toLowerCase();
-      return tagName === 'input' || tagName === 'button' || tagName === 'a' || target.getAttribute('role') === 'button';
-    });
-    if (isInteractive) return;
+    if (!this.rowClickable) return;
+    if (isInteractiveDataTableTarget(event)) return;
 
     this.qRowClick.emit({
+      item,
+      index,
+      originalEvent: event,
+    });
+  }
+
+  private handleRowAction(item: DataTableItem, index: number, action: DataTableRowAction, event: MouseEvent) {
+    event.stopPropagation();
+    this.qRowAction.emit({
+      action,
       item,
       index,
       originalEvent: event,
@@ -164,7 +185,27 @@ export class QDataTable {
     this.qSearch.emit(this.searchValue);
   };
 
+  private handleSortToggle = (column: TableColumn) => {
+    const nextDirection = this.getNextSortDirection(column.key);
+
+    this.sortColumn = nextDirection ? column.key : undefined;
+    this.sortDirection = nextDirection;
+    this.qSortChange.emit({
+      columnKey: this.sortColumn,
+      direction: this.sortDirection,
+    });
+  };
+
+  private getNextSortDirection(columnKey: string): DataTableSortDirection | undefined {
+    if (this.sortColumn !== columnKey) return 'asc';
+    if (this.sortDirection === 'asc') return 'desc';
+    if (this.sortDirection === 'desc') return undefined;
+    return 'asc';
+  }
+
   private handleRowKeyDown(item: DataTableItem, index: number, event: KeyboardEvent) {
+    if (!this.rowClickable) return;
+
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       this.qRowClick.emit({
@@ -179,142 +220,54 @@ export class QDataTable {
     }
   }
 
-  private getHeaderLabel(column: TableColumn): string {
-    return getHeaderLabel(column);
-  }
-
-  // ===================== [6] RENDER (Visual Template Only) =====================
-
   private renderCell(item: DataTableItem, column: TableColumn) {
     return renderDataTableCell(item, column, error => {
       console.error('QDataTable: Render function failed', error);
     });
   }
 
-  private getRenderKey(key: DataTableKey): string | number {
-    return typeof key === 'string' || typeof key === 'number' ? key : String(key);
-  }
-
   render() {
-    const columns = this.getParsedColumns();
-    const items = this.getParsedItems();
-    const { checked, indeterminate } = this.getSelectionState();
-    const selectedKeySet = this.getSelectedKeySet();
-    const columnSpan = columns.length + (this.selectable ? 1 : 0) || 1;
+    const model = getDataTableModel({
+      columns: this.columns,
+      items: this.items,
+      rowActions: this.rowActions,
+      rowClickable: this.rowClickable,
+      rowGroup: this.rowGroup,
+      selectedKeys: this.selectedKeys,
+      selectable: this.selectable,
+      keyField: this.keyField,
+      sortable: this.sortable,
+      sortMode: this.sortMode,
+      sortColumn: this.sortColumn,
+      sortDirection: this.sortDirection,
+    });
 
     return (
       <div class="table-container" role="grid">
-        {this.showToolbar && (
-          <div class="table-toolbar">
-            <div class="toolbar-left">
-              {this.toolbarTitle && <span class="toolbar-title">{this.toolbarTitle}</span>}
-              <slot name="toolbar-left" />
-              {this.showSearch && (
-                <q-input
-                  class="search-input"
-                  placeholder={this.searchPlaceholder}
-                  value={this.searchValue}
-                  onQInput={this.handleSearchInput}
-                  size="sm"
-                >
-                  <svg slot="prefix" class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style={{ width: '14px', height: '14px' }}>
-                    <circle cx="11" cy="11" r="8" />
-                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                  </svg>
-                </q-input>
-              )}
-              <slot name="filters" />
-            </div>
-            <div class="toolbar-right">
-              <slot name="actions" />
-            </div>
-          </div>
-        )}
+        {renderDataTableToolbar({
+          showToolbar: this.showToolbar,
+          toolbarTitle: this.toolbarTitle,
+          showSearch: this.showSearch,
+          searchPlaceholder: this.searchPlaceholder,
+          searchValue: this.searchValue,
+          onSearchInput: this.handleSearchInput,
+        })}
         <div class="table-scroll-area">
           <table class="table-el">
-            <thead>
-              <tr role="row">
-                {this.selectable && (
-                  <th class="col-selection" role="columnheader">
-                    <input
-                      type="checkbox"
-                      class="checkbox-input"
-                      checked={checked}
-                      ref={el => {
-                        if (el) el.indeterminate = indeterminate;
-                      }}
-                      onChange={e => this.handleSelectAllChange(e)}
-                      aria-label="Select all rows"
-                    />
-                  </th>
-                )}
-                {columns.map(col => {
-                  const style: Record<string, string> = {};
-                  if (col.width) {
-                    style.width = col.width;
-                  }
-                  return (
-                    <th style={style} class={col.className || ''} role="columnheader">
-                      {this.getHeaderLabel(col)}
-                    </th>
-                  );
-                })}
-              </tr>
-            </thead>
-            <tbody>
-              {this.loading ? (
-                <tr role="row">
-                  <td colSpan={columnSpan} class="loading-placeholder-cell" role="gridcell">
-                    <div class="table-loading-state">
-                      <q-circular-progress indeterminate={true} size="sm" />
-                    </div>
-                  </td>
-                </tr>
-              ) : items.length === 0 ? (
-                <tr role="row">
-                  <td colSpan={columnSpan} class="empty-cell" role="gridcell">
-                    <slot name="empty">No data available</slot>
-                  </td>
-                </tr>
-              ) : (
-                items.map((item, index) => {
-                  const key = this.getItemKey(item, index);
-                  const isSelected = selectedKeySet.has(key);
-
-                  return (
-                    <tr
-                      key={this.getRenderKey(key)}
-                      class={{
-                        'row-el': true,
-                        'is-selected': isSelected,
-                      }}
-                      tabindex="0"
-                      role="row"
-                      aria-selected={isSelected ? 'true' : 'false'}
-                      onClick={e => this.handleRowClick(item, index, e)}
-                      onKeyDown={e => this.handleRowKeyDown(item, index, e)}
-                    >
-                      {this.selectable && (
-                        <td class="cell-selection" role="gridcell">
-                          <input
-                            type="checkbox"
-                            class="checkbox-input"
-                            checked={isSelected}
-                            onChange={e => this.handleRowCheckboxChange(item, index, e)}
-                            aria-label={`Select row ${index + 1}`}
-                          />
-                        </td>
-                      )}
-                      {columns.map(col => (
-                        <td class={col.className || ''} role="gridcell">
-                          {this.renderCell(item, col)}
-                        </td>
-                      ))}
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
+            {renderDataTableHead({
+              model,
+              onSelectAllChange: event => this.handleSelectAllChange(event),
+              onSortToggle: column => this.handleSortToggle(column),
+            })}
+            {renderDataTableBody({
+              model,
+              loading: this.loading,
+              onRowClick: (item, index, event) => this.handleRowClick(item, index, event),
+              onRowKeyDown: (item, index, event) => this.handleRowKeyDown(item, index, event),
+              onRowCheckboxChange: (item, index, event) => this.handleRowCheckboxChange(item, index, event),
+              onRowAction: (item, index, action, event) => this.handleRowAction(item, index, action, event),
+              renderCell: (item, column) => this.renderCell(item, column),
+            })}
           </table>
         </div>
         <slot name="footer" />

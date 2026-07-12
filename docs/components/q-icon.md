@@ -1,5 +1,7 @@
 # 🧩 Component Specification: `q-icon`
 
+> Contract note: see [Current public contracts](./current-contracts.md#q-icon) and the [generated API](../../src/components/media/icon/readme.md) for the complete current surface. Generated API wins if an older design note below differs.
+
 The `<q-icon>` is a versatile icon rendering utility. It supports dynamic inline SVG injection from major remote libraries (Lucide, FontAwesome), customizable CDN source URLs, local offline assets (SVG or binary formats), preset sizing aliases, and auto-fallback error handling.
 
 ---
@@ -70,69 +72,9 @@ Below is the complete list of styling tokens mapped to the component's internal 
 
 ---
 
-## 7. HTML/TSX Structure (Shadow DOM Layout)
+## 7. Implementation source
 
-```tsx
-@Component({
-  tag: 'q-icon',
-  styleUrl: 'q-icon.css',
-  shadow: true,
-})
-export class QIcon {
-  @Prop() name: string;
-  @Prop() lib: string = 'lucide';
-  @Prop() size: string = 'md';
-  @Prop() color: string = 'currentColor';
-  @Prop() localPath: string = '/assets/icons/';
-
-  @State() svgContent: string = '';
-  @State() isBinary: boolean = false;
-  @State() resolvedUrl: string = '';
-  @State() hasError: boolean = false;
-
-  render() {
-    const sizeStyle = this.getSizeStyle();
-    const hostStyle = {
-      width: sizeStyle,
-      height: sizeStyle,
-      color: this.color,
-    };
-
-    if (this.hasError) {
-      return (
-        <Host style={hostStyle} class="q-icon-error">
-          <div class="icon-fallback">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-              <line x1="9" y1="9" x2="15" y2="15" />
-              <line x1="15" y1="9" x2="9" y2="15" />
-            </svg>
-          </div>
-        </Host>
-      );
-    }
-
-    if (this.isBinary) {
-      return (
-        <Host style={hostStyle} class="q-icon-binary">
-          <img
-            src={this.resolvedUrl}
-            alt={this.name}
-            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-            onError={() => { this.hasError = true; }}
-          />
-        </Host>
-      );
-    }
-
-    return (
-      <Host style={hostStyle} class="q-icon-svg">
-        <div class="svg-container" innerHTML={this.svgContent} />
-      </Host>
-    );
-  }
-}
-```
+The implementation is intentionally not duplicated in this guide. Use the generated API linked at the top of the page for the canonical public contract and the component's TypeScript source for implementation details. This avoids stale source snapshots in authored documentation.
 
 ---
 

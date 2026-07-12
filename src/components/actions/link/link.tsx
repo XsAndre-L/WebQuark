@@ -7,6 +7,9 @@ import type { QLinkTarget, QLinkUnderline, QLinkVariant } from './link.types';
  * @slot - Link text. Falls back to the `label` prop.
  * @slot icon-left - Content placed before the label.
  * @slot icon-right - Content placed after the label.
+ * @part link - Native anchor element.
+ * @part label - Link label wrapper.
+ * @part external-icon - External-link indicator icon.
  */
 @Component({
   tag: 'q-link',

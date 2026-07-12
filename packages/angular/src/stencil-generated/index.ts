@@ -26,5 +26,6 @@ export const DIRECTIVES = [
   d.QTextarea,
   d.QThumbnail,
   d.QToggle,
+  d.QToolbar,
   d.QTooltip
 ];

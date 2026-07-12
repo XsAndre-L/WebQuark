@@ -1,33 +1,40 @@
-# 📋 WebQuark Component Roadmap & Status Dashboard
+# WebQuark component status
 
-This document tracks the implementation and availability of generic Web Components (Custom Elements) ported to the **WebQuark** library.
+This dashboard tracks all public custom elements in the current source tree. The inventory is validated against `@Component({ tag: 'q-*' })` declarations; the canonical API is generated beside each implementation.
 
-* For styling guides, see the [CSS Theme Variables Reference](./theme_variables.md).
-* For game engine rendering constraints, see the [Unreal Engine Webview Compatibility Guide](./unreal_compatibility.md).
+See the [component documentation standard and index](./components/README.md), [current public contracts](./components/current-contracts.md), [theme variables](./theme_variables.md), and [Unreal/CEF compatibility guide](./unreal_compatibility.md).
 
----
+## Status matrix
 
-## 🚀 Component Status Matrix
-
-| Component Tag | Category | Status | Specs / Docs | Core Purpose |
+| Component | Category | Status | Authored guide | Notes |
 | :--- | :--- | :--- | :--- | :--- |
-| **`<q-button>`** | Form Input | `🟢 Implemented` | [q-button.md](./components/q-button.md) | Premium tactile action button, loading spinner support. |
-| **`<q-chip>`** | Actions / Data Display | `Implemented` | [q-chip.md](./components/q-chip.md) | Compact filter, status, and navigation chips with optional removal. |
-| **`<q-card>`** | Layout | `🟢 Implemented` | [q-card.md](./components/q-card.md) | Scoped glassmorphic card container with elevation. |
-| **`<q-carousel>`** | Media / Grid | `🟢 Implemented` | [q-carousel.md](./components/q-carousel.md) | Horizontal scrolling snaps with prev/next arrows. |
-| **`<q-circular-progress>`** | Data Display | `🟢 Implemented` | [q-circular-progress.md](./components/q-circular-progress.md) | Circular SVG reactive progress rings with fill transitions. |
-| **`<q-data-table>`** | Data Display | `🟢 Implemented` | [q-data-table.md](./components/q-data-table.md) | Tabular data grid with selection, search, and sorting. |
-| **`<q-dialog>`** | Layout Overlay | `🟢 Implemented` | [q-dialog.md](./components/q-dialog.md) | Centered modal backdrop overlay with action triggers. |
-| **`<q-dropdown>`** | Form Input | `🟢 Implemented` | [q-dropdown.md](./components/q-dropdown.md) | CEF-safe custom options select menu. |
-| **`<q-icon>`** | Media / Asset | `🟢 Implemented` | [q-icon.md](./components/q-icon.md) | Vector graphics engine with local and network options. |
-| **`<q-input>`** | Form Input | `🟢 Implemented` | [q-input.md](./components/q-input.md) | Floating label text field with icon/clear options. |
-| **`<q-quantity-selector>`**| Form Input | `🟢 Implemented` | [q-quantity-selector.md](./components/q-quantity-selector.md) | Numeric counter with sanitization buttons. |
-| **`<q-reel>`** | Media / Grid | `🟢 Implemented` | [q-reel.md](./components/q-reel.md) | Media container displaying thumbnails with lightbox zoom. |
-| **`<q-scrollable>`** | Layout | `🟢 Implemented` | [q-scrollable.md](./components/q-scrollable.md) | Custom draggable scrolling container with custom scrollbars. |
-| **`<q-sidepanel>`** | Layout Overlay | `🟢 Implemented` | [q-sidepanel.md](./components/q-sidepanel.md) | Side slide-out drawer (left/right/top/bottom). |
-| **`<q-step-diagram>`** | Data Display | `🟢 Implemented` | [q-step-diagram.md](./components/q-step-diagram.md) | Linear flow map diagram for roadmaps and wizard steps. |
-| **`<q-syntax-box>`** | Data Display | `🟢 Implemented` | [q-syntax-box.md](./components/q-syntax-box.md) | Read-only highlighted code box with copy triggers. |
-| **`<q-textarea>`** | Form Input | `🟢 Implemented` | [q-textarea.md](./components/q-textarea.md) | Multi-line text field supporting auto-grow height. |
-| **`<q-thumbnail>`** | Media / Asset | `🟢 Implemented` | [q-thumbnail.md](./components/q-thumbnail.md) | Highlighted photo/video card for `<q-reel>`. |
-| **`<q-toggle>`** | Form Input | `🟢 Implemented` | [q-toggle.md](./components/q-toggle.md) | Tactile toggle switch (checkbox replacement). |
-| **`<q-tooltip>`** | Layout Overlay | `🟢 Implemented` | [q-tooltip.md](./components/q-tooltip.md) | Anchored context popover text description bubble. |
+| `q-button` | Action | Implemented | [Guide](./components/q-button.md) | Native button/anchor rendering, loading and icon layouts. |
+| `q-chip` | Action / data display | Implemented | [Guide](./components/q-chip.md) | Link, button, selected, and removable contracts. |
+| `q-link` | Action | Implemented | [Guide](./components/q-link.md) | URL, mail, telephone, external, and disabled links. |
+| `q-card` | Layout | Implemented | [Guide](./components/q-card.md) | Surface, elevation, glass, lift, and optional interaction. |
+| `q-carousel` | Layout | Implemented | [Guide](./components/q-carousel.md) | Scroll snap, arrows, indicators, repeat, and methods. |
+| `q-form` | Layout / forms | Implemented | [Guide](./components/q-form.md) | Native form bridge, typed values, reset, and Enter policy. |
+| `q-navbar` | Navigation | Implemented | [Guide](./components/q-navbar.md) | Edge layouts, item icons, and mobile menu/inline modes. |
+| `q-panel` | Layout | Implemented | [Guide](./components/q-panel.md) | Header/body/footer region with scrolling and sticky regions. |
+| `q-scrollable` | Layout | Implemented | [Guide](./components/q-scrollable.md) | Custom vertical or styled native scrollbars. |
+| `q-sidepanel` | Navigation / overlay | Implemented with known limitation | [Guide](./components/q-sidepanel.md) | Drawer, panel, and nav variants; `mode` currently has no effect. |
+| `q-toolbar` | Layout | Implemented | [Guide](./components/q-toolbar.md) | Consumer-owned edge toolbar regions. |
+| `q-input` | Form control | Implemented | [Guide](./components/q-input.md) | Form-associated text, password, color, search, and number field. |
+| `q-textarea` | Form control | Implemented | [Guide](./components/q-textarea.md) | Form-associated auto, manual, and fixed resize modes. |
+| `q-dropdown` | Form control | Implemented | [Guide](./components/q-dropdown.md) | Searchable listbox with incremental option rendering. |
+| `q-quantity-selector` | Form control | Implemented with known limitation | [Guide](./components/q-quantity-selector.md) | Bounded stepper; not yet form-associated. |
+| `q-toggle` | Form control | Implemented | [Guide](./components/q-toggle.md) | Form-associated switch/checkbox presentations. |
+| `q-data-table` | Data display | Implemented | [Guide](./components/q-data-table.md) | Search events, selection, sorting, and row actions. |
+| `q-syntax-box` | Data display / input | Implemented with security follow-up | [Guide](./components/q-syntax-box.md) | Highlighting, editing, formatting, copying, and form participation. |
+| `q-circular-progress` | Indicator | Implemented | [Guide](./components/q-circular-progress.md) | Determinate and indeterminate progress. |
+| `q-step-diagram` | Indicator | Implemented | [Guide](./components/q-step-diagram.md) | Vertical/horizontal step sequence parent. |
+| `q-step-diagram-item` | Indicator | Implemented with known limitation | [Guide](./components/q-step-diagram-item.md) | Pending items still emit activation events. |
+| `q-icon` | Media | Implemented | [Guide](./components/q-icon.md) | Remote/local SVG and binary icon rendering. |
+| `q-reel` | Media | Implemented | [Guide](./components/q-reel.md) | Thumbnail gallery with optional lightbox. |
+| `q-thumbnail` | Media | Implemented | [Guide](./components/q-thumbnail.md) | Lazy media poster and activation metadata. |
+| `q-dialog` | Overlay | Implemented | [Guide](./components/q-dialog.md) | Modal lifecycle, focus management, actions, and CEF-safe backdrop. |
+| `q-tooltip` | Overlay | Implemented with known limitation | [Guide](./components/q-tooltip.md) | Parent-attached hover/focus tooltip without collision flipping. |
+
+## Inventory rule
+
+Any change that adds or removes a `q-*` component must update this matrix, `docs/components/README.md`, and the 26-component current-contract reference in the same change. The production build must regenerate and commit the source-adjacent API page and framework proxies where this repository tracks them.

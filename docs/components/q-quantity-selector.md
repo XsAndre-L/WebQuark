@@ -1,5 +1,7 @@
 # 🧩 Component Specification: `q-quantity-selector`
 
+> Contract note: see [Current public contracts](./current-contracts.md#q-quantity-selector) and the [generated API](../../src/components/inputs/quantity-selector/readme.md) for the complete current surface. Generated API wins if an older design note below differs.
+
 The `<q-quantity-selector>` is a custom numeric input selector control allowing users to increment or decrement a value using side action buttons. It supports custom step increments, minimum/maximum boundary constraints, text field sanitation, and both horizontal and vertical layout formats.
 
 ---
@@ -69,85 +71,9 @@ None
 
 ---
 
-## 7. HTML/TSX Structure (Shadow DOM Layout)
+## 7. Implementation source
 
-```tsx
-@Component({
-  tag: 'q-quantity-selector',
-  styleUrl: 'q-quantity-selector.css',
-  shadow: true
-})
-export class QQuantitySelector {
-  @Prop({ mutable: true }) value: number = 0;
-  @Prop() step: number = 1;
-  @Prop() min?: number;
-  @Prop() max?: number;
-  @Prop({ reflect: true }) variant: 'horizontal' | 'vertical' = 'horizontal';
-
-  @State() inputValue: string = '0';
-
-  private inputEl?: HTMLInputElement;
-
-  render() {
-    const isMinDisabled = this.min !== undefined && this.min !== null && this.value <= this.min;
-    const isMaxDisabled = this.max !== undefined && this.max !== null && this.value >= this.max;
-
-    const decBtn = (
-      <button
-        type="button"
-        class="quantity-btn quantity-btn-decrement"
-        onClick={this.decrement}
-        disabled={isMinDisabled}
-        aria-label="Decrement quantity"
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon">
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
-      </button>
-    );
-
-    const incBtn = (
-      <button
-        type="button"
-        class="quantity-btn quantity-btn-increment"
-        onClick={this.increment}
-        disabled={isMaxDisabled}
-        aria-label="Increment quantity"
-      >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="btn-icon">
-          <line x1="12" y1="5" x2="12" y2="19"></line>
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
-      </button>
-    );
-
-    const calculatedWidth = this.variant === 'horizontal' ? this.getCalculatedWidth() : '100%';
-
-    return (
-      <div
-        class={{
-          'quantity-selector': true,
-          [`variant-${this.variant}`]: true
-        }}
-      >
-        {this.variant === 'vertical' ? incBtn : decBtn}
-        <input
-          ref={(el) => (this.inputEl = el as HTMLInputElement)}
-          type="text"
-          class="quantity-input"
-          value={this.inputValue}
-          onInput={this.handleInput}
-          onBlur={this.handleBlur}
-          onChange={this.handleChange}
-          style={{ width: calculatedWidth }}
-          part="input"
-        />
-        {this.variant === 'vertical' ? decBtn : incBtn}
-      </div>
-    );
-  }
-}
-```
+The implementation is intentionally not duplicated in this guide. Use the generated API linked at the top of the page for the canonical public contract and the component's TypeScript source for implementation details. This avoids stale source snapshots in authored documentation.
 
 ---
 

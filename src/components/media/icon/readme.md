@@ -5,6 +5,10 @@
 <!-- Auto Generated Below -->
 
 
+## Overview
+
+Remote, local, or binary icon renderer with SVG sanitization.
+
 ## Properties
 
 | Property       | Attribute       | Description                                                                                                                       | Type                                                                    | Default            |
@@ -21,23 +25,29 @@
 
 ## Shadow Parts
 
-| Part         | Description |
-| ------------ | ----------- |
-| `"fallback"` |             |
-| `"image"`    |             |
-| `"svg"`      |             |
+| Part         | Description                                    |
+| ------------ | ---------------------------------------------- |
+| `"fallback"` | Error fallback shown when an icon cannot load. |
+| `"image"`    | Native image used for binary icon assets.      |
+| `"svg"`      | Container for a sanitized inline SVG.          |
 
 
 ## Dependencies
 
 ### Used by
 
+ - [q-button](../../actions/button)
+ - [q-data-table](../../data-display/data-table)
+ - [q-navbar](../../layout/navbar)
  - [q-sidepanel](../../layout/sidepanel)
  - [q-syntax-box](../../data-display/syntax-box)
 
 ### Graph
 ```mermaid
 graph TD;
+  q-button --> q-icon
+  q-data-table --> q-icon
+  q-navbar --> q-icon
   q-sidepanel --> q-icon
   q-syntax-box --> q-icon
   style q-icon fill:#f9f,stroke:#333,stroke-width:4px

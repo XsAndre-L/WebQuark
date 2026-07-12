@@ -22,6 +22,11 @@
       "default": "Environment Server",
       "desc": "Floating form label caption"
     },
+    "ariaLabel": {
+      "type": "string",
+      "default": "",
+      "desc": "Accessible name for the trigger and option list"
+    },
     "placeholder": {
       "type": "string",
       "default": "Select profile...",

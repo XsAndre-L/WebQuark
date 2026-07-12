@@ -1,4 +1,8 @@
+import type { QIconLibrary, QIconLocalPath, QIconName, QIconSize } from '../../media/icon/icon.types';
+
 export type QNavbarTarget = '_self' | '_blank' | '_parent' | '_top';
+export type QNavbarMobileMode = 'menu' | 'inline';
+export type QNavbarEdge = 'top' | 'right' | 'bottom' | 'left';
 
 export interface NavbarItem {
   label: string;
@@ -7,7 +11,16 @@ export interface NavbarItem {
   target?: QNavbarTarget;
   disabled?: boolean;
   active?: boolean;
+  icon?: QIconName;
+  iconLib?: QIconLibrary;
+  iconSize?: QIconSize;
+  iconLocalPath?: QIconLocalPath;
+  iconOnly?: boolean;
+  ariaLabel?: string;
 }
+
+/** A concise navigation label/value or a fully configured navigation item. */
+export type NavbarItemInput = NavbarItem | string;
 
 export interface NavbarSelectDetail {
   value: string;
@@ -15,4 +28,3 @@ export interface NavbarSelectDetail {
   item: NavbarItem;
   originalEvent: MouseEvent;
 }
-

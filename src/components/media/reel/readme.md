@@ -5,6 +5,10 @@
 <!-- Auto Generated Below -->
 
 
+## Overview
+
+Gallery layout for q-thumbnail children with an optional modal lightbox.
+
 ## Properties
 
 | Property   | Attribute  | Description                                                              | Type                   | Default  |
@@ -19,6 +23,13 @@
 | ---------------- | --------------------------------- | ------------------- |
 | `qLightboxClose` | Emitted when the lightbox closes. | `CustomEvent<void>` |
 | `qLightboxOpen`  | Emitted when the lightbox opens.  | `CustomEvent<void>` |
+
+
+## Slots
+
+| Slot | Description                       |
+| ---- | --------------------------------- |
+|      | One or more q-thumbnail elements. |
 
 
 ----------------------------------------------

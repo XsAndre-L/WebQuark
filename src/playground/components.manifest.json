@@ -1,25 +1,32 @@
-﻿[
-  { "tag": "q-button",            "name": "Button" },
-  { "tag": "q-chip",              "name": "Chip" },
-  { "tag": "q-link",              "name": "Link" },
-  { "tag": "q-toggle",            "name": "Toggle" },
-  { "tag": "q-card",              "name": "Card" },
-  { "tag": "q-panel",             "name": "Panel" },
-  { "tag": "q-navbar",            "name": "Navbar" },
-  { "tag": "q-form",              "name": "Form" },
-  { "tag": "q-carousel",          "name": "Carousel" },
-  { "tag": "q-circular-progress", "name": "Circular Progress" },
-  { "tag": "q-dropdown",          "name": "Dropdown" },
-  { "tag": "q-input",             "name": "Input" },
-  { "tag": "q-textarea",          "name": "Textarea" },
-  { "tag": "q-reel",              "name": "Reel" },
-  { "tag": "q-sidepanel",         "name": "Sidepanel" },
-  { "tag": "q-step-diagram",      "name": "Step Diagram" },
-  { "tag": "q-scrollable",        "name": "Scrollable" },
-  { "tag": "q-syntax-box",        "name": "Syntax Box" },
-  { "tag": "q-icon",              "name": "Icon" },
-  { "tag": "q-tooltip",           "name": "Tooltip" },
-  { "tag": "q-data-table",        "name": "Data Table" },
-  { "tag": "q-dialog",            "name": "Dialog" },
-  { "tag": "q-quantity-selector", "name": "Quantity Selector" }
+[
+  { "tag": "q-button",            "name": "Button",            "category": "actions" },
+  { "tag": "q-chip",              "name": "Chip",              "category": "actions" },
+  { "tag": "q-link",              "name": "Link",              "category": "actions" },
+
+  { "tag": "q-data-table",        "name": "Data Table",        "category": "data-display" },
+  { "tag": "q-syntax-box",        "name": "Syntax Box",        "category": "data-display" },
+
+  { "tag": "q-circular-progress", "name": "Circular Progress", "category": "indicators" },
+  { "tag": "q-step-diagram",      "name": "Step Diagram",      "category": "indicators" },
+
+  { "tag": "q-dropdown",          "name": "Dropdown",          "category": "inputs" },
+  { "tag": "q-input",             "name": "Input",             "category": "inputs" },
+  { "tag": "q-quantity-selector", "name": "Quantity Selector", "category": "inputs" },
+  { "tag": "q-textarea",          "name": "Textarea",          "category": "inputs" },
+  { "tag": "q-toggle",            "name": "Toggle",            "category": "inputs" },
+
+  { "tag": "q-card",              "name": "Card",              "category": "layout" },
+  { "tag": "q-carousel",          "name": "Carousel",          "category": "layout" },
+  { "tag": "q-form",              "name": "Form",              "category": "layout" },
+  { "tag": "q-navbar",            "name": "Navbar",            "category": "layout" },
+  { "tag": "q-panel",             "name": "Panel",             "category": "layout" },
+  { "tag": "q-scrollable",        "name": "Scrollable",        "category": "layout" },
+  { "tag": "q-sidepanel",         "name": "Sidepanel",         "category": "layout" },
+  { "tag": "q-toolbar",           "name": "Toolbar",           "category": "layout" },
+
+  { "tag": "q-icon",              "name": "Icon",              "category": "media" },
+  { "tag": "q-reel",              "name": "Reel",              "category": "media" },
+
+  { "tag": "q-dialog",            "name": "Dialog",            "category": "overlays" },
+  { "tag": "q-tooltip",           "name": "Tooltip",           "category": "overlays" }
 ]

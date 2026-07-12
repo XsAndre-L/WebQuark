@@ -1,5 +1,7 @@
 # 🧩 Component Specification: `q-textarea`
 
+> Contract note: see [Current public contracts](./current-contracts.md#q-textarea) and the [generated API](../../src/components/inputs/textarea/readme.md) for the complete current surface. Generated API wins if an older design note below differs.
+
 The `<q-textarea>` is a custom multi-line text input field supporting header labels, form association, custom resize modes, semantic validation error states, and high-performance auto-growing height options. It is optimized for seamless keyboard integration and rendering inside Unreal Engine's Webview context.
 
 ---
@@ -11,6 +13,7 @@ The `<q-textarea>` is a custom multi-line text input field supporting header lab
 | `value` | `value` | `string` | `""` | The current text value inside the text area. Mutable. |
 | `placeholder` | `placeholder` | `string` | `""` | Helper placeholder text displayed when the field is empty. |
 | `label` | `label` | `string` | `undefined` | The header label text displayed above the text area. |
+| `ariaLabel` | `aria-label` | `string` | `undefined` | Explicit accessible name for the native textarea. |
 | `rows` | `rows` | `number` | `3` | The initial visible height, measured in text rows. |
 | `autoGrow` | `auto-grow` | `boolean` | `true` | Automatically expands the text area height to fit input text dynamically. |
 | `resizeMode` | `resize-mode` | `"auto" \| "fixed" \| "manual"` | `'auto'` | Resizing mode constraint. `'manual'` enables vertical grab resizing. |
@@ -87,82 +90,9 @@ None
 
 ---
 
-## 7. HTML/TSX Structure (Shadow DOM Layout)
+## 7. Implementation source
 
-```tsx
-@Component({
-  tag: 'q-textarea',
-  styleUrl: 'q-textarea.css',
-  shadow: {
-    delegatesFocus: true
-  },
-  formAssociated: true
-})
-export class QTextarea {
-  @Element() el!: HTMLElement;
-
-  @Prop({ mutable: true }) value: string = "";
-  @Prop() placeholder: string = "";
-  @Prop() label?: string;
-  @Prop() rows: number = 3;
-  @Prop() autoGrow: boolean = true;
-  @Prop() resizeMode: 'auto' | 'manual' | 'fixed' = 'auto';
-  @Prop({ reflect: true }) disabled: boolean = false;
-  @Prop({ reflect: true }) required: boolean = false;
-  @Prop({ reflect: true }) error?: string;
-  @Prop() errorMessage?: string;
-
-  @AttachInternals() internals!: ElementInternals;
-
-  private textareaEl?: HTMLTextAreaElement;
-
-  render() {
-    const hasError = (this.error !== undefined && this.error.length > 0) || (this.errorMessage !== undefined && this.errorMessage.length > 0);
-    const displayError = this.error || this.errorMessage;
-    
-    return (
-      <div 
-        class={{
-          'textarea-wrapper': true,
-          'is-disabled': this.disabled,
-          'has-error': hasError
-        }}
-      >
-        {this.label && (
-          <label class="textarea-label" htmlFor="q-field" part="label">
-            {this.label}
-          </label>
-        )}
-        
-        <textarea
-          ref={(el) => (this.textareaEl = el as HTMLTextAreaElement)}
-          id="q-field"
-          class="textarea-box"
-          style={{ resize: this.activeResizeMode === 'manual' ? 'vertical' : 'none' }}
-          part="textarea"
-          value={this.value}
-          placeholder={this.placeholder}
-          rows={this.rows}
-          disabled={this.disabled}
-          required={this.required}
-          onInput={this.handleInput}
-          onChange={this.handleChange}
-          onBlur={this.handleBlur}
-          onFocus={this.handleFocus}
-          aria-invalid={hasError ? 'true' : 'false'}
-          aria-describedby={hasError ? 'q-field-error' : undefined}
-        />
-        
-        {hasError && (
-          <span id="q-field-error" class="error-msg" part="error-msg">
-            {displayError}
-          </span>
-        )}
-      </div>
-    );
-  }
-}
-```
+The implementation is intentionally not duplicated in this guide. Use the generated API linked at the top of the page for the canonical public contract and the component's TypeScript source for implementation details. This avoids stale source snapshots in authored documentation.
 
 ---
 
@@ -210,7 +140,7 @@ export class QTextarea {
 ```html
 <q-textarea 
   label="Description" 
-  required="true"
+  required
   error="Invalid input content detected." 
   error-message="Description must be at least 10 characters long.">
 </q-textarea>

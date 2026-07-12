@@ -71,6 +71,7 @@ graph TD;
   q-syntax-box --> q-button
   q-syntax-box --> q-icon
   q-syntax-box --> q-tooltip
+  q-button --> q-icon
   style q-syntax-box fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

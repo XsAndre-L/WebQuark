@@ -48,12 +48,12 @@ Compact label, link, filter, or removable token.
 
 ## Shadow Parts
 
-| Part              | Description |
-| ----------------- | ----------- |
-| `"chip"`          |             |
-| `"label"`         |             |
-| `"remove-button"` |             |
-| `"remove-icon"`   |             |
+| Part              | Description           |
+| ----------------- | --------------------- |
+| `"chip"`          | Root chip element.    |
+| `"label"`         | Chip label wrapper.   |
+| `"remove-button"` | Remove action button. |
+| `"remove-icon"`   | Remove action icon.   |
 
 
 ----------------------------------------------

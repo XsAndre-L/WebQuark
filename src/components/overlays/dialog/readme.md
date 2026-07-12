@@ -5,10 +5,15 @@
 <!-- Auto Generated Below -->
 
 
+## Overview
+
+Modal confirmation or message dialog with focus trapping and safe solid backdrops.
+
 ## Properties
 
 | Property              | Attribute                | Description                                                                                                    | Type                | Default          |
 | --------------------- | ------------------------ | -------------------------------------------------------------------------------------------------------------- | ------------------- | ---------------- |
+| `ariaLabel`           | `aria-label`             | Accessible name for the dialog, especially when using a custom header without dialogTitle.                     | `string`            | `undefined`      |
 | `backdropEffect`      | `backdrop-effect`        | Backdrop rendering style. Solid is the default CEF/Unreal-safe dimmer; none keeps the click layer transparent. | `"none" \| "solid"` | `'solid'`        |
 | `cancelLabel`         | `cancel-label`           | Text shown on the cancel action button.                                                                        | `string`            | `'Cancel'`       |
 | `closeLabel`          | `close-label`            | Accessible label for the header close button.                                                                  | `string`            | `'Close dialog'` |
@@ -75,18 +80,27 @@ Type: `Promise<void>`
 
 
 
+## Slots
+
+| Slot       | Description                                                                          |
+| ---------- | ------------------------------------------------------------------------------------ |
+|            | Custom dialog body content.                                                          |
+| `"footer"` | Custom action content. Consumers own disabled/loading behavior for slotted controls. |
+| `"header"` | Custom header content. Provide an accessible name when replacing `dialogTitle`.      |
+
+
 ## Shadow Parts
 
-| Part            | Description |
-| --------------- | ----------- |
-| `"backdrop"`    |             |
-| `"body"`        |             |
-| `"cancel-btn"`  |             |
-| `"close-btn"`   |             |
-| `"confirm-btn"` |             |
-| `"footer"`      |             |
-| `"header"`      |             |
-| `"modal"`       |             |
+| Part            | Description             |
+| --------------- | ----------------------- |
+| `"backdrop"`    | Backdrop click target.  |
+| `"body"`        | Body region.            |
+| `"cancel-btn"`  | Default cancel button.  |
+| `"close-btn"`   | Header close button.    |
+| `"confirm-btn"` | Default confirm button. |
+| `"footer"`      | Footer region.          |
+| `"header"`      | Header region.          |
+| `"modal"`       | Dialog surface.         |
 
 
 ----------------------------------------------

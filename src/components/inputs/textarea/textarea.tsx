@@ -30,6 +30,9 @@ export class QTextarea {
   /** Optional label rendered above the textarea. */
   @Prop() label?: string;
 
+  /** Accessible name for the native textarea when a visible label is not used. */
+  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+
   /** Visible row count used by the native textarea. */
   @Prop() rows: number = 3;
 
@@ -177,7 +180,7 @@ export class QTextarea {
   render() {
     const hasError = !!(this.error || this.errorMessage);
     const displayError = this.error || this.errorMessage;
-    const ariaLabel = !this.label && this.placeholder ? this.placeholder : undefined;
+    const ariaLabel = this.ariaLabel?.trim() || (!this.label && this.placeholder ? this.placeholder : undefined);
 
     return (
       <div

@@ -30,6 +30,69 @@ describe('q-navbar', () => {
     expect(el.shadowRoot.textContent).toContain('Docs');
   });
 
+  it('normalizes string items into matching labels and values', async () => {
+    const el = await createComponent({ items: ['Home', 'Docs'] });
+    const handler = vi.fn();
+    el.addEventListener('qSelect', handler);
+
+    const items = Array.from(el.shadowRoot.querySelectorAll('.desktop-nav .nav-item')) as HTMLElement[];
+    items[1].click();
+    await waitForUpdate();
+
+    expect(items.map(item => item.textContent?.trim())).toEqual(['Home', 'Docs']);
+    expect(handler.mock.calls[0][0].detail.value).toBe('Docs');
+  });
+
+  it('uses a custom aria-label for both responsive navigation regions', async () => {
+    const el = await createComponent({ ariaLabel: 'Product sections' });
+    const navs = Array.from(el.shadowRoot.querySelectorAll('nav')) as HTMLElement[];
+
+    expect(navs.map(nav => nav.getAttribute('aria-label'))).toEqual(['Product sections', 'Product sections']);
+  });
+
+  it('renders configured item icons', async () => {
+    const el = await createComponent({
+      items: [{ label: 'Home', value: 'home', icon: 'house', iconSize: 26 }],
+    });
+
+    const icon = el.shadowRoot.querySelector('.desktop-nav .nav-item q-icon') as HTMLElement;
+    expect(icon).toBeTruthy();
+    expect(icon.getAttribute('name')).toBe('house');
+    expect(icon.getAttribute('lib')).toBe('lucide');
+    expect(icon.getAttribute('size')).toBe('26');
+  });
+
+  it('supports icon-only navigation items with an accessible label', async () => {
+    const el = await createComponent({
+      items: [{ label: 'Home', value: 'home', icon: 'house', iconOnly: true }],
+    });
+
+    const item = el.shadowRoot.querySelector('.desktop-nav .nav-item') as HTMLElement;
+    const label = item.querySelector('.nav-item__label') as HTMLElement;
+
+    expect(item.classList.contains('is-icon-only')).toBe(true);
+    expect(item.getAttribute('aria-label')).toBe('Home');
+    expect(label.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  it('reflects inline mobile mode for non-collapsing navigation', async () => {
+    const el = await createComponent({
+      mobileMode: 'inline',
+      items: [{ label: 'Home', value: 'home', icon: 'house', iconOnly: true }],
+    });
+
+    expect(el.getAttribute('mobile-mode')).toBe('inline');
+  });
+
+  it('reflects the configured navbar edge', async () => {
+    const el = await createComponent({
+      edge: 'bottom',
+      items: [{ label: 'Home', value: 'home' }],
+    });
+
+    expect(el.getAttribute('edge')).toBe('bottom');
+  });
+
   it('emits qSelect when an item is clicked', async () => {
     const el = await createComponent({
       items: [{ label: 'Docs', value: 'docs' }],
