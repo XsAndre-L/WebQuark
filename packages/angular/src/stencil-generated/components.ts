@@ -204,14 +204,14 @@ export declare interface QCircularProgress extends Components.QCircularProgress 
 
 @ProxyCmp({
   defineCustomElementFn: defineQDataTable,
-  inputs: ['columns', 'items', 'keyField', 'loading', 'rowActions', 'rowClickable', 'searchPlaceholder', 'searchValue', 'selectable', 'selectedKeys', 'showSearch', 'showToolbar', 'sortColumn', 'sortDirection', 'sortMode', 'sortable', 'toolbarTitle']
+  inputs: ['columns', 'items', 'keyField', 'loading', 'rowActions', 'rowClickable', 'rowGroup', 'searchPlaceholder', 'searchValue', 'selectable', 'selectedKeys', 'showSearch', 'showToolbar', 'sortColumn', 'sortDirection', 'sortMode', 'sortable', 'toolbarTitle']
 })
 @Component({
   selector: 'q-data-table',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['columns', 'items', 'keyField', 'loading', 'rowActions', 'rowClickable', 'searchPlaceholder', 'searchValue', 'selectable', 'selectedKeys', 'showSearch', 'showToolbar', 'sortColumn', 'sortDirection', 'sortMode', 'sortable', 'toolbarTitle'],
+  inputs: ['columns', 'items', 'keyField', 'loading', 'rowActions', 'rowClickable', 'rowGroup', 'searchPlaceholder', 'searchValue', 'selectable', 'selectedKeys', 'showSearch', 'showToolbar', 'sortColumn', 'sortDirection', 'sortMode', 'sortable', 'toolbarTitle'],
   outputs: ['qRowClick', 'qRowAction', 'qSelectionChange', 'qSearch', 'qSortChange'],
 })
 export class QDataTable {
@@ -303,20 +303,22 @@ export declare interface QDialog extends Components.QDialog {
 
 @ProxyCmp({
   defineCustomElementFn: defineQDropdown,
-  inputs: ['ariaLabel', 'disabled', 'label', 'name', 'options', 'placeholder', 'searchable', 'size', 'value']
+  inputs: ['ariaLabel', 'disabled', 'externalSearch', 'hasMore', 'label', 'loading', 'name', 'options', 'placeholder', 'searchable', 'size', 'value']
 })
 @Component({
   selector: 'q-dropdown',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['ariaLabel', 'disabled', 'label', 'name', 'options', 'placeholder', 'searchable', 'size', 'value'],
-  outputs: ['qChange', 'qSelect', 'qFocus', 'qBlur', 'qClick'],
+  inputs: ['ariaLabel', 'disabled', 'externalSearch', 'hasMore', 'label', 'loading', 'name', 'options', 'placeholder', 'searchable', 'size', 'value'],
+  outputs: ['qChange', 'qSelect', 'qSearch', 'qLoadMore', 'qFocus', 'qBlur', 'qClick'],
 })
 export class QDropdown {
   protected el: HTMLQDropdownElement;
   @Output() qChange = new EventEmitter<QDropdownCustomEvent<string>>();
   @Output() qSelect = new EventEmitter<QDropdownCustomEvent<IQDropdownOption>>();
+  @Output() qSearch = new EventEmitter<QDropdownCustomEvent<string>>();
+  @Output() qLoadMore = new EventEmitter<QDropdownCustomEvent<void>>();
   @Output() qFocus = new EventEmitter<QDropdownCustomEvent<FocusEvent>>();
   @Output() qBlur = new EventEmitter<QDropdownCustomEvent<FocusEvent>>();
   @Output() qClick = new EventEmitter<QDropdownCustomEvent<MouseEvent>>();
@@ -339,6 +341,14 @@ export declare interface QDropdown extends Components.QDropdown {
    * Emitted with the selected option object when selection changes.
    */
   qSelect: EventEmitter<QDropdownCustomEvent<IQDropdownOption>>;
+  /**
+   * Emitted with the current search term when a searchable dropdown uses external search.
+   */
+  qSearch: EventEmitter<QDropdownCustomEvent<string>>;
+  /**
+   * Emitted when an externally loaded option list reaches its scroll boundary.
+   */
+  qLoadMore: EventEmitter<QDropdownCustomEvent<void>>;
   /**
    * Emitted when the trigger receives focus.
    */

@@ -3,6 +3,13 @@ export type DataTableKey = unknown;
 export type DataTableSortDirection = 'asc' | 'desc';
 export type DataTableSortMode = 'table' | 'external';
 
+export interface DataTableRowGroup {
+  key: string | number;
+  label: string;
+}
+
+export type DataTableRowGrouper<T = unknown> = (item: T, index: number) => DataTableRowGroup | null | undefined;
+
 export interface TableColumn<T = unknown> {
   key: string;
   header?: string;
@@ -42,4 +49,3 @@ export interface QDataTableSelectionChangeDetail<T = unknown> {
   selectedKeys: unknown[];
   selectedItems: T[];
 }
-
