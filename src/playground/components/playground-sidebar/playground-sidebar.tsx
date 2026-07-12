@@ -3,9 +3,28 @@ import { activeComponent, activeTab, fetchComponentSpec, effect } from '../../st
 import css from './playground-sidebar.css';
 
 interface ComponentManifestItem {
+  category: string;
   name: string;
   tag: string;
 }
+
+interface SidebarNavItem {
+  label: string;
+  value: string;
+  children?: SidebarNavItem[];
+}
+
+const CATEGORY_LABELS: Record<string, string> = {
+  actions: 'Actions',
+  'data-display': 'Data Display',
+  indicators: 'Indicators',
+  inputs: 'Inputs',
+  layout: 'Layout',
+  media: 'Media',
+  overlays: 'Overlays',
+};
+
+const CATEGORY_ORDER = Object.keys(CATEGORY_LABELS);
 
 class PlaygroundSidebar extends HTMLElement {
   private components: ComponentManifestItem[] = [];
@@ -28,7 +47,7 @@ class PlaygroundSidebar extends HTMLElement {
     // Render template via TSX
     this.innerHTML = '';
     this.appendChild(
-      <q-sidepanel id="sidebarNav" variant="nav" mode="flat">
+      <q-sidepanel id="sidebarNav" variant="nav" mode="tree">
         <div slot="footer">
           <button
             id="globalStylingBtn"
@@ -61,11 +80,7 @@ class PlaygroundSidebar extends HTMLElement {
 
     if (!this.navPanel) return;
 
-    // 1. Build items array for q-sidepanel
-    this.navPanel.items = this.components.map(comp => ({
-      label: comp.name,
-      value: comp.tag,
-    }));
+    this.navPanel.items = this.buildNavItems();
 
     // 2. Handle qSelect event from q-sidepanel nav
     this.handleNavSelect = (e: CustomEvent) => {
@@ -87,6 +102,41 @@ class PlaygroundSidebar extends HTMLElement {
         this.globalStylingBtn.classList.toggle('active', active === 'global-styling');
       }
     });
+  }
+
+  private buildNavItems(): SidebarNavItem[] {
+    const grouped = new Map<string, ComponentManifestItem[]>();
+
+    this.components.forEach(component => {
+      const category = component.category || 'other';
+      const components = grouped.get(category) ?? [];
+      components.push(component);
+      grouped.set(category, components);
+    });
+
+    const orderedCategories = [
+      ...CATEGORY_ORDER,
+      ...Array.from(grouped.keys()).filter(category => !CATEGORY_LABELS[category]).sort(),
+    ];
+
+    return orderedCategories
+      .filter(category => grouped.has(category))
+      .map(category => ({
+        label: CATEGORY_LABELS[category] ?? this.toTitleCase(category),
+        value: `category:${category}`,
+        children: grouped.get(category)!.map(component => ({
+          label: component.name,
+          value: component.tag,
+        })),
+      }));
+  }
+
+  private toTitleCase(value: string): string {
+    return value
+      .split(/[-_\s]+/)
+      .filter(Boolean)
+      .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(' ');
   }
 
   disconnectedCallback(): void {

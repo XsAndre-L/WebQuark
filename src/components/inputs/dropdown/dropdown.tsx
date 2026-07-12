@@ -1,11 +1,13 @@
 import { Component, Prop, State, Event, EventEmitter, Element, AttachInternals, Watch, Listen, h } from '@stencil/core';
 import { safeFocus } from '../../../utils/dom';
-import type { Option, QDropdownSize } from './dropdown.types';
+import type { DropdownOptionInput, Option, QDropdownSize } from './dropdown.types';
 import { computeDropdownDynamicWidth } from './internals/width';
 import { getDropdownOptions, getFilteredOptions, getOptionLabel, getSelectedOption, getVisibleOptions } from './internals/options';
 
 /**
- * Form-associated dropdown/select control with optional search and incremental option rendering.
+ * Form-associated dropdown/select control with optional search, incremental option rendering,
+ * and externally loaded option pages.
+ * @slot icon-left - Optional leading content rendered inside the trigger.
  * @part label - Optional field label.
  * @part trigger - Button that opens the option menu.
  * @part menu - Floating option menu.
@@ -29,11 +31,14 @@ export class QDropdown {
   /** Optional label rendered above the trigger. */
   @Prop() label?: string;
 
+  /** Accessible name for the trigger and option list when no visible label is available. */
+  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+
   /** Placeholder text shown when no option is selected. */
   @Prop() placeholder: string = 'Select an option...';
 
-  /** Options to render; accepts an array or a JSON string of { label, value } objects. */
-  @Prop() options: Option[] | string = [];
+  /** Options to render; strings use the same text for label and value, while objects allow separate values. */
+  @Prop() options: DropdownOptionInput[] | string = [];
 
   /** Disables the trigger and prevents selection changes. */
   @Prop({ reflect: true }) disabled: boolean = false;
@@ -43,6 +48,15 @@ export class QDropdown {
 
   /** Shows a search input inside the menu. */
   @Prop() searchable: boolean = false;
+
+  /** Leaves filtering and pagination to the consumer instead of filtering options locally. */
+  @Prop() externalSearch: boolean = false;
+
+  /** Indicates that another externally loaded option page is available. */
+  @Prop() hasMore: boolean = false;
+
+  /** Displays the menu loading state while options are being fetched. */
+  @Prop() loading: boolean = false;
 
   @State() isOpen: boolean = false;
   @State() focusedIndex: number = -1;
@@ -59,6 +73,12 @@ export class QDropdown {
 
   /** Emitted with the selected option object when selection changes. */
   @Event() qSelect!: EventEmitter<Option>;
+
+  /** Emitted with the current search term when a searchable dropdown uses external search. */
+  @Event() qSearch!: EventEmitter<string>;
+
+  /** Emitted when an externally loaded option list reaches its scroll boundary. */
+  @Event() qLoadMore!: EventEmitter<void>;
 
   /** Emitted when the trigger receives focus. */
   @Event() qFocus!: EventEmitter<FocusEvent>;
@@ -86,6 +106,20 @@ export class QDropdown {
   watchValue(newValue: string) {
     if (this.internals && typeof this.internals.setFormValue === 'function') {
       this.internals.setFormValue(newValue);
+    }
+  }
+
+  @Watch('options')
+  watchOptions() {
+    if (this.externalSearch) {
+      this.isScrollingLoading = false;
+    }
+  }
+
+  @Watch('loading')
+  watchLoading(newValue: boolean) {
+    if (!newValue) {
+      this.isScrollingLoading = false;
     }
   }
 
@@ -129,10 +163,18 @@ export class QDropdown {
   }
 
   private getFilteredOptions(): Option[] {
+    if (this.externalSearch) {
+      return this.getAllOptions();
+    }
+
     return getFilteredOptions(this.getAllOptions(), this.searchTerm, this.searchable);
   }
 
   private get parsedOptions(): Option[] {
+    if (this.externalSearch) {
+      return this.getFilteredOptions();
+    }
+
     return getVisibleOptions(this.getFilteredOptions(), this.visibleCount);
   }
 
@@ -190,6 +232,10 @@ export class QDropdown {
     this.focusedIndex = -1;
     this.visibleCount = 20;
     this.clearScrollLoading();
+
+    if (this.externalSearch) {
+      this.qSearch.emit(this.searchTerm);
+    }
   };
 
   private handleScroll = (ev: Event) => {
@@ -200,6 +246,15 @@ export class QDropdown {
     const isAtBottom = listEl.scrollHeight - listEl.scrollTop - listEl.clientHeight <= threshold;
 
     if (isAtBottom && !this.isScrollingLoading) {
+      if (this.externalSearch) {
+        if (this.hasMore && !this.loading) {
+          this.isScrollingLoading = true;
+          this.qLoadMore.emit();
+        }
+
+        return;
+      }
+
       const totalCount = this.getFilteredOptions().length;
       if (this.visibleCount < totalCount) {
         this.isScrollingLoading = true;
@@ -366,6 +421,7 @@ export class QDropdown {
     const displayLabel = selectedOption && selectedLabel ? selectedLabel : this.placeholder;
     const hasSelection = selectedOption !== undefined;
     const dynamicWidth = this.computeDynamicWidth(allOptions, selectedOption);
+    const ariaLabel = this.ariaLabel?.trim() || undefined;
 
     return (
       <div 
@@ -397,12 +453,16 @@ export class QDropdown {
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}
           aria-haspopup="listbox"
+          aria-label={ariaLabel}
           aria-expanded={this.isOpen ? 'true' : 'false'}
           aria-controls={this.isOpen ? 'q-field-menu' : undefined}
           aria-activedescendant={this.isOpen && this.focusedIndex >= 0 ? `q-field-item-${this.focusedIndex}` : undefined}
         >
-          <span class={{ 'trigger-text': true, 'is-placeholder': !hasSelection }}>
-            {displayLabel}
+          <span class="trigger-content">
+            <slot name="icon-left" />
+            <span class={{ 'trigger-text': true, 'is-placeholder': !hasSelection }}>
+              {displayLabel}
+            </span>
           </span>
           <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="6 9 12 15 18 9" />
@@ -416,7 +476,7 @@ export class QDropdown {
             class="dropdown-menu" 
             part="menu" 
             role="listbox"
-            aria-label={this.label || 'Options'}
+            aria-label={ariaLabel || this.label || 'Options'}
           >
             {this.searchable && (
               <div class="dropdown-search-container">
@@ -436,7 +496,7 @@ export class QDropdown {
               </div>
             )}
             <ul class="dropdown-items-list" onScroll={this.handleScroll}>
-              {opts.length === 0 ? (
+              {opts.length === 0 && !this.loading ? (
                 <li class="menu-item is-empty">No matches found</li>
               ) : (
                 opts.map((option, index) => (
@@ -457,7 +517,7 @@ export class QDropdown {
                   </li>
                 ))
               )}
-              {this.isScrollingLoading && (
+              {(this.loading || this.isScrollingLoading) && (
                 <li class="menu-item is-loading-more">
                   <span class="spinner-circle"></span>
                   <span>Loading...</span>

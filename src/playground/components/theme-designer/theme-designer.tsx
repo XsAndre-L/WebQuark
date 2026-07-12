@@ -25,9 +25,11 @@ const THEME_TOKENS: TokenCategory[] = [
     category: 'Surfaces & Backgrounds',
     tokens: [
       { name: '--q-bg-base', label: 'Base Background', type: 'color', desc: 'Lowest canvas background' },
-      { name: '--q-bg-surface-1', label: 'Surface 1', type: 'color', desc: 'Sidebar/surface panels' },
-      { name: '--q-bg-surface-2', label: 'Surface 2', type: 'color', desc: 'Nested tabs/toolbar sections' },
-      { name: '--q-bg-surface-3', label: 'Surface 3', type: 'color', desc: 'Dropdowns/popovers' }
+      { name: '--q-bg-surface-1', label: 'Surface 1', type: 'color', desc: 'Sidebar / primary panels' },
+      { name: '--q-bg-surface-2', label: 'Surface 2', type: 'color', desc: 'Cards / nested panels' },
+      { name: '--q-bg-surface-3', label: 'Surface 3', type: 'color', desc: 'Popovers / raised controls' },
+      { name: '--q-bg-surface-4', label: 'Surface 4', type: 'color', desc: 'Strong raised surfaces' },
+      { name: '--q-bg-surface-5', label: 'Surface 5', type: 'color', desc: 'Highest contrast neutral surface' }
     ]
   },
   {
@@ -55,7 +57,7 @@ export class ThemeDesigner extends HTMLElement {
       <div class="theme-designer-container">
         <div class="theme-designer-header">
           <div style="flex: 1">
-            <h2 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--text-main)">Global Styling Designer</h2>
+            <h2 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--q-fg-base)">Global Styling Designer</h2>
             <p class="theme-designer-desc">Customize global brand tokens and spacing variables. Overrides apply instantly to all sandbox components.</p>
           </div>
           <button id="resetThemeBtn" class="reset-theme-btn" type="button" onClick={() => this.resetTheme()}>

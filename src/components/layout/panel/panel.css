@@ -41,6 +41,10 @@
   border-radius: var(--q-panel-radius, var(--q-radius-md, 7px));
 }
 
+.panel.has-no-borders {
+  border: 0;
+}
+
 .panel-header,
 .panel-footer {
   flex: 0 0 auto;

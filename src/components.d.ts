@@ -5,57 +5,62 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
+import { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
+import { QIconColor, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
 import { QCardElevation } from "./components/layout/card/card.types";
 import { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/layout/carousel/carousel.types";
 import { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/actions/chip/chip.types";
 import { QCircularProgressSize } from "./components/indicators/circular-progress/circular-progress.types";
-import { DataTableItem, DataTableKey, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
+import { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
 import { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
-import { Option, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
+import { DropdownOptionInput, Option, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
 import { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/layout/form/form.types";
-import { QIconColor, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
 import { QInputSize, QInputType } from "./components/inputs/input/input.types";
 import { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
-import { NavbarItem, NavbarSelectDetail } from "./components/layout/navbar/navbar.types";
+import { NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode } from "./components/layout/navbar/navbar.types";
 import { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
 import { QQuantitySelectorVariant } from "./components/inputs/quantity-selector/quantity-selector.types";
 import { QReelLayout } from "./components/media/reel/reel.types";
 import { QScrollableEventDetail, QScrollableMode } from "./components/layout/scrollable/scrollable.types";
-import { QSidepanelCollapseControl, QSidepanelCollapsedChangeDetail, QSidepanelCollapseMode, QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItem } from "./components/layout/sidepanel/sidepanel.types";
+import { QSidepanelCollapseControl, QSidepanelCollapsedChangeDetail, QSidepanelCollapseMode, QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItemInput } from "./components/layout/sidepanel/sidepanel.types";
 import { QStepDiagramLayout } from "./components/indicators/step-diagram/step-diagram.types";
 import { QStepDiagramItemLayout, QStepDiagramItemLineStyle, QStepDiagramItemStatus } from "./components/indicators/step-diagram-item/step-diagram-item.types";
 import { QSyntaxBoxLanguage, QSyntaxBoxVariant } from "./components/data-display/syntax-box/syntax-box.types";
 import { QTextareaResizeMode } from "./components/inputs/textarea/textarea.types";
 import { QThumbnailMaximizeDetail } from "./components/media/thumbnail/thumbnail.types";
 import { QToggleSize, QToggleType } from "./components/inputs/toggle/toggle.types";
+import { QToolbarEdge } from "./components/layout/toolbar/toolbar.types";
 import { QTooltipPosition } from "./components/overlays/tooltip/tooltip.types";
-export { QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
+export { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
+export { QIconColor, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
 export { QCardElevation } from "./components/layout/card/card.types";
 export { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/layout/carousel/carousel.types";
 export { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/actions/chip/chip.types";
 export { QCircularProgressSize } from "./components/indicators/circular-progress/circular-progress.types";
-export { DataTableItem, DataTableKey, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
+export { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
 export { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
-export { Option, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
+export { DropdownOptionInput, Option, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
 export { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/layout/form/form.types";
-export { QIconColor, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
 export { QInputSize, QInputType } from "./components/inputs/input/input.types";
 export { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
-export { NavbarItem, NavbarSelectDetail } from "./components/layout/navbar/navbar.types";
+export { NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode } from "./components/layout/navbar/navbar.types";
 export { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
 export { QQuantitySelectorVariant } from "./components/inputs/quantity-selector/quantity-selector.types";
 export { QReelLayout } from "./components/media/reel/reel.types";
 export { QScrollableEventDetail, QScrollableMode } from "./components/layout/scrollable/scrollable.types";
-export { QSidepanelCollapseControl, QSidepanelCollapsedChangeDetail, QSidepanelCollapseMode, QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItem } from "./components/layout/sidepanel/sidepanel.types";
+export { QSidepanelCollapseControl, QSidepanelCollapsedChangeDetail, QSidepanelCollapseMode, QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItemInput } from "./components/layout/sidepanel/sidepanel.types";
 export { QStepDiagramLayout } from "./components/indicators/step-diagram/step-diagram.types";
 export { QStepDiagramItemLayout, QStepDiagramItemLineStyle, QStepDiagramItemStatus } from "./components/indicators/step-diagram-item/step-diagram-item.types";
 export { QSyntaxBoxLanguage, QSyntaxBoxVariant } from "./components/data-display/syntax-box/syntax-box.types";
 export { QTextareaResizeMode } from "./components/inputs/textarea/textarea.types";
 export { QThumbnailMaximizeDetail } from "./components/media/thumbnail/thumbnail.types";
 export { QToggleSize, QToggleType } from "./components/inputs/toggle/toggle.types";
+export { QToolbarEdge } from "./components/layout/toolbar/toolbar.types";
 export { QTooltipPosition } from "./components/overlays/tooltip/tooltip.types";
 export namespace Components {
+    /**
+     * Action button that renders a native button or anchor according to `href`.
+     */
     interface QButton {
         /**
           * Accessible label forwarded to the inner button or anchor. Required for icon-only buttons.
@@ -80,9 +85,18 @@ export namespace Components {
          */
         "href"?: string;
         /**
+          * Lucide icon name rendered before the label. Use the icon slots for other libraries or custom markup.
+         */
+        "icon"?: QIconName;
+        /**
           * Renders compact icon-only spacing. When unset, this is auto-detected from slotted icon content.
          */
         "iconOnly"?: boolean;
+        /**
+          * Controls whether icon and label content flow inline or stack vertically.
+          * @default 'inline'
+         */
+        "layout": QButtonLayout;
         /**
           * Shows a spinner and suppresses interaction while work is in progress.
           * @default false
@@ -92,6 +106,11 @@ export namespace Components {
           * Link rel value. Defaults to noopener noreferrer for target="_blank".
          */
         "rel"?: string;
+        /**
+          * Controls the button outline and fixed circular presentation.
+          * @default 'default'
+         */
+        "shape": QButtonShape;
         /**
           * Button size.
           * @default 'md'
@@ -265,6 +284,10 @@ export namespace Components {
     /**
      * Data grid with optional toolbar, search, row activation, and multi-row selection.
      * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
+     * @cssprop --q-table-group-bg - Background color for row-group divider rows.
+     * @cssprop --q-table-group-fg - Text color for row-group divider rows.
+     * @cssprop --q-table-group-border - Border color for row-group divider rows.
+     * @cssprop --q-table-group-padding - Padding for row-group divider cells.
      * @cssprop --q-table-dropdown-bg - Background color forwarded to slotted q-dropdown controls.
      * @cssprop --q-table-dropdown-menu-bg - Menu background color forwarded to slotted q-dropdown controls.
      * @cssprop --q-table-dropdown-border - Border style forwarded to slotted q-dropdown controls.
@@ -292,6 +315,20 @@ export namespace Components {
           * @default false
          */
         "loading": boolean;
+        /**
+          * Optional row-level actions rendered as trailing icon buttons.
+          * @default []
+         */
+        "rowActions": DataTableRowAction[] | string;
+        /**
+          * Enables full-row click and keyboard activation.
+          * @default true
+         */
+        "rowClickable": boolean;
+        /**
+          * Optional property-only callback that groups consecutive rendered rows. A divider is inserted whenever the returned group key changes.
+         */
+        "rowGroup"?: DataTableRowGrouper;
         /**
           * Placeholder text for the built-in search input.
           * @default 'Search...'
@@ -323,11 +360,36 @@ export namespace Components {
          */
         "showToolbar": boolean;
         /**
+          * Currently sorted column key.
+         */
+        "sortColumn"?: string;
+        /**
+          * Current sort direction for the sorted column.
+         */
+        "sortDirection"?: DataTableSortDirection;
+        /**
+          * Sorting behavior: 'table' sorts provided items locally, while 'external' only emits sort changes.
+          * @default 'table'
+         */
+        "sortMode": DataTableSortMode;
+        /**
+          * Enables sortable column headers. Columns can override this with their own sortable setting.
+          * @default false
+         */
+        "sortable": boolean;
+        /**
           * Title text rendered in the toolbar.
          */
         "toolbarTitle"?: string;
     }
+    /**
+     * Modal confirmation or message dialog with focus trapping and safe solid backdrops.
+     */
     interface QDialog {
+        /**
+          * Accessible name for the dialog, especially when using a custom header without dialogTitle.
+         */
+        "ariaLabel"?: string;
         /**
           * Backdrop rendering style. Solid is the default CEF/Unreal-safe dimmer; none keeps the click layer transparent.
           * @default 'solid'
@@ -404,27 +466,47 @@ export namespace Components {
         "showConfirm": boolean;
     }
     /**
-     * Form-associated dropdown/select control with optional search and incremental option rendering.
+     * Form-associated dropdown/select control with optional search, incremental option rendering,
+     * and externally loaded option pages.
      */
     interface QDropdown {
+        /**
+          * Accessible name for the trigger and option list when no visible label is available.
+         */
+        "ariaLabel"?: string;
         /**
           * Disables the trigger and prevents selection changes.
           * @default false
          */
         "disabled": boolean;
         /**
+          * Leaves filtering and pagination to the consumer instead of filtering options locally.
+          * @default false
+         */
+        "externalSearch": boolean;
+        /**
+          * Indicates that another externally loaded option page is available.
+          * @default false
+         */
+        "hasMore": boolean;
+        /**
           * Optional label rendered above the trigger.
          */
         "label"?: string;
+        /**
+          * Displays the menu loading state while options are being fetched.
+          * @default false
+         */
+        "loading": boolean;
         /**
           * Form field name.
          */
         "name"?: string;
         /**
-          * Options to render; accepts an array or a JSON string of { label, value } objects.
+          * Options to render; strings use the same text for label and value, while objects allow separate values.
           * @default []
          */
-        "options": Option[] | string;
+        "options": DropdownOptionInput[] | string;
         /**
           * Placeholder text shown when no option is selected.
           * @default 'Select an option...'
@@ -509,6 +591,9 @@ export namespace Components {
          */
         "target"?: QFormTarget;
     }
+    /**
+     * Remote, local, or binary icon renderer with SVG sanitization.
+     */
     interface QIcon {
         /**
           * The color of the icon. Defaults to 'currentColor'.
@@ -552,6 +637,10 @@ export namespace Components {
      * Form-associated input field with optional prefix/suffix slots, clear button, password visibility toggle, and numeric spinner controls.
      */
     interface QInput {
+        /**
+          * Accessible name for the native input when a visible label is not used.
+         */
+        "ariaLabel"?: string;
         /**
           * Clears the current value and focuses the native input.
          */
@@ -683,7 +772,7 @@ export namespace Components {
         "variant": QLinkVariant;
     }
     /**
-     * Responsive site navigation with optional brand content, actions, and mobile menu.
+     * Edge-aware site navigation with optional brand content, actions, and mobile menu.
      */
     interface QNavbar {
         /**
@@ -692,7 +781,11 @@ export namespace Components {
          */
         "activeValue": string;
         /**
-          * Renders a bottom border on the navbar.
+          * Accessible name for the desktop and mobile navigation regions.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Renders a border along the inward-facing edge.
           * @default true
          */
         "bordered": boolean;
@@ -711,10 +804,15 @@ export namespace Components {
          */
         "compact": boolean;
         /**
-          * Navigation items rendered in the desktop and mobile menus.
+          * Edge the navbar is arranged against.
+          * @default 'top'
+         */
+        "edge": QNavbarEdge;
+        /**
+          * Navigation items; strings use the same text for label and value, while objects enable links, icons, and state.
           * @default []
          */
-        "items": NavbarItem[] | string;
+        "items": NavbarItemInput[] | string;
         /**
           * Accessible text for a logo-only brand image.
           * @default ''
@@ -730,7 +828,12 @@ export namespace Components {
          */
         "mobileLabel": string;
         /**
-          * Keeps the navbar pinned to the top of its scroll container.
+          * Controls whether mobile widths collapse items into a menu or keep them inline.
+          * @default 'menu'
+         */
+        "mobileMode": QNavbarMobileMode;
+        /**
+          * Keeps the navbar pinned to its configured edge.
           * @default false
          */
         "sticky": boolean;
@@ -754,6 +857,11 @@ export namespace Components {
          */
         "fullHeight": boolean;
         /**
+          * Removes the panel border while preserving the selected variant's other styling.
+          * @default false
+         */
+        "noBorders": boolean;
+        /**
           * Padding density applied to the body region.
           * @default 'md'
          */
@@ -775,7 +883,7 @@ export namespace Components {
         "stickyHeader": boolean;
         /**
           * Visual treatment for the panel container.
-          * @default 'surface'
+          * @default 'bordered'
          */
         "variant": QPanelVariant;
     }
@@ -807,6 +915,9 @@ export namespace Components {
          */
         "variant": QQuantitySelectorVariant;
     }
+    /**
+     * Gallery layout for q-thumbnail children with an optional modal lightbox.
+     */
     interface QReel {
         /**
           * Layout used for slotted q-thumbnail items.
@@ -862,6 +973,9 @@ export namespace Components {
          */
         "target": string;
     }
+    /**
+     * Drawer, persistent panel, or hierarchical navigation side panel.
+     */
     interface QSidepanel {
         /**
           * If true, opening one group collapses all sibling groups
@@ -869,12 +983,16 @@ export namespace Components {
          */
         "accordion": boolean;
         /**
+          * Accessible name for the rendered navigation, panel, or drawer region.
+         */
+        "ariaLabel"?: string;
+        /**
           * Where to render the built-in collapse toggle button. 'none' means the consumer supplies their own control and drives `collapsed` externally.
           * @default 'none'
          */
         "collapseControl": QSidepanelCollapseControl;
         /**
-          * Accessible label for the built-in collapse control (aria-label/title).
+          * Accessible label override for the built-in collapse control (aria-label/title).
           * @default 'Toggle sidebar'
          */
         "collapseLabel": string;
@@ -901,7 +1019,7 @@ export namespace Components {
           * Navigation items rendered in nav mode.
           * @default []
          */
-        "items": SidepanelItem[];
+        "items": SidepanelItemInput[];
         /**
           * Item display mode: flat list, one-level groups, or deep tree
           * @default 'flat'
@@ -928,7 +1046,7 @@ export namespace Components {
          */
         "value": string;
         /**
-          * 'drawer' = slide-in overlay, 'nav' = fixed navigation sidebar
+          * 'drawer' = slide-in overlay, 'nav' = fixed navigation sidebar, 'panel' = persistent slotted side panel
           * @default 'nav'
          */
         "variant": QSidepanelVariant;
@@ -1035,6 +1153,10 @@ export namespace Components {
           * Recalculates the auto-grow height when resizeMode is auto.
          */
         "adjustHeight": () => Promise<void>;
+        /**
+          * Accessible name for the native textarea when a visible label is not used.
+         */
+        "ariaLabel"?: string;
         /**
           * Enables automatic height growth when resizeMode is auto.
           * @default true
@@ -1166,6 +1288,43 @@ export namespace Components {
          */
         "type": QToggleType;
     }
+    /**
+     * Customizable edge toolbar with consumer-owned start, content, and end regions.
+     */
+    interface QToolbar {
+        /**
+          * Accessible label for the toolbar content group.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Renders a border along the inward-facing edge.
+          * @default false
+         */
+        "bordered": boolean;
+        /**
+          * Uses a reduced toolbar size and padding.
+          * @default false
+         */
+        "compact": boolean;
+        /**
+          * Edge the toolbar is arranged against.
+          * @default 'top'
+         */
+        "edge": QToolbarEdge;
+        /**
+          * Keeps the toolbar pinned to its configured edge.
+          * @default false
+         */
+        "sticky": boolean;
+        /**
+          * Removes the toolbar background.
+          * @default false
+         */
+        "transparent": boolean;
+    }
+    /**
+     * Non-interactive tooltip attached to its immediate parent element.
+     */
     interface QTooltip {
         /**
           * The text content to display inside the tooltip.
@@ -1265,6 +1424,9 @@ declare global {
         "qFocus": FocusEvent;
         "qBlur": FocusEvent;
     }
+    /**
+     * Action button that renders a native button or anchor according to `href`.
+     */
     interface HTMLQButtonElement extends Components.QButton, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQButtonElementEventMap>(type: K, listener: (this: HTMLQButtonElement, ev: QButtonCustomEvent<HTMLQButtonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1342,12 +1504,18 @@ declare global {
     };
     interface HTMLQDataTableElementEventMap {
         "qRowClick": QDataTableRowClickDetail;
+        "qRowAction": QDataTableRowActionDetail;
         "qSelectionChange": QDataTableSelectionChangeDetail;
         "qSearch": string;
+        "qSortChange": QDataTableSortChangeDetail;
     }
     /**
      * Data grid with optional toolbar, search, row activation, and multi-row selection.
      * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
+     * @cssprop --q-table-group-bg - Background color for row-group divider rows.
+     * @cssprop --q-table-group-fg - Text color for row-group divider rows.
+     * @cssprop --q-table-group-border - Border color for row-group divider rows.
+     * @cssprop --q-table-group-padding - Padding for row-group divider cells.
      * @cssprop --q-table-dropdown-bg - Background color forwarded to slotted q-dropdown controls.
      * @cssprop --q-table-dropdown-menu-bg - Menu background color forwarded to slotted q-dropdown controls.
      * @cssprop --q-table-dropdown-border - Border style forwarded to slotted q-dropdown controls.
@@ -1373,6 +1541,9 @@ declare global {
         "qCancel": void;
         "qClose": void;
     }
+    /**
+     * Modal confirmation or message dialog with focus trapping and safe solid backdrops.
+     */
     interface HTMLQDialogElement extends Components.QDialog, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQDialogElementEventMap>(type: K, listener: (this: HTMLQDialogElement, ev: QDialogCustomEvent<HTMLQDialogElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1390,12 +1561,15 @@ declare global {
     interface HTMLQDropdownElementEventMap {
         "qChange": string;
         "qSelect": Option;
+        "qSearch": string;
+        "qLoadMore": void;
         "qFocus": FocusEvent;
         "qBlur": FocusEvent;
         "qClick": MouseEvent;
     }
     /**
-     * Form-associated dropdown/select control with optional search and incremental option rendering.
+     * Form-associated dropdown/select control with optional search, incremental option rendering,
+     * and externally loaded option pages.
      */
     interface HTMLQDropdownElement extends Components.QDropdown, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQDropdownElementEventMap>(type: K, listener: (this: HTMLQDropdownElement, ev: QDropdownCustomEvent<HTMLQDropdownElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1432,6 +1606,9 @@ declare global {
         prototype: HTMLQFormElement;
         new (): HTMLQFormElement;
     };
+    /**
+     * Remote, local, or binary icon renderer with SVG sanitization.
+     */
     interface HTMLQIconElement extends Components.QIcon, HTMLStencilElement {
     }
     var HTMLQIconElement: {
@@ -1489,7 +1666,7 @@ declare global {
         "qMenuToggle": boolean;
     }
     /**
-     * Responsive site navigation with optional brand content, actions, and mobile menu.
+     * Edge-aware site navigation with optional brand content, actions, and mobile menu.
      */
     interface HTMLQNavbarElement extends Components.QNavbar, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQNavbarElementEventMap>(type: K, listener: (this: HTMLQNavbarElement, ev: QNavbarCustomEvent<HTMLQNavbarElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1541,6 +1718,9 @@ declare global {
         "qLightboxOpen": void;
         "qLightboxClose": void;
     }
+    /**
+     * Gallery layout for q-thumbnail children with an optional modal lightbox.
+     */
     interface HTMLQReelElement extends Components.QReel, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQReelElementEventMap>(type: K, listener: (this: HTMLQReelElement, ev: QReelCustomEvent<HTMLQReelElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1580,6 +1760,9 @@ declare global {
         "qSelect": QSidepanelSelectDetail;
         "qCollapsedChange": QSidepanelCollapsedChangeDetail;
     }
+    /**
+     * Drawer, persistent panel, or hierarchical navigation side panel.
+     */
     interface HTMLQSidepanelElement extends Components.QSidepanel, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQSidepanelElementEventMap>(type: K, listener: (this: HTMLQSidepanelElement, ev: QSidepanelCustomEvent<HTMLQSidepanelElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1711,6 +1894,18 @@ declare global {
         prototype: HTMLQToggleElement;
         new (): HTMLQToggleElement;
     };
+    /**
+     * Customizable edge toolbar with consumer-owned start, content, and end regions.
+     */
+    interface HTMLQToolbarElement extends Components.QToolbar, HTMLStencilElement {
+    }
+    var HTMLQToolbarElement: {
+        prototype: HTMLQToolbarElement;
+        new (): HTMLQToolbarElement;
+    };
+    /**
+     * Non-interactive tooltip attached to its immediate parent element.
+     */
     interface HTMLQTooltipElement extends Components.QTooltip, HTMLStencilElement {
     }
     var HTMLQTooltipElement: {
@@ -1742,10 +1937,14 @@ declare global {
         "q-textarea": HTMLQTextareaElement;
         "q-thumbnail": HTMLQThumbnailElement;
         "q-toggle": HTMLQToggleElement;
+        "q-toolbar": HTMLQToolbarElement;
         "q-tooltip": HTMLQTooltipElement;
     }
 }
 declare namespace LocalJSX {
+    /**
+     * Action button that renders a native button or anchor according to `href`.
+     */
     interface QButton {
         /**
           * Accessible label forwarded to the inner button or anchor. Required for icon-only buttons.
@@ -1770,9 +1969,18 @@ declare namespace LocalJSX {
          */
         "href"?: string;
         /**
+          * Lucide icon name rendered before the label. Use the icon slots for other libraries or custom markup.
+         */
+        "icon"?: QIconName;
+        /**
           * Renders compact icon-only spacing. When unset, this is auto-detected from slotted icon content.
          */
         "iconOnly"?: boolean;
+        /**
+          * Controls whether icon and label content flow inline or stack vertically.
+          * @default 'inline'
+         */
+        "layout"?: QButtonLayout;
         /**
           * Shows a spinner and suppresses interaction while work is in progress.
           * @default false
@@ -1794,6 +2002,11 @@ declare namespace LocalJSX {
           * Link rel value. Defaults to noopener noreferrer for target="_blank".
          */
         "rel"?: string;
+        /**
+          * Controls the button outline and fixed circular presentation.
+          * @default 'default'
+         */
+        "shape"?: QButtonShape;
         /**
           * Button size.
           * @default 'md'
@@ -1979,6 +2192,10 @@ declare namespace LocalJSX {
     /**
      * Data grid with optional toolbar, search, row activation, and multi-row selection.
      * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
+     * @cssprop --q-table-group-bg - Background color for row-group divider rows.
+     * @cssprop --q-table-group-fg - Text color for row-group divider rows.
+     * @cssprop --q-table-group-border - Border color for row-group divider rows.
+     * @cssprop --q-table-group-padding - Padding for row-group divider cells.
      * @cssprop --q-table-dropdown-bg - Background color forwarded to slotted q-dropdown controls.
      * @cssprop --q-table-dropdown-menu-bg - Menu background color forwarded to slotted q-dropdown controls.
      * @cssprop --q-table-dropdown-border - Border style forwarded to slotted q-dropdown controls.
@@ -2007,6 +2224,10 @@ declare namespace LocalJSX {
          */
         "loading"?: boolean;
         /**
+          * Emitted when a row action button is clicked.
+         */
+        "onQRowAction"?: (event: QDataTableCustomEvent<QDataTableRowActionDetail>) => void;
+        /**
           * Emitted when a non-interactive row area is clicked or activated with the keyboard.
          */
         "onQRowClick"?: (event: QDataTableCustomEvent<QDataTableRowClickDetail>) => void;
@@ -2018,6 +2239,24 @@ declare namespace LocalJSX {
           * Emitted when selected rows change.
          */
         "onQSelectionChange"?: (event: QDataTableCustomEvent<QDataTableSelectionChangeDetail>) => void;
+        /**
+          * Emitted when a sortable column header changes sort state.
+         */
+        "onQSortChange"?: (event: QDataTableCustomEvent<QDataTableSortChangeDetail>) => void;
+        /**
+          * Optional row-level actions rendered as trailing icon buttons.
+          * @default []
+         */
+        "rowActions"?: DataTableRowAction[] | string;
+        /**
+          * Enables full-row click and keyboard activation.
+          * @default true
+         */
+        "rowClickable"?: boolean;
+        /**
+          * Optional property-only callback that groups consecutive rendered rows. A divider is inserted whenever the returned group key changes.
+         */
+        "rowGroup"?: DataTableRowGrouper;
         /**
           * Placeholder text for the built-in search input.
           * @default 'Search...'
@@ -2049,11 +2288,36 @@ declare namespace LocalJSX {
          */
         "showToolbar"?: boolean;
         /**
+          * Currently sorted column key.
+         */
+        "sortColumn"?: string;
+        /**
+          * Current sort direction for the sorted column.
+         */
+        "sortDirection"?: DataTableSortDirection;
+        /**
+          * Sorting behavior: 'table' sorts provided items locally, while 'external' only emits sort changes.
+          * @default 'table'
+         */
+        "sortMode"?: DataTableSortMode;
+        /**
+          * Enables sortable column headers. Columns can override this with their own sortable setting.
+          * @default false
+         */
+        "sortable"?: boolean;
+        /**
           * Title text rendered in the toolbar.
          */
         "toolbarTitle"?: string;
     }
+    /**
+     * Modal confirmation or message dialog with focus trapping and safe solid backdrops.
+     */
     interface QDialog {
+        /**
+          * Accessible name for the dialog, especially when using a custom header without dialogTitle.
+         */
+        "ariaLabel"?: string;
         /**
           * Backdrop rendering style. Solid is the default CEF/Unreal-safe dimmer; none keeps the click layer transparent.
           * @default 'solid'
@@ -2126,22 +2390,42 @@ declare namespace LocalJSX {
         "showConfirm"?: boolean;
     }
     /**
-     * Form-associated dropdown/select control with optional search and incremental option rendering.
+     * Form-associated dropdown/select control with optional search, incremental option rendering,
+     * and externally loaded option pages.
      */
     interface QDropdown {
+        /**
+          * Accessible name for the trigger and option list when no visible label is available.
+         */
+        "ariaLabel"?: string;
         /**
           * Disables the trigger and prevents selection changes.
           * @default false
          */
         "disabled"?: boolean;
         /**
+          * Leaves filtering and pagination to the consumer instead of filtering options locally.
+          * @default false
+         */
+        "externalSearch"?: boolean;
+        /**
           * The `id` of a `<form>` element to associate this element with.
          */
         "form"?: string;
         /**
+          * Indicates that another externally loaded option page is available.
+          * @default false
+         */
+        "hasMore"?: boolean;
+        /**
           * Optional label rendered above the trigger.
          */
         "label"?: string;
+        /**
+          * Displays the menu loading state while options are being fetched.
+          * @default false
+         */
+        "loading"?: boolean;
         /**
           * Form field name.
          */
@@ -2163,14 +2447,22 @@ declare namespace LocalJSX {
          */
         "onQFocus"?: (event: QDropdownCustomEvent<FocusEvent>) => void;
         /**
+          * Emitted when an externally loaded option list reaches its scroll boundary.
+         */
+        "onQLoadMore"?: (event: QDropdownCustomEvent<void>) => void;
+        /**
+          * Emitted with the current search term when a searchable dropdown uses external search.
+         */
+        "onQSearch"?: (event: QDropdownCustomEvent<string>) => void;
+        /**
           * Emitted with the selected option object when selection changes.
          */
         "onQSelect"?: (event: QDropdownCustomEvent<Option>) => void;
         /**
-          * Options to render; accepts an array or a JSON string of { label, value } objects.
+          * Options to render; strings use the same text for label and value, while objects allow separate values.
           * @default []
          */
-        "options"?: Option[] | string;
+        "options"?: DropdownOptionInput[] | string;
         /**
           * Placeholder text shown when no option is selected.
           * @default 'Select an option...'
@@ -2247,6 +2539,9 @@ declare namespace LocalJSX {
          */
         "target"?: QFormTarget;
     }
+    /**
+     * Remote, local, or binary icon renderer with SVG sanitization.
+     */
     interface QIcon {
         /**
           * The color of the icon. Defaults to 'currentColor'.
@@ -2290,6 +2585,10 @@ declare namespace LocalJSX {
      * Form-associated input field with optional prefix/suffix slots, clear button, password visibility toggle, and numeric spinner controls.
      */
     interface QInput {
+        /**
+          * Accessible name for the native input when a visible label is not used.
+         */
+        "ariaLabel"?: string;
         /**
           * Shows a clear button when the field has a value.
           * @default false
@@ -2449,7 +2748,7 @@ declare namespace LocalJSX {
         "variant"?: QLinkVariant;
     }
     /**
-     * Responsive site navigation with optional brand content, actions, and mobile menu.
+     * Edge-aware site navigation with optional brand content, actions, and mobile menu.
      */
     interface QNavbar {
         /**
@@ -2458,7 +2757,11 @@ declare namespace LocalJSX {
          */
         "activeValue"?: string;
         /**
-          * Renders a bottom border on the navbar.
+          * Accessible name for the desktop and mobile navigation regions.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Renders a border along the inward-facing edge.
           * @default true
          */
         "bordered"?: boolean;
@@ -2477,10 +2780,15 @@ declare namespace LocalJSX {
          */
         "compact"?: boolean;
         /**
-          * Navigation items rendered in the desktop and mobile menus.
+          * Edge the navbar is arranged against.
+          * @default 'top'
+         */
+        "edge"?: QNavbarEdge;
+        /**
+          * Navigation items; strings use the same text for label and value, while objects enable links, icons, and state.
           * @default []
          */
-        "items"?: NavbarItem[] | string;
+        "items"?: NavbarItemInput[] | string;
         /**
           * Accessible text for a logo-only brand image.
           * @default ''
@@ -2496,6 +2804,11 @@ declare namespace LocalJSX {
          */
         "mobileLabel"?: string;
         /**
+          * Controls whether mobile widths collapse items into a menu or keep them inline.
+          * @default 'menu'
+         */
+        "mobileMode"?: QNavbarMobileMode;
+        /**
           * Emitted when the mobile menu opens or closes.
          */
         "onQMenuToggle"?: (event: QNavbarCustomEvent<boolean>) => void;
@@ -2504,7 +2817,7 @@ declare namespace LocalJSX {
          */
         "onQSelect"?: (event: QNavbarCustomEvent<NavbarSelectDetail>) => void;
         /**
-          * Keeps the navbar pinned to the top of its scroll container.
+          * Keeps the navbar pinned to its configured edge.
           * @default false
          */
         "sticky"?: boolean;
@@ -2528,6 +2841,11 @@ declare namespace LocalJSX {
          */
         "fullHeight"?: boolean;
         /**
+          * Removes the panel border while preserving the selected variant's other styling.
+          * @default false
+         */
+        "noBorders"?: boolean;
+        /**
           * Padding density applied to the body region.
           * @default 'md'
          */
@@ -2549,7 +2867,7 @@ declare namespace LocalJSX {
         "stickyHeader"?: boolean;
         /**
           * Visual treatment for the panel container.
-          * @default 'surface'
+          * @default 'bordered'
          */
         "variant"?: QPanelVariant;
     }
@@ -2597,6 +2915,9 @@ declare namespace LocalJSX {
          */
         "variant"?: QQuantitySelectorVariant;
     }
+    /**
+     * Gallery layout for q-thumbnail children with an optional modal lightbox.
+     */
     interface QReel {
         /**
           * Layout used for slotted q-thumbnail items.
@@ -2656,6 +2977,9 @@ declare namespace LocalJSX {
          */
         "target"?: string;
     }
+    /**
+     * Drawer, persistent panel, or hierarchical navigation side panel.
+     */
     interface QSidepanel {
         /**
           * If true, opening one group collapses all sibling groups
@@ -2663,12 +2987,16 @@ declare namespace LocalJSX {
          */
         "accordion"?: boolean;
         /**
+          * Accessible name for the rendered navigation, panel, or drawer region.
+         */
+        "ariaLabel"?: string;
+        /**
           * Where to render the built-in collapse toggle button. 'none' means the consumer supplies their own control and drives `collapsed` externally.
           * @default 'none'
          */
         "collapseControl"?: QSidepanelCollapseControl;
         /**
-          * Accessible label for the built-in collapse control (aria-label/title).
+          * Accessible label override for the built-in collapse control (aria-label/title).
           * @default 'Toggle sidebar'
          */
         "collapseLabel"?: string;
@@ -2695,7 +3023,7 @@ declare namespace LocalJSX {
           * Navigation items rendered in nav mode.
           * @default []
          */
-        "items"?: SidepanelItem[];
+        "items"?: SidepanelItemInput[];
         /**
           * Item display mode: flat list, one-level groups, or deep tree
           * @default 'flat'
@@ -2734,7 +3062,7 @@ declare namespace LocalJSX {
          */
         "value"?: string;
         /**
-          * 'drawer' = slide-in overlay, 'nav' = fixed navigation sidebar
+          * 'drawer' = slide-in overlay, 'nav' = fixed navigation sidebar, 'panel' = persistent slotted side panel
           * @default 'nav'
          */
         "variant"?: QSidepanelVariant;
@@ -2849,6 +3177,10 @@ declare namespace LocalJSX {
      * Form-associated textarea with optional auto-grow behavior and validation messaging.
      */
     interface QTextarea {
+        /**
+          * Accessible name for the native textarea when a visible label is not used.
+         */
+        "ariaLabel"?: string;
         /**
           * Enables automatic height growth when resizeMode is auto.
           * @default true
@@ -3020,6 +3352,43 @@ declare namespace LocalJSX {
          */
         "type"?: QToggleType;
     }
+    /**
+     * Customizable edge toolbar with consumer-owned start, content, and end regions.
+     */
+    interface QToolbar {
+        /**
+          * Accessible label for the toolbar content group.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Renders a border along the inward-facing edge.
+          * @default false
+         */
+        "bordered"?: boolean;
+        /**
+          * Uses a reduced toolbar size and padding.
+          * @default false
+         */
+        "compact"?: boolean;
+        /**
+          * Edge the toolbar is arranged against.
+          * @default 'top'
+         */
+        "edge"?: QToolbarEdge;
+        /**
+          * Keeps the toolbar pinned to its configured edge.
+          * @default false
+         */
+        "sticky"?: boolean;
+        /**
+          * Removes the toolbar background.
+          * @default false
+         */
+        "transparent"?: boolean;
+    }
+    /**
+     * Non-interactive tooltip attached to its immediate parent element.
+     */
     interface QTooltip {
         /**
           * The text content to display inside the tooltip.
@@ -3040,6 +3409,9 @@ declare namespace LocalJSX {
     interface QButtonAttributes {
         "variant": QButtonVariant;
         "size": QButtonSize;
+        "icon": QIconName;
+        "shape": QButtonShape;
+        "layout": QButtonLayout;
         "disabled": boolean;
         "loading": boolean;
         "type": QButtonType;
@@ -3088,9 +3460,15 @@ declare namespace LocalJSX {
     interface QDataTableAttributes {
         "columns": TableColumn[] | string;
         "items": DataTableItem[] | string;
+        "rowActions": DataTableRowAction[] | string;
+        "rowClickable": boolean;
         "loading": boolean;
         "selectable": boolean;
         "keyField": string;
+        "sortable": boolean;
+        "sortMode": DataTableSortMode;
+        "sortColumn": string;
+        "sortDirection": DataTableSortDirection;
         "showToolbar": boolean;
         "toolbarTitle": string;
         "showSearch": boolean;
@@ -3100,6 +3478,7 @@ declare namespace LocalJSX {
     interface QDialogAttributes {
         "open": boolean;
         "dialogTitle": string;
+        "ariaLabel": string;
         "message": string;
         "closeOnEsc": boolean;
         "closeOnOverlayClick": boolean;
@@ -3115,11 +3494,15 @@ declare namespace LocalJSX {
         "value": string;
         "name": string;
         "label": string;
+        "ariaLabel": string;
         "placeholder": string;
-        "options": Option[] | string;
+        "options": DropdownOptionInput[] | string;
         "disabled": boolean;
         "size": QDropdownSize;
         "searchable": boolean;
+        "externalSearch": boolean;
+        "hasMore": boolean;
+        "loading": boolean;
     }
     interface QFormAttributes {
         "label": string;
@@ -3148,6 +3531,7 @@ declare namespace LocalJSX {
         "type": QInputType;
         "placeholder": string;
         "label": string;
+        "ariaLabel": string;
         "disabled": boolean;
         "required": boolean;
         "error": string;
@@ -3177,9 +3561,12 @@ declare namespace LocalJSX {
         "logoSrc": string;
         "logoAlt": string;
         "brandHref": string;
-        "items": NavbarItem[] | string;
+        "items": NavbarItemInput[] | string;
+        "ariaLabel": string;
         "activeValue": string;
         "mobileLabel": string;
+        "edge": QNavbarEdge;
+        "mobileMode": QNavbarMobileMode;
         "sticky": boolean;
         "compact": boolean;
         "transparent": boolean;
@@ -3187,6 +3574,7 @@ declare namespace LocalJSX {
     }
     interface QPanelAttributes {
         "variant": QPanelVariant;
+        "noBorders": boolean;
         "padding": QPanelPadding;
         "scrollable": boolean;
         "fullHeight": boolean;
@@ -3218,6 +3606,7 @@ declare namespace LocalJSX {
         "open": boolean;
         "side": QSidepanelSide;
         "panelSize": string;
+        "ariaLabel": string;
         "value": string;
         "mode": QSidepanelMode;
         "expanded": boolean;
@@ -3255,6 +3644,7 @@ declare namespace LocalJSX {
         "name": string;
         "placeholder": string;
         "label": string;
+        "ariaLabel": string;
         "rows": number;
         "autoGrow": boolean;
         "resizeMode": QTextareaResizeMode;
@@ -3279,6 +3669,14 @@ declare namespace LocalJSX {
         "disabled": boolean;
         "required": boolean;
         "error": string;
+    }
+    interface QToolbarAttributes {
+        "edge": QToolbarEdge;
+        "sticky": boolean;
+        "compact": boolean;
+        "transparent": boolean;
+        "bordered": boolean;
+        "ariaLabel": string;
     }
     interface QTooltipAttributes {
         "content": string;
@@ -3311,6 +3709,7 @@ declare namespace LocalJSX {
         "q-textarea": Omit<QTextarea, keyof QTextareaAttributes> & { [K in keyof QTextarea & keyof QTextareaAttributes]?: QTextarea[K] } & { [K in keyof QTextarea & keyof QTextareaAttributes as `attr:${K}`]?: QTextareaAttributes[K] } & { [K in keyof QTextarea & keyof QTextareaAttributes as `prop:${K}`]?: QTextarea[K] };
         "q-thumbnail": Omit<QThumbnail, keyof QThumbnailAttributes> & { [K in keyof QThumbnail & keyof QThumbnailAttributes]?: QThumbnail[K] } & { [K in keyof QThumbnail & keyof QThumbnailAttributes as `attr:${K}`]?: QThumbnailAttributes[K] } & { [K in keyof QThumbnail & keyof QThumbnailAttributes as `prop:${K}`]?: QThumbnail[K] };
         "q-toggle": Omit<QToggle, keyof QToggleAttributes> & { [K in keyof QToggle & keyof QToggleAttributes]?: QToggle[K] } & { [K in keyof QToggle & keyof QToggleAttributes as `attr:${K}`]?: QToggleAttributes[K] } & { [K in keyof QToggle & keyof QToggleAttributes as `prop:${K}`]?: QToggle[K] };
+        "q-toolbar": Omit<QToolbar, keyof QToolbarAttributes> & { [K in keyof QToolbar & keyof QToolbarAttributes]?: QToolbar[K] } & { [K in keyof QToolbar & keyof QToolbarAttributes as `attr:${K}`]?: QToolbarAttributes[K] } & { [K in keyof QToolbar & keyof QToolbarAttributes as `prop:${K}`]?: QToolbar[K] };
         "q-tooltip": Omit<QTooltip, keyof QTooltipAttributes> & { [K in keyof QTooltip & keyof QTooltipAttributes]?: QTooltip[K] } & { [K in keyof QTooltip & keyof QTooltipAttributes as `attr:${K}`]?: QTooltipAttributes[K] } & { [K in keyof QTooltip & keyof QTooltipAttributes as `prop:${K}`]?: QTooltip[K] };
     }
 }
@@ -3318,6 +3717,9 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            /**
+             * Action button that renders a native button or anchor according to `href`.
+             */
             "q-button": LocalJSX.IntrinsicElements["q-button"] & JSXBase.HTMLAttributes<HTMLQButtonElement>;
             /**
              * Flexible content card with optional header slot, elevation, glass, lift, and interactive button semantics.
@@ -3338,6 +3740,10 @@ declare module "@stencil/core" {
             /**
              * Data grid with optional toolbar, search, row activation, and multi-row selection.
              * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
+             * @cssprop --q-table-group-bg - Background color for row-group divider rows.
+             * @cssprop --q-table-group-fg - Text color for row-group divider rows.
+             * @cssprop --q-table-group-border - Border color for row-group divider rows.
+             * @cssprop --q-table-group-padding - Padding for row-group divider cells.
              * @cssprop --q-table-dropdown-bg - Background color forwarded to slotted q-dropdown controls.
              * @cssprop --q-table-dropdown-menu-bg - Menu background color forwarded to slotted q-dropdown controls.
              * @cssprop --q-table-dropdown-border - Border style forwarded to slotted q-dropdown controls.
@@ -3345,15 +3751,22 @@ declare module "@stencil/core" {
              * @cssprop --q-table-dropdown-fg - Foreground color forwarded to slotted q-dropdown controls.
              */
             "q-data-table": LocalJSX.IntrinsicElements["q-data-table"] & JSXBase.HTMLAttributes<HTMLQDataTableElement>;
+            /**
+             * Modal confirmation or message dialog with focus trapping and safe solid backdrops.
+             */
             "q-dialog": LocalJSX.IntrinsicElements["q-dialog"] & JSXBase.HTMLAttributes<HTMLQDialogElement>;
             /**
-             * Form-associated dropdown/select control with optional search and incremental option rendering.
+             * Form-associated dropdown/select control with optional search, incremental option rendering,
+             * and externally loaded option pages.
              */
             "q-dropdown": LocalJSX.IntrinsicElements["q-dropdown"] & JSXBase.HTMLAttributes<HTMLQDropdownElement>;
             /**
              * Form wrapper that bridges slotted WebQuark controls to a native form element.
              */
             "q-form": LocalJSX.IntrinsicElements["q-form"] & JSXBase.HTMLAttributes<HTMLQFormElement>;
+            /**
+             * Remote, local, or binary icon renderer with SVG sanitization.
+             */
             "q-icon": LocalJSX.IntrinsicElements["q-icon"] & JSXBase.HTMLAttributes<HTMLQIconElement>;
             /**
              * Form-associated input field with optional prefix/suffix slots, clear button, password visibility toggle, and numeric spinner controls.
@@ -3364,7 +3777,7 @@ declare module "@stencil/core" {
              */
             "q-link": LocalJSX.IntrinsicElements["q-link"] & JSXBase.HTMLAttributes<HTMLQLinkElement>;
             /**
-             * Responsive site navigation with optional brand content, actions, and mobile menu.
+             * Edge-aware site navigation with optional brand content, actions, and mobile menu.
              */
             "q-navbar": LocalJSX.IntrinsicElements["q-navbar"] & JSXBase.HTMLAttributes<HTMLQNavbarElement>;
             /**
@@ -3375,11 +3788,17 @@ declare module "@stencil/core" {
              * Numeric quantity control with increment/decrement buttons and a bounded editable value.
              */
             "q-quantity-selector": LocalJSX.IntrinsicElements["q-quantity-selector"] & JSXBase.HTMLAttributes<HTMLQQuantitySelectorElement>;
+            /**
+             * Gallery layout for q-thumbnail children with an optional modal lightbox.
+             */
             "q-reel": LocalJSX.IntrinsicElements["q-reel"] & JSXBase.HTMLAttributes<HTMLQReelElement>;
             /**
              * Scroll container with custom or native scrollbar styling.
              */
             "q-scrollable": LocalJSX.IntrinsicElements["q-scrollable"] & JSXBase.HTMLAttributes<HTMLQScrollableElement>;
+            /**
+             * Drawer, persistent panel, or hierarchical navigation side panel.
+             */
             "q-sidepanel": LocalJSX.IntrinsicElements["q-sidepanel"] & JSXBase.HTMLAttributes<HTMLQSidepanelElement>;
             /**
              * Groups step diagram items into a vertical or horizontal sequence.
@@ -3405,6 +3824,13 @@ declare module "@stencil/core" {
              * Form-associated switch or checkbox toggle control.
              */
             "q-toggle": LocalJSX.IntrinsicElements["q-toggle"] & JSXBase.HTMLAttributes<HTMLQToggleElement>;
+            /**
+             * Customizable edge toolbar with consumer-owned start, content, and end regions.
+             */
+            "q-toolbar": LocalJSX.IntrinsicElements["q-toolbar"] & JSXBase.HTMLAttributes<HTMLQToolbarElement>;
+            /**
+             * Non-interactive tooltip attached to its immediate parent element.
+             */
             "q-tooltip": LocalJSX.IntrinsicElements["q-tooltip"] & JSXBase.HTMLAttributes<HTMLQTooltipElement>;
         }
     }

@@ -1,4 +1,6 @@
-# 🧩 Component Specification: `q-step-diagram` & `q-step-diagram-item`
+# 🧩 Component Specification: `q-step-diagram`
+
+> Contract note: see [Current public contracts](./current-contracts.md#q-step-diagram), the [generated API](../../src/components/indicators/step-diagram/readme.md), and the separate [q-step-diagram-item guide](./q-step-diagram-item.md). Generated API wins if an older design note below differs.
 
 The `<q-step-diagram>` component acts as a generic connected-path progress flow diagram. It displays chronological activity logs, sequential configuration steps (wizards), or project milestones. It supports both vertical and horizontal layouts, dynamic line styles, and semantic state colors, rendering smoothly in Unreal Engine's Off-Screen Rendering (OSR) browser mode.
 
@@ -92,93 +94,9 @@ Below is the complete list of styling tokens mapped to the component's internal 
 
 ---
 
-## 7. HTML/TSX Structure (Shadow DOM Layout)
+## 7. Implementation source
 
-### A. Parent Container: `<q-step-diagram>`
-```tsx
-@Component({
-  tag: 'q-step-diagram',
-  styleUrl: 'q-step-diagram.css',
-  shadow: true,
-})
-export class QStepDiagram {
-  @Prop() layout: 'vertical' | 'horizontal' = 'vertical';
-  @Element() el!: HTMLElement;
-
-  render() {
-    return (
-      <div class={{
-        'step-diagram': true,
-        [`layout-${this.layout}`]: true
-      }}>
-        <slot onSlotchange={this.handleSlotChange} />
-      </div>
-    );
-  }
-}
-```
-
-### B. Child Item: `<q-step-diagram-item>`
-```tsx
-@Component({
-  tag: 'q-step-diagram-item',
-  styleUrl: 'q-step-diagram-item.css',
-  shadow: true,
-})
-export class QStepDiagramItem {
-  @Prop({ reflect: true }) status: 'pending' | 'active' | 'completed' | 'success' | 'warning' | 'danger' = 'completed';
-  @Prop({ reflect: true }) lineStyle: 'solid' | 'dashed' | 'dotted' | 'none' = 'solid';
-  @Prop({ reflect: true }) layout: 'vertical' | 'horizontal' = 'vertical';
-  @Element() el!: HTMLElement;
-
-  @Event() qItemClick: EventEmitter<void>;
-
-  render() {
-    return (
-      <div 
-        class={{
-          'step-item': true,
-          [`status-${this.status}`]: true,
-          [`line-${this.lineStyle}`]: true,
-          [`layout-${this.layout}`]: true
-        }}
-      >
-        {/* Visual Line Path and Node Circle - decorative */}
-        <div class="step-line-container">
-          <div 
-            class="step-badge" 
-            onClick={this.handleTrigger} 
-            aria-hidden="true"
-            part="badge"
-          >
-            <slot name="badge">
-              <div class="badge-dot" />
-            </slot>
-          </div>
-          <div class="step-connector" part="connector" />
-        </div>
-
-        {/* Content Box - focusable */}
-        <div 
-          class="step-content" 
-          onClick={this.handleTrigger} 
-          onKeyDown={this.handleKeyDown}
-          tabindex="0"
-          role="button"
-          part="content"
-        >
-          <div class="step-title" part="title">
-            <slot name="title" />
-          </div>
-          <div class="step-body" part="body">
-            <slot />
-          </div>
-        </div>
-      </div>
-    );
-  }
-}
-```
+The implementation is intentionally not duplicated in this guide. Use the generated API linked at the top of the page for the canonical public contract and the component's TypeScript source for implementation details. This avoids stale source snapshots in authored documentation.
 
 ---
 

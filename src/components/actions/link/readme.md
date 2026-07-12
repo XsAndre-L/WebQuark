@@ -47,11 +47,11 @@ Inline link with disabled handling, external-link affordances, and optional icon
 
 ## Shadow Parts
 
-| Part              | Description |
-| ----------------- | ----------- |
-| `"external-icon"` |             |
-| `"label"`         |             |
-| `"link"`          |             |
+| Part              | Description                   |
+| ----------------- | ----------------------------- |
+| `"external-icon"` | External-link indicator icon. |
+| `"label"`         | Link label wrapper.           |
+| `"link"`          | Native anchor element.        |
 
 
 ----------------------------------------------

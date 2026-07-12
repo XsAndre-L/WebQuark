@@ -11,7 +11,7 @@ import type { EventName, StencilReactComponent } from '@stencil/react-output-tar
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
 
-import { type NavbarSelectDetail, type Option, type QButtonCustomEvent, type QCarouselCustomEvent, type QCarouselSlideChangeDetail, type QChipCustomEvent, type QChipRemoveDetail, type QDataTableCustomEvent, type QDataTableRowClickDetail, type QDataTableSelectionChangeDetail, type QDialogCustomEvent, type QDropdownCustomEvent, type QFormCustomEvent, type QFormResetDetail, type QFormSubmitDetail, type QInputCustomEvent, type QLinkCustomEvent, type QNavbarCustomEvent, type QQuantitySelectorCustomEvent, type QReelCustomEvent, type QScrollableCustomEvent, type QScrollableEventDetail, type QSidepanelCollapsedChangeDetail, type QSidepanelCustomEvent, type QSidepanelSelectDetail, type QStepDiagramItemCustomEvent, type QSyntaxBoxCustomEvent, type QTextareaCustomEvent, type QThumbnailCustomEvent, type QThumbnailMaximizeDetail, type QToggleCustomEvent } from "@webquark/core";
+import { type NavbarSelectDetail, type Option, type QButtonCustomEvent, type QCarouselCustomEvent, type QCarouselSlideChangeDetail, type QChipCustomEvent, type QChipRemoveDetail, type QDataTableCustomEvent, type QDataTableRowActionDetail, type QDataTableRowClickDetail, type QDataTableSelectionChangeDetail, type QDataTableSortChangeDetail, type QDialogCustomEvent, type QDropdownCustomEvent, type QFormCustomEvent, type QFormResetDetail, type QFormSubmitDetail, type QInputCustomEvent, type QLinkCustomEvent, type QNavbarCustomEvent, type QQuantitySelectorCustomEvent, type QReelCustomEvent, type QScrollableCustomEvent, type QScrollableEventDetail, type QSidepanelCollapsedChangeDetail, type QSidepanelCustomEvent, type QSidepanelSelectDetail, type QStepDiagramItemCustomEvent, type QSyntaxBoxCustomEvent, type QTextareaCustomEvent, type QThumbnailCustomEvent, type QThumbnailMaximizeDetail, type QToggleCustomEvent } from "@webquark/core";
 import type { Components } from "@webquark/core/dist/components";
 import { QButton as QButtonElement, defineCustomElement as defineQButton } from "@webquark/core/dist/components/q-button.js";
 import { QCard as QCardElement, defineCustomElement as defineQCard } from "@webquark/core/dist/components/q-card.js";
@@ -37,6 +37,7 @@ import { QSyntaxBox as QSyntaxBoxElement, defineCustomElement as defineQSyntaxBo
 import { QTextarea as QTextareaElement, defineCustomElement as defineQTextarea } from "@webquark/core/dist/components/q-textarea.js";
 import { QThumbnail as QThumbnailElement, defineCustomElement as defineQThumbnail } from "@webquark/core/dist/components/q-thumbnail.js";
 import { QToggle as QToggleElement, defineCustomElement as defineQToggle } from "@webquark/core/dist/components/q-toggle.js";
+import { QToolbar as QToolbarElement, defineCustomElement as defineQToolbar } from "@webquark/core/dist/components/q-toolbar.js";
 import { QTooltip as QTooltipElement, defineCustomElement as defineQTooltip } from "@webquark/core/dist/components/q-tooltip.js";
 
 export type QButtonEvents = {
@@ -114,8 +115,10 @@ export const QCircularProgress: StencilReactComponent<QCircularProgressElement, 
 
 export type QDataTableEvents = {
     onQRowClick: EventName<QDataTableCustomEvent<QDataTableRowClickDetail>>,
+    onQRowAction: EventName<QDataTableCustomEvent<QDataTableRowActionDetail>>,
     onQSelectionChange: EventName<QDataTableCustomEvent<QDataTableSelectionChangeDetail>>,
-    onQSearch: EventName<QDataTableCustomEvent<string>>
+    onQSearch: EventName<QDataTableCustomEvent<string>>,
+    onQSortChange: EventName<QDataTableCustomEvent<QDataTableSortChangeDetail>>
 };
 
 export const QDataTable: StencilReactComponent<QDataTableElement, QDataTableEvents, Components.QDataTable> = /*@__PURE__*/ createComponent<QDataTableElement, QDataTableEvents, Components.QDataTable>({
@@ -125,8 +128,10 @@ export const QDataTable: StencilReactComponent<QDataTableElement, QDataTableEven
     react: React,
     events: {
         onQRowClick: 'qRowClick',
+        onQRowAction: 'qRowAction',
         onQSelectionChange: 'qSelectionChange',
-        onQSearch: 'qSearch'
+        onQSearch: 'qSearch',
+        onQSortChange: 'qSortChange'
     } as QDataTableEvents,
     defineCustomElement: defineQDataTable
 });
@@ -153,6 +158,8 @@ export const QDialog: StencilReactComponent<QDialogElement, QDialogEvents, Compo
 export type QDropdownEvents = {
     onQChange: EventName<QDropdownCustomEvent<string>>,
     onQSelect: EventName<QDropdownCustomEvent<Option>>,
+    onQSearch: EventName<QDropdownCustomEvent<string>>,
+    onQLoadMore: EventName<QDropdownCustomEvent<void>>,
     onQFocus: EventName<QDropdownCustomEvent<FocusEvent>>,
     onQBlur: EventName<QDropdownCustomEvent<FocusEvent>>,
     onQClick: EventName<QDropdownCustomEvent<MouseEvent>>
@@ -166,6 +173,8 @@ export const QDropdown: StencilReactComponent<QDropdownElement, QDropdownEvents,
     events: {
         onQChange: 'qChange',
         onQSelect: 'qSelect',
+        onQSearch: 'qSearch',
+        onQLoadMore: 'qLoadMore',
         onQFocus: 'qFocus',
         onQBlur: 'qBlur',
         onQClick: 'qClick'
@@ -431,6 +440,17 @@ export const QToggle: StencilReactComponent<QToggleElement, QToggleEvents, Compo
         onQClick: 'qClick'
     } as QToggleEvents,
     defineCustomElement: defineQToggle
+});
+
+export type QToolbarEvents = NonNullable<unknown>;
+
+export const QToolbar: StencilReactComponent<QToolbarElement, QToolbarEvents, Components.QToolbar> = /*@__PURE__*/ createComponent<QToolbarElement, QToolbarEvents, Components.QToolbar>({
+    tagName: 'q-toolbar',
+    elementClass: QToolbarElement,
+    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
+    react: React,
+    events: {} as QToolbarEvents,
+    defineCustomElement: defineQToolbar
 });
 
 export type QTooltipEvents = NonNullable<unknown>;

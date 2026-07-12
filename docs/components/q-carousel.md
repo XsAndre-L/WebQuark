@@ -1,5 +1,7 @@
 # 🧩 Component Specification: `q-carousel`
 
+> Contract note: see [Current public contracts](./current-contracts.md#q-carousel) and the [generated API](../../src/components/layout/carousel/readme.md) for the complete current surface. Generated API wins if an older design note below differs.
+
 The `<q-carousel>` is a generic horizontal layout container designed to hold and slide any slotted children (such as cards, image banners, or product items). It supports smooth momentum scrolling, touch swipe gestures, horizontal scroll snapping, and optional hover-triggered navigation arrows and indicator dots.
 
 It is engineered to run at maximum frame rates in Unreal Engine Off-Screen Rendering (OSR) browser interfaces by relying on native CSS scroll physics and lightweight 2D translation offsets rather than heavy JavaScript layout libraries.
@@ -80,106 +82,9 @@ Below is the complete list of styling tokens mapped to the component's internal 
 
 ---
 
-## 7. HTML/TSX Structure (Shadow DOM Layout)
+## 7. Implementation source
 
-```tsx
-@Component({
-  tag: 'q-carousel',
-  styleUrl: 'q-carousel.css',
-  shadow: true,
-})
-export class QCarousel {
-  @Prop({ reflect: true }) snapAlignment: 'start' | 'center' | 'end' | 'none' = 'start';
-  @Prop({ reflect: true }) showArrows: boolean = false;
-  @Prop({ reflect: true }) showIndicators: boolean = false;
-  @Prop({ reflect: true }) repeat: boolean = false;
-  @Prop() itemWidth: string = "auto";
-
-  @State() activeIndex: number = 0;
-  @State() maxIndex: number = 0;
-  @State() isScrollable: boolean = false;
-  @State() isAtStart: boolean = true;
-  @State() isAtEnd: boolean = true;
-
-  @Event() qSlideChange!: EventEmitter<{ index: number; element: HTMLElement }>;
-
-  render() {
-    const isFirst = this.repeat ? (!this.isScrollable || this.maxIndex <= 0) : (this.isAtStart || !this.isScrollable);
-    const isLast = this.repeat ? (!this.isScrollable || this.maxIndex <= 0) : (this.isAtEnd || !this.isScrollable);
-
-    return (
-      <div class="carousel-wrapper">
-        
-        {/* Navigation Arrow Controls */}
-        {this.showArrows && (
-          <button 
-            class={{ 'arrow-btn': true, 'arrow-left': true }}
-            aria-disabled={isFirst ? 'true' : 'false'}
-            onClick={isFirst ? undefined : this.slidePrev}
-            aria-label="Previous slide"
-            type="button"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-          </button>
-        )}
-
-        {/* Viewport Slider */}
-        <div 
-          class={{
-            'carousel-viewport': true,
-            [`snap-${this.snapAlignment}`]: this.snapAlignment !== 'none'
-          }}
-          tabindex="0"
-          aria-label="Carousel content"
-          onScroll={this.handleScroll}
-          ref={(el) => (this.scrollContainer = el)}
-        >
-          <slot onSlotchange={this.handleSlotChange} />
-        </div>
-
-        {this.showArrows && (
-          <button 
-            class={{ 'arrow-btn': true, 'arrow-right': true }}
-            aria-disabled={isLast ? 'true' : 'false'}
-            onClick={isLast ? undefined : this.slideNext}
-            aria-label="Next slide"
-            type="button"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
-          </button>
-        )}
-
-        {/* Indicator Dots */}
-        {this.showIndicators && this.isScrollable && this.maxIndex > 0 && (
-          <div 
-            class="carousel-indicators" 
-            role="tablist" 
-            aria-label="Carousel slides"
-            onKeyDown={this.handleIndicatorKeyDown}
-          >
-            {Array.from({ length: this.maxIndex + 1 }).map((_, idx) => (
-              <button
-                class={{ 'indicator-dot': true, 'is-active': idx === this.activeIndex }}
-                role="tab"
-                aria-selected={idx === this.activeIndex ? 'true' : 'false'}
-                onClick={() => this.scrollToIndex(idx)}
-                aria-label={`Go to slide ${idx + 1}`}
-                type="button"
-                tabindex={idx === this.activeIndex ? 0 : -1}
-              />
-            ))}
-          </div>
-        )}
-
-      </div>
-    );
-  }
-}
-```
+The implementation is intentionally not duplicated in this guide. Use the generated API linked at the top of the page for the canonical public contract and the component's TypeScript source for implementation details. This avoids stale source snapshots in authored documentation.
 
 ---
 
@@ -196,7 +101,7 @@ export class QCarousel {
 
 ### Basic Image Gallery
 ```html
-<q-carousel show-arrows="true" show-indicators="true" snap-alignment="center" item-width="300px">
+<q-carousel show-arrows show-indicators snap-alignment="center" item-width="300px">
   <img src="/img/1.jpg" alt="Scene 1" />
   <img src="/img/2.jpg" alt="Scene 2" />
   <img src="/img/3.jpg" alt="Scene 3" />
@@ -205,7 +110,7 @@ export class QCarousel {
 
 ### Wizard / Card Stepper with Programmatic Control
 ```html
-<q-carousel id="wizard-carousel" show-indicators="true" repeat="false">
+<q-carousel id="wizard-carousel" show-indicators>
   <q-card><h3>Step 1</h3><p>Choose your workspace setup.</p></q-card>
   <q-card><h3>Step 2</h3><p>Configure integration plugins.</p></q-card>
   <q-card><h3>Step 3</h3><p>Review and deploy.</p></q-card>

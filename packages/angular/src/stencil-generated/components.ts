@@ -30,17 +30,18 @@ import { defineCustomElement as defineQSyntaxBox } from '@webquark/core/componen
 import { defineCustomElement as defineQTextarea } from '@webquark/core/components/q-textarea.js';
 import { defineCustomElement as defineQThumbnail } from '@webquark/core/components/q-thumbnail.js';
 import { defineCustomElement as defineQToggle } from '@webquark/core/components/q-toggle.js';
+import { defineCustomElement as defineQToolbar } from '@webquark/core/components/q-toolbar.js';
 import { defineCustomElement as defineQTooltip } from '@webquark/core/components/q-tooltip.js';
 @ProxyCmp({
   defineCustomElementFn: defineQButton,
-  inputs: ['ariaLabel', 'disabled', 'download', 'expand', 'href', 'iconOnly', 'loading', 'rel', 'size', 'target', 'type', 'variant']
+  inputs: ['ariaLabel', 'disabled', 'download', 'expand', 'href', 'icon', 'iconOnly', 'layout', 'loading', 'rel', 'shape', 'size', 'target', 'type', 'variant']
 })
 @Component({
   selector: 'q-button',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['ariaLabel', 'disabled', 'download', 'expand', 'href', 'iconOnly', 'loading', 'rel', 'size', 'target', 'type', 'variant'],
+  inputs: ['ariaLabel', 'disabled', 'download', 'expand', 'href', 'icon', 'iconOnly', 'layout', 'loading', 'rel', 'shape', 'size', 'target', 'type', 'variant'],
   outputs: ['qClick', 'qFocus', 'qBlur'],
 })
 export class QButton {
@@ -203,21 +204,23 @@ export declare interface QCircularProgress extends Components.QCircularProgress 
 
 @ProxyCmp({
   defineCustomElementFn: defineQDataTable,
-  inputs: ['columns', 'items', 'keyField', 'loading', 'searchPlaceholder', 'searchValue', 'selectable', 'selectedKeys', 'showSearch', 'showToolbar', 'toolbarTitle']
+  inputs: ['columns', 'items', 'keyField', 'loading', 'rowActions', 'rowClickable', 'rowGroup', 'searchPlaceholder', 'searchValue', 'selectable', 'selectedKeys', 'showSearch', 'showToolbar', 'sortColumn', 'sortDirection', 'sortMode', 'sortable', 'toolbarTitle']
 })
 @Component({
   selector: 'q-data-table',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['columns', 'items', 'keyField', 'loading', 'searchPlaceholder', 'searchValue', 'selectable', 'selectedKeys', 'showSearch', 'showToolbar', 'toolbarTitle'],
-  outputs: ['qRowClick', 'qSelectionChange', 'qSearch'],
+  inputs: ['columns', 'items', 'keyField', 'loading', 'rowActions', 'rowClickable', 'rowGroup', 'searchPlaceholder', 'searchValue', 'selectable', 'selectedKeys', 'showSearch', 'showToolbar', 'sortColumn', 'sortDirection', 'sortMode', 'sortable', 'toolbarTitle'],
+  outputs: ['qRowClick', 'qRowAction', 'qSelectionChange', 'qSearch', 'qSortChange'],
 })
 export class QDataTable {
   protected el: HTMLQDataTableElement;
   @Output() qRowClick = new EventEmitter<QDataTableCustomEvent<IQDataTableQDataTableRowClickDetail>>();
+  @Output() qRowAction = new EventEmitter<QDataTableCustomEvent<IQDataTableQDataTableRowActionDetail>>();
   @Output() qSelectionChange = new EventEmitter<QDataTableCustomEvent<IQDataTableQDataTableSelectionChangeDetail>>();
   @Output() qSearch = new EventEmitter<QDataTableCustomEvent<string>>();
+  @Output() qSortChange = new EventEmitter<QDataTableCustomEvent<IQDataTableQDataTableSortChangeDetail>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -227,13 +230,19 @@ export class QDataTable {
 
 import type { QDataTableCustomEvent } from '@webquark/core/components';
 import type { QDataTableRowClickDetail as IQDataTableQDataTableRowClickDetail } from '@webquark/core/components';
+import type { QDataTableRowActionDetail as IQDataTableQDataTableRowActionDetail } from '@webquark/core/components';
 import type { QDataTableSelectionChangeDetail as IQDataTableQDataTableSelectionChangeDetail } from '@webquark/core/components';
+import type { QDataTableSortChangeDetail as IQDataTableQDataTableSortChangeDetail } from '@webquark/core/components';
 
 export declare interface QDataTable extends Components.QDataTable {
   /**
    * Emitted when a non-interactive row area is clicked or activated with the keyboard.
    */
   qRowClick: EventEmitter<QDataTableCustomEvent<IQDataTableQDataTableRowClickDetail>>;
+  /**
+   * Emitted when a row action button is clicked.
+   */
+  qRowAction: EventEmitter<QDataTableCustomEvent<IQDataTableQDataTableRowActionDetail>>;
   /**
    * Emitted when selected rows change.
    */
@@ -242,12 +251,16 @@ export declare interface QDataTable extends Components.QDataTable {
    * Emitted when the built-in search input value changes.
    */
   qSearch: EventEmitter<QDataTableCustomEvent<string>>;
+  /**
+   * Emitted when a sortable column header changes sort state.
+   */
+  qSortChange: EventEmitter<QDataTableCustomEvent<IQDataTableQDataTableSortChangeDetail>>;
 }
 
 
 @ProxyCmp({
   defineCustomElementFn: defineQDialog,
-  inputs: ['backdropEffect', 'cancelLabel', 'closeLabel', 'closeOnEsc', 'closeOnOverlayClick', 'confirmLabel', 'dialogTitle', 'loading', 'message', 'open', 'showCancel', 'showConfirm'],
+  inputs: ['ariaLabel', 'backdropEffect', 'cancelLabel', 'closeLabel', 'closeOnEsc', 'closeOnOverlayClick', 'confirmLabel', 'dialogTitle', 'loading', 'message', 'open', 'showCancel', 'showConfirm'],
   methods: ['show', 'close', 'confirm', 'cancel']
 })
 @Component({
@@ -255,7 +268,7 @@ export declare interface QDataTable extends Components.QDataTable {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['backdropEffect', 'cancelLabel', 'closeLabel', 'closeOnEsc', 'closeOnOverlayClick', 'confirmLabel', 'dialogTitle', 'loading', 'message', 'open', 'showCancel', 'showConfirm'],
+  inputs: ['ariaLabel', 'backdropEffect', 'cancelLabel', 'closeLabel', 'closeOnEsc', 'closeOnOverlayClick', 'confirmLabel', 'dialogTitle', 'loading', 'message', 'open', 'showCancel', 'showConfirm'],
   outputs: ['qConfirm', 'qCancel', 'qClose'],
 })
 export class QDialog {
@@ -290,20 +303,22 @@ export declare interface QDialog extends Components.QDialog {
 
 @ProxyCmp({
   defineCustomElementFn: defineQDropdown,
-  inputs: ['disabled', 'label', 'name', 'options', 'placeholder', 'searchable', 'size', 'value']
+  inputs: ['ariaLabel', 'disabled', 'externalSearch', 'hasMore', 'label', 'loading', 'name', 'options', 'placeholder', 'searchable', 'size', 'value']
 })
 @Component({
   selector: 'q-dropdown',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'label', 'name', 'options', 'placeholder', 'searchable', 'size', 'value'],
-  outputs: ['qChange', 'qSelect', 'qFocus', 'qBlur', 'qClick'],
+  inputs: ['ariaLabel', 'disabled', 'externalSearch', 'hasMore', 'label', 'loading', 'name', 'options', 'placeholder', 'searchable', 'size', 'value'],
+  outputs: ['qChange', 'qSelect', 'qSearch', 'qLoadMore', 'qFocus', 'qBlur', 'qClick'],
 })
 export class QDropdown {
   protected el: HTMLQDropdownElement;
   @Output() qChange = new EventEmitter<QDropdownCustomEvent<string>>();
   @Output() qSelect = new EventEmitter<QDropdownCustomEvent<IQDropdownOption>>();
+  @Output() qSearch = new EventEmitter<QDropdownCustomEvent<string>>();
+  @Output() qLoadMore = new EventEmitter<QDropdownCustomEvent<void>>();
   @Output() qFocus = new EventEmitter<QDropdownCustomEvent<FocusEvent>>();
   @Output() qBlur = new EventEmitter<QDropdownCustomEvent<FocusEvent>>();
   @Output() qClick = new EventEmitter<QDropdownCustomEvent<MouseEvent>>();
@@ -326,6 +341,14 @@ export declare interface QDropdown extends Components.QDropdown {
    * Emitted with the selected option object when selection changes.
    */
   qSelect: EventEmitter<QDropdownCustomEvent<IQDropdownOption>>;
+  /**
+   * Emitted with the current search term when a searchable dropdown uses external search.
+   */
+  qSearch: EventEmitter<QDropdownCustomEvent<string>>;
+  /**
+   * Emitted when an externally loaded option list reaches its scroll boundary.
+   */
+  qLoadMore: EventEmitter<QDropdownCustomEvent<void>>;
   /**
    * Emitted when the trigger receives focus.
    */
@@ -406,7 +429,7 @@ export declare interface QIcon extends Components.QIcon {}
 
 @ProxyCmp({
   defineCustomElementFn: defineQInput,
-  inputs: ['clearable', 'disabled', 'error', 'errorMessage', 'label', 'max', 'min', 'name', 'placeholder', 'required', 'size', 'step', 'type', 'value'],
+  inputs: ['ariaLabel', 'clearable', 'disabled', 'error', 'errorMessage', 'label', 'max', 'min', 'name', 'placeholder', 'required', 'size', 'step', 'type', 'value'],
   methods: ['focusElement', 'clearValue']
 })
 @Component({
@@ -414,7 +437,7 @@ export declare interface QIcon extends Components.QIcon {}
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['clearable', 'disabled', 'error', 'errorMessage', 'label', 'max', 'min', 'name', 'placeholder', 'required', 'size', 'step', 'type', 'value'],
+  inputs: ['ariaLabel', 'clearable', 'disabled', 'error', 'errorMessage', 'label', 'max', 'min', 'name', 'placeholder', 'required', 'size', 'step', 'type', 'value'],
   outputs: ['qChange', 'qInput', 'qBlur', 'qFocus', 'qClick'],
 })
 export class QInput {
@@ -501,14 +524,14 @@ export declare interface QLink extends Components.QLink {
 
 @ProxyCmp({
   defineCustomElementFn: defineQNavbar,
-  inputs: ['activeValue', 'bordered', 'brand', 'brandHref', 'compact', 'items', 'logoAlt', 'logoSrc', 'mobileLabel', 'sticky', 'transparent']
+  inputs: ['activeValue', 'ariaLabel', 'bordered', 'brand', 'brandHref', 'compact', 'edge', 'items', 'logoAlt', 'logoSrc', 'mobileLabel', 'mobileMode', 'sticky', 'transparent']
 })
 @Component({
   selector: 'q-navbar',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['activeValue', 'bordered', 'brand', 'brandHref', 'compact', 'items', 'logoAlt', 'logoSrc', 'mobileLabel', 'sticky', 'transparent'],
+  inputs: ['activeValue', 'ariaLabel', 'bordered', 'brand', 'brandHref', 'compact', 'edge', 'items', 'logoAlt', 'logoSrc', 'mobileLabel', 'mobileMode', 'sticky', 'transparent'],
   outputs: ['qSelect', 'qMenuToggle'],
 })
 export class QNavbar {
@@ -539,14 +562,14 @@ export declare interface QNavbar extends Components.QNavbar {
 
 @ProxyCmp({
   defineCustomElementFn: defineQPanel,
-  inputs: ['ariaLabel', 'fullHeight', 'padding', 'scrollable', 'stickyFooter', 'stickyHeader', 'variant']
+  inputs: ['ariaLabel', 'fullHeight', 'noBorders', 'padding', 'scrollable', 'stickyFooter', 'stickyHeader', 'variant']
 })
 @Component({
   selector: 'q-panel',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['ariaLabel', 'fullHeight', 'padding', 'scrollable', 'stickyFooter', 'stickyHeader', 'variant'],
+  inputs: ['ariaLabel', 'fullHeight', 'noBorders', 'padding', 'scrollable', 'stickyFooter', 'stickyHeader', 'variant'],
 })
 export class QPanel {
   protected el: HTMLQPanelElement;
@@ -680,14 +703,14 @@ export declare interface QScrollable extends Components.QScrollable {
 
 @ProxyCmp({
   defineCustomElementFn: defineQSidepanel,
-  inputs: ['accordion', 'collapseControl', 'collapseLabel', 'collapseMode', 'collapsed', 'collapsible', 'expanded', 'items', 'mode', 'open', 'panelSize', 'side', 'value', 'variant']
+  inputs: ['accordion', 'ariaLabel', 'collapseControl', 'collapseLabel', 'collapseMode', 'collapsed', 'collapsible', 'expanded', 'items', 'mode', 'open', 'panelSize', 'side', 'value', 'variant']
 })
 @Component({
   selector: 'q-sidepanel',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['accordion', 'collapseControl', 'collapseLabel', 'collapseMode', 'collapsed', 'collapsible', 'expanded', 'items', 'mode', 'open', 'panelSize', 'side', 'value', 'variant'],
+  inputs: ['accordion', 'ariaLabel', 'collapseControl', 'collapseLabel', 'collapseMode', 'collapsed', 'collapsible', 'expanded', 'items', 'mode', 'open', 'panelSize', 'side', 'value', 'variant'],
   outputs: ['qClose', 'qSelect', 'qCollapsedChange'],
 })
 export class QSidepanel {
@@ -817,7 +840,7 @@ export declare interface QSyntaxBox extends Components.QSyntaxBox {
 
 @ProxyCmp({
   defineCustomElementFn: defineQTextarea,
-  inputs: ['autoGrow', 'disabled', 'error', 'errorMessage', 'label', 'name', 'placeholder', 'required', 'resizeMode', 'rows', 'value'],
+  inputs: ['ariaLabel', 'autoGrow', 'disabled', 'error', 'errorMessage', 'label', 'name', 'placeholder', 'required', 'resizeMode', 'rows', 'value'],
   methods: ['focusElement', 'adjustHeight']
 })
 @Component({
@@ -825,7 +848,7 @@ export declare interface QSyntaxBox extends Components.QSyntaxBox {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['autoGrow', 'disabled', 'error', 'errorMessage', 'label', 'name', 'placeholder', 'required', 'resizeMode', 'rows', 'value'],
+  inputs: ['ariaLabel', 'autoGrow', 'disabled', 'error', 'errorMessage', 'label', 'name', 'placeholder', 'required', 'resizeMode', 'rows', 'value'],
   outputs: ['qChange', 'qInput', 'qBlur', 'qFocus', 'qClick'],
 })
 export class QTextarea {
@@ -947,6 +970,29 @@ export declare interface QToggle extends Components.QToggle {
    */
   qClick: EventEmitter<QToggleCustomEvent<MouseEvent>>;
 }
+
+
+@ProxyCmp({
+  defineCustomElementFn: defineQToolbar,
+  inputs: ['ariaLabel', 'bordered', 'compact', 'edge', 'sticky', 'transparent']
+})
+@Component({
+  selector: 'q-toolbar',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<ng-content></ng-content>',
+  // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
+  inputs: ['ariaLabel', 'bordered', 'compact', 'edge', 'sticky', 'transparent'],
+})
+export class QToolbar {
+  protected el: HTMLQToolbarElement;
+  constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
+    c.detach();
+    this.el = r.nativeElement;
+  }
+}
+
+
+export declare interface QToolbar extends Components.QToolbar {}
 
 
 @ProxyCmp({

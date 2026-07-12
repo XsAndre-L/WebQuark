@@ -25,6 +25,16 @@
       "default": "md",
       "desc": "Vertical padding & font size modifier"
     },
+    "icon": {
+      "type": "string",
+      "default": "",
+      "desc": "Leading Lucide icon shorthand; icon-left slot content overrides it"
+    },
+    "ariaLabel": {
+      "type": "string",
+      "default": "",
+      "desc": "Accessible name required when the button has no visible text"
+    },
     "expand": {
       "type": "boolean",
       "default": false,
@@ -187,11 +197,12 @@
     {
       "name": "Icon-only Button",
       "props": {
-        "variant": "primary"
+        "variant": "primary",
+        "icon": "flame",
+        "ariaLabel": "Ignite"
       },
       "slots": {
-        "default": "",
-        "icon-left": "<span style=\"font-size:16px\">🔥</span>"
+        "default": ""
       }
     }
   ]

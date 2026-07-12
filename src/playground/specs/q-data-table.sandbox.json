@@ -22,6 +22,33 @@
       "default": "id",
       "desc": "Unique field key representing each row identity"
     },
+    "rowClickable": {
+      "type": "boolean",
+      "default": true,
+      "desc": "Enables full-row click and keyboard activation"
+    },
+    "sortable": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Enables sortable headers for columns that do not opt out"
+    },
+    "sortMode": {
+      "type": "select",
+      "options": ["table", "external"],
+      "default": "table",
+      "desc": "Use table to sort provided items locally, or external to only emit sort changes"
+    },
+    "sortColumn": {
+      "type": "string",
+      "default": "",
+      "desc": "Currently sorted column key"
+    },
+    "sortDirection": {
+      "type": "select",
+      "options": ["", "asc", "desc"],
+      "default": "",
+      "desc": "Current sort direction"
+    },
     "toolbarTitle": {
       "type": "string",
       "default": "",
@@ -41,6 +68,11 @@
       "type": "textarea",
       "default": "[\n  { \"id\": \"1\", \"name\": \"Administrator Account\", \"role\": \"Admin\", \"status\": \"Active\" },\n  { \"id\": \"2\", \"name\": \"Content Editor Manager\", \"role\": \"Editor\", \"status\": \"Inactive\" },\n  { \"id\": \"3\", \"name\": \"Viewer Guest\", \"role\": \"Viewer\", \"status\": \"Active\" }\n]",
       "desc": "JSON array of data row items"
+    },
+    "rowActions": {
+      "type": "textarea",
+      "default": "[]",
+      "desc": "JSON array of row action definitions with key, icon, and tooltip"
     },
     "searchValue": {
       "type": "string",
@@ -95,6 +127,27 @@
         "toolbarTitle": "Users Directory",
         "showSearch": true,
         "searchPlaceholder": "Search users..."
+      }
+    },
+    {
+      "name": "Sortable Grid",
+      "props": {
+        "sortable": true,
+        "sortMode": "table"
+      }
+    },
+    {
+      "name": "External Sort Grid",
+      "props": {
+        "sortable": true,
+        "sortMode": "external"
+      }
+    },
+    {
+      "name": "Grid with Row Actions",
+      "props": {
+        "rowClickable": false,
+        "rowActions": "[\n  { \"key\": \"edit\", \"icon\": \"pencil\", \"tooltip\": \"Edit user\" },\n  { \"key\": \"delete\", \"icon\": \"trash-2\", \"tooltip\": \"Delete user\" },\n  { \"key\": \"reset-password\", \"icon\": \"key-round\", \"tooltip\": \"Reset password\" }\n]"
       }
     },
     {

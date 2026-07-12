@@ -3,5 +3,7 @@ export interface Option {
   value: string;
 }
 
-export type QDropdownSize = 'sm' | 'md' | 'lg';
+/** A concise option label/value or a fully configured option object. */
+export type DropdownOptionInput = Option | string;
 
+export type QDropdownSize = 'sm' | 'md' | 'lg';

@@ -59,7 +59,20 @@
   box-shadow: 0 0 0 1px var(--q-color-primary, #60a5fa);
 }
 
+.trigger-content {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  min-width: 0;
+  gap: var(--q-dropdown-icon-gap, 10px);
+}
+
+.trigger-content slot[name='icon-left']::slotted(*) {
+  flex: 0 0 auto;
+}
+
 .trigger-text {
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -147,16 +160,16 @@
   font-size: var(--q-font-size-sm, 0.7rem);
 }
 .dropdown-wrapper.size-sm .dropdown-trigger {
-  padding: 6px 10px;
-  font-size: var(--q-font-size-sm, 0.7rem);
+  padding: var(--q-dropdown-padding, 6px 10px);
+  font-size: var(--q-dropdown-font-size, var(--q-font-size-sm, 0.7rem));
 }
 .dropdown-wrapper.size-sm .chevron-icon {
   width: 14px;
   height: 14px;
 }
 .dropdown-wrapper.size-sm .menu-item {
-  padding: 6px 10px;
-  font-size: var(--q-font-size-sm, 0.7rem);
+  padding: var(--q-dropdown-padding, 6px 10px);
+  font-size: var(--q-dropdown-font-size, var(--q-font-size-sm, 0.7rem));
 }
 .dropdown-wrapper.size-sm .menu-item.is-selected {
   padding-left: 7px;
@@ -166,16 +179,16 @@
   font-size: var(--q-font-size-sm, 0.7rem);
 }
 .dropdown-wrapper.size-md .dropdown-trigger {
-  padding: 10px 14px;
-  font-size: var(--q-font-size-base, 0.9rem);
+  padding: var(--q-dropdown-padding, 10px 14px);
+  font-size: var(--q-dropdown-font-size, var(--q-font-size-base, 0.9rem));
 }
 .dropdown-wrapper.size-md .chevron-icon {
   width: 16px;
   height: 16px;
 }
 .dropdown-wrapper.size-md .menu-item {
-  padding: 10px 14px;
-  font-size: var(--q-font-size-base, 0.9rem);
+  padding: var(--q-dropdown-padding, 10px 14px);
+  font-size: var(--q-dropdown-font-size, var(--q-font-size-base, 0.9rem));
 }
 .dropdown-wrapper.size-md .menu-item.is-selected {
   padding-left: 11px;
@@ -185,16 +198,16 @@
   font-size: var(--q-font-size-base, 0.9rem);
 }
 .dropdown-wrapper.size-lg .dropdown-trigger {
-  padding: 14px 18px;
-  font-size: var(--q-font-size-lg, 1rem);
+  padding: var(--q-dropdown-padding, 14px 18px);
+  font-size: var(--q-dropdown-font-size, var(--q-font-size-lg, 1rem));
 }
 .dropdown-wrapper.size-lg .chevron-icon {
   width: 20px;
   height: 20px;
 }
 .dropdown-wrapper.size-lg .menu-item {
-  padding: 14px 18px;
-  font-size: var(--q-font-size-lg, 1rem);
+  padding: var(--q-dropdown-padding, 14px 18px);
+  font-size: var(--q-dropdown-font-size, var(--q-font-size-lg, 1rem));
 }
 .dropdown-wrapper.size-lg .menu-item.is-selected {
   padding-left: 15px;
@@ -210,13 +223,13 @@
 /* Search Box Input */
 .dropdown-search-input {
   width: 100%;
-  padding: 8px 12px;
+  padding: var(--q-dropdown-padding, 10px 14px);
   font-family: var(--q-font-family, inherit);
-  font-size: var(--q-font-size-sm, 0.7rem);
+  font-size: var(--q-dropdown-font-size, var(--q-font-size-base, 0.9rem));
   color: var(--q-fg-base, #f9fafb);
   background: var(--q-bg-surface-2, #374151);
   border: var(--q-dropdown-border, var(--q-border, 1px solid var(--q-border-color, #4b5563)));
-  border-radius: var(--q-radius-sm, 4px);
+  border-radius: var(--q-dropdown-radius, var(--q-radius-md, 8px));
   outline: none;
   box-sizing: border-box;
   transition: border-color var(--q-transition-fast, 150ms ease);
@@ -226,6 +239,33 @@
   border-color: var(--q-color-primary, #60a5fa);
 }
 
+.dropdown-wrapper.size-sm .dropdown-search-container {
+  padding: 4px;
+}
+
+.dropdown-wrapper.size-sm .dropdown-search-input {
+  padding: var(--q-dropdown-padding, 6px 10px);
+  font-size: var(--q-dropdown-font-size, var(--q-font-size-sm, 0.7rem));
+}
+
+.dropdown-wrapper.size-md .dropdown-search-container {
+  padding: 6px;
+}
+
+.dropdown-wrapper.size-md .dropdown-search-input {
+  padding: var(--q-dropdown-padding, 10px 14px);
+  font-size: var(--q-dropdown-font-size, var(--q-font-size-base, 0.9rem));
+}
+
+.dropdown-wrapper.size-lg .dropdown-search-container {
+  padding: 8px;
+}
+
+.dropdown-wrapper.size-lg .dropdown-search-input {
+  padding: var(--q-dropdown-padding, 14px 18px);
+  font-size: var(--q-dropdown-font-size, var(--q-font-size-lg, 1rem));
+}
+
 /* Dropdown items scroll container */
 .dropdown-items-list {
   margin: 0;
@@ -233,6 +273,9 @@
   list-style: none;
   max-height: 240px;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
 }
 

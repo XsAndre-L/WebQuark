@@ -1,5 +1,7 @@
 # 🧩 Component Specification: `q-input`
 
+> Contract note: see [Current public contracts](./current-contracts.md#q-input) and the [generated API](../../src/components/inputs/input/readme.md) for the complete current surface. Generated API wins if an older design note below differs.
+
 The `<q-input>` is a custom single-line input control component supporting label headers, clear button overlays, numerical spin counters, prefix/suffix slot elements, error states, and keyboard focus routing. It is fully accessible (form-associated) and optimized for high-performance Off-Screen Rendering (OSR) in game engine webviews.
 
 ---
@@ -12,6 +14,7 @@ The `<q-input>` is a custom single-line input control component supporting label
 | `type` | `type` | `"color" \| "email" \| "number" \| "password" \| "search" \| "text" \| "url"` | `'text'` | The native input field type. |
 | `placeholder` | `placeholder` | `string` | `""` | Helper text to display when the input is empty. |
 | `label` | `label` | `string` | `undefined` | Optional header label text displayed above the control. |
+| `ariaLabel` | `aria-label` | `string` | `undefined` | Accessible name forwarded to the native input when no visible label is used. |
 | `disabled` | `disabled` | `boolean` | `false` | Reflects disabled state. Disables interaction and user input. |
 | `required` | `required` | `boolean` | `false` | Reflects required state for form validation. |
 | `error` | `error` | `string` | `undefined` | Reflects custom validation error string. Overrides standard layout borders to warning colors. |
@@ -95,141 +98,9 @@ The `<q-input>` is a custom single-line input control component supporting label
 
 ---
 
-## 7. HTML/TSX Structure (Shadow DOM Layout)
+## 7. Implementation source
 
-```tsx
-@Component({
-  tag: 'q-input',
-  styleUrl: 'q-input.css',
-  shadow: {
-    delegatesFocus: true
-  },
-  formAssociated: true
-})
-export class QInput {
-  @Prop({ mutable: true }) value: string = "";
-  @Prop() type: 'text' | 'password' | 'email' | 'number' | 'url' | 'search' | 'color' = 'text';
-  @Prop() placeholder: string = "";
-  @Prop() label?: string;
-  @Prop({ reflect: true }) disabled: boolean = false;
-  @Prop({ reflect: true }) required: boolean = false;
-  @Prop({ reflect: true }) error?: string;
-  @Prop() errorMessage?: string;
-  @Prop() size: 'sm' | 'md' | 'lg' = 'md';
-  @Prop() clearable: boolean = false;
-  @Prop() min?: number;
-  @Prop() max?: number;
-  @Prop() step?: number = 1;
-
-  @State() hasPrefix: boolean = false;
-  @State() hasSuffix: boolean = false;
-
-  render() {
-    const hasError = (this.error !== undefined && this.error.length > 0) || (this.errorMessage !== undefined && this.errorMessage.length > 0);
-    const displayError = this.error || this.errorMessage;
-    const showClearBtn = this.clearable && !this.disabled && this.value.length > 0;
-    const showSuffixContainer = this.hasSuffix || showClearBtn;
-
-    return (
-      <div 
-        class={{
-          'input-wrapper': true,
-          'is-disabled': this.disabled,
-          'has-error': hasError,
-          [`size-${this.size}`]: true
-        }}
-      >
-        {this.label && (
-          <label class="input-label" htmlFor="q-field" part="label">
-            {this.label}
-          </label>
-        )}
-
-        <div class="input-control" part="control">
-          
-          <span 
-            class="prefix-container" 
-            style={{ display: this.hasPrefix ? 'flex' : 'none' }}
-            part="prefix"
-          >
-            <slot name="prefix" onSlotchange={this.handlePrefixSlotChange} />
-          </span>
-
-          <input
-            id="q-field"
-            class={{
-              'input-box': true,
-              'has-prefix-padding': this.hasPrefix,
-              'has-suffix-padding': showSuffixContainer
-            }}
-            type={this.type}
-            value={this.value}
-            placeholder={this.placeholder}
-            disabled={this.disabled}
-            required={this.required}
-            min={this.min}
-            max={this.max}
-            step={this.step}
-            onInput={this.handleInput}
-            onChange={this.handleChange}
-            onBlur={this.handleBlur}
-            onFocus={this.handleFocus}
-            aria-invalid={hasError ? 'true' : 'false'}
-            aria-describedby={hasError ? 'q-field-error' : undefined}
-          />
-
-          {this.type === 'number' && !this.disabled && (
-            <div class="input-spinners" part="spinners">
-              <button class="spinner-btn spinner-up" type="button" onClick={this.handleIncrement} tabindex="-1">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M18 15l-6-6-6 6" />
-                </svg>
-              </button>
-              <button class="spinner-btn spinner-down" type="button" onClick={this.handleDecrement} tabindex="-1">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M6 9l6 6 6-6" />
-                </svg>
-              </button>
-            </div>
-          )}
-
-          <span 
-            class="suffix-container" 
-            style={{ display: showSuffixContainer ? 'flex' : 'none' }}
-            part="suffix"
-          >
-            {showClearBtn && (
-              <button 
-                class="clear-btn" 
-                type="button" 
-                onClick={this.handleClear}
-                aria-label="Clear input"
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M18 6L6 18M6 6l12 12" />
-                </svg>
-              </button>
-            )}
-            <span style={{ display: showClearBtn ? 'none' : 'block' }}>
-              <slot 
-                name="suffix" 
-                onSlotchange={this.handleSuffixSlotChange} 
-              />
-            </span>
-          </span>
-
-        </div>
-
-        {hasError && (
-          <span id="q-field-error" class="error-msg" part="error-msg">
-            {displayError}
-          </span>
-        )}
-      </div>
-    );
-  }
-}
-```
+The implementation is intentionally not duplicated in this guide. Use the generated API linked at the top of the page for the canonical public contract and the component's TypeScript source for implementation details. This avoids stale source snapshots in authored documentation.
 
 ---
 
@@ -258,7 +129,7 @@ export class QInput {
 <q-input 
   type="search" 
   placeholder="Search database..." 
-  clearable="true">
+  clearable>
   <span slot="prefix">🔍</span>
 </q-input>
 ```

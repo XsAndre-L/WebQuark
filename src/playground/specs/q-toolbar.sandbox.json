@@ -1,0 +1,26 @@
+{
+  "name": "Toolbar",
+  "tag": "q-toolbar",
+  "props": {
+    "edge": { "type": "select", "default": "top", "options": ["top", "right", "bottom", "left"], "desc": "Edge and orientation" },
+    "sticky": { "type": "boolean", "default": false, "desc": "Pins the toolbar to its edge" },
+    "compact": { "type": "boolean", "default": false, "desc": "Uses the compact size" },
+    "transparent": { "type": "boolean", "default": false, "desc": "Removes the default background" },
+    "bordered": { "type": "boolean", "default": false, "desc": "Shows an inward-facing border" },
+    "ariaLabel": { "type": "string", "default": "Page toolbar", "desc": "Accessible content-group label" }
+  },
+  "slots": {
+    "start": { "type": "html", "default": "<q-button size=\"sm\" variant=\"text\">Back</q-button>", "desc": "Starting content" },
+    "default": { "type": "html", "default": "<strong>Page title</strong>", "desc": "Primary content" },
+    "end": { "type": "html", "default": "<q-button size=\"sm\" variant=\"secondary\">Action</q-button>", "desc": "Ending content" }
+  },
+  "variants": [
+    { "name": "Page Toolbar", "props": { "edge": "top", "bordered": true } },
+    { "name": "Bottom Toolbar", "props": { "edge": "bottom", "bordered": true } },
+    { "name": "Compact Transparent", "props": { "edge": "top", "compact": true, "transparent": true } },
+    { "name": "Left Toolbar", "props": { "edge": "left", "bordered": true } }
+  ],
+  "edgeCases": [
+    { "name": "Content Only", "slots": { "start": "", "default": "Toolbar content without actions", "end": "" } }
+  ]
+}
