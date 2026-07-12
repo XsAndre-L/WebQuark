@@ -158,6 +158,8 @@ export const QDialog: StencilReactComponent<QDialogElement, QDialogEvents, Compo
 export type QDropdownEvents = {
     onQChange: EventName<QDropdownCustomEvent<string>>,
     onQSelect: EventName<QDropdownCustomEvent<Option>>,
+    onQSearch: EventName<QDropdownCustomEvent<string>>,
+    onQLoadMore: EventName<QDropdownCustomEvent<void>>,
     onQFocus: EventName<QDropdownCustomEvent<FocusEvent>>,
     onQBlur: EventName<QDropdownCustomEvent<FocusEvent>>,
     onQClick: EventName<QDropdownCustomEvent<MouseEvent>>
@@ -171,6 +173,8 @@ export const QDropdown: StencilReactComponent<QDropdownElement, QDropdownEvents,
     events: {
         onQChange: 'qChange',
         onQSelect: 'qSelect',
+        onQSearch: 'qSearch',
+        onQLoadMore: 'qLoadMore',
         onQFocus: 'qFocus',
         onQBlur: 'qBlur',
         onQClick: 'qClick'

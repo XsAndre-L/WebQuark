@@ -3,6 +3,7 @@ import type {
   DataTableItem,
   DataTableKey,
   DataTableRowAction,
+  DataTableRowGrouper,
   DataTableSortDirection,
   DataTableSortMode,
   QDataTableRowActionDetail,
@@ -27,6 +28,10 @@ import { getAllItemKeys, getSelectedItems, toggleSelectedKey } from './internals
  * @slot empty - Empty-state content shown when no rows are available.
  * @slot footer - Footer content rendered below the scrollable table.
  * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
+ * @cssprop --q-table-group-bg - Background color for row-group divider rows.
+ * @cssprop --q-table-group-fg - Text color for row-group divider rows.
+ * @cssprop --q-table-group-border - Border color for row-group divider rows.
+ * @cssprop --q-table-group-padding - Padding for row-group divider cells.
  * @cssprop --q-table-dropdown-bg - Background color forwarded to slotted q-dropdown controls.
  * @cssprop --q-table-dropdown-menu-bg - Menu background color forwarded to slotted q-dropdown controls.
  * @cssprop --q-table-dropdown-border - Border style forwarded to slotted q-dropdown controls.
@@ -50,6 +55,12 @@ export class QDataTable {
 
   /** Enables full-row click and keyboard activation. */
   @Prop() rowClickable: boolean = true;
+
+  /**
+   * Optional property-only callback that groups consecutive rendered rows.
+   * A divider is inserted whenever the returned group key changes.
+   */
+  @Prop() rowGroup?: DataTableRowGrouper;
 
   /** Shows a loading state and suppresses row rendering while true. */
   @Prop() loading: boolean = false;
@@ -221,6 +232,7 @@ export class QDataTable {
       items: this.items,
       rowActions: this.rowActions,
       rowClickable: this.rowClickable,
+      rowGroup: this.rowGroup,
       selectedKeys: this.selectedKeys,
       selectable: this.selectable,
       keyField: this.keyField,

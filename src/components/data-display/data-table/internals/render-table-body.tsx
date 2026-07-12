@@ -34,9 +34,23 @@ export function renderDataTableBody(options: RenderDataTableBodyOptions) {
           </td>
         </tr>
       ) : (
-        model.rows.map(row => renderDataTableRow(row, options))
+        model.rows.flatMap(row =>
+          row.startsGroup && row.group ? [renderDataTableGroupRow(row, model.columnSpan), renderDataTableRow(row, options)] : [renderDataTableRow(row, options)],
+        )
       )}
     </tbody>
+  );
+}
+
+function renderDataTableGroupRow(row: DataTableRowModel, columnSpan: number) {
+  if (!row.group) return null;
+
+  return (
+    <tr key={`group-${String(row.group.key)}-${String(row.renderKey)}`} class="row-group" role="row" aria-label={row.group.label}>
+      <td class="row-group-cell" colSpan={columnSpan} role="gridcell">
+        {row.group.label}
+      </td>
+    </tr>
   );
 }
 

@@ -19,9 +19,7 @@ describe('q-data-table', () => {
   }
 
   function getFirstColumnText(el: any): string[] {
-    return Array.from(el.shadowRoot.querySelectorAll('tbody tr')).map((row: any) =>
-      row.querySelector('td:not(.cell-selection):not(.cell-actions)')?.textContent?.trim()
-    );
+    return Array.from(el.shadowRoot.querySelectorAll('tbody tr')).map((row: any) => row.querySelector('td:not(.cell-selection):not(.cell-actions)')?.textContent?.trim());
   }
 
   async function clickFirstSortButton(el: any) {
@@ -66,6 +64,48 @@ describe('q-data-table', () => {
 
     expect(rows).toHaveLength(2);
     expect(rows[0].getAttribute('aria-selected')).toBe('false');
+    el.remove();
+  });
+
+  it('renders group dividers when the consecutive row group changes', async () => {
+    const groupedItems = [
+      { id: 1, name: 'Alpha', day: '2026-07-12' },
+      { id: 2, name: 'Beta', day: '2026-07-12' },
+      { id: 3, name: 'Gamma', day: '2026-07-11' },
+    ];
+    const rowGroup = (item: any) => ({ key: item.day, label: item.day });
+    const el = await createComponent({
+      columns,
+      items: groupedItems,
+      rowGroup,
+      selectable: true,
+      rowActions: [{ key: 'open', icon: 'eye', tooltip: 'Open' }],
+    });
+    const groupRows = el.shadowRoot.querySelectorAll('.row-group');
+
+    expect(groupRows).toHaveLength(2);
+    expect(groupRows[0].textContent?.trim()).toBe('2026-07-12');
+    expect(groupRows[1].textContent?.trim()).toBe('2026-07-11');
+    expect(groupRows[0].querySelector('td')?.getAttribute('colspan')).toBe('3');
+    expect(el.shadowRoot.querySelectorAll('.row-el')).toHaveLength(3);
+    expect(el.shadowRoot.querySelectorAll('tbody input[type="checkbox"]')).toHaveLength(3);
+    expect(el.shadowRoot.querySelectorAll('.row-group .cell-actions')).toHaveLength(0);
+    el.remove();
+  });
+
+  it('does not emit row events when a group divider is clicked', async () => {
+    const el = await createComponent({
+      columns,
+      items,
+      rowGroup: (_item: any, index: number) => ({ key: index, label: `Group ${index}` }),
+    });
+    const handler = vi.fn();
+    el.addEventListener('qRowClick', handler);
+
+    el.shadowRoot.querySelector('.row-group')?.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
+    await new Promise(resolve => setTimeout(resolve, 10));
+
+    expect(handler).not.toHaveBeenCalled();
     el.remove();
   });
 
@@ -224,9 +264,7 @@ describe('q-data-table', () => {
   });
 
   it('supports disabling row actions per row', async () => {
-    const rowActions = [
-      { key: 'edit', icon: 'pencil', tooltip: 'Edit user', disabled: (item: any) => item.id === 1 },
-    ];
+    const rowActions = [{ key: 'edit', icon: 'pencil', tooltip: 'Edit user', disabled: (item: any) => item.id === 1 }];
     const el = await createComponent({ columns, items, rowActions });
     const rowActionHandler = vi.fn();
     el.addEventListener('qRowAction', rowActionHandler);
@@ -322,7 +360,15 @@ describe('q-data-table', () => {
 
   it('falls back to nested values when a custom renderer throws', async () => {
     const el = await createComponent({
-      columns: [{ key: 'profile.name', header: 'Name', render: () => { throw new Error('bad render'); } }],
+      columns: [
+        {
+          key: 'profile.name',
+          header: 'Name',
+          render: () => {
+            throw new Error('bad render');
+          },
+        },
+      ],
       items: [{ id: 1, profile: { name: 'Nested Alpha' } }],
     });
     const cell = el.shadowRoot.querySelector('tbody td') as HTMLTableCellElement;

@@ -11,7 +11,7 @@ import { QCardElevation } from "./components/layout/card/card.types";
 import { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/layout/carousel/carousel.types";
 import { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/actions/chip/chip.types";
 import { QCircularProgressSize } from "./components/indicators/circular-progress/circular-progress.types";
-import { DataTableItem, DataTableKey, DataTableRowAction, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
+import { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
 import { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
 import { DropdownOptionInput, Option, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
 import { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/layout/form/form.types";
@@ -37,7 +37,7 @@ export { QCardElevation } from "./components/layout/card/card.types";
 export { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/layout/carousel/carousel.types";
 export { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/actions/chip/chip.types";
 export { QCircularProgressSize } from "./components/indicators/circular-progress/circular-progress.types";
-export { DataTableItem, DataTableKey, DataTableRowAction, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
+export { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
 export { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
 export { DropdownOptionInput, Option, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
 export { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/layout/form/form.types";
@@ -284,6 +284,10 @@ export namespace Components {
     /**
      * Data grid with optional toolbar, search, row activation, and multi-row selection.
      * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
+     * @cssprop --q-table-group-bg - Background color for row-group divider rows.
+     * @cssprop --q-table-group-fg - Text color for row-group divider rows.
+     * @cssprop --q-table-group-border - Border color for row-group divider rows.
+     * @cssprop --q-table-group-padding - Padding for row-group divider cells.
      * @cssprop --q-table-dropdown-bg - Background color forwarded to slotted q-dropdown controls.
      * @cssprop --q-table-dropdown-menu-bg - Menu background color forwarded to slotted q-dropdown controls.
      * @cssprop --q-table-dropdown-border - Border style forwarded to slotted q-dropdown controls.
@@ -321,6 +325,10 @@ export namespace Components {
           * @default true
          */
         "rowClickable": boolean;
+        /**
+          * Optional property-only callback that groups consecutive rendered rows. A divider is inserted whenever the returned group key changes.
+         */
+        "rowGroup"?: DataTableRowGrouper;
         /**
           * Placeholder text for the built-in search input.
           * @default 'Search...'
@@ -458,7 +466,8 @@ export namespace Components {
         "showConfirm": boolean;
     }
     /**
-     * Form-associated dropdown/select control with optional search and incremental option rendering.
+     * Form-associated dropdown/select control with optional search, incremental option rendering,
+     * and externally loaded option pages.
      */
     interface QDropdown {
         /**
@@ -471,9 +480,24 @@ export namespace Components {
          */
         "disabled": boolean;
         /**
+          * Leaves filtering and pagination to the consumer instead of filtering options locally.
+          * @default false
+         */
+        "externalSearch": boolean;
+        /**
+          * Indicates that another externally loaded option page is available.
+          * @default false
+         */
+        "hasMore": boolean;
+        /**
           * Optional label rendered above the trigger.
          */
         "label"?: string;
+        /**
+          * Displays the menu loading state while options are being fetched.
+          * @default false
+         */
+        "loading": boolean;
         /**
           * Form field name.
          */
@@ -1488,6 +1512,10 @@ declare global {
     /**
      * Data grid with optional toolbar, search, row activation, and multi-row selection.
      * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
+     * @cssprop --q-table-group-bg - Background color for row-group divider rows.
+     * @cssprop --q-table-group-fg - Text color for row-group divider rows.
+     * @cssprop --q-table-group-border - Border color for row-group divider rows.
+     * @cssprop --q-table-group-padding - Padding for row-group divider cells.
      * @cssprop --q-table-dropdown-bg - Background color forwarded to slotted q-dropdown controls.
      * @cssprop --q-table-dropdown-menu-bg - Menu background color forwarded to slotted q-dropdown controls.
      * @cssprop --q-table-dropdown-border - Border style forwarded to slotted q-dropdown controls.
@@ -1533,12 +1561,15 @@ declare global {
     interface HTMLQDropdownElementEventMap {
         "qChange": string;
         "qSelect": Option;
+        "qSearch": string;
+        "qLoadMore": void;
         "qFocus": FocusEvent;
         "qBlur": FocusEvent;
         "qClick": MouseEvent;
     }
     /**
-     * Form-associated dropdown/select control with optional search and incremental option rendering.
+     * Form-associated dropdown/select control with optional search, incremental option rendering,
+     * and externally loaded option pages.
      */
     interface HTMLQDropdownElement extends Components.QDropdown, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQDropdownElementEventMap>(type: K, listener: (this: HTMLQDropdownElement, ev: QDropdownCustomEvent<HTMLQDropdownElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2161,6 +2192,10 @@ declare namespace LocalJSX {
     /**
      * Data grid with optional toolbar, search, row activation, and multi-row selection.
      * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
+     * @cssprop --q-table-group-bg - Background color for row-group divider rows.
+     * @cssprop --q-table-group-fg - Text color for row-group divider rows.
+     * @cssprop --q-table-group-border - Border color for row-group divider rows.
+     * @cssprop --q-table-group-padding - Padding for row-group divider cells.
      * @cssprop --q-table-dropdown-bg - Background color forwarded to slotted q-dropdown controls.
      * @cssprop --q-table-dropdown-menu-bg - Menu background color forwarded to slotted q-dropdown controls.
      * @cssprop --q-table-dropdown-border - Border style forwarded to slotted q-dropdown controls.
@@ -2218,6 +2253,10 @@ declare namespace LocalJSX {
           * @default true
          */
         "rowClickable"?: boolean;
+        /**
+          * Optional property-only callback that groups consecutive rendered rows. A divider is inserted whenever the returned group key changes.
+         */
+        "rowGroup"?: DataTableRowGrouper;
         /**
           * Placeholder text for the built-in search input.
           * @default 'Search...'
@@ -2351,7 +2390,8 @@ declare namespace LocalJSX {
         "showConfirm"?: boolean;
     }
     /**
-     * Form-associated dropdown/select control with optional search and incremental option rendering.
+     * Form-associated dropdown/select control with optional search, incremental option rendering,
+     * and externally loaded option pages.
      */
     interface QDropdown {
         /**
@@ -2364,13 +2404,28 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
+          * Leaves filtering and pagination to the consumer instead of filtering options locally.
+          * @default false
+         */
+        "externalSearch"?: boolean;
+        /**
           * The `id` of a `<form>` element to associate this element with.
          */
         "form"?: string;
         /**
+          * Indicates that another externally loaded option page is available.
+          * @default false
+         */
+        "hasMore"?: boolean;
+        /**
           * Optional label rendered above the trigger.
          */
         "label"?: string;
+        /**
+          * Displays the menu loading state while options are being fetched.
+          * @default false
+         */
+        "loading"?: boolean;
         /**
           * Form field name.
          */
@@ -2391,6 +2446,14 @@ declare namespace LocalJSX {
           * Emitted when the trigger receives focus.
          */
         "onQFocus"?: (event: QDropdownCustomEvent<FocusEvent>) => void;
+        /**
+          * Emitted when an externally loaded option list reaches its scroll boundary.
+         */
+        "onQLoadMore"?: (event: QDropdownCustomEvent<void>) => void;
+        /**
+          * Emitted with the current search term when a searchable dropdown uses external search.
+         */
+        "onQSearch"?: (event: QDropdownCustomEvent<string>) => void;
         /**
           * Emitted with the selected option object when selection changes.
          */
@@ -3437,6 +3500,9 @@ declare namespace LocalJSX {
         "disabled": boolean;
         "size": QDropdownSize;
         "searchable": boolean;
+        "externalSearch": boolean;
+        "hasMore": boolean;
+        "loading": boolean;
     }
     interface QFormAttributes {
         "label": string;
@@ -3674,6 +3740,10 @@ declare module "@stencil/core" {
             /**
              * Data grid with optional toolbar, search, row activation, and multi-row selection.
              * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
+             * @cssprop --q-table-group-bg - Background color for row-group divider rows.
+             * @cssprop --q-table-group-fg - Text color for row-group divider rows.
+             * @cssprop --q-table-group-border - Border color for row-group divider rows.
+             * @cssprop --q-table-group-padding - Padding for row-group divider cells.
              * @cssprop --q-table-dropdown-bg - Background color forwarded to slotted q-dropdown controls.
              * @cssprop --q-table-dropdown-menu-bg - Menu background color forwarded to slotted q-dropdown controls.
              * @cssprop --q-table-dropdown-border - Border style forwarded to slotted q-dropdown controls.
@@ -3686,7 +3756,8 @@ declare module "@stencil/core" {
              */
             "q-dialog": LocalJSX.IntrinsicElements["q-dialog"] & JSXBase.HTMLAttributes<HTMLQDialogElement>;
             /**
-             * Form-associated dropdown/select control with optional search and incremental option rendering.
+             * Form-associated dropdown/select control with optional search, incremental option rendering,
+             * and externally loaded option pages.
              */
             "q-dropdown": LocalJSX.IntrinsicElements["q-dropdown"] & JSXBase.HTMLAttributes<HTMLQDropdownElement>;
             /**
