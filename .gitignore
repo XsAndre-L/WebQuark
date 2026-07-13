@@ -32,3 +32,7 @@ src/playground/playground.bundled.js
 
 # Compiled CLI Sandbox Server
 scripts/webquark-serve.js
+
+# Generated framework wrappers
+packages/angular/src/stencil-generated/
+packages/react/src/stencil-generated/
