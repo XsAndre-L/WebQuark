@@ -12,7 +12,7 @@
     ".": {
       "types": "./dist/types/index.d.ts",
       "import": "./dist/webquark/webquark.esm.js",
-      "require": "./dist/webquark/webquark.cjs.js"
+      "require": "./dist/index.cjs.js"
     },
     "./components": {
       "import": "./dist/components/index.js",
@@ -42,7 +42,7 @@
     "./loader": {
       "types": "./dist/loader/index.d.ts",
       "import": "./dist/loader/index.js",
-      "require": "./dist/loader/index.cjs"
+      "require": "./dist/loader/index.cjs.js"
     }
   },
   "workspaces": [
@@ -54,12 +54,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/stenciljs/component-starter.git"
+    "url": "https://github.com/Purely-IT/WebQuark.git"
   },
   "files": [
     "dist/",
     "scripts/webquark-serve.js"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "bun build src/playground/playground.ts --outfile=src/playground/playground.bundled.js --loader .html:text --loader .css:text && bun build scripts/webquark-serve.ts --outfile=scripts/webquark-serve.js --target=node --format=cjs && stencil build",
     "start": "bun run scripts/start-playground.ts",
@@ -67,7 +70,9 @@
     "test": "stencil-test --prod",
     "test:watch": "stencil-test --prod --watch",
     "generate": "stencil generate",
-    "publish-all": "bun run scripts/publish.ts",
+    "release:prepare": "bun .github/scripts/publishing/prepare-release.ts",
+    "release:verify": "bun .github/scripts/publishing/verify-packages.ts",
+    "publish-all": "bun .github/scripts/publishing/publish-packages.ts",
     "align-headers": "bun run scripts/align-headers.ts"
   },
   "devDependencies": {

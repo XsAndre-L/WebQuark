@@ -54,7 +54,7 @@ export class QSidepanel {
   /** Navigation items rendered in nav mode. */
   @Prop() items: SidepanelItemInput[] = [];
   /** Accessible name for the rendered navigation, panel, or drawer region. */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
   /** Active leaf item value. */
   @Prop({ reflect: true }) value: string = '';
   /** Item display mode: flat list, one-level groups, or deep tree */

@@ -45,7 +45,7 @@ export class QPanel {
   @Prop({ reflect: true }) stickyFooter: boolean = false;
 
   /** Accessible label for the panel container and scrollable body region. */
-  @Prop() ariaLabel?: string;
+  @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
 
   // ========================= [2] INTERNAL STATE & REFS =========================
 

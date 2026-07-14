@@ -64,8 +64,9 @@ export namespace Components {
     interface QButton {
         /**
           * Accessible label forwarded to the inner button or anchor. Required for icon-only buttons.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel": string | null;
         /**
           * Disables interaction and marks the control as unavailable.
           * @default false
@@ -259,8 +260,9 @@ export namespace Components {
     interface QCircularProgress {
         /**
           * Accessible name for the progressbar.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel": string | null;
         /**
           * Shows a spinning indeterminate state instead of a fixed progress value.
           * @default false
@@ -388,8 +390,9 @@ export namespace Components {
     interface QDialog {
         /**
           * Accessible name for the dialog, especially when using a custom header without dialogTitle.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel": string | null;
         /**
           * Backdrop rendering style. Solid is the default CEF/Unreal-safe dimmer; none keeps the click layer transparent.
           * @default 'solid'
@@ -472,8 +475,9 @@ export namespace Components {
     interface QDropdown {
         /**
           * Accessible name for the trigger and option list when no visible label is available.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel": string | null;
         /**
           * Disables the trigger and prevents selection changes.
           * @default false
@@ -639,8 +643,9 @@ export namespace Components {
     interface QInput {
         /**
           * Accessible name for the native input when a visible label is not used.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel": string | null;
         /**
           * Clears the current value and focuses the native input.
          */
@@ -782,8 +787,9 @@ export namespace Components {
         "activeValue": string;
         /**
           * Accessible name for the desktop and mobile navigation regions.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel": string | null;
         /**
           * Renders a border along the inward-facing edge.
           * @default true
@@ -849,8 +855,9 @@ export namespace Components {
     interface QPanel {
         /**
           * Accessible label for the panel container and scrollable body region.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel": string | null;
         /**
           * Stretches the panel to fill the available height.
           * @default false
@@ -984,8 +991,9 @@ export namespace Components {
         "accordion": boolean;
         /**
           * Accessible name for the rendered navigation, panel, or drawer region.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel": string | null;
         /**
           * Where to render the built-in collapse toggle button. 'none' means the consumer supplies their own control and drives `collapsed` externally.
           * @default 'none'
@@ -1059,7 +1067,7 @@ export namespace Components {
           * Accessible label for the step sequence.
           * @default 'Steps'
          */
-        "ariaLabel": string;
+        "ariaLabel": string | null;
         /**
           * Controls whether step items are stacked vertically or arranged horizontally.
           * @default 'vertical'
@@ -1155,8 +1163,9 @@ export namespace Components {
         "adjustHeight": () => Promise<void>;
         /**
           * Accessible name for the native textarea when a visible label is not used.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel": string | null;
         /**
           * Enables automatic height growth when resizeMode is auto.
           * @default true
@@ -1294,8 +1303,9 @@ export namespace Components {
     interface QToolbar {
         /**
           * Accessible label for the toolbar content group.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel": string | null;
         /**
           * Renders a border along the inward-facing edge.
           * @default false
@@ -1948,8 +1958,9 @@ declare namespace LocalJSX {
     interface QButton {
         /**
           * Accessible label forwarded to the inner button or anchor. Required for icon-only buttons.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel"?: string | null;
         /**
           * Disables interaction and marks the control as unavailable.
           * @default false
@@ -2167,8 +2178,9 @@ declare namespace LocalJSX {
     interface QCircularProgress {
         /**
           * Accessible name for the progressbar.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel"?: string | null;
         /**
           * Shows a spinning indeterminate state instead of a fixed progress value.
           * @default false
@@ -2316,8 +2328,9 @@ declare namespace LocalJSX {
     interface QDialog {
         /**
           * Accessible name for the dialog, especially when using a custom header without dialogTitle.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel"?: string | null;
         /**
           * Backdrop rendering style. Solid is the default CEF/Unreal-safe dimmer; none keeps the click layer transparent.
           * @default 'solid'
@@ -2396,8 +2409,9 @@ declare namespace LocalJSX {
     interface QDropdown {
         /**
           * Accessible name for the trigger and option list when no visible label is available.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel"?: string | null;
         /**
           * Disables the trigger and prevents selection changes.
           * @default false
@@ -2587,8 +2601,9 @@ declare namespace LocalJSX {
     interface QInput {
         /**
           * Accessible name for the native input when a visible label is not used.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel"?: string | null;
         /**
           * Shows a clear button when the field has a value.
           * @default false
@@ -2758,8 +2773,9 @@ declare namespace LocalJSX {
         "activeValue"?: string;
         /**
           * Accessible name for the desktop and mobile navigation regions.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel"?: string | null;
         /**
           * Renders a border along the inward-facing edge.
           * @default true
@@ -2833,8 +2849,9 @@ declare namespace LocalJSX {
     interface QPanel {
         /**
           * Accessible label for the panel container and scrollable body region.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel"?: string | null;
         /**
           * Stretches the panel to fill the available height.
           * @default false
@@ -2988,8 +3005,9 @@ declare namespace LocalJSX {
         "accordion"?: boolean;
         /**
           * Accessible name for the rendered navigation, panel, or drawer region.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel"?: string | null;
         /**
           * Where to render the built-in collapse toggle button. 'none' means the consumer supplies their own control and drives `collapsed` externally.
           * @default 'none'
@@ -3075,7 +3093,7 @@ declare namespace LocalJSX {
           * Accessible label for the step sequence.
           * @default 'Steps'
          */
-        "ariaLabel"?: string;
+        "ariaLabel"?: string | null;
         /**
           * Controls whether step items are stacked vertically or arranged horizontally.
           * @default 'vertical'
@@ -3179,8 +3197,9 @@ declare namespace LocalJSX {
     interface QTextarea {
         /**
           * Accessible name for the native textarea when a visible label is not used.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel"?: string | null;
         /**
           * Enables automatic height growth when resizeMode is auto.
           * @default true
@@ -3358,8 +3377,9 @@ declare namespace LocalJSX {
     interface QToolbar {
         /**
           * Accessible label for the toolbar content group.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel"?: string | null;
         /**
           * Renders a border along the inward-facing edge.
           * @default false
@@ -3421,7 +3441,7 @@ declare namespace LocalJSX {
         "rel": string;
         "download": string;
         "iconOnly": boolean;
-        "ariaLabel": string;
+        "ariaLabel": string | null;
     }
     interface QCardAttributes {
         "elevation": string;
@@ -3453,7 +3473,7 @@ declare namespace LocalJSX {
     interface QCircularProgressAttributes {
         "value": number;
         "label": string;
-        "ariaLabel": string;
+        "ariaLabel": string | null;
         "indeterminate": boolean;
         "size": QCircularProgressSize;
     }
@@ -3478,7 +3498,7 @@ declare namespace LocalJSX {
     interface QDialogAttributes {
         "open": boolean;
         "dialogTitle": string;
-        "ariaLabel": string;
+        "ariaLabel": string | null;
         "message": string;
         "closeOnEsc": boolean;
         "closeOnOverlayClick": boolean;
@@ -3494,7 +3514,7 @@ declare namespace LocalJSX {
         "value": string;
         "name": string;
         "label": string;
-        "ariaLabel": string;
+        "ariaLabel": string | null;
         "placeholder": string;
         "options": DropdownOptionInput[] | string;
         "disabled": boolean;
@@ -3531,7 +3551,7 @@ declare namespace LocalJSX {
         "type": QInputType;
         "placeholder": string;
         "label": string;
-        "ariaLabel": string;
+        "ariaLabel": string | null;
         "disabled": boolean;
         "required": boolean;
         "error": string;
@@ -3562,7 +3582,7 @@ declare namespace LocalJSX {
         "logoAlt": string;
         "brandHref": string;
         "items": NavbarItemInput[] | string;
-        "ariaLabel": string;
+        "ariaLabel": string | null;
         "activeValue": string;
         "mobileLabel": string;
         "edge": QNavbarEdge;
@@ -3580,7 +3600,7 @@ declare namespace LocalJSX {
         "fullHeight": boolean;
         "stickyHeader": boolean;
         "stickyFooter": boolean;
-        "ariaLabel": string;
+        "ariaLabel": string | null;
     }
     interface QQuantitySelectorAttributes {
         "value": number;
@@ -3606,7 +3626,7 @@ declare namespace LocalJSX {
         "open": boolean;
         "side": QSidepanelSide;
         "panelSize": string;
-        "ariaLabel": string;
+        "ariaLabel": string | null;
         "value": string;
         "mode": QSidepanelMode;
         "expanded": boolean;
@@ -3619,7 +3639,7 @@ declare namespace LocalJSX {
     }
     interface QStepDiagramAttributes {
         "layout": QStepDiagramLayout;
-        "ariaLabel": string;
+        "ariaLabel": string | null;
     }
     interface QStepDiagramItemAttributes {
         "status": QStepDiagramItemStatus;
@@ -3644,7 +3664,7 @@ declare namespace LocalJSX {
         "name": string;
         "placeholder": string;
         "label": string;
-        "ariaLabel": string;
+        "ariaLabel": string | null;
         "rows": number;
         "autoGrow": boolean;
         "resizeMode": QTextareaResizeMode;
@@ -3676,7 +3696,7 @@ declare namespace LocalJSX {
         "compact": boolean;
         "transparent": boolean;
         "bordered": boolean;
-        "ariaLabel": string;
+        "ariaLabel": string | null;
     }
     interface QTooltipAttributes {
         "content": string;

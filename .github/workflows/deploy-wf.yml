@@ -17,21 +17,22 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: read
+  contents: write
+  id-token: write
 
 jobs:
   publish:
-    name: Publish to npm (${{ github.ref_name == 'main' && 'latest' || 'next' }})
+    name: Publish to npm (${{ github.ref_name == 'main' && 'latest' || 'dev' }})
     if: >-
       ${{ vars.WEBQUARK_PIPELINE_ENABLED == 'true' &&
       (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main') }}
     runs-on: ubuntu-latest
     environment: ${{ github.ref_name == 'main' && 'npm-production' || 'npm-prerelease' }}
-    env:
-      NPM_CONFIG_TAG: ${{ github.ref_name == 'main' && 'latest' || 'next' }}
     steps:
       - name: Checkout WebQuark
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
@@ -47,13 +48,29 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Build test assets
-        run: bun run build
+      - name: Prepare lockstep package version
+        id: release
+        run: >-
+          bun .github/scripts/publishing/prepare-release.ts
+          --channel ${{ github.ref_name == 'main' && 'stable' || 'dev' }}
 
-      - name: Run tests
-        run: bunx vitest run
+      - name: Build, test, and verify npm packages
+        run: bun run release:verify
 
       - name: Publish packages
-        run: bun run publish-all
+        run: >-
+          bun .github/scripts/publishing/publish-packages.ts
+          --tag ${{ steps.release.outputs.npm_tag }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: "true"
+
+      - name: Create stable GitHub release
+        if: ${{ github.ref_name == 'main' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          if ! gh release view "v${VERSION}" >/dev/null 2>&1; then
+            gh release create "v${VERSION}" --target "${GITHUB_SHA}" --generate-notes --title "WebQuark ${VERSION}"
+          fi

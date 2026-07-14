@@ -35,7 +35,7 @@ export class QToolbar {
   @Prop({ reflect: true }) bordered: boolean = false;
 
   /** Accessible label for the toolbar content group. */
-  @Prop() ariaLabel?: string;
+  @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
 
   render() {
     return (

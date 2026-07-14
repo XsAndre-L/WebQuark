@@ -32,7 +32,7 @@ export class QDropdown {
   @Prop() label?: string;
 
   /** Accessible name for the trigger and option list when no visible label is available. */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
 
   /** Placeholder text shown when no option is selected. */
   @Prop() placeholder: string = 'Select an option...';
