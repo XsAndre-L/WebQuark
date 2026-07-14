@@ -23,7 +23,7 @@ export class QCircularProgress {
   @Prop() label?: string;
 
   /** Accessible name for the progressbar. */
-  @Prop() ariaLabel?: string;
+  @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
 
   /** Shows a spinning indeterminate state instead of a fixed progress value. */
   @Prop({ reflect: true }) indeterminate: boolean = false;

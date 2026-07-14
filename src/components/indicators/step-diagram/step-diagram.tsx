@@ -18,7 +18,7 @@ export class QStepDiagram {
   @Prop({ reflect: true }) layout: QStepDiagramLayout = 'vertical';
 
   /** Accessible label for the step sequence. */
-  @Prop() ariaLabel: string = 'Steps';
+  @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = 'Steps';
 
   @Element() el!: HTMLElement;
 

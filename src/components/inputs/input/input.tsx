@@ -40,7 +40,7 @@ export class QInput {
   @Prop() label?: string;
 
   /** Accessible name for the native input when a visible label is not used. */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
 
   /** Disables input interaction. */
   @Prop({ reflect: true }) disabled: boolean = false;

@@ -11,7 +11,12 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "bundler"
+    "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "paths": {
+      "@webquark/core": ["../../dist/types/index.d.ts"],
+      "@webquark/core/*": ["../../*"]
+    }
   },
   "include": ["src/**/*"]
 }

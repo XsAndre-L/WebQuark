@@ -40,7 +40,7 @@ export class QDialog {
   @Prop() dialogTitle?: string;
 
   /** Accessible name for the dialog, especially when using a custom header without dialogTitle. */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
 
   /** Optional message text rendered in the default dialog body. */
   @Prop() message?: string;

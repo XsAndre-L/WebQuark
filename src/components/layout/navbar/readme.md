@@ -14,7 +14,7 @@ Edge-aware site navigation with optional brand content, actions, and mobile menu
 | Property      | Attribute      | Description                                                                                                    | Type                                     | Default     |
 | ------------- | -------------- | -------------------------------------------------------------------------------------------------------------- | ---------------------------------------- | ----------- |
 | `activeValue` | `active-value` | Value or href of the currently active navigation item.                                                         | `string`                                 | `''`        |
-| `ariaLabel`   | `aria-label`   | Accessible name for the desktop and mobile navigation regions.                                                 | `string`                                 | `undefined` |
+| `ariaLabel`   | `aria-label`   | Accessible name for the desktop and mobile navigation regions.                                                 | `string`                                 | `null`      |
 | `bordered`    | `bordered`     | Renders a border along the inward-facing edge.                                                                 | `boolean`                                | `true`      |
 | `brand`       | `brand`        | Brand text rendered inside the brand link.                                                                     | `string`                                 | `undefined` |
 | `brandHref`   | `brand-href`   | URL used by the brand link.                                                                                    | `string`                                 | `'/'`       |

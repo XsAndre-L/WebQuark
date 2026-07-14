@@ -13,7 +13,7 @@ Action button that renders a native button or anchor according to `href`.
 
 | Property    | Attribute    | Description                                                                                          | Type                                                                     | Default     |
 | ----------- | ------------ | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ | ----------- |
-| `ariaLabel` | `aria-label` | Accessible label forwarded to the inner button or anchor. Required for icon-only buttons.            | `string`                                                                 | `undefined` |
+| `ariaLabel` | `aria-label` | Accessible label forwarded to the inner button or anchor. Required for icon-only buttons.            | `string`                                                                 | `null`      |
 | `disabled`  | `disabled`   | Disables interaction and marks the control as unavailable.                                           | `boolean`                                                                | `false`     |
 | `download`  | `download`   | Download filename or boolean download hint for link buttons.                                         | `string`                                                                 | `undefined` |
 | `expand`    | `expand`     | Expands the button to fill its container width.                                                      | `boolean`                                                                | `false`     |
