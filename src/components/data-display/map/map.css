@@ -1,0 +1,258 @@
+:host {
+  display: block;
+  width: 100%;
+  height: var(--q-map-height, 100%);
+  min-width: 0;
+  min-height: var(--q-map-min-height, 240px);
+  box-sizing: border-box;
+}
+
+.map-surface {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: var(--q-map-bg, var(--q-bg-surface-1, #1f2937));
+  border: var(--q-map-border, var(--q-border, 1px solid var(--q-border-color, #374151)));
+  border-radius: var(--q-map-radius, var(--q-radius-lg, 11px));
+}
+
+.map-canvas {
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  background: inherit;
+  outline: none;
+}
+
+.map-canvas:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--q-color-primary, #60a5fa);
+}
+
+.map-empty {
+  position: absolute;
+  z-index: 900;
+  top: 50%;
+  left: 50%;
+  max-width: calc(100% - 32px);
+  padding: 8px 12px;
+  transform: translate(-50%, -50%);
+  border: var(--q-border, 1px solid var(--q-border-color, #374151));
+  border-radius: var(--q-radius-md, 8px);
+  background: var(--q-bg-base, #111827);
+  color: var(--q-fg-muted, #9ca3af);
+  box-shadow: var(--q-shadow-low, 0 2px 4px rgba(0, 0, 0, 0.2));
+  font-family: var(--q-font-family, inherit);
+  font-size: var(--q-font-size-sm, 0.8rem);
+  line-height: 1.4;
+  text-align: center;
+  pointer-events: none;
+}
+
+.map-attribution {
+  position: absolute;
+  z-index: 1000;
+  right: 0;
+  bottom: 0;
+  max-width: calc(100% - 8px);
+  padding: 2px 6px;
+  overflow: hidden;
+  background: var(--q-map-attribution-bg, var(--q-bg-base, #111827));
+  color: var(--q-map-attribution-color, var(--q-fg-muted, #9ca3af));
+  font-family: var(--q-font-family, inherit);
+  font-size: var(--q-font-size-xs, 0.7rem);
+  line-height: 1.4;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+a.map-attribution:hover,
+a.map-attribution:focus-visible {
+  color: var(--q-fg-base, #f9fafb);
+  text-decoration: underline;
+}
+
+a.map-attribution:focus-visible {
+  outline: var(--q-focus-ring, 2px solid var(--q-color-primary, #60a5fa));
+  outline-offset: -2px;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/*
+ * Minimal Shadow DOM adaptation of Leaflet 1.9.4 core layout rules.
+ * Copyright (c) 2010-2023 Volodymyr Agafonkin and 2010-2011 CloudMade.
+ * Leaflet is distributed under the BSD-2-Clause license: https://github.com/Leaflet/Leaflet/blob/v1.9.4/LICENSE
+ */
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.leaflet-container {
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+}
+
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.leaflet-container .leaflet-tile-pane img,
+.leaflet-container .leaflet-tile {
+  width: auto;
+  max-width: none !important;
+  max-height: none !important;
+  padding: 0;
+}
+
+.leaflet-tile {
+  visibility: hidden;
+}
+
+.leaflet-tile-loaded {
+  visibility: inherit;
+}
+
+.leaflet-pane { z-index: 400; }
+.leaflet-tile-pane { z-index: 200; }
+.leaflet-shadow-pane { z-index: 500; }
+.leaflet-marker-pane { z-index: 600; }
+
+.leaflet-top,
+.leaflet-bottom {
+  position: absolute;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.leaflet-top { top: 0; }
+.leaflet-right { right: 0; }
+.leaflet-bottom { bottom: 0; }
+.leaflet-left { left: 0; }
+
+.leaflet-control {
+  position: relative;
+  z-index: 800;
+  float: left;
+  clear: both;
+  pointer-events: auto;
+}
+
+.leaflet-right .leaflet-control { float: right; }
+.leaflet-top .leaflet-control { margin-top: 10px; }
+.leaflet-bottom .leaflet-control { margin-bottom: 10px; }
+.leaflet-left .leaflet-control { margin-left: 10px; }
+.leaflet-right .leaflet-control { margin-right: 10px; }
+
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-container {
+  pointer-events: none;
+}
+
+.leaflet-marker-icon.leaflet-interactive { pointer-events: auto; }
+.leaflet-grab { cursor: grab; }
+.leaflet-dragging .leaflet-grab,
+.leaflet-dragging .leaflet-marker-draggable { cursor: grabbing; }
+.leaflet-interactive { cursor: pointer; }
+
+.leaflet-bar {
+  overflow: hidden;
+  border: var(--q-border, 1px solid var(--q-border-color, #374151));
+  border-radius: var(--q-radius-md, 8px);
+  background: var(--q-bg-base, #111827);
+  box-shadow: var(--q-shadow-low, 0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.leaflet-bar a {
+  display: block;
+  width: 30px;
+  height: 30px;
+  border-bottom: 1px solid var(--q-border-color, #374151);
+  background: var(--q-bg-base, #111827);
+  color: var(--q-fg-base, #f9fafb);
+  font: 700 18px/30px var(--q-font-family, sans-serif);
+  text-align: center;
+  text-decoration: none;
+}
+
+.leaflet-bar a:last-child { border-bottom: 0; }
+
+.leaflet-bar a:hover,
+.leaflet-bar a:focus-visible {
+  background: var(--q-bg-surface-2, #374151);
+  color: var(--q-color-primary, #60a5fa);
+}
+
+.leaflet-bar a:focus-visible {
+  outline: var(--q-focus-ring, 2px solid var(--q-color-primary, #60a5fa));
+  outline-offset: -2px;
+}
+
+.leaflet-bar a.leaflet-disabled {
+  color: var(--q-fg-disabled, #6b7280);
+  cursor: default;
+}
+
+.q-map-marker {
+  display: grid !important;
+  width: var(--q-map-marker-size, 20px) !important;
+  height: var(--q-map-marker-size, 20px) !important;
+  margin: 0 !important;
+  place-items: center;
+  box-sizing: border-box;
+  transform: translate(-50%, -50%);
+  border: 3px solid var(--q-bg-base, #111827);
+  border-radius: 50%;
+  background: var(--q-map-marker-color, var(--q-color-primary, #60a5fa));
+  box-shadow: var(--q-shadow-low, 0 2px 4px rgba(0, 0, 0, 0.3));
+  outline: none;
+}
+
+.q-map-marker.variant-success { background: var(--q-map-marker-success, var(--q-color-success, #22c55e)); }
+.q-map-marker.variant-warning { background: var(--q-map-marker-warning, var(--q-color-warning, #f59e0b)); }
+.q-map-marker.variant-danger { background: var(--q-map-marker-danger, var(--q-color-danger, #ef4444)); }
+.q-map-marker.variant-muted { background: var(--q-map-marker-muted, var(--q-fg-muted, #9ca3af)); }
+
+.q-map-marker.is-selected {
+  box-shadow:
+    0 0 0 3px var(--q-map-marker-selected-color, var(--q-fg-base, #f9fafb)),
+    var(--q-shadow-medium, 0 8px 16px rgba(0, 0, 0, 0.3));
+}
+
+.q-map-marker:focus-visible {
+  outline: var(--q-focus-ring, 2px solid var(--q-color-primary, #60a5fa));
+  outline-offset: 4px;
+}
+
+.q-map-marker__center {
+  width: 30%;
+  height: 30%;
+  border-radius: 50%;
+  background: var(--q-bg-base, #111827);
+  pointer-events: none;
+}

@@ -25,6 +25,7 @@ See the [component documentation standard and index](./components/README.md), [c
 | `q-quantity-selector` | Form control | Implemented with known limitation | [Guide](./components/q-quantity-selector.md) | Bounded stepper; not yet form-associated. |
 | `q-toggle` | Form control | Implemented | [Guide](./components/q-toggle.md) | Form-associated switch/checkbox presentations. |
 | `q-data-table` | Data display | Implemented | [Guide](./components/q-data-table.md) | Search events, selection, sorting, and row actions. |
+| `q-map` | Data display | Implemented | [Guide](./components/q-map.md) | Leaflet-backed tile or Google imagery, typed markers, selection, and resize handling. |
 | `q-syntax-box` | Data display / input | Implemented with security follow-up | [Guide](./components/q-syntax-box.md) | Highlighting, editing, formatting, copying, and form participation. |
 | `q-circular-progress` | Indicator | Implemented | [Guide](./components/q-circular-progress.md) | Determinate and indeterminate progress. |
 | `q-step-diagram` | Indicator | Implemented | [Guide](./components/q-step-diagram.md) | Vertical/horizontal step sequence parent. |
@@ -37,4 +38,4 @@ See the [component documentation standard and index](./components/README.md), [c
 
 ## Inventory rule
 
-Any change that adds or removes a `q-*` component must update this matrix, `docs/components/README.md`, and the 26-component current-contract reference in the same change. The production build must regenerate and commit the source-adjacent API page and framework proxies where this repository tracks them.
+Any change that adds or removes a `q-*` component must update this matrix, `docs/components/README.md`, and the 27-component current-contract reference in the same change. The production build must regenerate and commit the source-adjacent API page and framework proxies where this repository tracks them.
