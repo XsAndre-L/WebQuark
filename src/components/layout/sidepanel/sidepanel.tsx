@@ -178,6 +178,10 @@ export class QSidepanel {
 
   private handleNavItemClick = (item: SidepanelItem) => {
     if (item.children && item.children.length > 0) {
+      if (item.alwaysExpanded === true) {
+        return;
+      }
+
       this.hasUserToggledGroups = true;
       this.expandedGroups = toggleGroup(this.normalizedItems, this.expandedGroups, this.accordion, item.value);
     } else {

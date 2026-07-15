@@ -27,9 +27,15 @@ export interface SidepanelItem {
   label: string;
   value: string;
   icon?: string;
+  alwaysExpanded?: boolean;
   children?: SidepanelItem[];
 }
 ```
+
+Set `alwaysExpanded` on a parent item to render it as a persistent category heading. Its children
+remain visible, it has no collapse affordance, and it does not affect the collapsible behavior of
+other navigation groups. It overrides `expanded=false` and accordion mode, applies only to the item
+where it is set, and is ignored for items without children.
 
 For a flat navigation list, the concise form is enough:
 

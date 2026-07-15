@@ -175,6 +175,47 @@ describe('q-sidepanel', () => {
     expect(items.map(item => item.dataset.depthTone)).toEqual(['primary', 'secondary', 'primary']);
   });
 
+  it('keeps designated navigation categories expanded and non-collapsible', async () => {
+    const el = await createComponent({
+      variant: 'nav',
+      expanded: false,
+      items: [
+        {
+          label: 'Analytics',
+          value: 'analytics',
+          alwaysExpanded: true,
+          children: [
+            {
+              label: 'Store Analytics',
+              value: 'store-analytics',
+              alwaysExpanded: true,
+              children: [{ label: 'Stock on Hand', value: 'stock-on-hand' }],
+            },
+          ],
+        },
+      ],
+    });
+
+    const categories = Array.from(
+      el.shadowRoot.querySelectorAll('.nav-item--always-expanded'),
+    ) as HTMLElement[];
+
+    expect(categories).toHaveLength(2);
+    expect(categories.map(category => category.getAttribute('role'))).toEqual([
+      'heading',
+      'heading',
+    ]);
+    expect(categories.map(category => category.getAttribute('tabindex'))).toEqual([null, null]);
+    expect(el.shadowRoot.querySelectorAll('.nav-item__chevron')).toHaveLength(0);
+    expect(el.shadowRoot.textContent).toContain('Stock on Hand');
+
+    categories[0].click();
+    categories[1].click();
+    await wait();
+
+    expect(el.shadowRoot.textContent).toContain('Stock on Hand');
+  });
+
   it('preserves user-collapsed groups when items update', async () => {
     const items = [
       {

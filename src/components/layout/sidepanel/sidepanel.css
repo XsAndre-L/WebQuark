@@ -397,7 +397,6 @@ slot[name='footer'] {
 .nav-item--parent {
   font-size: 0.75rem;
   font-weight: 700;
-  text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--q-sidepanel-nav-depth-color);
 }
@@ -405,6 +404,15 @@ slot[name='footer'] {
 .nav-item--parent:hover,
 .nav-item--parent:focus-visible {
   color: var(--q-sidepanel-nav-depth-color);
+}
+
+.nav-item--always-expanded {
+  cursor: default;
+}
+
+.nav-item--always-expanded:hover,
+.nav-item--always-expanded:focus-visible {
+  background: transparent;
 }
 
 /* ── Icons ───────────────────────────────────────────────────────────────── */
@@ -459,6 +467,10 @@ slot[name='footer'] {
   padding-left: 0 !important;
   padding-right: 0 !important;
   justify-content: center;
+}
+
+.nav-sidebar.is-collapsed.collapse-mode-rail .nav-item--always-expanded {
+  display: none;
 }
 
 .nav-sidebar.is-collapsed.collapse-mode-rail .nav-item__label,
