@@ -2,6 +2,8 @@ export interface SidepanelItem {
   label: string;
   value: string;
   icon?: string;
+  /** Keeps a parent category visible and non-collapsible. Ignored for leaf items. */
+  alwaysExpanded?: boolean;
   children?: SidepanelItem[];
 }
 

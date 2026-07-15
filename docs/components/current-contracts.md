@@ -96,7 +96,7 @@ For array and object inputs, assign the JavaScript property unless the contract 
 - Properties: `variant`, `open`, `side`, `panelSize`, `items`, `ariaLabel`, `value`, `mode`, `expanded`, `accordion`, `collapsible`, `collapsed`, `collapseControl`, `collapseMode`, `collapseLabel`.
 - Events: `qClose`, `qSelect`, `qCollapsedChange`.
 - Slots: `header`, default body, `footer`.
-- Behavior: `drawer` is modal, `panel` is persistent slotted content, and `nav` renders item trees. Top-level string items normalize to matching labels and values. The built-in collapse control mutates `collapsed` and emits `qCollapsedChange`; direct consumer assignments do not emit it.
+- Behavior: `drawer` is modal, `panel` is persistent slotted content, and `nav` renders item trees. Top-level string items normalize to matching labels and values. An item-level `alwaysExpanded` value of `true` turns a parent into a persistent, non-interactive category heading; it overrides `expanded=false` and accordion mode, is not inherited, and is ignored for leaf items. The built-in collapse control mutates `collapsed` and emits `qCollapsedChange`; direct consumer assignments do not emit it.
 - Accessibility: the drawer traps focus and restores it after closing. Use `ariaLabel` to name the navigation, panel region, or drawer dialog.
 - Known limitation: `mode` is exposed but currently does not change rendering; do not depend on distinct `flat`, `grouped`, or `tree` behavior until that contract is implemented.
 
