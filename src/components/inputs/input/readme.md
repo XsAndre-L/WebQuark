@@ -13,7 +13,7 @@ Form-associated input field with optional prefix/suffix slots, clear button, pas
 
 | Property       | Attribute       | Description                                                                            | Type                                                                          | Default     |
 | -------------- | --------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ----------- |
-| `ariaLabel`    | `aria-label`    | Accessible name for the native input when a visible label is not used.                 | `string`                                                                      | `undefined` |
+| `ariaLabel`    | `aria-label`    | Accessible name for the native input when a visible label is not used.                 | `string`                                                                      | `null`      |
 | `clearable`    | `clearable`     | Shows a clear button when the field has a value.                                       | `boolean`                                                                     | `false`     |
 | `disabled`     | `disabled`      | Disables input interaction.                                                            | `boolean`                                                                     | `false`     |
 | `error`        | `error`         | Validation error text or error-state flag.                                             | `string`                                                                      | `undefined` |

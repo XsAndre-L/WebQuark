@@ -4,6 +4,7 @@
   { "tag": "q-link",              "name": "Link",              "category": "actions" },
 
   { "tag": "q-data-table",        "name": "Data Table",        "category": "data-display" },
+  { "tag": "q-map",               "name": "Map",               "category": "data-display" },
   { "tag": "q-syntax-box",        "name": "Syntax Box",        "category": "data-display" },
 
   { "tag": "q-circular-progress", "name": "Circular Progress", "category": "indicators" },

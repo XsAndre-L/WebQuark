@@ -51,7 +51,7 @@ export class QButton {
   /** Renders compact icon-only spacing. When unset, this is auto-detected from slotted icon content. */
   @Prop({ reflect: true }) iconOnly?: boolean;
   /** Accessible label forwarded to the inner button or anchor. Required for icon-only buttons. */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
 
   /** Emitted on click, unless disabled or loading. */
   @Event() qClick!: EventEmitter<MouseEvent>;

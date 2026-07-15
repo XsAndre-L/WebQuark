@@ -196,6 +196,24 @@ Exposes variables specialized for fine-tuning specific complex components.
 *   `--q-panel-border`: `var(--q-border)` — Edge separating line.
 *   `--q-panel-shadow`: `var(--q-shadow-high)` — Floating shadow depth.
 
+### I. Map (`q-map`)
+*   `--q-map-height`: `100%` — Map host height within its containing layout.
+*   `--q-map-min-height`: `240px` — Minimum usable map height when the parent does not establish one.
+*   `--q-map-bg`: `var(--q-bg-surface-1)` — Surface behind tiles and the missing-configuration state.
+*   `--q-map-border`: `var(--q-border)` — Outer map surface border.
+*   `--q-map-radius`: `var(--q-radius-lg)` — Outer map surface corner radius.
+*   `--q-map-marker-size`: `20px` — Width and height of point markers.
+*   `--q-map-marker-color`: `var(--q-color-primary)` — Default marker colour.
+*   `--q-map-marker-success`: `var(--q-color-success)` — Success marker colour.
+*   `--q-map-marker-warning`: `var(--q-color-warning)` — Warning marker colour.
+*   `--q-map-marker-danger`: `var(--q-color-danger)` — Danger marker colour.
+*   `--q-map-marker-muted`: `var(--q-fg-muted)` — Muted marker colour.
+*   `--q-map-marker-selected-color`: `var(--q-fg-base)` — Selected marker emphasis colour.
+*   `--q-map-attribution-bg`: `var(--q-bg-base)` — Solid attribution label background.
+*   `--q-map-attribution-color`: `var(--q-fg-muted)` — Attribution label and link colour.
+
+Map colour tokens reference the shared semantic palette, so automatic light mode and explicit `data-theme="light"` or `data-theme="dark"` changes flow through without separate map-specific overrides.
+
 ---
 
 ## Usage Example

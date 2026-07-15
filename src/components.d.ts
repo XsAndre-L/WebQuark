@@ -17,6 +17,7 @@ import { DropdownOptionInput, Option, QDropdownSize } from "./components/inputs/
 import { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/layout/form/form.types";
 import { QInputSize, QInputType } from "./components/inputs/input/input.types";
 import { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
+import { QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapProvider } from "./components/data-display/map/map.types";
 import { NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode } from "./components/layout/navbar/navbar.types";
 import { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
 import { QQuantitySelectorVariant } from "./components/inputs/quantity-selector/quantity-selector.types";
@@ -43,6 +44,7 @@ export { DropdownOptionInput, Option, QDropdownSize } from "./components/inputs/
 export { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/layout/form/form.types";
 export { QInputSize, QInputType } from "./components/inputs/input/input.types";
 export { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
+export { QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapProvider } from "./components/data-display/map/map.types";
 export { NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode } from "./components/layout/navbar/navbar.types";
 export { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
 export { QQuantitySelectorVariant } from "./components/inputs/quantity-selector/quantity-selector.types";
@@ -64,8 +66,9 @@ export namespace Components {
     interface QButton {
         /**
           * Accessible label forwarded to the inner button or anchor. Required for icon-only buttons.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel": string | null;
         /**
           * Disables interaction and marks the control as unavailable.
           * @default false
@@ -259,8 +262,9 @@ export namespace Components {
     interface QCircularProgress {
         /**
           * Accessible name for the progressbar.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel": string | null;
         /**
           * Shows a spinning indeterminate state instead of a fixed progress value.
           * @default false
@@ -388,8 +392,9 @@ export namespace Components {
     interface QDialog {
         /**
           * Accessible name for the dialog, especially when using a custom header without dialogTitle.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel": string | null;
         /**
           * Backdrop rendering style. Solid is the default CEF/Unreal-safe dimmer; none keeps the click layer transparent.
           * @default 'solid'
@@ -472,8 +477,9 @@ export namespace Components {
     interface QDropdown {
         /**
           * Accessible name for the trigger and option list when no visible label is available.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel": string | null;
         /**
           * Disables the trigger and prevents selection changes.
           * @default false
@@ -639,8 +645,9 @@ export namespace Components {
     interface QInput {
         /**
           * Accessible name for the native input when a visible label is not used.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel": string | null;
         /**
           * Clears the current value and focuses the native input.
          */
@@ -772,6 +779,94 @@ export namespace Components {
         "variant": QLinkVariant;
     }
     /**
+     * Framework-neutral interactive map powered by Leaflet.
+     * @cssprop --q-map-height - Component height.
+     * @cssprop --q-map-min-height - Minimum component height.
+     * @cssprop --q-map-bg - Background behind map tiles.
+     * @cssprop --q-map-border - Outer border.
+     * @cssprop --q-map-radius - Outer corner radius.
+     * @cssprop --q-map-marker-size - Marker diameter.
+     * @cssprop --q-map-marker-color - Default marker color.
+     * @cssprop --q-map-marker-success - Success marker color.
+     * @cssprop --q-map-marker-warning - Warning marker color.
+     * @cssprop --q-map-marker-danger - Danger marker color.
+     * @cssprop --q-map-marker-muted - Muted marker color.
+     * @cssprop --q-map-marker-selected-color - Selected-marker ring color.
+     * @cssprop --q-map-attribution-bg - Attribution background.
+     * @cssprop --q-map-attribution-color - Attribution foreground.
+     */
+    interface QMap {
+        /**
+          * Accessible name for the interactive map region.
+          * @default 'Interactive map'
+         */
+        "ariaLabel": string;
+        /**
+          * Plain-text tile-provider attribution.
+          * @default ''
+         */
+        "attribution": string;
+        /**
+          * Optional HTTP(S) destination for the attribution text.
+          * @default ''
+         */
+        "attributionUrl": string;
+        /**
+          * Initial and controlled center latitude.
+          * @default 0
+         */
+        "centerLatitude": number;
+        /**
+          * Initial and controlled center longitude.
+          * @default 0
+         */
+        "centerLongitude": number;
+        /**
+          * Browser-restricted Google Maps JavaScript API key used by the Google provider.
+          * @default ''
+         */
+        "googleApiKey": string;
+        /**
+          * Google base-map style used by the Google provider.
+          * @default 'roadmap'
+         */
+        "googleMapType": QMapGoogleMapType;
+        /**
+          * Marker records, or a JSON string containing marker records.
+          * @default []
+         */
+        "markers": QMapMarkerInput;
+        /**
+          * Highest permitted zoom level.
+          * @default 19
+         */
+        "maxZoom": number;
+        /**
+          * Lowest permitted zoom level.
+          * @default 0
+         */
+        "minZoom": number;
+        /**
+          * Map imagery provider.
+          * @default 'tiles'
+         */
+        "provider": QMapProvider;
+        /**
+          * Identifier of the marker rendered in the selected state.
+         */
+        "selectedMarkerId"?: QMapMarkerId;
+        /**
+          * URL template used by the tiles provider and as an optional Google-provider fallback.
+          * @default ''
+         */
+        "tileUrl": string;
+        /**
+          * Initial and controlled zoom level.
+          * @default 2
+         */
+        "zoom": number;
+    }
+    /**
      * Edge-aware site navigation with optional brand content, actions, and mobile menu.
      */
     interface QNavbar {
@@ -782,8 +877,9 @@ export namespace Components {
         "activeValue": string;
         /**
           * Accessible name for the desktop and mobile navigation regions.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel": string | null;
         /**
           * Renders a border along the inward-facing edge.
           * @default true
@@ -849,8 +945,9 @@ export namespace Components {
     interface QPanel {
         /**
           * Accessible label for the panel container and scrollable body region.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel": string | null;
         /**
           * Stretches the panel to fill the available height.
           * @default false
@@ -984,8 +1081,9 @@ export namespace Components {
         "accordion": boolean;
         /**
           * Accessible name for the rendered navigation, panel, or drawer region.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel": string | null;
         /**
           * Where to render the built-in collapse toggle button. 'none' means the consumer supplies their own control and drives `collapsed` externally.
           * @default 'none'
@@ -1059,7 +1157,7 @@ export namespace Components {
           * Accessible label for the step sequence.
           * @default 'Steps'
          */
-        "ariaLabel": string;
+        "ariaLabel": string | null;
         /**
           * Controls whether step items are stacked vertically or arranged horizontally.
           * @default 'vertical'
@@ -1155,8 +1253,9 @@ export namespace Components {
         "adjustHeight": () => Promise<void>;
         /**
           * Accessible name for the native textarea when a visible label is not used.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel": string | null;
         /**
           * Enables automatic height growth when resizeMode is auto.
           * @default true
@@ -1294,8 +1393,9 @@ export namespace Components {
     interface QToolbar {
         /**
           * Accessible label for the toolbar content group.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel": string | null;
         /**
           * Renders a border along the inward-facing edge.
           * @default false
@@ -1377,6 +1477,10 @@ export interface QInputCustomEvent<T> extends CustomEvent<T> {
 export interface QLinkCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLQLinkElement;
+}
+export interface QMapCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQMapElement;
 }
 export interface QNavbarCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -1661,6 +1765,41 @@ declare global {
         prototype: HTMLQLinkElement;
         new (): HTMLQLinkElement;
     };
+    interface HTMLQMapElementEventMap {
+        "qReady": void;
+        "qMarkerSelect": QMapMarkerSelectDetail;
+    }
+    /**
+     * Framework-neutral interactive map powered by Leaflet.
+     * @cssprop --q-map-height - Component height.
+     * @cssprop --q-map-min-height - Minimum component height.
+     * @cssprop --q-map-bg - Background behind map tiles.
+     * @cssprop --q-map-border - Outer border.
+     * @cssprop --q-map-radius - Outer corner radius.
+     * @cssprop --q-map-marker-size - Marker diameter.
+     * @cssprop --q-map-marker-color - Default marker color.
+     * @cssprop --q-map-marker-success - Success marker color.
+     * @cssprop --q-map-marker-warning - Warning marker color.
+     * @cssprop --q-map-marker-danger - Danger marker color.
+     * @cssprop --q-map-marker-muted - Muted marker color.
+     * @cssprop --q-map-marker-selected-color - Selected-marker ring color.
+     * @cssprop --q-map-attribution-bg - Attribution background.
+     * @cssprop --q-map-attribution-color - Attribution foreground.
+     */
+    interface HTMLQMapElement extends Components.QMap, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQMapElementEventMap>(type: K, listener: (this: HTMLQMapElement, ev: QMapCustomEvent<HTMLQMapElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQMapElementEventMap>(type: K, listener: (this: HTMLQMapElement, ev: QMapCustomEvent<HTMLQMapElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLQMapElement: {
+        prototype: HTMLQMapElement;
+        new (): HTMLQMapElement;
+    };
     interface HTMLQNavbarElementEventMap {
         "qSelect": NavbarSelectDetail;
         "qMenuToggle": boolean;
@@ -1925,6 +2064,7 @@ declare global {
         "q-icon": HTMLQIconElement;
         "q-input": HTMLQInputElement;
         "q-link": HTMLQLinkElement;
+        "q-map": HTMLQMapElement;
         "q-navbar": HTMLQNavbarElement;
         "q-panel": HTMLQPanelElement;
         "q-quantity-selector": HTMLQQuantitySelectorElement;
@@ -1948,8 +2088,9 @@ declare namespace LocalJSX {
     interface QButton {
         /**
           * Accessible label forwarded to the inner button or anchor. Required for icon-only buttons.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel"?: string | null;
         /**
           * Disables interaction and marks the control as unavailable.
           * @default false
@@ -2167,8 +2308,9 @@ declare namespace LocalJSX {
     interface QCircularProgress {
         /**
           * Accessible name for the progressbar.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel"?: string | null;
         /**
           * Shows a spinning indeterminate state instead of a fixed progress value.
           * @default false
@@ -2316,8 +2458,9 @@ declare namespace LocalJSX {
     interface QDialog {
         /**
           * Accessible name for the dialog, especially when using a custom header without dialogTitle.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel"?: string | null;
         /**
           * Backdrop rendering style. Solid is the default CEF/Unreal-safe dimmer; none keeps the click layer transparent.
           * @default 'solid'
@@ -2396,8 +2539,9 @@ declare namespace LocalJSX {
     interface QDropdown {
         /**
           * Accessible name for the trigger and option list when no visible label is available.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel"?: string | null;
         /**
           * Disables the trigger and prevents selection changes.
           * @default false
@@ -2587,8 +2731,9 @@ declare namespace LocalJSX {
     interface QInput {
         /**
           * Accessible name for the native input when a visible label is not used.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel"?: string | null;
         /**
           * Shows a clear button when the field has a value.
           * @default false
@@ -2748,6 +2893,102 @@ declare namespace LocalJSX {
         "variant"?: QLinkVariant;
     }
     /**
+     * Framework-neutral interactive map powered by Leaflet.
+     * @cssprop --q-map-height - Component height.
+     * @cssprop --q-map-min-height - Minimum component height.
+     * @cssprop --q-map-bg - Background behind map tiles.
+     * @cssprop --q-map-border - Outer border.
+     * @cssprop --q-map-radius - Outer corner radius.
+     * @cssprop --q-map-marker-size - Marker diameter.
+     * @cssprop --q-map-marker-color - Default marker color.
+     * @cssprop --q-map-marker-success - Success marker color.
+     * @cssprop --q-map-marker-warning - Warning marker color.
+     * @cssprop --q-map-marker-danger - Danger marker color.
+     * @cssprop --q-map-marker-muted - Muted marker color.
+     * @cssprop --q-map-marker-selected-color - Selected-marker ring color.
+     * @cssprop --q-map-attribution-bg - Attribution background.
+     * @cssprop --q-map-attribution-color - Attribution foreground.
+     */
+    interface QMap {
+        /**
+          * Accessible name for the interactive map region.
+          * @default 'Interactive map'
+         */
+        "ariaLabel"?: string;
+        /**
+          * Plain-text tile-provider attribution.
+          * @default ''
+         */
+        "attribution"?: string;
+        /**
+          * Optional HTTP(S) destination for the attribution text.
+          * @default ''
+         */
+        "attributionUrl"?: string;
+        /**
+          * Initial and controlled center latitude.
+          * @default 0
+         */
+        "centerLatitude"?: number;
+        /**
+          * Initial and controlled center longitude.
+          * @default 0
+         */
+        "centerLongitude"?: number;
+        /**
+          * Browser-restricted Google Maps JavaScript API key used by the Google provider.
+          * @default ''
+         */
+        "googleApiKey"?: string;
+        /**
+          * Google base-map style used by the Google provider.
+          * @default 'roadmap'
+         */
+        "googleMapType"?: QMapGoogleMapType;
+        /**
+          * Marker records, or a JSON string containing marker records.
+          * @default []
+         */
+        "markers"?: QMapMarkerInput;
+        /**
+          * Highest permitted zoom level.
+          * @default 19
+         */
+        "maxZoom"?: number;
+        /**
+          * Lowest permitted zoom level.
+          * @default 0
+         */
+        "minZoom"?: number;
+        /**
+          * Emitted when a marker is activated with a pointer or keyboard.
+         */
+        "onQMarkerSelect"?: (event: QMapCustomEvent<QMapMarkerSelectDetail>) => void;
+        /**
+          * Emitted after Leaflet and the initial provider setup have completed.
+         */
+        "onQReady"?: (event: QMapCustomEvent<void>) => void;
+        /**
+          * Map imagery provider.
+          * @default 'tiles'
+         */
+        "provider"?: QMapProvider;
+        /**
+          * Identifier of the marker rendered in the selected state.
+         */
+        "selectedMarkerId"?: QMapMarkerId;
+        /**
+          * URL template used by the tiles provider and as an optional Google-provider fallback.
+          * @default ''
+         */
+        "tileUrl"?: string;
+        /**
+          * Initial and controlled zoom level.
+          * @default 2
+         */
+        "zoom"?: number;
+    }
+    /**
      * Edge-aware site navigation with optional brand content, actions, and mobile menu.
      */
     interface QNavbar {
@@ -2758,8 +2999,9 @@ declare namespace LocalJSX {
         "activeValue"?: string;
         /**
           * Accessible name for the desktop and mobile navigation regions.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel"?: string | null;
         /**
           * Renders a border along the inward-facing edge.
           * @default true
@@ -2833,8 +3075,9 @@ declare namespace LocalJSX {
     interface QPanel {
         /**
           * Accessible label for the panel container and scrollable body region.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel"?: string | null;
         /**
           * Stretches the panel to fill the available height.
           * @default false
@@ -2988,8 +3231,9 @@ declare namespace LocalJSX {
         "accordion"?: boolean;
         /**
           * Accessible name for the rendered navigation, panel, or drawer region.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel"?: string | null;
         /**
           * Where to render the built-in collapse toggle button. 'none' means the consumer supplies their own control and drives `collapsed` externally.
           * @default 'none'
@@ -3075,7 +3319,7 @@ declare namespace LocalJSX {
           * Accessible label for the step sequence.
           * @default 'Steps'
          */
-        "ariaLabel"?: string;
+        "ariaLabel"?: string | null;
         /**
           * Controls whether step items are stacked vertically or arranged horizontally.
           * @default 'vertical'
@@ -3179,8 +3423,9 @@ declare namespace LocalJSX {
     interface QTextarea {
         /**
           * Accessible name for the native textarea when a visible label is not used.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel"?: string | null;
         /**
           * Enables automatic height growth when resizeMode is auto.
           * @default true
@@ -3358,8 +3603,9 @@ declare namespace LocalJSX {
     interface QToolbar {
         /**
           * Accessible label for the toolbar content group.
+          * @default null
          */
-        "ariaLabel"?: string;
+        "ariaLabel"?: string | null;
         /**
           * Renders a border along the inward-facing edge.
           * @default false
@@ -3421,7 +3667,7 @@ declare namespace LocalJSX {
         "rel": string;
         "download": string;
         "iconOnly": boolean;
-        "ariaLabel": string;
+        "ariaLabel": string | null;
     }
     interface QCardAttributes {
         "elevation": string;
@@ -3453,7 +3699,7 @@ declare namespace LocalJSX {
     interface QCircularProgressAttributes {
         "value": number;
         "label": string;
-        "ariaLabel": string;
+        "ariaLabel": string | null;
         "indeterminate": boolean;
         "size": QCircularProgressSize;
     }
@@ -3478,7 +3724,7 @@ declare namespace LocalJSX {
     interface QDialogAttributes {
         "open": boolean;
         "dialogTitle": string;
-        "ariaLabel": string;
+        "ariaLabel": string | null;
         "message": string;
         "closeOnEsc": boolean;
         "closeOnOverlayClick": boolean;
@@ -3494,7 +3740,7 @@ declare namespace LocalJSX {
         "value": string;
         "name": string;
         "label": string;
-        "ariaLabel": string;
+        "ariaLabel": string | null;
         "placeholder": string;
         "options": DropdownOptionInput[] | string;
         "disabled": boolean;
@@ -3531,7 +3777,7 @@ declare namespace LocalJSX {
         "type": QInputType;
         "placeholder": string;
         "label": string;
-        "ariaLabel": string;
+        "ariaLabel": string | null;
         "disabled": boolean;
         "required": boolean;
         "error": string;
@@ -3556,13 +3802,29 @@ declare namespace LocalJSX {
         "external": boolean;
         "disabled": boolean;
     }
+    interface QMapAttributes {
+        "provider": QMapProvider;
+        "tileUrl": string;
+        "googleApiKey": string;
+        "googleMapType": QMapGoogleMapType;
+        "attribution": string;
+        "attributionUrl": string;
+        "centerLatitude": number;
+        "centerLongitude": number;
+        "zoom": number;
+        "minZoom": number;
+        "maxZoom": number;
+        "markers": QMapMarkerInput;
+        "selectedMarkerId": string;
+        "ariaLabel": string;
+    }
     interface QNavbarAttributes {
         "brand": string;
         "logoSrc": string;
         "logoAlt": string;
         "brandHref": string;
         "items": NavbarItemInput[] | string;
-        "ariaLabel": string;
+        "ariaLabel": string | null;
         "activeValue": string;
         "mobileLabel": string;
         "edge": QNavbarEdge;
@@ -3580,7 +3842,7 @@ declare namespace LocalJSX {
         "fullHeight": boolean;
         "stickyHeader": boolean;
         "stickyFooter": boolean;
-        "ariaLabel": string;
+        "ariaLabel": string | null;
     }
     interface QQuantitySelectorAttributes {
         "value": number;
@@ -3606,7 +3868,7 @@ declare namespace LocalJSX {
         "open": boolean;
         "side": QSidepanelSide;
         "panelSize": string;
-        "ariaLabel": string;
+        "ariaLabel": string | null;
         "value": string;
         "mode": QSidepanelMode;
         "expanded": boolean;
@@ -3619,7 +3881,7 @@ declare namespace LocalJSX {
     }
     interface QStepDiagramAttributes {
         "layout": QStepDiagramLayout;
-        "ariaLabel": string;
+        "ariaLabel": string | null;
     }
     interface QStepDiagramItemAttributes {
         "status": QStepDiagramItemStatus;
@@ -3644,7 +3906,7 @@ declare namespace LocalJSX {
         "name": string;
         "placeholder": string;
         "label": string;
-        "ariaLabel": string;
+        "ariaLabel": string | null;
         "rows": number;
         "autoGrow": boolean;
         "resizeMode": QTextareaResizeMode;
@@ -3676,7 +3938,7 @@ declare namespace LocalJSX {
         "compact": boolean;
         "transparent": boolean;
         "bordered": boolean;
-        "ariaLabel": string;
+        "ariaLabel": string | null;
     }
     interface QTooltipAttributes {
         "content": string;
@@ -3697,6 +3959,7 @@ declare namespace LocalJSX {
         "q-icon": Omit<QIcon, keyof QIconAttributes> & { [K in keyof QIcon & keyof QIconAttributes]?: QIcon[K] } & { [K in keyof QIcon & keyof QIconAttributes as `attr:${K}`]?: QIconAttributes[K] } & { [K in keyof QIcon & keyof QIconAttributes as `prop:${K}`]?: QIcon[K] };
         "q-input": Omit<QInput, keyof QInputAttributes> & { [K in keyof QInput & keyof QInputAttributes]?: QInput[K] } & { [K in keyof QInput & keyof QInputAttributes as `attr:${K}`]?: QInputAttributes[K] } & { [K in keyof QInput & keyof QInputAttributes as `prop:${K}`]?: QInput[K] };
         "q-link": Omit<QLink, keyof QLinkAttributes> & { [K in keyof QLink & keyof QLinkAttributes]?: QLink[K] } & { [K in keyof QLink & keyof QLinkAttributes as `attr:${K}`]?: QLinkAttributes[K] } & { [K in keyof QLink & keyof QLinkAttributes as `prop:${K}`]?: QLink[K] };
+        "q-map": Omit<QMap, keyof QMapAttributes> & { [K in keyof QMap & keyof QMapAttributes]?: QMap[K] } & { [K in keyof QMap & keyof QMapAttributes as `attr:${K}`]?: QMapAttributes[K] } & { [K in keyof QMap & keyof QMapAttributes as `prop:${K}`]?: QMap[K] };
         "q-navbar": Omit<QNavbar, keyof QNavbarAttributes> & { [K in keyof QNavbar & keyof QNavbarAttributes]?: QNavbar[K] } & { [K in keyof QNavbar & keyof QNavbarAttributes as `attr:${K}`]?: QNavbarAttributes[K] } & { [K in keyof QNavbar & keyof QNavbarAttributes as `prop:${K}`]?: QNavbar[K] };
         "q-panel": Omit<QPanel, keyof QPanelAttributes> & { [K in keyof QPanel & keyof QPanelAttributes]?: QPanel[K] } & { [K in keyof QPanel & keyof QPanelAttributes as `attr:${K}`]?: QPanelAttributes[K] } & { [K in keyof QPanel & keyof QPanelAttributes as `prop:${K}`]?: QPanel[K] };
         "q-quantity-selector": Omit<QQuantitySelector, keyof QQuantitySelectorAttributes> & { [K in keyof QQuantitySelector & keyof QQuantitySelectorAttributes]?: QQuantitySelector[K] } & { [K in keyof QQuantitySelector & keyof QQuantitySelectorAttributes as `attr:${K}`]?: QQuantitySelectorAttributes[K] } & { [K in keyof QQuantitySelector & keyof QQuantitySelectorAttributes as `prop:${K}`]?: QQuantitySelector[K] };
@@ -3776,6 +4039,24 @@ declare module "@stencil/core" {
              * Inline link with disabled handling, external-link affordances, and optional icon slots.
              */
             "q-link": LocalJSX.IntrinsicElements["q-link"] & JSXBase.HTMLAttributes<HTMLQLinkElement>;
+            /**
+             * Framework-neutral interactive map powered by Leaflet.
+             * @cssprop --q-map-height - Component height.
+             * @cssprop --q-map-min-height - Minimum component height.
+             * @cssprop --q-map-bg - Background behind map tiles.
+             * @cssprop --q-map-border - Outer border.
+             * @cssprop --q-map-radius - Outer corner radius.
+             * @cssprop --q-map-marker-size - Marker diameter.
+             * @cssprop --q-map-marker-color - Default marker color.
+             * @cssprop --q-map-marker-success - Success marker color.
+             * @cssprop --q-map-marker-warning - Warning marker color.
+             * @cssprop --q-map-marker-danger - Danger marker color.
+             * @cssprop --q-map-marker-muted - Muted marker color.
+             * @cssprop --q-map-marker-selected-color - Selected-marker ring color.
+             * @cssprop --q-map-attribution-bg - Attribution background.
+             * @cssprop --q-map-attribution-color - Attribution foreground.
+             */
+            "q-map": LocalJSX.IntrinsicElements["q-map"] & JSXBase.HTMLAttributes<HTMLQMapElement>;
             /**
              * Edge-aware site navigation with optional brand content, actions, and mobile menu.
              */

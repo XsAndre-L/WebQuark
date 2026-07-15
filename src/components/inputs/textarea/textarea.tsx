@@ -31,7 +31,7 @@ export class QTextarea {
   @Prop() label?: string;
 
   /** Accessible name for the native textarea when a visible label is not used. */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
 
   /** Visible row count used by the native textarea. */
   @Prop() rows: number = 3;
