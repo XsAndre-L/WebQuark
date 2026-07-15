@@ -13,7 +13,7 @@ Circular progress indicator for determinate percentages or indeterminate loading
 
 | Property        | Attribute       | Description                                                               | Type                   | Default     |
 | --------------- | --------------- | ------------------------------------------------------------------------- | ---------------------- | ----------- |
-| `ariaLabel`     | `aria-label`    | Accessible name for the progressbar.                                      | `string`               | `undefined` |
+| `ariaLabel`     | `aria-label`    | Accessible name for the progressbar.                                      | `string`               | `null`      |
 | `indeterminate` | `indeterminate` | Shows a spinning indeterminate state instead of a fixed progress value.   | `boolean`              | `false`     |
 | `label`         | `label`         | Optional visible center text. Defaults to the clamped percentage.         | `string`               | `undefined` |
 | `size`          | `size`          | Visual size preset for the SVG, stroke width, and label text.             | `"lg" \| "md" \| "sm"` | `'md'`      |

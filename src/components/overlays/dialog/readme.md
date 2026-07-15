@@ -13,7 +13,7 @@ Modal confirmation or message dialog with focus trapping and safe solid backdrop
 
 | Property              | Attribute                | Description                                                                                                    | Type                | Default          |
 | --------------------- | ------------------------ | -------------------------------------------------------------------------------------------------------------- | ------------------- | ---------------- |
-| `ariaLabel`           | `aria-label`             | Accessible name for the dialog, especially when using a custom header without dialogTitle.                     | `string`            | `undefined`      |
+| `ariaLabel`           | `aria-label`             | Accessible name for the dialog, especially when using a custom header without dialogTitle.                     | `string`            | `null`           |
 | `backdropEffect`      | `backdrop-effect`        | Backdrop rendering style. Solid is the default CEF/Unreal-safe dimmer; none keeps the click layer transparent. | `"none" \| "solid"` | `'solid'`        |
 | `cancelLabel`         | `cancel-label`           | Text shown on the cancel action button.                                                                        | `string`            | `'Cancel'`       |
 | `closeLabel`          | `close-label`            | Accessible label for the header close button.                                                                  | `string`            | `'Close dialog'` |

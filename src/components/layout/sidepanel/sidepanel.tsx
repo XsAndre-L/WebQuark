@@ -54,7 +54,7 @@ export class QSidepanel {
   /** Navigation items rendered in nav mode. */
   @Prop() items: SidepanelItemInput[] = [];
   /** Accessible name for the rendered navigation, panel, or drawer region. */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
   /** Active leaf item value. */
   @Prop({ reflect: true }) value: string = '';
   /** Item display mode: flat list, one-level groups, or deep tree */
@@ -178,6 +178,10 @@ export class QSidepanel {
 
   private handleNavItemClick = (item: SidepanelItem) => {
     if (item.children && item.children.length > 0) {
+      if (item.alwaysExpanded === true) {
+        return;
+      }
+
       this.hasUserToggledGroups = true;
       this.expandedGroups = toggleGroup(this.normalizedItems, this.expandedGroups, this.accordion, item.value);
     } else {

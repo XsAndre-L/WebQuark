@@ -1,5 +1,5 @@
 export interface ButtonAccessibleNameState {
-  ariaLabel?: string;
+  ariaLabel?: string | null;
   iconOnly?: boolean;
   hasVisibleText: boolean;
   hasIcon: boolean;

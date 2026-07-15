@@ -184,6 +184,22 @@
   --q-sidepanel-panel-footer-padding: var(--q-padding-lg);
   --q-sidepanel-panel-section-border: var(--q-border);
 
+  /* Map (q-map) */
+  --q-map-height: 100%;
+  --q-map-min-height: 240px;
+  --q-map-bg: var(--q-bg-surface-1);
+  --q-map-border: var(--q-border);
+  --q-map-radius: var(--q-radius-lg);
+  --q-map-marker-size: 20px;
+  --q-map-marker-color: var(--q-color-primary);
+  --q-map-marker-success: var(--q-color-success);
+  --q-map-marker-warning: var(--q-color-warning);
+  --q-map-marker-danger: var(--q-color-danger);
+  --q-map-marker-muted: var(--q-fg-muted);
+  --q-map-marker-selected-color: var(--q-fg-base);
+  --q-map-attribution-bg: var(--q-bg-base);
+  --q-map-attribution-color: var(--q-fg-muted);
+
   /* Scrollbars */
   --q-scrollbar-width: 6px;
   --q-scrollbar-width-thin: thin;

@@ -1,0 +1,153 @@
+{
+  "name": "Map",
+  "tag": "q-map",
+  "props": {
+    "provider": {
+      "type": "select",
+      "options": ["tiles", "google"],
+      "default": "tiles",
+      "desc": "Map imagery provider"
+    },
+    "tileUrl": {
+      "type": "string",
+      "default": "",
+      "desc": "Leaflet tile URL template used by the tiles provider"
+    },
+    "googleApiKey": {
+      "type": "string",
+      "default": "",
+      "desc": "Browser-restricted Maps JavaScript API key used by the Google provider"
+    },
+    "googleMapType": {
+      "type": "select",
+      "options": ["roadmap", "satellite", "terrain", "hybrid"],
+      "default": "roadmap",
+      "desc": "Google base-map style"
+    },
+    "attribution": {
+      "type": "string",
+      "default": "",
+      "desc": "Visible tile-provider attribution label"
+    },
+    "attributionUrl": {
+      "type": "string",
+      "default": "",
+      "desc": "Optional attribution link target"
+    },
+    "centerLatitude": {
+      "type": "number",
+      "default": 0,
+      "desc": "Controlled viewport centre latitude"
+    },
+    "centerLongitude": {
+      "type": "number",
+      "default": 0,
+      "desc": "Controlled viewport centre longitude"
+    },
+    "zoom": {
+      "type": "number",
+      "default": 2,
+      "desc": "Controlled Leaflet zoom level"
+    },
+    "minZoom": {
+      "type": "number",
+      "default": 0,
+      "desc": "Lowest permitted zoom level"
+    },
+    "maxZoom": {
+      "type": "number",
+      "default": 19,
+      "desc": "Highest permitted zoom level"
+    },
+    "markers": {
+      "type": "textarea",
+      "default": "[]",
+      "desc": "JSON array of marker records; application code should prefer property assignment"
+    },
+    "selectedMarkerId": {
+      "type": "string",
+      "default": "",
+      "desc": "Stable ID of the marker shown as selected"
+    },
+    "ariaLabel": {
+      "type": "string",
+      "default": "Interactive map",
+      "desc": "Accessible map-region name"
+    }
+  },
+  "slots": {
+    "empty": {
+      "type": "html",
+      "default": "<strong>Map unavailable</strong><span style=\"display:block;margin-top:4px\">Configure a tile provider to display locations.</span>",
+      "desc": "Missing-configuration content shown when the active provider lacks its URL or key"
+    }
+  },
+  "variants": [
+    {
+      "name": "World Map",
+      "props": {
+        "tileUrl": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "attribution": "© OpenStreetMap contributors",
+        "attributionUrl": "https://www.openstreetmap.org/copyright",
+        "centerLatitude": 0,
+        "centerLongitude": 0,
+        "zoom": 2,
+        "markers": "[]"
+      }
+    },
+    {
+      "name": "Johannesburg Locations",
+      "props": {
+        "tileUrl": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "attribution": "© OpenStreetMap contributors",
+        "attributionUrl": "https://www.openstreetmap.org/copyright",
+        "centerLatitude": -26.16,
+        "centerLongitude": 28.05,
+        "zoom": 11,
+        "ariaLabel": "Johannesburg store locations",
+        "markers": "[\n  { \"id\": \"rosebank\", \"latitude\": -26.1459, \"longitude\": 28.0416, \"label\": \"Rosebank store, active\", \"variant\": \"success\" },\n  { \"id\": \"sandton\", \"latitude\": -26.1076, \"longitude\": 28.0567, \"label\": \"Sandton store, attention required\", \"variant\": \"warning\" },\n  { \"id\": \"central\", \"latitude\": -26.2041, \"longitude\": 28.0473, \"label\": \"Johannesburg central, inactive\", \"variant\": \"muted\" }\n]"
+      }
+    },
+    {
+      "name": "Selected Marker",
+      "props": {
+        "tileUrl": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "attribution": "© OpenStreetMap contributors",
+        "attributionUrl": "https://www.openstreetmap.org/copyright",
+        "centerLatitude": -26.13,
+        "centerLongitude": 28.05,
+        "zoom": 12,
+        "selectedMarkerId": "sandton",
+        "markers": "[\n  { \"id\": \"rosebank\", \"latitude\": -26.1459, \"longitude\": 28.0416, \"label\": \"Rosebank store\", \"variant\": \"default\" },\n  { \"id\": \"sandton\", \"latitude\": -26.1076, \"longitude\": 28.0567, \"label\": \"Sandton store\", \"variant\": \"danger\" }\n]"
+      }
+    }
+  ],
+  "edgeCases": [
+    {
+      "name": "Missing Tile Configuration",
+      "props": {
+        "provider": "tiles",
+        "tileUrl": "",
+        "markers": "[]"
+      }
+    },
+    {
+      "name": "Missing Google Configuration",
+      "props": {
+        "provider": "google",
+        "googleApiKey": "",
+        "markers": "[]"
+      }
+    },
+    {
+      "name": "Unknown Selected Marker",
+      "props": {
+        "tileUrl": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "attribution": "© OpenStreetMap contributors",
+        "attributionUrl": "https://www.openstreetmap.org/copyright",
+        "selectedMarkerId": "not-present",
+        "markers": "[\n  { \"id\": \"visible\", \"latitude\": 0, \"longitude\": 0, \"label\": \"Visible marker\" }\n]"
+      }
+    }
+  ]
+}

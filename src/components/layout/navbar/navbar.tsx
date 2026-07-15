@@ -44,7 +44,7 @@ export class QNavbar {
   @Prop() items: NavbarItemInput[] | string = [];
 
   /** Accessible name for the desktop and mobile navigation regions. */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
 
   /** Value or href of the currently active navigation item. */
   @Prop() activeValue: string = '';

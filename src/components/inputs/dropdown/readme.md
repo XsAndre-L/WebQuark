@@ -14,7 +14,7 @@ and externally loaded option pages.
 
 | Property         | Attribute         | Description                                                                                            | Type                              | Default                 |
 | ---------------- | ----------------- | ------------------------------------------------------------------------------------------------------ | --------------------------------- | ----------------------- |
-| `ariaLabel`      | `aria-label`      | Accessible name for the trigger and option list when no visible label is available.                    | `string`                          | `undefined`             |
+| `ariaLabel`      | `aria-label`      | Accessible name for the trigger and option list when no visible label is available.                    | `string`                          | `null`                  |
 | `disabled`       | `disabled`        | Disables the trigger and prevents selection changes.                                                   | `boolean`                         | `false`                 |
 | `externalSearch` | `external-search` | Leaves filtering and pagination to the consumer instead of filtering options locally.                  | `boolean`                         | `false`                 |
 | `hasMore`        | `has-more`        | Indicates that another externally loaded option page is available.                                     | `boolean`                         | `false`                 |

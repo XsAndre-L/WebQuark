@@ -11,8 +11,11 @@ export function getSidepanelItems(items: readonly SidepanelItemInput[]): Sidepan
       return [];
     }
 
+    const { alwaysExpanded, ...rest } = item;
+
     return [{
-      ...item,
+      ...rest,
+      ...(alwaysExpanded === true ? { alwaysExpanded: true } : {}),
       children: item.children ? getSidepanelItems(item.children) : undefined,
     }];
   });
