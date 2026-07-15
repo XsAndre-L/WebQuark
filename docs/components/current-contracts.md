@@ -1,6 +1,6 @@
 # Current public component contracts
 
-This reference was reconciled against the 26 Stencil component implementations on 2026-07-11. It fills gaps in older authored specification tables while those longer design guides are progressively simplified. The generated API page linked for each component remains canonical for exact TypeScript types and defaults.
+This reference was reconciled against the 27 Stencil component implementations on 2026-07-15. It fills gaps in older authored specification tables while those longer design guides are progressively simplified. The generated API page linked for each component remains canonical for exact TypeScript types and defaults.
 
 For array and object inputs, assign the JavaScript property unless the contract explicitly accepts a JSON string. Event names are case-sensitive DOM custom-event names.
 
@@ -168,6 +168,18 @@ For array and object inputs, assign the JavaScript property unless the contract 
 - Behavior: columns, rows, and row actions accept arrays or JSON strings. `sortMode="table"` sorts locally; `external` emits state without reordering. Search is controlled/event-driven and does not filter rows automatically.
 - DX: use a stable primitive `keyField`; index fallback becomes unstable when sorting or replacing rows. Callback-based cell renderers and disabled predicates require JavaScript property assignment.
 - Performance: rows are not virtualized; paginate or window large datasets outside the component.
+
+### `q-map`
+
+- API: [generated reference](../../src/components/data-display/map/readme.md)
+- Properties: `provider`, `tileUrl`, `googleApiKey`, `googleMapType`, `attribution`, `attributionUrl`, `centerLatitude`, `centerLongitude`, `zoom`, `minZoom`, `maxZoom`, `markers`, `selectedMarkerId`, `ariaLabel`.
+- Events: `qReady`, `qMarkerSelect`.
+- Slot: `empty` replaces the missing-configuration state when the active provider lacks its URL or key.
+- Shadow parts: `surface`, `canvas`, `marker`, `attribution`, `empty`.
+- Behavior: wraps Leaflet behind a framework-neutral Web Component contract. The `tiles` provider uses a consumer-supplied URL and attribution; the optional `google` provider lazily loads the Maps JavaScript API through GoogleMutant and preserves Google's legal controls. A failed Google initialization falls back to `tileUrl` when one is configured. Assign `markers` as a JavaScript array of records containing a stable `id`, finite `latitude` and `longitude`, a `label`, and an optional visual `variant`. Marker selection is controlled through `selectedMarkerId`; activation emits `qMarkerSelect` without mutating application data.
+- Accessibility: `ariaLabel` names the map region and markers are keyboard operable. Important locations and actions must also be available outside the map because a spatial canvas is not an accessible replacement for structured content.
+- Performance: marker layers are reconciled by stable ID and map sizing follows its host container. Paginate, cluster, or otherwise limit very large marker collections in the consuming application.
+- Limitations: consumers provide and license the imagery service, API key and CSP where applicable, attribution, location data, real-time transport, geocoding, routing, clustering, and domain-specific popups. `q-map` does not call an application backend. Google imagery is network-only and GoogleMutant's legal controls require visual validation in each supported runtime.
 
 ### `q-syntax-box`
 

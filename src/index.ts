@@ -10,3 +10,12 @@
 
 export { format } from './utils/utils';
 export type * from './components.d.ts';
+export type {
+  QMapGoogleMapType,
+  QMapMarker,
+  QMapMarkerId,
+  QMapMarkerInput,
+  QMapMarkerSelectDetail,
+  QMapMarkerVariant,
+  QMapProvider,
+} from './components/data-display/map/map.types';
