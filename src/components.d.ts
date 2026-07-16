@@ -13,7 +13,7 @@ import { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./compo
 import { QCircularProgressSize } from "./components/indicators/circular-progress/circular-progress.types";
 import { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
 import { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
-import { DropdownOptionInput, Option, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
+import { DropdownOptionInput, Option, QDropdownPlacement, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
 import { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/layout/form/form.types";
 import { QInputSize, QInputType } from "./components/inputs/input/input.types";
 import { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
@@ -27,6 +27,7 @@ import { QSidepanelCollapseControl, QSidepanelCollapsedChangeDetail, QSidepanelC
 import { QStepDiagramLayout } from "./components/indicators/step-diagram/step-diagram.types";
 import { QStepDiagramItemLayout, QStepDiagramItemLineStyle, QStepDiagramItemStatus } from "./components/indicators/step-diagram-item/step-diagram-item.types";
 import { QSyntaxBoxLanguage, QSyntaxBoxVariant } from "./components/data-display/syntax-box/syntax-box.types";
+import { QTabsOrientation, TabItemInput } from "./components/layout/tabs/tabs.types";
 import { QTextareaResizeMode } from "./components/inputs/textarea/textarea.types";
 import { QThumbnailMaximizeDetail } from "./components/media/thumbnail/thumbnail.types";
 import { QToggleSize, QToggleType } from "./components/inputs/toggle/toggle.types";
@@ -40,7 +41,7 @@ export { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./compo
 export { QCircularProgressSize } from "./components/indicators/circular-progress/circular-progress.types";
 export { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
 export { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
-export { DropdownOptionInput, Option, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
+export { DropdownOptionInput, Option, QDropdownPlacement, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
 export { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/layout/form/form.types";
 export { QInputSize, QInputType } from "./components/inputs/input/input.types";
 export { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
@@ -54,6 +55,7 @@ export { QSidepanelCollapseControl, QSidepanelCollapsedChangeDetail, QSidepanelC
 export { QStepDiagramLayout } from "./components/indicators/step-diagram/step-diagram.types";
 export { QStepDiagramItemLayout, QStepDiagramItemLineStyle, QStepDiagramItemStatus } from "./components/indicators/step-diagram-item/step-diagram-item.types";
 export { QSyntaxBoxLanguage, QSyntaxBoxVariant } from "./components/data-display/syntax-box/syntax-box.types";
+export { QTabsOrientation, TabItemInput } from "./components/layout/tabs/tabs.types";
 export { QTextareaResizeMode } from "./components/inputs/textarea/textarea.types";
 export { QThumbnailMaximizeDetail } from "./components/media/thumbnail/thumbnail.types";
 export { QToggleSize, QToggleType } from "./components/inputs/toggle/toggle.types";
@@ -481,6 +483,11 @@ export namespace Components {
          */
         "ariaLabel": string | null;
         /**
+          * Minimum distance maintained between the open menu and viewport edges.
+          * @default 8
+         */
+        "collisionPadding": number;
+        /**
           * Disables the trigger and prevents selection changes.
           * @default false
          */
@@ -518,6 +525,11 @@ export namespace Components {
           * @default 'Select an option...'
          */
         "placeholder": string;
+        /**
+          * Preferred menu direction. Auto uses the side with enough viewport space.
+          * @default 'auto'
+         */
+        "placement": QDropdownPlacement;
         /**
           * Shows a search input inside the menu.
           * @default false
@@ -1253,6 +1265,36 @@ export namespace Components {
         "variant": QSyntaxBoxVariant;
     }
     /**
+     * Accessible tab selector for switching between consumer-owned tab panels.
+     */
+    interface QTabs {
+        /**
+          * Accessible name for the tab list.
+          * @default 'Sections'
+         */
+        "ariaLabel": string;
+        /**
+          * Tab records; strings use the same text for label and value.
+          * @default []
+         */
+        "items": TabItemInput[] | string;
+        /**
+          * Direction of the tab list and its corresponding arrow-key navigation.
+          * @default 'horizontal'
+         */
+        "orientation": QTabsOrientation;
+        /**
+          * Makes enabled tabs share the available width evenly.
+          * @default false
+         */
+        "stretch": boolean;
+        /**
+          * Value of the currently selected tab. The first enabled tab is used when it does not match an item.
+          * @default ''
+         */
+        "value": string;
+    }
+    /**
      * Form-associated textarea with optional auto-grow behavior and validation messaging.
      */
     interface QTextarea {
@@ -1518,6 +1560,10 @@ export interface QStepDiagramItemCustomEvent<T> extends CustomEvent<T> {
 export interface QSyntaxBoxCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLQSyntaxBoxElement;
+}
+export interface QTabsCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQTabsElement;
 }
 export interface QTextareaCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -1977,6 +2023,26 @@ declare global {
         prototype: HTMLQSyntaxBoxElement;
         new (): HTMLQSyntaxBoxElement;
     };
+    interface HTMLQTabsElementEventMap {
+        "qChange": string;
+    }
+    /**
+     * Accessible tab selector for switching between consumer-owned tab panels.
+     */
+    interface HTMLQTabsElement extends Components.QTabs, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQTabsElementEventMap>(type: K, listener: (this: HTMLQTabsElement, ev: QTabsCustomEvent<HTMLQTabsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQTabsElementEventMap>(type: K, listener: (this: HTMLQTabsElement, ev: QTabsCustomEvent<HTMLQTabsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLQTabsElement: {
+        prototype: HTMLQTabsElement;
+        new (): HTMLQTabsElement;
+    };
     interface HTMLQTextareaElementEventMap {
         "qChange": string;
         "qInput": string;
@@ -2085,6 +2151,7 @@ declare global {
         "q-step-diagram": HTMLQStepDiagramElement;
         "q-step-diagram-item": HTMLQStepDiagramItemElement;
         "q-syntax-box": HTMLQSyntaxBoxElement;
+        "q-tabs": HTMLQTabsElement;
         "q-textarea": HTMLQTextareaElement;
         "q-thumbnail": HTMLQThumbnailElement;
         "q-toggle": HTMLQToggleElement;
@@ -2554,6 +2621,11 @@ declare namespace LocalJSX {
          */
         "ariaLabel"?: string | null;
         /**
+          * Minimum distance maintained between the open menu and viewport edges.
+          * @default 8
+         */
+        "collisionPadding"?: number;
+        /**
           * Disables the trigger and prevents selection changes.
           * @default false
          */
@@ -2623,6 +2695,11 @@ declare namespace LocalJSX {
           * @default 'Select an option...'
          */
         "placeholder"?: string;
+        /**
+          * Preferred menu direction. Auto uses the side with enough viewport space.
+          * @default 'auto'
+         */
+        "placement"?: QDropdownPlacement;
         /**
           * Shows a search input inside the menu.
           * @default false
@@ -3446,6 +3523,40 @@ declare namespace LocalJSX {
         "variant"?: QSyntaxBoxVariant;
     }
     /**
+     * Accessible tab selector for switching between consumer-owned tab panels.
+     */
+    interface QTabs {
+        /**
+          * Accessible name for the tab list.
+          * @default 'Sections'
+         */
+        "ariaLabel"?: string;
+        /**
+          * Tab records; strings use the same text for label and value.
+          * @default []
+         */
+        "items"?: TabItemInput[] | string;
+        /**
+          * Emitted with the selected tab value after pointer or keyboard activation.
+         */
+        "onQChange"?: (event: QTabsCustomEvent<string>) => void;
+        /**
+          * Direction of the tab list and its corresponding arrow-key navigation.
+          * @default 'horizontal'
+         */
+        "orientation"?: QTabsOrientation;
+        /**
+          * Makes enabled tabs share the available width evenly.
+          * @default false
+         */
+        "stretch"?: boolean;
+        /**
+          * Value of the currently selected tab. The first enabled tab is used when it does not match an item.
+          * @default ''
+         */
+        "value"?: string;
+    }
+    /**
      * Form-associated textarea with optional auto-grow behavior and validation messaging.
      */
     interface QTextarea {
@@ -3773,6 +3884,8 @@ declare namespace LocalJSX {
         "options": DropdownOptionInput[] | string;
         "disabled": boolean;
         "size": QDropdownSize;
+        "placement": QDropdownPlacement;
+        "collisionPadding": number;
         "searchable": boolean;
         "externalSearch": boolean;
         "hasMore": boolean;
@@ -3931,6 +4044,13 @@ declare namespace LocalJSX {
         "disabled": boolean;
         "required": boolean;
     }
+    interface QTabsAttributes {
+        "items": TabItemInput[] | string;
+        "value": string;
+        "ariaLabel": string;
+        "orientation": QTabsOrientation;
+        "stretch": boolean;
+    }
     interface QTextareaAttributes {
         "value": string;
         "name": string;
@@ -3999,6 +4119,7 @@ declare namespace LocalJSX {
         "q-step-diagram": Omit<QStepDiagram, keyof QStepDiagramAttributes> & { [K in keyof QStepDiagram & keyof QStepDiagramAttributes]?: QStepDiagram[K] } & { [K in keyof QStepDiagram & keyof QStepDiagramAttributes as `attr:${K}`]?: QStepDiagramAttributes[K] } & { [K in keyof QStepDiagram & keyof QStepDiagramAttributes as `prop:${K}`]?: QStepDiagram[K] };
         "q-step-diagram-item": Omit<QStepDiagramItem, keyof QStepDiagramItemAttributes> & { [K in keyof QStepDiagramItem & keyof QStepDiagramItemAttributes]?: QStepDiagramItem[K] } & { [K in keyof QStepDiagramItem & keyof QStepDiagramItemAttributes as `attr:${K}`]?: QStepDiagramItemAttributes[K] } & { [K in keyof QStepDiagramItem & keyof QStepDiagramItemAttributes as `prop:${K}`]?: QStepDiagramItem[K] };
         "q-syntax-box": Omit<QSyntaxBox, keyof QSyntaxBoxAttributes> & { [K in keyof QSyntaxBox & keyof QSyntaxBoxAttributes]?: QSyntaxBox[K] } & { [K in keyof QSyntaxBox & keyof QSyntaxBoxAttributes as `attr:${K}`]?: QSyntaxBoxAttributes[K] } & { [K in keyof QSyntaxBox & keyof QSyntaxBoxAttributes as `prop:${K}`]?: QSyntaxBox[K] };
+        "q-tabs": Omit<QTabs, keyof QTabsAttributes> & { [K in keyof QTabs & keyof QTabsAttributes]?: QTabs[K] } & { [K in keyof QTabs & keyof QTabsAttributes as `attr:${K}`]?: QTabsAttributes[K] } & { [K in keyof QTabs & keyof QTabsAttributes as `prop:${K}`]?: QTabs[K] };
         "q-textarea": Omit<QTextarea, keyof QTextareaAttributes> & { [K in keyof QTextarea & keyof QTextareaAttributes]?: QTextarea[K] } & { [K in keyof QTextarea & keyof QTextareaAttributes as `attr:${K}`]?: QTextareaAttributes[K] } & { [K in keyof QTextarea & keyof QTextareaAttributes as `prop:${K}`]?: QTextarea[K] };
         "q-thumbnail": Omit<QThumbnail, keyof QThumbnailAttributes> & { [K in keyof QThumbnail & keyof QThumbnailAttributes]?: QThumbnail[K] } & { [K in keyof QThumbnail & keyof QThumbnailAttributes as `attr:${K}`]?: QThumbnailAttributes[K] } & { [K in keyof QThumbnail & keyof QThumbnailAttributes as `prop:${K}`]?: QThumbnail[K] };
         "q-toggle": Omit<QToggle, keyof QToggleAttributes> & { [K in keyof QToggle & keyof QToggleAttributes]?: QToggle[K] } & { [K in keyof QToggle & keyof QToggleAttributes as `attr:${K}`]?: QToggleAttributes[K] } & { [K in keyof QToggle & keyof QToggleAttributes as `prop:${K}`]?: QToggle[K] };
@@ -4123,6 +4244,10 @@ declare module "@stencil/core" {
              * Displays and optionally edits syntax-highlighted code, with form association in editable mode.
              */
             "q-syntax-box": LocalJSX.IntrinsicElements["q-syntax-box"] & JSXBase.HTMLAttributes<HTMLQSyntaxBoxElement>;
+            /**
+             * Accessible tab selector for switching between consumer-owned tab panels.
+             */
+            "q-tabs": LocalJSX.IntrinsicElements["q-tabs"] & JSXBase.HTMLAttributes<HTMLQTabsElement>;
             /**
              * Form-associated textarea with optional auto-grow behavior and validation messaging.
              */
