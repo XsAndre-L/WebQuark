@@ -9,8 +9,13 @@
  */
 
 export { format } from './utils/utils';
+export { Q_MAP_MARKER_VARIANTS } from './components/data-display/map/map.types';
 export type * from './components.d.ts';
 export type {
+  QMapBounds,
+  QMapBoundsInput,
+  QMapErrorCode,
+  QMapErrorDetail,
   QMapGoogleMapType,
   QMapMarker,
   QMapMarkerId,
@@ -18,4 +23,6 @@ export type {
   QMapMarkerSelectDetail,
   QMapMarkerVariant,
   QMapProvider,
+  QMapStatus,
+  QMapStatusChangeDetail,
 } from './components/data-display/map/map.types';

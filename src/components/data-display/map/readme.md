@@ -11,37 +11,42 @@ Framework-neutral interactive map powered by Leaflet.
 
 ## Properties
 
-| Property           | Attribute            | Description                                                                          | Type                                                | Default             |
-| ------------------ | -------------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------- | ------------------- |
-| `ariaLabel`        | `aria-label`         | Accessible name for the interactive map region.                                      | `string`                                            | `'Interactive map'` |
-| `attribution`      | `attribution`        | Plain-text tile-provider attribution.                                                | `string`                                            | `''`                |
-| `attributionUrl`   | `attribution-url`    | Optional HTTP(S) destination for the attribution text.                               | `string`                                            | `''`                |
-| `centerLatitude`   | `center-latitude`    | Initial and controlled center latitude.                                              | `number`                                            | `0`                 |
-| `centerLongitude`  | `center-longitude`   | Initial and controlled center longitude.                                             | `number`                                            | `0`                 |
-| `googleApiKey`     | `google-api-key`     | Browser-restricted Google Maps JavaScript API key used by the Google provider.       | `string`                                            | `''`                |
-| `googleMapType`    | `google-map-type`    | Google base-map style used by the Google provider.                                   | `"hybrid" \| "roadmap" \| "satellite" \| "terrain"` | `'roadmap'`         |
-| `markers`          | `markers`            | Marker records, or a JSON string containing marker records.                          | `QMapMarker[] \| string`                            | `[]`                |
-| `maxZoom`          | `max-zoom`           | Highest permitted zoom level.                                                        | `number`                                            | `19`                |
-| `minZoom`          | `min-zoom`           | Lowest permitted zoom level.                                                         | `number`                                            | `0`                 |
-| `provider`         | `provider`           | Map imagery provider.                                                                | `"google" \| "tiles"`                               | `'tiles'`           |
-| `selectedMarkerId` | `selected-marker-id` | Identifier of the marker rendered in the selected state.                             | `number \| string`                                  | `undefined`         |
-| `tileUrl`          | `tile-url`           | URL template used by the tiles provider and as an optional Google-provider fallback. | `string`                                            | `''`                |
-| `zoom`             | `zoom`               | Initial and controlled zoom level.                                                   | `number`                                            | `2`                 |
+| Property             | Attribute              | Description                                                                                                 | Type                                                | Default             |
+| -------------------- | ---------------------- | ----------------------------------------------------------------------------------------------------------- | --------------------------------------------------- | ------------------- |
+| `ariaLabel`          | `aria-label`           | Provides the accessible name announced for the interactive map region.                                      | `string`                                            | `'Interactive map'` |
+| `attribution`        | `attribution`          | Renders plain-text attribution whenever tiles are the active imagery provider.                              | `string`                                            | `''`                |
+| `attributionUrl`     | `attribution-url`      | Links tile attribution only when the value resolves to an HTTP(S) URL.                                      | `string`                                            | `''`                |
+| `centerLatitude`     | `center-latitude`      | Controls viewport latitude; finite values are clamped to the geographic range.                              | `number`                                            | `0`                 |
+| `centerLongitude`    | `center-longitude`     | Controls viewport longitude; finite values are clamped to the geographic range.                             | `number`                                            | `0`                 |
+| `googleApiKey`       | `google-api-key`       | Supplies the browser-restricted key used only when WebQuark must load Google Maps.                          | `string`                                            | `''`                |
+| `googleMapType`      | `google-map-type`      | Chooses the Google base-map style, normalizing unsupported values to roadmap.                               | `"hybrid" \| "roadmap" \| "satellite" \| "terrain"` | `'roadmap'`         |
+| `markers`            | `markers`              | Reconciles marker records from an array or JSON string using type-stable IDs.                               | `QMapMarker[] \| string`                            | `[]`                |
+| `maxBounds`          | `max-bounds`           | Constrains panning from a bounds object or JSON string; malformed updates preserve the last valid boundary. | `QMapBounds \| string`                              | `undefined`         |
+| `maxBoundsViscosity` | `max-bounds-viscosity` | Controls drag resistance at maxBounds and is clamped from zero to one.                                      | `number`                                            | `1`                 |
+| `maxZoom`            | `max-zoom`             | Sets the highest permitted zoom and never resolves below minZoom.                                           | `number`                                            | `19`                |
+| `minZoom`            | `min-zoom`             | Sets the lowest permitted zoom; non-finite values normalize to zero.                                        | `number`                                            | `0`                 |
+| `provider`           | `provider`             | Selects tile imagery or Google imagery; Google failures may use tileUrl as a fallback.                      | `"google" \| "tiles"`                               | `'tiles'`           |
+| `selectedMarkerId`   | `selected-marker-id`   | Controls which marker exposes its selected visual and aria-pressed state.                                   | `number \| string`                                  | `undefined`         |
+| `tileUrl`            | `tile-url`             | Supplies the tile URL template for the tiles provider and optional Google fallback.                         | `string`                                            | `''`                |
+| `zoom`               | `zoom`                 | Controls the viewport zoom and is clamped between the normalized zoom limits.                               | `number`                                            | `2`                 |
 
 
 ## Events
 
-| Event           | Description                                                          | Type                                  |
-| --------------- | -------------------------------------------------------------------- | ------------------------------------- |
-| `qMarkerSelect` | Emitted when a marker is activated with a pointer or keyboard.       | `CustomEvent<QMapMarkerSelectDetail>` |
-| `qReady`        | Emitted after Leaflet and the initial provider setup have completed. | `CustomEvent<void>`                   |
+| Event           | Description                                                                     | Type                                  |
+| --------------- | ------------------------------------------------------------------------------- | ------------------------------------- |
+| `qError`        | Reports serializable configuration and initialization failures.                 | `CustomEvent<QMapErrorDetail>`        |
+| `qMarkerSelect` | Reports marker activation without mutating selectedMarkerId.                    | `CustomEvent<QMapMarkerSelectDetail>` |
+| `qReady`        | Fires after Leaflet setup and the initial provider attempt complete.            | `CustomEvent<void>`                   |
+| `qStatusChange` | Reports provider lifecycle transitions, including the active fallback provider. | `CustomEvent<QMapStatusChangeDetail>` |
 
 
 ## Slots
 
-| Slot      | Description                                                     |
-| --------- | --------------------------------------------------------------- |
-| `"empty"` | Content shown when the selected map provider is not configured. |
+| Slot      | Description                                                                  |
+| --------- | ---------------------------------------------------------------------------- |
+| `"empty"` | Content shown when the requested provider is missing required configuration. |
+| `"error"` | Content shown after provider initialization fails without a usable fallback. |
 
 
 ## Shadow Parts
@@ -51,6 +56,7 @@ Framework-neutral interactive map powered by Leaflet.
 | `"attribution"` | Provider attribution text or link. |
 | `"canvas"`      | Leaflet map canvas.                |
 | `"empty"`       | Missing-configuration overlay.     |
+| `"error"`       | Provider-error overlay.            |
 | `"marker"`      | Each interactive map marker.       |
 | `"surface"`     | Outer clipped map surface.         |
 

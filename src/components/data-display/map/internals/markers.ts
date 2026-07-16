@@ -1,6 +1,7 @@
+import { Q_MAP_MARKER_VARIANTS } from '../map.types';
 import type { QMapMarker, QMapMarkerId, QMapMarkerInput, QMapMarkerVariant } from '../map.types';
 
-const MARKER_VARIANTS = new Set<QMapMarkerVariant>(['default', 'success', 'warning', 'danger', 'muted']);
+const MARKER_VARIANTS = new Set<string>(Q_MAP_MARKER_VARIANTS);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
@@ -22,7 +23,7 @@ function isMarkerId(value: unknown): value is QMapMarkerId {
 }
 
 function getMarkerVariant(value: unknown): QMapMarkerVariant {
-  return typeof value === 'string' && MARKER_VARIANTS.has(value as QMapMarkerVariant) ? (value as QMapMarkerVariant) : 'default';
+  return typeof value === 'string' && MARKER_VARIANTS.has(value) ? (value as QMapMarkerVariant) : 'default';
 }
 
 function normalizeMarker(value: unknown): QMapMarker | undefined {
@@ -42,7 +43,7 @@ function normalizeMarker(value: unknown): QMapMarker | undefined {
 }
 
 export function getMapMarkerKey(id: QMapMarkerId): string {
-  return String(id);
+  return typeof id === 'number' ? `number:${id}` : `string:${id}`;
 }
 
 export function getMapMarkers(markers: QMapMarkerInput): QMapMarker[] {
