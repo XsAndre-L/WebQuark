@@ -51,6 +51,10 @@
   pointer-events: none;
 }
 
+.map-error {
+  color: var(--q-color-danger, #ef4444);
+}
+
 .map-attribution {
   position: absolute;
   z-index: 1000;

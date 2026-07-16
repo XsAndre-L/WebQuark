@@ -17,7 +17,7 @@ import { DropdownOptionInput, Option, QDropdownSize } from "./components/inputs/
 import { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/layout/form/form.types";
 import { QInputSize, QInputType } from "./components/inputs/input/input.types";
 import { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
-import { QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapProvider } from "./components/data-display/map/map.types";
+import { QMapBoundsInput, QMapErrorDetail, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapProvider, QMapStatusChangeDetail } from "./components/data-display/map/map.types";
 import { NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode } from "./components/layout/navbar/navbar.types";
 import { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
 import { QQuantitySelectorVariant } from "./components/inputs/quantity-selector/quantity-selector.types";
@@ -44,7 +44,7 @@ export { DropdownOptionInput, Option, QDropdownSize } from "./components/inputs/
 export { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/layout/form/form.types";
 export { QInputSize, QInputType } from "./components/inputs/input/input.types";
 export { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
-export { QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapProvider } from "./components/data-display/map/map.types";
+export { QMapBoundsInput, QMapErrorDetail, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapProvider, QMapStatusChangeDetail } from "./components/data-display/map/map.types";
 export { NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode } from "./components/layout/navbar/navbar.types";
 export { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
 export { QQuantitySelectorVariant } from "./components/inputs/quantity-selector/quantity-selector.types";
@@ -797,71 +797,80 @@ export namespace Components {
      */
     interface QMap {
         /**
-          * Accessible name for the interactive map region.
+          * Provides the accessible name announced for the interactive map region.
           * @default 'Interactive map'
          */
         "ariaLabel": string;
         /**
-          * Plain-text tile-provider attribution.
+          * Renders plain-text attribution whenever tiles are the active imagery provider.
           * @default ''
          */
         "attribution": string;
         /**
-          * Optional HTTP(S) destination for the attribution text.
+          * Links tile attribution only when the value resolves to an HTTP(S) URL.
           * @default ''
          */
         "attributionUrl": string;
         /**
-          * Initial and controlled center latitude.
+          * Controls viewport latitude; finite values are clamped to the geographic range.
           * @default 0
          */
         "centerLatitude": number;
         /**
-          * Initial and controlled center longitude.
+          * Controls viewport longitude; finite values are clamped to the geographic range.
           * @default 0
          */
         "centerLongitude": number;
         /**
-          * Browser-restricted Google Maps JavaScript API key used by the Google provider.
+          * Supplies the browser-restricted key used only when WebQuark must load Google Maps.
           * @default ''
          */
         "googleApiKey": string;
         /**
-          * Google base-map style used by the Google provider.
+          * Chooses the Google base-map style, normalizing unsupported values to roadmap.
           * @default 'roadmap'
          */
         "googleMapType": QMapGoogleMapType;
         /**
-          * Marker records, or a JSON string containing marker records.
+          * Reconciles marker records from an array or JSON string using type-stable IDs.
           * @default []
          */
         "markers": QMapMarkerInput;
         /**
-          * Highest permitted zoom level.
+          * Constrains panning from a bounds object or JSON string; malformed updates preserve the last valid boundary.
+         */
+        "maxBounds"?: QMapBoundsInput;
+        /**
+          * Controls drag resistance at maxBounds and is clamped from zero to one.
+          * @default 1
+         */
+        "maxBoundsViscosity": number;
+        /**
+          * Sets the highest permitted zoom and never resolves below minZoom.
           * @default 19
          */
         "maxZoom": number;
         /**
-          * Lowest permitted zoom level.
+          * Sets the lowest permitted zoom; non-finite values normalize to zero.
           * @default 0
          */
         "minZoom": number;
         /**
-          * Map imagery provider.
+          * Selects tile imagery or Google imagery; Google failures may use tileUrl as a fallback.
           * @default 'tiles'
          */
         "provider": QMapProvider;
         /**
-          * Identifier of the marker rendered in the selected state.
+          * Controls which marker exposes its selected visual and aria-pressed state.
          */
         "selectedMarkerId"?: QMapMarkerId;
         /**
-          * URL template used by the tiles provider and as an optional Google-provider fallback.
+          * Supplies the tile URL template for the tiles provider and optional Google fallback.
           * @default ''
          */
         "tileUrl": string;
         /**
-          * Initial and controlled zoom level.
+          * Controls the viewport zoom and is clamped between the normalized zoom limits.
           * @default 2
          */
         "zoom": number;
@@ -1768,6 +1777,8 @@ declare global {
     interface HTMLQMapElementEventMap {
         "qReady": void;
         "qMarkerSelect": QMapMarkerSelectDetail;
+        "qStatusChange": QMapStatusChangeDetail;
+        "qError": QMapErrorDetail;
     }
     /**
      * Framework-neutral interactive map powered by Leaflet.
@@ -2911,79 +2922,96 @@ declare namespace LocalJSX {
      */
     interface QMap {
         /**
-          * Accessible name for the interactive map region.
+          * Provides the accessible name announced for the interactive map region.
           * @default 'Interactive map'
          */
         "ariaLabel"?: string;
         /**
-          * Plain-text tile-provider attribution.
+          * Renders plain-text attribution whenever tiles are the active imagery provider.
           * @default ''
          */
         "attribution"?: string;
         /**
-          * Optional HTTP(S) destination for the attribution text.
+          * Links tile attribution only when the value resolves to an HTTP(S) URL.
           * @default ''
          */
         "attributionUrl"?: string;
         /**
-          * Initial and controlled center latitude.
+          * Controls viewport latitude; finite values are clamped to the geographic range.
           * @default 0
          */
         "centerLatitude"?: number;
         /**
-          * Initial and controlled center longitude.
+          * Controls viewport longitude; finite values are clamped to the geographic range.
           * @default 0
          */
         "centerLongitude"?: number;
         /**
-          * Browser-restricted Google Maps JavaScript API key used by the Google provider.
+          * Supplies the browser-restricted key used only when WebQuark must load Google Maps.
           * @default ''
          */
         "googleApiKey"?: string;
         /**
-          * Google base-map style used by the Google provider.
+          * Chooses the Google base-map style, normalizing unsupported values to roadmap.
           * @default 'roadmap'
          */
         "googleMapType"?: QMapGoogleMapType;
         /**
-          * Marker records, or a JSON string containing marker records.
+          * Reconciles marker records from an array or JSON string using type-stable IDs.
           * @default []
          */
         "markers"?: QMapMarkerInput;
         /**
-          * Highest permitted zoom level.
+          * Constrains panning from a bounds object or JSON string; malformed updates preserve the last valid boundary.
+         */
+        "maxBounds"?: QMapBoundsInput;
+        /**
+          * Controls drag resistance at maxBounds and is clamped from zero to one.
+          * @default 1
+         */
+        "maxBoundsViscosity"?: number;
+        /**
+          * Sets the highest permitted zoom and never resolves below minZoom.
           * @default 19
          */
         "maxZoom"?: number;
         /**
-          * Lowest permitted zoom level.
+          * Sets the lowest permitted zoom; non-finite values normalize to zero.
           * @default 0
          */
         "minZoom"?: number;
         /**
-          * Emitted when a marker is activated with a pointer or keyboard.
+          * Reports serializable configuration and initialization failures.
+         */
+        "onQError"?: (event: QMapCustomEvent<QMapErrorDetail>) => void;
+        /**
+          * Reports marker activation without mutating selectedMarkerId.
          */
         "onQMarkerSelect"?: (event: QMapCustomEvent<QMapMarkerSelectDetail>) => void;
         /**
-          * Emitted after Leaflet and the initial provider setup have completed.
+          * Fires after Leaflet setup and the initial provider attempt complete.
          */
         "onQReady"?: (event: QMapCustomEvent<void>) => void;
         /**
-          * Map imagery provider.
+          * Reports provider lifecycle transitions, including the active fallback provider.
+         */
+        "onQStatusChange"?: (event: QMapCustomEvent<QMapStatusChangeDetail>) => void;
+        /**
+          * Selects tile imagery or Google imagery; Google failures may use tileUrl as a fallback.
           * @default 'tiles'
          */
         "provider"?: QMapProvider;
         /**
-          * Identifier of the marker rendered in the selected state.
+          * Controls which marker exposes its selected visual and aria-pressed state.
          */
         "selectedMarkerId"?: QMapMarkerId;
         /**
-          * URL template used by the tiles provider and as an optional Google-provider fallback.
+          * Supplies the tile URL template for the tiles provider and optional Google fallback.
           * @default ''
          */
         "tileUrl"?: string;
         /**
-          * Initial and controlled zoom level.
+          * Controls the viewport zoom and is clamped between the normalized zoom limits.
           * @default 2
          */
         "zoom"?: number;
@@ -3814,6 +3842,8 @@ declare namespace LocalJSX {
         "zoom": number;
         "minZoom": number;
         "maxZoom": number;
+        "maxBounds": QMapBoundsInput;
+        "maxBoundsViscosity": number;
         "markers": QMapMarkerInput;
         "selectedMarkerId": string;
         "ariaLabel": string;
