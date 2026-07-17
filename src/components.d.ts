@@ -11,7 +11,6 @@ import { QIconColor, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "
 import { QCardElevation } from "./components/layout/card/card.types";
 import { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/layout/carousel/carousel.types";
 import { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/actions/chip/chip.types";
-import { QCircularProgressSize } from "./components/indicators/circular-progress/circular-progress.types";
 import { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
 import { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
 import { DropdownOptionInput, Option, QDropdownPlacement, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
@@ -21,6 +20,7 @@ import { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/
 import { QMapBoundsInput, QMapErrorDetail, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapProvider, QMapStatusChangeDetail } from "./components/data-display/map/map.types";
 import { NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode } from "./components/layout/navbar/navbar.types";
 import { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
+import { QProgressSize, QProgressTone, QProgressVariant } from "./components/indicators/progress/progress.types";
 import { QQuantitySelectorVariant } from "./components/inputs/quantity-selector/quantity-selector.types";
 import { QReelLayout } from "./components/media/reel/reel.types";
 import { QScrollableEventDetail, QScrollableMode } from "./components/layout/scrollable/scrollable.types";
@@ -40,7 +40,6 @@ export { QIconColor, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "
 export { QCardElevation } from "./components/layout/card/card.types";
 export { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/layout/carousel/carousel.types";
 export { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/actions/chip/chip.types";
-export { QCircularProgressSize } from "./components/indicators/circular-progress/circular-progress.types";
 export { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
 export { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
 export { DropdownOptionInput, Option, QDropdownPlacement, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
@@ -50,6 +49,7 @@ export { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/
 export { QMapBoundsInput, QMapErrorDetail, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapProvider, QMapStatusChangeDetail } from "./components/data-display/map/map.types";
 export { NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode } from "./components/layout/navbar/navbar.types";
 export { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
+export { QProgressSize, QProgressTone, QProgressVariant } from "./components/indicators/progress/progress.types";
 export { QQuantitySelectorVariant } from "./components/inputs/quantity-selector/quantity-selector.types";
 export { QReelLayout } from "./components/media/reel/reel.types";
 export { QScrollableEventDetail, QScrollableMode } from "./components/layout/scrollable/scrollable.types";
@@ -288,35 +288,6 @@ export namespace Components {
           * @default 'neutral'
          */
         "variant": QChipVariant;
-    }
-    /**
-     * Circular progress indicator for determinate percentages or indeterminate loading states.
-     */
-    interface QCircularProgress {
-        /**
-          * Accessible name for the progressbar.
-          * @default null
-         */
-        "ariaLabel": string | null;
-        /**
-          * Shows a spinning indeterminate state instead of a fixed progress value.
-          * @default false
-         */
-        "indeterminate": boolean;
-        /**
-          * Optional visible center text. Defaults to the clamped percentage.
-         */
-        "label"?: string;
-        /**
-          * Visual size preset for the SVG, stroke width, and label text.
-          * @default 'md'
-         */
-        "size": QCircularProgressSize;
-        /**
-          * Progress percentage from 0 to 100; values outside that range are clamped.
-          * @default 0
-         */
-        "value": number;
     }
     /**
      * Data grid with optional toolbar, search, row activation, and multi-row selection.
@@ -932,6 +903,11 @@ export namespace Components {
           * @default 2
          */
         "zoom": number;
+        /**
+          * Controls whether the built-in plus/minus zoom control is rendered.
+          * @default true
+         */
+        "zoomControls": boolean;
     }
     /**
      * Edge-aware site navigation with optional brand content, actions, and mobile menu.
@@ -1091,6 +1067,50 @@ export namespace Components {
           * @default 'bordered'
          */
         "variant": QPanelVariant;
+    }
+    /**
+     * Progress indicator with linear and circular presentation variants.
+     */
+    interface QProgress {
+        /**
+          * Accessible name for the progressbar.
+          * @default null
+         */
+        "ariaLabel": string | null;
+        /**
+          * Optional accessible value description, such as "2 of 6 tasks completed".
+          * @default null
+         */
+        "ariaValueText": string | null;
+        /**
+          * Shows an indeterminate animation instead of a fixed progress value.
+          * @default false
+         */
+        "indeterminate": boolean;
+        /**
+          * Optional visible circular label. Defaults to the clamped percentage.
+         */
+        "label"?: string;
+        /**
+          * Visual size preset. Numeric values set a custom pixel size or height.
+          * @default 'md'
+         */
+        "size": QProgressSize;
+        /**
+          * Semantic color applied to the progress fill.
+          * @default 'primary'
+         */
+        "tone": QProgressTone;
+        /**
+          * Progress percentage from 0 to 100; values outside that range are clamped.
+          * @default 0
+         */
+        "value": number;
+        /**
+          * Visual presentation of the progress indicator.
+          * @default 'linear'
+         */
+        "variant": QProgressVariant;
     }
     /**
      * Numeric quantity control with increment/decrement buttons and a bounded editable value.
@@ -1811,15 +1831,6 @@ declare global {
         prototype: HTMLQChipElement;
         new (): HTMLQChipElement;
     };
-    /**
-     * Circular progress indicator for determinate percentages or indeterminate loading states.
-     */
-    interface HTMLQCircularProgressElement extends Components.QCircularProgress, HTMLStencilElement {
-    }
-    var HTMLQCircularProgressElement: {
-        prototype: HTMLQCircularProgressElement;
-        new (): HTMLQCircularProgressElement;
-    };
     interface HTMLQDataTableElementEventMap {
         "qRowClick": QDataTableRowClickDetail;
         "qRowAction": QDataTableRowActionDetail;
@@ -2074,6 +2085,15 @@ declare global {
         prototype: HTMLQPanelElement;
         new (): HTMLQPanelElement;
     };
+    /**
+     * Progress indicator with linear and circular presentation variants.
+     */
+    interface HTMLQProgressElement extends Components.QProgress, HTMLStencilElement {
+    }
+    var HTMLQProgressElement: {
+        prototype: HTMLQProgressElement;
+        new (): HTMLQProgressElement;
+    };
     interface HTMLQQuantitySelectorElementEventMap {
         "qChange": number;
         "qFocus": FocusEvent;
@@ -2321,7 +2341,6 @@ declare global {
         "q-card": HTMLQCardElement;
         "q-carousel": HTMLQCarouselElement;
         "q-chip": HTMLQChipElement;
-        "q-circular-progress": HTMLQCircularProgressElement;
         "q-data-table": HTMLQDataTableElement;
         "q-dialog": HTMLQDialogElement;
         "q-dropdown": HTMLQDropdownElement;
@@ -2333,6 +2352,7 @@ declare global {
         "q-navbar": HTMLQNavbarElement;
         "q-pagination": HTMLQPaginationElement;
         "q-panel": HTMLQPanelElement;
+        "q-progress": HTMLQProgressElement;
         "q-quantity-selector": HTMLQQuantitySelectorElement;
         "q-reel": HTMLQReelElement;
         "q-scrollable": HTMLQScrollableElement;
@@ -2601,35 +2621,6 @@ declare namespace LocalJSX {
           * @default 'neutral'
          */
         "variant"?: QChipVariant;
-    }
-    /**
-     * Circular progress indicator for determinate percentages or indeterminate loading states.
-     */
-    interface QCircularProgress {
-        /**
-          * Accessible name for the progressbar.
-          * @default null
-         */
-        "ariaLabel"?: string | null;
-        /**
-          * Shows a spinning indeterminate state instead of a fixed progress value.
-          * @default false
-         */
-        "indeterminate"?: boolean;
-        /**
-          * Optional visible center text. Defaults to the clamped percentage.
-         */
-        "label"?: string;
-        /**
-          * Visual size preset for the SVG, stroke width, and label text.
-          * @default 'md'
-         */
-        "size"?: QCircularProgressSize;
-        /**
-          * Progress percentage from 0 to 100; values outside that range are clamped.
-          * @default 0
-         */
-        "value"?: number;
     }
     /**
      * Data grid with optional toolbar, search, row activation, and multi-row selection.
@@ -3321,6 +3312,11 @@ declare namespace LocalJSX {
           * @default 2
          */
         "zoom"?: number;
+        /**
+          * Controls whether the built-in plus/minus zoom control is rendered.
+          * @default true
+         */
+        "zoomControls"?: boolean;
     }
     /**
      * Edge-aware site navigation with optional brand content, actions, and mobile menu.
@@ -3492,6 +3488,50 @@ declare namespace LocalJSX {
           * @default 'bordered'
          */
         "variant"?: QPanelVariant;
+    }
+    /**
+     * Progress indicator with linear and circular presentation variants.
+     */
+    interface QProgress {
+        /**
+          * Accessible name for the progressbar.
+          * @default null
+         */
+        "ariaLabel"?: string | null;
+        /**
+          * Optional accessible value description, such as "2 of 6 tasks completed".
+          * @default null
+         */
+        "ariaValueText"?: string | null;
+        /**
+          * Shows an indeterminate animation instead of a fixed progress value.
+          * @default false
+         */
+        "indeterminate"?: boolean;
+        /**
+          * Optional visible circular label. Defaults to the clamped percentage.
+         */
+        "label"?: string;
+        /**
+          * Visual size preset. Numeric values set a custom pixel size or height.
+          * @default 'md'
+         */
+        "size"?: QProgressSize;
+        /**
+          * Semantic color applied to the progress fill.
+          * @default 'primary'
+         */
+        "tone"?: QProgressTone;
+        /**
+          * Progress percentage from 0 to 100; values outside that range are clamped.
+          * @default 0
+         */
+        "value"?: number;
+        /**
+          * Visual presentation of the progress indicator.
+          * @default 'linear'
+         */
+        "variant"?: QProgressVariant;
     }
     /**
      * Numeric quantity control with increment/decrement buttons and a bounded editable value.
@@ -4136,13 +4176,6 @@ declare namespace LocalJSX {
         "clickable": boolean;
         "removable": boolean;
     }
-    interface QCircularProgressAttributes {
-        "value": number;
-        "label": string;
-        "ariaLabel": string | null;
-        "indeterminate": boolean;
-        "size": QCircularProgressSize;
-    }
     interface QDataTableAttributes {
         "columns": TableColumn[] | string;
         "items": DataTableItem[] | string;
@@ -4254,6 +4287,7 @@ declare namespace LocalJSX {
         "centerLatitude": number;
         "centerLongitude": number;
         "zoom": number;
+        "zoomControls": boolean;
         "minZoom": number;
         "maxZoom": number;
         "maxBounds": QMapBoundsInput;
@@ -4296,6 +4330,16 @@ declare namespace LocalJSX {
         "stickyHeader": boolean;
         "stickyFooter": boolean;
         "ariaLabel": string | null;
+    }
+    interface QProgressAttributes {
+        "variant": QProgressVariant;
+        "value": number;
+        "label": string;
+        "ariaLabel": string | null;
+        "ariaValueText": string | null;
+        "indeterminate": boolean;
+        "size": string;
+        "tone": QProgressTone;
     }
     interface QQuantitySelectorAttributes {
         "value": number;
@@ -4416,7 +4460,6 @@ declare namespace LocalJSX {
         "q-card": Omit<QCard, keyof QCardAttributes> & { [K in keyof QCard & keyof QCardAttributes]?: QCard[K] } & { [K in keyof QCard & keyof QCardAttributes as `attr:${K}`]?: QCardAttributes[K] } & { [K in keyof QCard & keyof QCardAttributes as `prop:${K}`]?: QCard[K] };
         "q-carousel": Omit<QCarousel, keyof QCarouselAttributes> & { [K in keyof QCarousel & keyof QCarouselAttributes]?: QCarousel[K] } & { [K in keyof QCarousel & keyof QCarouselAttributes as `attr:${K}`]?: QCarouselAttributes[K] } & { [K in keyof QCarousel & keyof QCarouselAttributes as `prop:${K}`]?: QCarousel[K] };
         "q-chip": Omit<QChip, keyof QChipAttributes> & { [K in keyof QChip & keyof QChipAttributes]?: QChip[K] } & { [K in keyof QChip & keyof QChipAttributes as `attr:${K}`]?: QChipAttributes[K] } & { [K in keyof QChip & keyof QChipAttributes as `prop:${K}`]?: QChip[K] };
-        "q-circular-progress": Omit<QCircularProgress, keyof QCircularProgressAttributes> & { [K in keyof QCircularProgress & keyof QCircularProgressAttributes]?: QCircularProgress[K] } & { [K in keyof QCircularProgress & keyof QCircularProgressAttributes as `attr:${K}`]?: QCircularProgressAttributes[K] } & { [K in keyof QCircularProgress & keyof QCircularProgressAttributes as `prop:${K}`]?: QCircularProgress[K] };
         "q-data-table": Omit<QDataTable, keyof QDataTableAttributes> & { [K in keyof QDataTable & keyof QDataTableAttributes]?: QDataTable[K] } & { [K in keyof QDataTable & keyof QDataTableAttributes as `attr:${K}`]?: QDataTableAttributes[K] } & { [K in keyof QDataTable & keyof QDataTableAttributes as `prop:${K}`]?: QDataTable[K] };
         "q-dialog": Omit<QDialog, keyof QDialogAttributes> & { [K in keyof QDialog & keyof QDialogAttributes]?: QDialog[K] } & { [K in keyof QDialog & keyof QDialogAttributes as `attr:${K}`]?: QDialogAttributes[K] } & { [K in keyof QDialog & keyof QDialogAttributes as `prop:${K}`]?: QDialog[K] };
         "q-dropdown": Omit<QDropdown, keyof QDropdownAttributes> & { [K in keyof QDropdown & keyof QDropdownAttributes]?: QDropdown[K] } & { [K in keyof QDropdown & keyof QDropdownAttributes as `attr:${K}`]?: QDropdownAttributes[K] } & { [K in keyof QDropdown & keyof QDropdownAttributes as `prop:${K}`]?: QDropdown[K] };
@@ -4428,6 +4471,7 @@ declare namespace LocalJSX {
         "q-navbar": Omit<QNavbar, keyof QNavbarAttributes> & { [K in keyof QNavbar & keyof QNavbarAttributes]?: QNavbar[K] } & { [K in keyof QNavbar & keyof QNavbarAttributes as `attr:${K}`]?: QNavbarAttributes[K] } & { [K in keyof QNavbar & keyof QNavbarAttributes as `prop:${K}`]?: QNavbar[K] };
         "q-pagination": Omit<QPagination, keyof QPaginationAttributes> & { [K in keyof QPagination & keyof QPaginationAttributes]?: QPagination[K] } & { [K in keyof QPagination & keyof QPaginationAttributes as `attr:${K}`]?: QPaginationAttributes[K] } & { [K in keyof QPagination & keyof QPaginationAttributes as `prop:${K}`]?: QPagination[K] };
         "q-panel": Omit<QPanel, keyof QPanelAttributes> & { [K in keyof QPanel & keyof QPanelAttributes]?: QPanel[K] } & { [K in keyof QPanel & keyof QPanelAttributes as `attr:${K}`]?: QPanelAttributes[K] } & { [K in keyof QPanel & keyof QPanelAttributes as `prop:${K}`]?: QPanel[K] };
+        "q-progress": Omit<QProgress, keyof QProgressAttributes> & { [K in keyof QProgress & keyof QProgressAttributes]?: QProgress[K] } & { [K in keyof QProgress & keyof QProgressAttributes as `attr:${K}`]?: QProgressAttributes[K] } & { [K in keyof QProgress & keyof QProgressAttributes as `prop:${K}`]?: QProgress[K] };
         "q-quantity-selector": Omit<QQuantitySelector, keyof QQuantitySelectorAttributes> & { [K in keyof QQuantitySelector & keyof QQuantitySelectorAttributes]?: QQuantitySelector[K] } & { [K in keyof QQuantitySelector & keyof QQuantitySelectorAttributes as `attr:${K}`]?: QQuantitySelectorAttributes[K] } & { [K in keyof QQuantitySelector & keyof QQuantitySelectorAttributes as `prop:${K}`]?: QQuantitySelector[K] };
         "q-reel": Omit<QReel, keyof QReelAttributes> & { [K in keyof QReel & keyof QReelAttributes]?: QReel[K] } & { [K in keyof QReel & keyof QReelAttributes as `attr:${K}`]?: QReelAttributes[K] } & { [K in keyof QReel & keyof QReelAttributes as `prop:${K}`]?: QReel[K] };
         "q-scrollable": Omit<QScrollable, keyof QScrollableAttributes> & { [K in keyof QScrollable & keyof QScrollableAttributes]?: QScrollable[K] } & { [K in keyof QScrollable & keyof QScrollableAttributes as `attr:${K}`]?: QScrollableAttributes[K] } & { [K in keyof QScrollable & keyof QScrollableAttributes as `prop:${K}`]?: QScrollable[K] };
@@ -4467,10 +4511,6 @@ declare module "@stencil/core" {
              * Compact label, link, filter, or removable token.
              */
             "q-chip": LocalJSX.IntrinsicElements["q-chip"] & JSXBase.HTMLAttributes<HTMLQChipElement>;
-            /**
-             * Circular progress indicator for determinate percentages or indeterminate loading states.
-             */
-            "q-circular-progress": LocalJSX.IntrinsicElements["q-circular-progress"] & JSXBase.HTMLAttributes<HTMLQCircularProgressElement>;
             /**
              * Data grid with optional toolbar, search, row activation, and multi-row selection.
              * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
@@ -4548,6 +4588,10 @@ declare module "@stencil/core" {
              * Flexible panel surface with optional header, body, and footer regions.
              */
             "q-panel": LocalJSX.IntrinsicElements["q-panel"] & JSXBase.HTMLAttributes<HTMLQPanelElement>;
+            /**
+             * Progress indicator with linear and circular presentation variants.
+             */
+            "q-progress": LocalJSX.IntrinsicElements["q-progress"] & JSXBase.HTMLAttributes<HTMLQProgressElement>;
             /**
              * Numeric quantity control with increment/decrement buttons and a bounded editable value.
              */

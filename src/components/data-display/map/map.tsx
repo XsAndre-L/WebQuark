@@ -93,6 +93,9 @@ export class QMap {
   /** Controls the viewport zoom and is clamped between the normalized zoom limits. */
   @Prop() zoom: number = 2;
 
+  /** Controls whether the built-in plus/minus zoom control is rendered. */
+  @Prop() zoomControls: boolean = true;
+
   /** Sets the lowest permitted zoom; non-finite values normalize to zero. */
   @Prop() minZoom: number = 0;
 
@@ -206,6 +209,13 @@ export class QMap {
     this.syncBounds(true);
   }
 
+  @Watch('zoomControls')
+  handleZoomControlsChange() {
+    if (!this.map) return;
+    this.destroyMap();
+    void this.initializeMap();
+  }
+
   private setCanvas = (element: HTMLDivElement | null) => {
     this.canvas = element ?? undefined;
   };
@@ -236,7 +246,7 @@ export class QMap {
         minZoom: minimum,
         trackResize: false,
         zoomAnimation: false,
-        zoomControl: true,
+        zoomControl: this.zoomControls,
       });
       if (boundsResolution.kind === 'invalid') this.reportInvalidBounds(boundsResolution.message);
       else this.lastInvalidBoundsInput = undefined;

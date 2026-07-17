@@ -24,7 +24,12 @@ export function renderDataTableBody(options: RenderDataTableBodyOptions) {
         <tr role="row">
           <td colSpan={model.columnSpan} class="loading-placeholder-cell" role="gridcell">
             <div class="table-loading-state">
-              <q-circular-progress indeterminate={true} size="sm" />
+              <q-progress
+                variant="circular"
+                indeterminate={true}
+                size="sm"
+                ariaLabel="Loading table data"
+              />
             </div>
           </td>
         </tr>
