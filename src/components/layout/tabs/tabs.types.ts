@@ -1,4 +1,6 @@
+export type QTabsSize = 'sm' | 'md' | 'lg';
 export type QTabsOrientation = 'horizontal' | 'vertical';
+export type QTabsVariant = 'underline' | 'enclosed' | 'pills' | 'button';
 
 export interface TabItem {
   label: string;

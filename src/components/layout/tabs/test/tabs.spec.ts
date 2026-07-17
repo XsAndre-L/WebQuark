@@ -44,6 +44,28 @@ describe('q-tabs', () => {
     expect(tabs.map(tab => tab.getAttribute('tabindex'))).toEqual(['-1', '0']);
   });
 
+  it('uses the medium size by default and applies the requested size class', async () => {
+    const defaultElement = await createComponent({ items: ['First', 'Second'] });
+    const smallElement = await createComponent({ items: ['First', 'Second'], size: 'sm' });
+
+    expect(defaultElement.size).toBe('md');
+    expect(defaultElement.shadowRoot.querySelector('.tab-list').classList.contains('size-md')).toBe(true);
+    expect(smallElement.size).toBe('sm');
+    expect(smallElement.shadowRoot.querySelector('.tab-list').classList.contains('size-sm')).toBe(true);
+  });
+
+  it('uses underline by default and applies every visual variant class', async () => {
+    const defaultElement = await createComponent({ items: ['First', 'Second'] });
+
+    expect(defaultElement.variant).toBe('underline');
+    expect(defaultElement.shadowRoot.querySelector('.tab-list').classList.contains('variant-underline')).toBe(true);
+
+    for (const variant of ['enclosed', 'pills', 'button']) {
+      const element = await createComponent({ items: ['First', 'Second'], variant });
+      expect(element.shadowRoot.querySelector('.tab-list').classList.contains(`variant-${variant}`)).toBe(true);
+    }
+  });
+
   it('emits the selected value when clicked', async () => {
     const element = await createComponent({ items: ['Debugging', 'Permissions'] });
     const handler = vi.fn();
