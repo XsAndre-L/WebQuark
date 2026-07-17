@@ -581,7 +581,7 @@ slot[name='footer'] {
   transform: translateX(-50%);
 }
 
-:host([side="right"]) .collapse-control--edge {
+:host([side="right"]) .nav-sidebar > .collapse-control--edge {
   right: auto;
   left: 8px;
 }
