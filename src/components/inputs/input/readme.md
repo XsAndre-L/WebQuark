@@ -43,6 +43,16 @@ Form-associated input field with optional prefix/suffix slots, clear button, pas
 
 ## Methods
 
+### `checkValidity() => Promise<boolean>`
+
+Returns whether the control satisfies native and custom constraints.
+
+#### Returns
+
+Type: `Promise<boolean>`
+
+
+
 ### `clearValue() => Promise<void>`
 
 Clears the current value and focuses the native input.
@@ -60,6 +70,16 @@ Moves focus to the native input.
 #### Returns
 
 Type: `Promise<void>`
+
+
+
+### `reportValidity() => Promise<boolean>`
+
+Reports native or custom constraint violations and returns whether the control is valid.
+
+#### Returns
+
+Type: `Promise<boolean>`
 
 
 

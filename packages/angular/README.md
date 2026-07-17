@@ -4,6 +4,47 @@ Angular wrappers for the WebQuark component library.
 
 Install with `npm install @webquark/core @webquark/angular`.
 
+## Standalone components
+
+The generated WebQuark proxies and form value accessors are standalone Angular
+declarations. Import only the components used by the consumer:
+
+```ts
+import { Component } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import {
+  BooleanValueAccessor,
+  QButton,
+  QInput,
+  QToggle,
+  TextValueAccessor,
+} from '@webquark/angular';
+
+@Component({
+  standalone: true,
+  imports: [
+    ReactiveFormsModule,
+    QButton,
+    QInput,
+    QToggle,
+    TextValueAccessor,
+    BooleanValueAccessor,
+  ],
+  template: `
+    <q-input label="Name" [formControl]="name" />
+    <q-toggle label="Enabled" [formControl]="enabled" />
+    <q-button type="submit">Save</q-button>
+  `,
+})
+export class ExampleComponent {
+  readonly name = new FormControl('', { nonNullable: true });
+  readonly enabled = new FormControl(false, { nonNullable: true });
+}
+```
+
+`TextValueAccessor` updates controls on `qInput`, `SelectValueAccessor` supports
+`q-dropdown`, and `BooleanValueAccessor` supports `q-toggle`.
+
 ## Rich data-table cells
 
 Import the standalone cell directives:

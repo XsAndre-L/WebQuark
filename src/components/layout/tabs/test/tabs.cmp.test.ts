@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import '../tabs';
+import tabsCss from '../tabs.css?inline';
 
 async function nextFrame(): Promise<void> {
   await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
@@ -65,6 +66,12 @@ describe('q-tabs keyboard navigation in Chromium', () => {
     await nextFrame();
 
     const tab = element.shadowRoot?.querySelector<HTMLButtonElement>('.tab');
+    const stylesheet = new CSSStyleSheet();
+    await stylesheet.replace(tabsCss);
+    element.shadowRoot!.adoptedStyleSheets = [
+      ...element.shadowRoot!.adoptedStyleSheets,
+      stylesheet,
+    ];
 
     expect(getComputedStyle(tab!).maxWidth).toBe('94px');
   });

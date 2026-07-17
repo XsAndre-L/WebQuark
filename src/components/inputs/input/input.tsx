@@ -1,5 +1,6 @@
 import { Component, Prop, State, Event, EventEmitter, Method, AttachInternals, Watch, h } from '@stencil/core';
 
+import { syncNativeControlValidity } from '../../../utils/form-control-validity';
 import type { QInputSize, QInputType } from './input.types';
 import { hasAssignedSlotContent } from './input.utils';
 
@@ -112,6 +113,10 @@ export class QInput {
     }
   }
 
+  componentDidRender() {
+    this.syncValidity();
+  }
+
   formResetCallback() {
     this.value = this.initialValue;
     if (this.internals && typeof this.internals.setFormValue === 'function') {
@@ -133,6 +138,26 @@ export class QInput {
     this.handleClear();
   }
 
+  /** Returns whether the control satisfies native and custom constraints. */
+  @Method()
+  async checkValidity(): Promise<boolean> {
+    this.syncValidity();
+    if (typeof this.internals.checkValidity === 'function') {
+      return this.internals.checkValidity();
+    }
+    return this.inputEl?.checkValidity?.() ?? true;
+  }
+
+  /** Reports native or custom constraint violations and returns whether the control is valid. */
+  @Method()
+  async reportValidity(): Promise<boolean> {
+    this.syncValidity();
+    if (typeof this.internals.reportValidity === 'function') {
+      return this.internals.reportValidity();
+    }
+    return this.inputEl?.reportValidity?.() ?? true;
+  }
+
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
   private handlePrefixSlotChange = (ev: Event) => {
@@ -144,6 +169,17 @@ export class QInput {
     const slot = ev.target as HTMLSlotElement;
     this.hasSuffix = hasAssignedSlotContent(slot);
   };
+
+  private syncValidity(): void {
+    if (!this.inputEl || !this.internals) return;
+
+    syncNativeControlValidity({
+      internals: this.internals,
+      control: this.inputEl,
+      disabled: this.disabled,
+      customError: this.error || this.errorMessage,
+    });
+  }
 
   private handleInput = (ev: Event) => {
     const target = ev.target as HTMLInputElement;
