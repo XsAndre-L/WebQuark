@@ -27,7 +27,7 @@ import { QSidepanelCollapseControl, QSidepanelCollapsedChangeDetail, QSidepanelC
 import { QStepDiagramLayout } from "./components/indicators/step-diagram/step-diagram.types";
 import { QStepDiagramItemLayout, QStepDiagramItemLineStyle, QStepDiagramItemStatus } from "./components/indicators/step-diagram-item/step-diagram-item.types";
 import { QSyntaxBoxLanguage, QSyntaxBoxVariant } from "./components/data-display/syntax-box/syntax-box.types";
-import { QTabsOrientation, TabItemInput } from "./components/layout/tabs/tabs.types";
+import { QTabsOrientation, QTabsSize, QTabsVariant, TabItemInput } from "./components/layout/tabs/tabs.types";
 import { QTextareaResizeMode } from "./components/inputs/textarea/textarea.types";
 import { QThumbnailMaximizeDetail } from "./components/media/thumbnail/thumbnail.types";
 import { QToggleSize, QToggleType } from "./components/inputs/toggle/toggle.types";
@@ -55,7 +55,7 @@ export { QSidepanelCollapseControl, QSidepanelCollapsedChangeDetail, QSidepanelC
 export { QStepDiagramLayout } from "./components/indicators/step-diagram/step-diagram.types";
 export { QStepDiagramItemLayout, QStepDiagramItemLineStyle, QStepDiagramItemStatus } from "./components/indicators/step-diagram-item/step-diagram-item.types";
 export { QSyntaxBoxLanguage, QSyntaxBoxVariant } from "./components/data-display/syntax-box/syntax-box.types";
-export { QTabsOrientation, TabItemInput } from "./components/layout/tabs/tabs.types";
+export { QTabsOrientation, QTabsSize, QTabsVariant, TabItemInput } from "./components/layout/tabs/tabs.types";
 export { QTextareaResizeMode } from "./components/inputs/textarea/textarea.types";
 export { QThumbnailMaximizeDetail } from "./components/media/thumbnail/thumbnail.types";
 export { QToggleSize, QToggleType } from "./components/inputs/toggle/toggle.types";
@@ -1284,6 +1284,11 @@ export namespace Components {
          */
         "orientation": QTabsOrientation;
         /**
+          * Visual size preset.
+          * @default 'md'
+         */
+        "size": QTabsSize;
+        /**
           * Makes enabled tabs share the available width evenly.
           * @default false
          */
@@ -1293,6 +1298,11 @@ export namespace Components {
           * @default ''
          */
         "value": string;
+        /**
+          * Visual presentation of the tabs.
+          * @default 'underline'
+         */
+        "variant": QTabsVariant;
     }
     /**
      * Form-associated textarea with optional auto-grow behavior and validation messaging.
@@ -3546,6 +3556,11 @@ declare namespace LocalJSX {
          */
         "orientation"?: QTabsOrientation;
         /**
+          * Visual size preset.
+          * @default 'md'
+         */
+        "size"?: QTabsSize;
+        /**
           * Makes enabled tabs share the available width evenly.
           * @default false
          */
@@ -3555,6 +3570,11 @@ declare namespace LocalJSX {
           * @default ''
          */
         "value"?: string;
+        /**
+          * Visual presentation of the tabs.
+          * @default 'underline'
+         */
+        "variant"?: QTabsVariant;
     }
     /**
      * Form-associated textarea with optional auto-grow behavior and validation messaging.
@@ -4049,6 +4069,8 @@ declare namespace LocalJSX {
         "value": string;
         "ariaLabel": string;
         "orientation": QTabsOrientation;
+        "size": QTabsSize;
+        "variant": QTabsVariant;
         "stretch": boolean;
     }
     interface QTextareaAttributes {

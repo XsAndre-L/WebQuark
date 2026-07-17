@@ -26,8 +26,4 @@ export type {
   QMapStatus,
   QMapStatusChangeDetail,
 } from './components/data-display/map/map.types';
-export type {
-  QTabsOrientation,
-  TabItem,
-  TabItemInput,
-} from './components/layout/tabs/tabs.types';
+export type { QTabsOrientation, QTabsSize, QTabsVariant, TabItem, TabItemInput } from './components/layout/tabs/tabs.types';

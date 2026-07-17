@@ -1,6 +1,6 @@
 import { Component, Element, Event, EventEmitter, Prop, h } from '@stencil/core';
 
-import type { QTabsOrientation, TabItem, TabItemInput } from './tabs.types';
+import type { QTabsOrientation, QTabsSize, QTabsVariant, TabItem, TabItemInput } from './tabs.types';
 import { getTabItems } from './tabs.utils';
 
 let tabsId = 0;
@@ -33,6 +33,12 @@ export class QTabs {
   /** Direction of the tab list and its corresponding arrow-key navigation. */
   @Prop({ reflect: true }) orientation: QTabsOrientation = 'horizontal';
 
+  /** Visual size preset. */
+  @Prop() size: QTabsSize = 'md';
+
+  /** Visual presentation of the tabs. */
+  @Prop() variant: QTabsVariant = 'underline';
+
   /** Makes enabled tabs share the available width evenly. */
   @Prop({ reflect: true }) stretch: boolean = false;
 
@@ -48,8 +54,8 @@ export class QTabs {
   }
 
   private getActiveIndex(items: readonly TabItem[]): number {
-    const selectedIndex = items.findIndex((item) => !item.disabled && item.value === this.value);
-    return selectedIndex >= 0 ? selectedIndex : items.findIndex((item) => !item.disabled);
+    const selectedIndex = items.findIndex(item => !item.disabled && item.value === this.value);
+    return selectedIndex >= 0 ? selectedIndex : items.findIndex(item => !item.disabled);
   }
 
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
@@ -81,9 +87,7 @@ export class QTabs {
 
     event.preventDefault();
     const item = items[nextIndex];
-    const tab = this.el.shadowRoot?.querySelector<HTMLButtonElement>(
-      `#${this.tabId(item, nextIndex)}`,
-    );
+    const tab = this.el.shadowRoot?.querySelector<HTMLButtonElement>(`#${this.tabId(item, nextIndex)}`);
     focusWithoutPageScroll(tab);
     this.selectItem(item);
   };
@@ -100,7 +104,11 @@ export class QTabs {
 
     return (
       <div
-        class="tab-list"
+        class={{
+          'tab-list': true,
+          [`size-${this.size}`]: true,
+          [`variant-${this.variant}`]: true,
+        }}
         part="tablist"
         role="tablist"
         aria-label={this.ariaLabel.trim() || 'Sections'}
@@ -112,7 +120,7 @@ export class QTabs {
           return (
             <button
               id={this.tabId(item, index)}
-              class={{ tab: true, 'is-selected': selected }}
+              class={{ 'tab': true, 'is-selected': selected }}
               type="button"
               role="tab"
               part={`tab${selected ? ' selected-tab' : ''}`}
@@ -120,8 +128,9 @@ export class QTabs {
               aria-selected={selected ? 'true' : 'false'}
               aria-controls={item.panelId}
               tabindex={selected ? 0 : -1}
+              title={item.label}
               onClick={() => this.selectItem(item)}
-              onKeyDown={(event) => this.handleKeyDown(event, index)}
+              onKeyDown={event => this.handleKeyDown(event, index)}
             >
               {item.label}
             </button>
