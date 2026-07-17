@@ -1,6 +1,6 @@
 export type QMapMarkerId = string | number;
 
-export type QMapProvider = 'tiles' | 'google';
+export type QMapProvider = 'tiles' | 'vector' | 'google';
 
 export type QMapGoogleMapType = 'roadmap' | 'satellite' | 'terrain' | 'hybrid';
 
@@ -23,6 +23,8 @@ export interface QMapMarker {
   longitude: number;
   label: string;
   variant?: QMapMarkerVariant;
+  imageUrl?: string;
+  fallbackText?: string;
 }
 
 export type QMapMarkerInput = QMapMarker[] | string;

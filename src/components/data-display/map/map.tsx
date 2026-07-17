@@ -1,5 +1,5 @@
 import { Component, Element, Event, EventEmitter, h, Prop, State, Watch } from '@stencil/core';
-import type { GridLayer as LeafletGridLayer, Map as LeafletMap } from 'leaflet';
+import type { Layer as LeafletLayer, Map as LeafletMap } from 'leaflet';
 
 import { MapBaseLayerController } from './internals/base-layer';
 import {
@@ -10,6 +10,7 @@ import {
 } from './internals/bounds';
 import { hasGoogleMapsConfiguration, loadGoogleMapsApi } from './internals/google-maps';
 import { loadGoogleMutantConstructor } from './internals/google-mutant';
+import { loadMapLibreLayerFactory, waitForMapLibreLayerReady } from './internals/maplibre';
 import { MapMarkerController } from './internals/marker-controller';
 import type {
   QMapBoundsInput,
@@ -26,11 +27,12 @@ import type {
 
 type LeafletModule = typeof import('leaflet');
 
-interface LeafletWindow extends Window {
-  L_DISABLE_3D?: boolean;
-}
-
 const GOOGLE_MAP_TYPES: QMapGoogleMapType[] = ['roadmap', 'satellite', 'terrain', 'hybrid'];
+const SMOOTH_ZOOM_DELTA = 0.5;
+const SMOOTH_ZOOM_SNAP = 0.25;
+const SMOOTH_WHEEL_DEBOUNCE_MS = 16;
+const SMOOTH_WHEEL_PIXELS_PER_LEVEL = 120;
+const VECTOR_SYMBOL_FADE_DURATION_MS = 750;
 
 /**
  * Framework-neutral interactive map powered by Leaflet.
@@ -55,6 +57,9 @@ const GOOGLE_MAP_TYPES: QMapGoogleMapType[] = ['roadmap', 'satellite', 'terrain'
  * @cssprop --q-map-marker-danger - Danger marker color.
  * @cssprop --q-map-marker-muted - Muted marker color.
  * @cssprop --q-map-marker-selected-color - Selected-marker ring color.
+ * @cssprop --q-map-marker-content-gap - Space exposing the marker status color around image or text content.
+ * @cssprop --q-map-marker-content-bg - Background behind marker image or fallback text.
+ * @cssprop --q-map-marker-content-color - Marker fallback-text color.
  * @cssprop --q-map-attribution-bg - Attribution background.
  * @cssprop --q-map-attribution-color - Attribution foreground.
  */
@@ -66,11 +71,14 @@ const GOOGLE_MAP_TYPES: QMapGoogleMapType[] = ['roadmap', 'satellite', 'terrain'
 export class QMap {
   @Element() el!: HTMLElement;
 
-  /** Selects tile imagery or Google imagery; Google failures may use tileUrl as a fallback. */
+  /** Selects raster tiles, styled vector data, or Google imagery; non-tile failures may use tileUrl as a fallback. */
   @Prop() provider: QMapProvider = 'tiles';
 
-  /** Supplies the tile URL template for the tiles provider and optional Google fallback. */
+  /** Supplies the tile URL template for the tiles provider and optional vector/Google fallback. */
   @Prop() tileUrl: string = '';
+
+  /** Supplies a MapLibre Style Specification URL for the vector provider. */
+  @Prop() vectorStyleUrl: string = '';
 
   /** Supplies the browser-restricted key used only when WebQuark must load Google Maps. */
   @Prop() googleApiKey: string = '';
@@ -78,10 +86,10 @@ export class QMap {
   /** Chooses the Google base-map style, normalizing unsupported values to roadmap. */
   @Prop() googleMapType: QMapGoogleMapType = 'roadmap';
 
-  /** Renders plain-text attribution whenever tiles are the active imagery provider. */
+  /** Renders plain-text attribution whenever raster tiles or styled vectors are active. */
   @Prop() attribution: string = '';
 
-  /** Links tile attribution only when the value resolves to an HTTP(S) URL. */
+  /** Links map attribution only when the value resolves to an HTTP(S) URL. */
   @Prop() attributionUrl: string = '';
 
   /** Controls viewport latitude; finite values are clamped to the geographic range. */
@@ -140,7 +148,7 @@ export class QMap {
   private resizeObserver?: ResizeObserver;
   private resizeFrame?: number;
   private initializationToken = 0;
-  private layerController?: MapBaseLayerController<LeafletGridLayer>;
+  private layerController?: MapBaseLayerController<LeafletLayer>;
   private markerController?: MapMarkerController;
   private lastInvalidBoundsInput?: QMapBoundsInput;
   private reportedRequestedProvider?: QMapProvider;
@@ -165,6 +173,7 @@ export class QMap {
 
   @Watch('provider')
   @Watch('tileUrl')
+  @Watch('vectorStyleUrl')
   @Watch('googleApiKey')
   @Watch('googleMapType')
   handleBaseLayerChange() {
@@ -189,7 +198,7 @@ export class QMap {
   @Watch('centerLongitude')
   @Watch('zoom')
   handleViewChange() {
-    this.syncView();
+    this.syncView(true);
   }
 
   @Watch('minZoom')
@@ -225,7 +234,6 @@ export class QMap {
 
     const token = ++this.initializationToken;
     this.setProviderStatus('initializing', undefined, false, true);
-    (window as LeafletWindow).L_DISABLE_3D = true;
 
     try {
       const leaflet = this.leaflet ?? (await import('leaflet'));
@@ -234,19 +242,24 @@ export class QMap {
 
       const { minimum, maximum } = this.getZoomLimits();
       const boundsResolution = resolveMapBounds(this.maxBounds);
+      const smoothMotion = !this.prefersReducedMotion();
       this.map = leaflet.map(this.canvas, {
         attributionControl: false,
-        fadeAnimation: false,
+        fadeAnimation: smoothMotion,
         inertia: false,
         keyboard: true,
-        markerZoomAnimation: false,
+        markerZoomAnimation: smoothMotion,
         maxBounds: getInitialLeafletMapBounds(boundsResolution),
         maxBoundsViscosity: getMapBoundsViscosity(this.maxBoundsViscosity),
         maxZoom: maximum,
         minZoom: minimum,
         trackResize: false,
-        zoomAnimation: false,
+        wheelDebounceTime: smoothMotion ? SMOOTH_WHEEL_DEBOUNCE_MS : 40,
+        wheelPxPerZoomLevel: smoothMotion ? SMOOTH_WHEEL_PIXELS_PER_LEVEL : 60,
+        zoomAnimation: smoothMotion,
         zoomControl: this.zoomControls,
+        zoomDelta: smoothMotion ? SMOOTH_ZOOM_DELTA : 1,
+        zoomSnap: smoothMotion ? SMOOTH_ZOOM_SNAP : 1,
       });
       if (boundsResolution.kind === 'invalid') this.reportInvalidBounds(boundsResolution.message);
       else this.lastInvalidBoundsInput = undefined;
@@ -270,8 +283,11 @@ export class QMap {
   }
 
   private createControllers(map: LeafletMap, leaflet: LeafletModule): void {
-    this.layerController = new MapBaseLayerController<LeafletGridLayer>({
-      attach: layer => layer.addTo(map),
+    this.layerController = new MapBaseLayerController<LeafletLayer>({
+      attach: async (layer, provider) => {
+        layer.addTo(map);
+        if (provider === 'vector') await waitForMapLibreLayerReady(layer);
+      },
       createGoogle: async config => {
         await loadGoogleMapsApi(config.googleApiKey);
         const GoogleMutant = await loadGoogleMutantConstructor(leaflet);
@@ -286,6 +302,20 @@ export class QMap {
         minZoom: config.minZoom,
         maxZoom: config.maxZoom,
       }),
+      createVector: async config => {
+        const createMapLibreLayer = await loadMapLibreLayerFactory(leaflet);
+        return createMapLibreLayer({
+          attributionControl: false,
+          fadeDuration: VECTOR_SYMBOL_FADE_DURATION_MS,
+          interactive: false,
+          maxTileCacheZoomLevels: 6,
+          maxZoom: config.maxZoom,
+          minZoom: config.minZoom,
+          padding: 0.2,
+          style: config.vectorStyleUrl,
+          updateInterval: 16,
+        });
+      },
     });
     this.markerController = new MapMarkerController({
       map,
@@ -307,6 +337,7 @@ export class QMap {
     const result = await controller.sync({
       requestedProvider,
       tileUrl: this.tileUrl.trim(),
+      vectorStyleUrl: this.vectorStyleUrl.trim(),
       googleApiKey: this.googleApiKey.trim(),
       googleApiAvailable: hasGoogleMapsConfiguration(),
       googleMapType: this.getGoogleMapType(),
@@ -352,15 +383,23 @@ export class QMap {
   }
 
   private getProvider(): QMapProvider {
-    return this.provider === 'google' ? 'google' : 'tiles';
+    return this.provider === 'google' || this.provider === 'vector' ? this.provider : 'tiles';
   }
 
   private getGoogleMapType(): QMapGoogleMapType {
     return GOOGLE_MAP_TYPES.includes(this.googleMapType) ? this.googleMapType : 'roadmap';
   }
 
-  private syncView(): void {
-    this.map?.setView(this.getCenter(), this.getZoom(), { animate: false });
+  private syncView(animate = false): void {
+    this.map?.setView(this.getCenter(), this.getZoom(), {
+      animate: animate && !this.prefersReducedMotion(),
+    });
+  }
+
+  private prefersReducedMotion(): boolean {
+    return typeof window !== 'undefined'
+      && typeof window.matchMedia === 'function'
+      && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
 
   private syncBounds(reportInvalid: boolean): void {
@@ -446,7 +485,7 @@ export class QMap {
   }
 
   private renderAttribution() {
-    if (this.activeProvider !== 'tiles') return null;
+    if (this.activeProvider !== 'tiles' && this.activeProvider !== 'vector') return null;
     const attribution = this.attribution.trim();
     if (!attribution) return null;
 
