@@ -24,7 +24,7 @@ import { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.ty
 import { QQuantitySelectorVariant } from "./components/inputs/quantity-selector/quantity-selector.types";
 import { QReelLayout } from "./components/media/reel/reel.types";
 import { QScrollableEventDetail, QScrollableMode } from "./components/layout/scrollable/scrollable.types";
-import { QSidepanelCollapseControl, QSidepanelCollapsedChangeDetail, QSidepanelCollapseMode, QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItemInput } from "./components/layout/sidepanel/sidepanel.types";
+import { QSidepanelCollapseControl, QSidepanelCollapseControlAppearance, QSidepanelCollapsedChangeDetail, QSidepanelCollapseMode, QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItemInput } from "./components/layout/sidepanel/sidepanel.types";
 import { QStepDiagramLayout } from "./components/indicators/step-diagram/step-diagram.types";
 import { QStepDiagramItemLayout, QStepDiagramItemLineStyle, QStepDiagramItemStatus } from "./components/indicators/step-diagram-item/step-diagram-item.types";
 import { QSyntaxBoxLanguage, QSyntaxBoxVariant } from "./components/data-display/syntax-box/syntax-box.types";
@@ -53,7 +53,7 @@ export { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.ty
 export { QQuantitySelectorVariant } from "./components/inputs/quantity-selector/quantity-selector.types";
 export { QReelLayout } from "./components/media/reel/reel.types";
 export { QScrollableEventDetail, QScrollableMode } from "./components/layout/scrollable/scrollable.types";
-export { QSidepanelCollapseControl, QSidepanelCollapsedChangeDetail, QSidepanelCollapseMode, QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItemInput } from "./components/layout/sidepanel/sidepanel.types";
+export { QSidepanelCollapseControl, QSidepanelCollapseControlAppearance, QSidepanelCollapsedChangeDetail, QSidepanelCollapseMode, QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItemInput } from "./components/layout/sidepanel/sidepanel.types";
 export { QStepDiagramLayout } from "./components/indicators/step-diagram/step-diagram.types";
 export { QStepDiagramItemLayout, QStepDiagramItemLineStyle, QStepDiagramItemStatus } from "./components/indicators/step-diagram-item/step-diagram-item.types";
 export { QSyntaxBoxLanguage, QSyntaxBoxVariant } from "./components/data-display/syntax-box/syntax-box.types";
@@ -1198,6 +1198,16 @@ export namespace Components {
          */
         "collapseControl": QSidepanelCollapseControl;
         /**
+          * Visual style of the built-in collapse control. `edge-tab` is intended for `collapse-control="edge"`; other placements retain icon-button geometry.
+          * @default 'icon-button'
+         */
+        "collapseControlAppearance": QSidepanelCollapseControlAppearance;
+        /**
+          * Start-edge position of an edge control. For left/right sidepanels this is measured from the top; for top/bottom sidepanels it is measured from the left. Accepts CSS lengths and percentages.
+          * @default ''
+         */
+        "collapseControlPosition": string;
+        /**
           * Accessible label override for the built-in collapse control (aria-label/title).
           * @default 'Toggle sidebar'
          */
@@ -1213,7 +1223,7 @@ export namespace Components {
          */
         "collapsed": boolean;
         /**
-          * Enables the collapse feature. Only takes effect when variant="nav". Reflected so host-level width CSS (e.g. the collapsed/rail width rule) can be gated on it, keeping it in sync with the inner is-collapsed/collapse-mode-* classes applied in render().
+          * Enables the collapse feature for nav and panel variants. Reflected so host-level sizing CSS stays in sync with the rendered collapsed state.
           * @default false
          */
         "collapsible": boolean;
@@ -3609,6 +3619,16 @@ declare namespace LocalJSX {
          */
         "collapseControl"?: QSidepanelCollapseControl;
         /**
+          * Visual style of the built-in collapse control. `edge-tab` is intended for `collapse-control="edge"`; other placements retain icon-button geometry.
+          * @default 'icon-button'
+         */
+        "collapseControlAppearance"?: QSidepanelCollapseControlAppearance;
+        /**
+          * Start-edge position of an edge control. For left/right sidepanels this is measured from the top; for top/bottom sidepanels it is measured from the left. Accepts CSS lengths and percentages.
+          * @default ''
+         */
+        "collapseControlPosition"?: string;
+        /**
           * Accessible label override for the built-in collapse control (aria-label/title).
           * @default 'Toggle sidebar'
          */
@@ -3624,7 +3644,7 @@ declare namespace LocalJSX {
          */
         "collapsed"?: boolean;
         /**
-          * Enables the collapse feature. Only takes effect when variant="nav". Reflected so host-level width CSS (e.g. the collapsed/rail width rule) can be gated on it, keeping it in sync with the inner is-collapsed/collapse-mode-* classes applied in render().
+          * Enables the collapse feature for nav and panel variants. Reflected so host-level sizing CSS stays in sync with the rendered collapsed state.
           * @default false
          */
         "collapsible"?: boolean;
@@ -4309,6 +4329,8 @@ declare namespace LocalJSX {
         "collapsible": boolean;
         "collapsed": boolean;
         "collapseControl": QSidepanelCollapseControl;
+        "collapseControlAppearance": QSidepanelCollapseControlAppearance;
+        "collapseControlPosition": string;
         "collapseMode": QSidepanelCollapseMode;
         "collapseLabel": string;
     }
