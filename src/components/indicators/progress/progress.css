@@ -1,0 +1,223 @@
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  --_q-progress-linear-height: var(--q-progress-linear-height-md, 6px);
+  --_q-progress-circular-size: var(--q-progress-circular-size-md, 120px);
+  --_q-progress-stroke-width: var(
+    --q-progress-circular-stroke-width-md,
+    8px
+  );
+  --_q-progress-font-size: var(
+    --q-progress-circular-font-size-md,
+    var(--q-font-size-lg, 1rem)
+  );
+  --_q-progress-track-color: var(--q-bg-surface-3, #22304d);
+  --_q-progress-tone-color: var(--q-color-primary, #60a5fa);
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+:host([variant='circular']) {
+  display: inline-block;
+  width: auto;
+  --_q-progress-track-color: var(--q-border-color, #374151);
+}
+
+:host([size='sm']) {
+  --_q-progress-linear-height: var(--q-progress-linear-height-sm, 4px);
+  --_q-progress-circular-size: var(--q-progress-circular-size-sm, 64px);
+  --_q-progress-stroke-width: var(
+    --q-progress-circular-stroke-width-sm,
+    6px
+  );
+  --_q-progress-font-size: var(
+    --q-progress-circular-font-size-sm,
+    var(--q-font-size-sm, 0.7rem)
+  );
+}
+
+:host([size='lg']) {
+  --_q-progress-linear-height: var(--q-progress-linear-height-lg, 8px);
+  --_q-progress-circular-size: var(--q-progress-circular-size-lg, 180px);
+  --_q-progress-stroke-width: var(
+    --q-progress-circular-stroke-width-lg,
+    10px
+  );
+  --_q-progress-font-size: var(
+    --q-progress-circular-font-size-lg,
+    calc(var(--q-font-size-lg, 1rem) * 1.5)
+  );
+}
+
+:host([tone='neutral']) {
+  --_q-progress-tone-color: var(--q-fg-muted, #9ca3af);
+}
+
+:host([tone='primary']) {
+  --_q-progress-tone-color: var(--q-color-primary, #60a5fa);
+}
+
+:host([tone='success']) {
+  --_q-progress-tone-color: var(--q-color-success, #34d399);
+}
+
+:host([tone='warning']) {
+  --_q-progress-tone-color: var(--q-color-warning, #fbbf24);
+}
+
+:host([tone='danger']) {
+  --_q-progress-tone-color: var(--q-color-danger, #f87171);
+}
+
+.progress-linear {
+  position: relative;
+  width: 100%;
+  height: var(
+    --q-progress-linear-height,
+    var(
+      --q-progress-bar-height,
+      var(--_q-progress-custom-size, var(--_q-progress-linear-height))
+    )
+  );
+  overflow: hidden;
+  border-radius: var(
+    --q-progress-linear-radius,
+    var(--q-progress-bar-radius, 999px)
+  );
+  background: var(
+    --q-progress-track-color,
+    var(--q-progress-bar-track-color, var(--_q-progress-track-color))
+  );
+}
+
+.progress-linear__fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(
+    --q-progress-fill-color,
+    var(--q-progress-bar-fill-color, var(--_q-progress-tone-color))
+  );
+  transition: width
+    var(
+      --q-progress-transition,
+      var(--q-progress-bar-transition, var(--q-transition-normal, 250ms ease))
+    );
+}
+
+.progress-linear__fill.is-indeterminate {
+  width: 42%;
+  animation: q-progress-linear-indeterminate
+    var(
+      --q-progress-indeterminate-duration,
+      var(--q-progress-bar-indeterminate-duration, 1.4s)
+    )
+    ease-in-out infinite;
+}
+
+.progress-circular {
+  width: var(
+    --q-progress-circular-size,
+    var(
+      --q-progress-size,
+      var(--_q-progress-custom-size, var(--_q-progress-circular-size))
+    )
+  );
+  height: var(
+    --q-progress-circular-size,
+    var(
+      --q-progress-size,
+      var(--_q-progress-custom-size, var(--_q-progress-circular-size))
+    )
+  );
+}
+
+.progress-circular__svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.progress-circular__rings {
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
+
+.progress-circular__track,
+.progress-circular__fill {
+  fill: none;
+  stroke-width: var(
+    --q-progress-circular-stroke-width,
+    var(--q-progress-stroke-width, var(--_q-progress-stroke-width))
+  );
+}
+
+.progress-circular__track {
+  stroke: var(--q-progress-track-color, var(--_q-progress-track-color));
+}
+
+.progress-circular__fill {
+  stroke: var(
+    --q-progress-fill-color,
+    var(--_q-progress-tone-color)
+  );
+  stroke-linecap: var(--q-progress-circular-linecap, round);
+  transition: stroke-dashoffset
+    var(--q-progress-transition, var(--q-transition-normal, 250ms ease));
+}
+
+.progress-circular__label {
+  fill: var(--q-fg-base, #f9fafb);
+  font-family: var(--q-font-family, inherit);
+  font-size: var(
+    --q-progress-circular-font-size,
+    var(--q-progress-font-size, var(--_q-progress-font-size))
+  );
+  font-weight: var(
+    --q-progress-circular-font-weight,
+    var(--q-progress-font-weight, var(--q-font-weight-bold, 600))
+  );
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+:host([variant='circular'][indeterminate]) .progress-circular__rings {
+  animation: q-progress-circular-indeterminate
+    var(--q-progress-indeterminate-duration, 1.4s) linear infinite;
+}
+
+@keyframes q-progress-linear-indeterminate {
+  0% {
+    transform: translateX(-110%);
+  }
+
+  100% {
+    transform: translateX(255%);
+  }
+}
+
+@keyframes q-progress-circular-indeterminate {
+  0% {
+    transform: rotate(-90deg);
+  }
+
+  100% {
+    transform: rotate(270deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-linear__fill,
+  .progress-circular__fill {
+    transition: none;
+  }
+
+  .progress-linear__fill.is-indeterminate,
+  :host([variant='circular'][indeterminate]) .progress-circular__rings {
+    animation-duration: 2.8s;
+  }
+}

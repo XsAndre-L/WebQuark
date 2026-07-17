@@ -113,15 +113,21 @@
   --q-carousel-indicator-gap: 8px;
   --q-carousel-indicator-size: 6px;
 
-  /* Circular Progress (q-circular-progress) */
-  --q-progress-size: 120px;
-  --q-progress-stroke-width: 8px;
-  --q-progress-linecap: round; /* round | butt */
-  --q-progress-track-color: var(--q-border-color);
-  --q-progress-fill-color: var(--q-color-primary);
-  --q-progress-font-size: var(--q-font-size-lg);
-  --q-progress-font-weight: var(--q-font-weight-bold);
-  --q-progress-animation-duration: 1s;
+  /* Progress (q-progress) */
+  --q-progress-transition: var(--q-transition-normal);
+  --q-progress-indeterminate-duration: 1.4s;
+  --q-progress-linear-height-sm: 4px;
+  --q-progress-linear-height-md: 6px;
+  --q-progress-linear-height-lg: 8px;
+  --q-progress-linear-radius: 999px;
+  --q-progress-circular-size-sm: 64px;
+  --q-progress-circular-size-md: 120px;
+  --q-progress-circular-size-lg: 180px;
+  --q-progress-circular-stroke-width-sm: 6px;
+  --q-progress-circular-stroke-width-md: 8px;
+  --q-progress-circular-stroke-width-lg: 10px;
+  --q-progress-circular-linecap: round;
+  --q-progress-circular-font-weight: var(--q-font-weight-bold);
 
   /* Button (q-button) */
   --q-btn-radius: var(--q-radius-md);

@@ -29,6 +29,7 @@ Framework-neutral interactive map powered by Leaflet.
 | `selectedMarkerId`   | `selected-marker-id`   | Controls which marker exposes its selected visual and aria-pressed state.                                   | `number \| string`                                  | `undefined`         |
 | `tileUrl`            | `tile-url`             | Supplies the tile URL template for the tiles provider and optional Google fallback.                         | `string`                                            | `''`                |
 | `zoom`               | `zoom`                 | Controls the viewport zoom and is clamped between the normalized zoom limits.                               | `number`                                            | `2`                 |
+| `zoomControls`       | `zoom-controls`        | Controls whether the built-in plus/minus zoom control is rendered.                                          | `boolean`                                           | `true`              |
 
 
 ## Events

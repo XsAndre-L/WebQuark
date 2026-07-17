@@ -619,7 +619,7 @@ describe('q-data-table', () => {
     const rows = el.shadowRoot.querySelectorAll('tbody tr');
 
     expect(rows).toHaveLength(1);
-    expect(el.shadowRoot.querySelector('.table-loading-state q-circular-progress')).toBeTruthy();
+    expect(el.shadowRoot.querySelector('.table-loading-state q-progress')).toBeTruthy();
     expect(el.shadowRoot.textContent).not.toContain('Alpha');
     el.remove();
   });

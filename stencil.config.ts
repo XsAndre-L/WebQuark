@@ -13,12 +13,14 @@ export const config: Config = {
     {
       type: 'dist',
       esmLoaderPath: 'loader',
+      empty: true,
     },
     {
       type: 'dist-custom-elements',
       dir: 'dist/components',
       customElementsExportBehavior: 'auto-define-custom-elements',
       externalRuntime: false,
+      empty: true,
     },
     {
       type: 'docs-readme',

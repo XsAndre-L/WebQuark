@@ -95,7 +95,7 @@ Data grid with optional toolbar, search, row activation, and multi-row selection
 
 ### Depends on
 
-- [q-circular-progress](../../indicators/circular-progress)
+- [q-progress](../../indicators/progress)
 - [q-button](../../actions/button)
 - [q-icon](../../media/icon)
 - [q-tooltip](../../overlays/tooltip)
@@ -104,7 +104,7 @@ Data grid with optional toolbar, search, row activation, and multi-row selection
 ### Graph
 ```mermaid
 graph TD;
-  q-data-table --> q-circular-progress
+  q-data-table --> q-progress
   q-data-table --> q-button
   q-data-table --> q-icon
   q-data-table --> q-tooltip
