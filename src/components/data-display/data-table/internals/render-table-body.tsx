@@ -83,13 +83,26 @@ function renderDataTableRow(row: DataTableRowModel, options: RenderDataTableBody
           />
         </td>
       )}
-      {model.columns.map(columnModel => (
-        <td key={columnModel.renderKey} class={columnModel.column.className || ''} part="cell" role="gridcell">
-          <slot name={getDataTableCellSlotName(columnModel.identity, row.identity)}>
-            {options.renderCell(row.item, columnModel.column)}
-          </slot>
-        </td>
-      ))}
+      {model.columns.map(columnModel => {
+        const className = getCellClassName(
+          columnModel.column,
+          row.item,
+          row.index,
+        );
+
+        return (
+          <td
+            key={columnModel.renderKey}
+            class={className}
+            part={getCellPartNames(className)}
+            role="gridcell"
+          >
+            <slot name={getDataTableCellSlotName(columnModel.identity, row.identity)}>
+              {options.renderCell(row.item, columnModel.column)}
+            </slot>
+          </td>
+        );
+      })}
       {renderDataTableRowActions({
         actions: model.rowActions,
         item: row.item,
@@ -98,4 +111,32 @@ function renderDataTableRow(row: DataTableRowModel, options: RenderDataTableBody
       })}
     </tr>
   );
+}
+
+function getCellClassName(
+  column: TableColumn,
+  item: DataTableItem,
+  rowIndex: number,
+): string {
+  const classes = [
+    column.className,
+    column.sticky === 'start' ? 'is-sticky-start' : undefined,
+  ];
+
+  try {
+    classes.push(
+      typeof column.cellClassName === 'function'
+        ? column.cellClassName(item, rowIndex, column)
+        : column.cellClassName,
+    );
+  } catch (error) {
+    console.error('QDataTable: Cell class function failed', error);
+  }
+
+  return classes.filter(Boolean).join(' ');
+}
+
+function getCellPartNames(className: string): string {
+  const classParts = className.split(/\s+/).filter(Boolean);
+  return ['cell', ...new Set(classParts)].join(' ');
 }

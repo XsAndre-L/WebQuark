@@ -8,6 +8,9 @@
 ## Overview
 
 Form wrapper that bridges slotted WebQuark controls to a native form element.
+Named controls in the light DOM and assigned slots participate in validation,
+value collection, reset, and `FormData`. Controls hidden inside a
+consumer-owned nested shadow root are outside this explicit boundary.
 
 ## Properties
 

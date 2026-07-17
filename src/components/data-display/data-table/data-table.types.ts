@@ -2,6 +2,10 @@ export type DataTableItem = unknown;
 export type DataTableKey = unknown;
 export type DataTableSortDirection = 'asc' | 'desc';
 export type DataTableSortMode = 'table' | 'external';
+export type DataTableColumnSticky = 'start';
+export type DataTableCellClassName<T = unknown> =
+  | string
+  | ((item: T, rowIndex: number, column: TableColumn<T>) => string | null | undefined);
 
 export interface DataTableRowGroup {
   key: string | number;
@@ -15,6 +19,8 @@ export interface TableColumn<T = unknown> {
   header?: string;
   width?: string;
   className?: string;
+  cellClassName?: DataTableCellClassName<T>;
+  sticky?: DataTableColumnSticky;
   sortable?: boolean;
   sortKey?: string;
   render?: (item: T, column: TableColumn<T>) => unknown;

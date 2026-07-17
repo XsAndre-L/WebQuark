@@ -39,6 +39,7 @@ export function renderDataTableHead({ model, onSelectAllChange, onSortToggle }: 
           const sortDirection = getColumnSortDirection(model, column, sortable);
           const headerClass = [
             column.className || '',
+            column.sticky === 'start' ? 'is-sticky-start' : '',
             sortable ? 'is-sortable' : '',
             sortDirection ? 'is-sorted' : '',
           ].filter(Boolean).join(' ');
@@ -52,6 +53,7 @@ export function renderDataTableHead({ model, onSelectAllChange, onSortToggle }: 
               key={columnModel.renderKey}
               style={style}
               class={headerClass}
+              part={getHeaderPartNames(headerClass)}
               role="columnheader"
               aria-sort={sortable ? getAriaSort(sortDirection) : undefined}
             >
@@ -70,6 +72,11 @@ export function renderDataTableHead({ model, onSelectAllChange, onSortToggle }: 
       </tr>
     </thead>
   );
+}
+
+function getHeaderPartNames(className: string): string {
+  const classParts = className.split(/\s+/).filter(Boolean);
+  return ['column-header', ...new Set(classParts)].join(' ');
 }
 
 function getColumnSortDirection(model: DataTableModel, column: TableColumn, sortable: boolean): DataTableSortDirection | undefined {

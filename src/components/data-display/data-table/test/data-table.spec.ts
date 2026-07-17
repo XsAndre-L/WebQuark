@@ -112,6 +112,37 @@ describe('q-data-table', () => {
     el.remove();
   });
 
+  it('pins sticky columns and exposes per-row cell classes as shadow parts', async () => {
+    const el = await createComponent({
+      columns: [
+        {
+          key: 'name',
+          header: 'Name',
+          sticky: 'start',
+          cellClassName: (item: any) =>
+            item.id === 1 ? 'stock-cell is-low' : 'stock-cell',
+        },
+      ],
+      items,
+    });
+    const header = el.shadowRoot.querySelector('thead th');
+    const cells = el.shadowRoot.querySelectorAll('tbody td');
+
+    expect(header.classList.contains('is-sticky-start')).toBe(true);
+    expect(header.getAttribute('part')).toBe(
+      'column-header is-sticky-start',
+    );
+    expect(cells[0].classList.contains('is-sticky-start')).toBe(true);
+    expect(cells[0].classList.contains('is-low')).toBe(true);
+    expect(cells[0].getAttribute('part')).toBe(
+      'cell is-sticky-start stock-cell is-low',
+    );
+    expect(cells[1].getAttribute('part')).toBe(
+      'cell is-sticky-start stock-cell',
+    );
+    el.remove();
+  });
+
   it('keeps string and numeric rich-cell identities distinct', () => {
     expect(getDataTableCellSlotName(1, 'row')).not.toBe(
       getDataTableCellSlotName('number:1', 'row'),

@@ -35,6 +35,26 @@ Form-associated switch or checkbox toggle control.
 
 ## Methods
 
+### `checkValidity() => Promise<boolean>`
+
+Returns whether the toggle satisfies its required constraint.
+
+#### Returns
+
+Type: `Promise<boolean>`
+
+
+
+### `reportValidity() => Promise<boolean>`
+
+Reports a required constraint violation and returns whether the toggle is valid.
+
+#### Returns
+
+Type: `Promise<boolean>`
+
+
+
 ### `toggle() => Promise<void>`
 
 Programmatically toggles checked and emits qChange.

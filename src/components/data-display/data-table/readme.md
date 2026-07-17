@@ -8,6 +8,12 @@ custom element. Angular and React consumers should use the framework APIs from
 Rich cells require a stable value in `keyField` (the default is `id`) so projected
 content remains attached to the correct row while rows are sorted or refreshed.
 
+Columns support `sticky: 'start'` for a left-pinned identity column.
+`cellClassName` accepts either a class string or a callback that returns classes
+for each row. Column and cell classes are also exposed as CSS shadow parts, so
+consumers can style column alignment and row-specific states with selectors such as
+`q-data-table::part(is-warning)`.
+
 Rows, columns, row-group dividers, row actions, and rich cells use Collection
 Identity. Valid unique identities preserve unchanged DOM and framework resources.
 Missing, invalid, or duplicate identities warn and use a deterministic fallback,
@@ -24,6 +30,10 @@ but stable reuse is not guaranteed for those fallback items.
 | `--q-table-dropdown-menu-bg` | Menu background color forwarded to slotted q-dropdown controls. |
 | `--q-table-dropdown-primary` | Primary color forwarded to slotted q-dropdown controls.        |
 | `--q-table-max-height`       | Maximum height for the scrollable table area.                  |
+| `--q-table-sticky-column-bg` | Background color for body cells in a sticky start column.      |
+| `--q-table-sticky-column-hover-bg` | Background color for sticky start cells in a hovered row. |
+| `--q-table-sticky-column-selected-bg` | Background color for sticky start cells in a selected row. |
+| `--q-table-sticky-column-selected-hover-bg` | Background color for sticky start cells in a selected, hovered row. |
 
 
 <!-- Auto Generated Below -->

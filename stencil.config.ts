@@ -50,10 +50,11 @@ export const config: Config = {
       directivesProxyFile: 'packages/angular/src/stencil-generated/components.ts',
       directivesArrayFile: 'packages/angular/src/stencil-generated/index.ts',
       outputType: 'standalone',
+      inlineProperties: true,
       valueAccessorConfigs: [
         {
           elementSelectors: ['q-input', 'q-textarea'],
-          event: 'qChange',
+          event: 'qInput',
           targetAttr: 'value',
           type: 'text',
         },
@@ -62,6 +63,12 @@ export const config: Config = {
           event: 'qChange',
           targetAttr: 'value',
           type: 'select',
+        },
+        {
+          elementSelectors: ['q-toggle'],
+          event: 'qChange',
+          targetAttr: 'checked',
+          type: 'boolean',
         },
       ],
     }),

@@ -35,6 +35,8 @@ export {
 export type * from './components.d.ts';
 export type {
   DataTableCellContext,
+  DataTableCellClassName,
+  DataTableColumnSticky,
   DataTableItem,
   DataTableKey,
   DataTableRowAction,

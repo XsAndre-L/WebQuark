@@ -1,5 +1,6 @@
 import { Component, Prop, Event, EventEmitter, Method, AttachInternals, Watch, h } from '@stencil/core';
 
+import { syncNativeControlValidity } from '../../../utils/form-control-validity';
 import type { QTextareaResizeMode } from './textarea.types';
 
 /**
@@ -102,6 +103,11 @@ export class QTextarea {
 
   componentDidLoad() {
     this.adjustHeightInternal();
+    this.syncValidity();
+  }
+
+  componentDidRender() {
+    this.syncValidity();
   }
 
   formResetCallback() {
@@ -124,6 +130,26 @@ export class QTextarea {
   @Method()
   async adjustHeight() {
     this.adjustHeightInternal();
+  }
+
+  /** Returns whether the control satisfies native and custom constraints. */
+  @Method()
+  async checkValidity(): Promise<boolean> {
+    this.syncValidity();
+    if (typeof this.internals.checkValidity === 'function') {
+      return this.internals.checkValidity();
+    }
+    return this.textareaEl?.checkValidity?.() ?? true;
+  }
+
+  /** Reports native or custom constraint violations and returns whether the control is valid. */
+  @Method()
+  async reportValidity(): Promise<boolean> {
+    this.syncValidity();
+    if (typeof this.internals.reportValidity === 'function') {
+      return this.internals.reportValidity();
+    }
+    return this.textareaEl?.reportValidity?.() ?? true;
   }
 
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
@@ -153,6 +179,17 @@ export class QTextarea {
     if (this.disabled) return;
     this.qClick.emit(ev);
   };
+
+  private syncValidity(): void {
+    if (!this.textareaEl || !this.internals) return;
+
+    syncNativeControlValidity({
+      internals: this.internals,
+      control: this.textareaEl,
+      disabled: this.disabled,
+      customError: this.error || this.errorMessage,
+    });
+  }
 
   private get activeResizeMode(): QTextareaResizeMode {
     if (!this.autoGrow && this.resizeMode === 'auto') {

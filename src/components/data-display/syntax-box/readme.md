@@ -36,6 +36,26 @@ Displays and optionally edits syntax-highlighted code, with form association in 
 
 ## Methods
 
+### `checkValidity() => Promise<boolean>`
+
+Returns whether editable content satisfies native constraints.
+
+#### Returns
+
+Type: `Promise<boolean>`
+
+
+
+### `reportValidity() => Promise<boolean>`
+
+Reports editable constraint violations and returns whether the control is valid.
+
+#### Returns
+
+Type: `Promise<boolean>`
+
+
+
 ### `scrollToBottom() => Promise<void>`
 
 Programmatically scrolls the read-only code body to the bottom when it is wrapped by q-scrollable.
