@@ -19,6 +19,10 @@
       "@webquark/core/*": ["../../dist/*"]
     }
   },
+  "angularCompilerOptions": {
+    "compilationMode": "partial",
+    "strictTemplates": true
+  },
   "include": [
     "src/**/*",
     "../../dist/types/components.d.ts"

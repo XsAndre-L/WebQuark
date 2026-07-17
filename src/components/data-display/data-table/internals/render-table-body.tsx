@@ -1,5 +1,6 @@
 import { h } from '@stencil/core';
 
+import { getDataTableCellSlotName } from '../data-table-cell';
 import type { DataTableItem, DataTableRowAction, TableColumn } from '../data-table.types';
 import { renderDataTableRowActions } from './render-row-actions';
 import type { DataTableModel, DataTableRowModel } from './table-model';
@@ -46,7 +47,7 @@ function renderDataTableGroupRow(row: DataTableRowModel, columnSpan: number) {
   if (!row.group) return null;
 
   return (
-    <tr key={`group-${String(row.group.key)}-${String(row.renderKey)}`} class="row-group" role="row" aria-label={row.group.label}>
+    <tr key={`group:${row.renderKey}`} class="row-group" role="row" aria-label={row.group.label}>
       <td class="row-group-cell" colSpan={columnSpan} role="gridcell">
         {row.group.label}
       </td>
@@ -72,7 +73,7 @@ function renderDataTableRow(row: DataTableRowModel, options: RenderDataTableBody
       onKeyDown={model.rowClickable ? event => options.onRowKeyDown(row.item, row.index, event) : undefined}
     >
       {model.selectable && (
-        <td class="cell-selection" role="gridcell">
+        <td key="selection" class="cell-selection" role="gridcell">
           <input
             type="checkbox"
             class="checkbox-input"
@@ -82,9 +83,11 @@ function renderDataTableRow(row: DataTableRowModel, options: RenderDataTableBody
           />
         </td>
       )}
-      {model.columns.map(column => (
-        <td class={column.className || ''} role="gridcell">
-          {options.renderCell(row.item, column)}
+      {model.columns.map(columnModel => (
+        <td key={columnModel.renderKey} class={columnModel.column.className || ''} part="cell" role="gridcell">
+          <slot name={getDataTableCellSlotName(columnModel.identity, row.identity)}>
+            {options.renderCell(row.item, columnModel.column)}
+          </slot>
         </td>
       ))}
       {renderDataTableRowActions({

@@ -1,7 +1,8 @@
 import { Component, Element, Event, EventEmitter, Prop, h } from '@stencil/core';
 
+import { identifyItems } from '../../../utils/collection-identity';
 import type { QTabsOrientation, QTabsSize, QTabsVariant, TabItem, TabItemInput } from './tabs.types';
-import { getTabItems } from './tabs.utils';
+import { getTabDomId, getTabIdentity, getTabItems } from './tabs.utils';
 
 let tabsId = 0;
 
@@ -87,19 +88,18 @@ export class QTabs {
 
     event.preventDefault();
     const item = items[nextIndex];
-    const tab = this.el.shadowRoot?.querySelector<HTMLButtonElement>(`#${this.tabId(item, nextIndex)}`);
+    const tab = this.el.shadowRoot?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[nextIndex];
     focusWithoutPageScroll(tab);
     this.selectItem(item);
   };
-
-  private tabId(item: TabItem, index: number): string {
-    return item.tabId?.trim() || `${this.instanceId}-tab-${index}`;
-  }
 
   // ===================== [6] RENDER (Visual Template Only) =====================
 
   render() {
     const items = this.parsedItems;
+    const identifiedItems = identifyItems(items, getTabIdentity, {
+      warningContext: 'q-tabs items',
+    });
     const activeIndex = this.getActiveIndex(items);
 
     return (
@@ -114,12 +114,13 @@ export class QTabs {
         aria-label={this.ariaLabel.trim() || 'Sections'}
         aria-orientation={this.orientation}
       >
-        {items.map((item, index) => {
+        {identifiedItems.map(({ item, index, key, usesFallback }) => {
           const selected = index === activeIndex;
 
           return (
             <button
-              id={this.tabId(item, index)}
+              key={key}
+              id={getTabDomId(this.instanceId, item, key, usesFallback)}
               class={{ 'tab': true, 'is-selected': selected }}
               type="button"
               role="tab"

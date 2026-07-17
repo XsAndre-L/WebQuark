@@ -43,6 +43,7 @@ export const config: Config = {
     reactOutputTarget({
       componentCorePackage: '@webquark/core',
       outDir: 'packages/react/src/stencil-generated/',
+      excludeComponents: ['q-data-table'],
     }),
     angularOutputTarget({
       componentCorePackage: '@webquark/core',

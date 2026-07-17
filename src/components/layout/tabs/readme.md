@@ -16,6 +16,15 @@ override the cap with `--q-tabs-tab-max-width` when required.
 <q-tabs variant="button"></q-tabs>
 ```
 
+## Item Identity
+
+Each tab uses its trimmed `tabId` as its identity when provided; otherwise it
+uses its trimmed `value`. Keep that identity stable and unique.
+
+Stable identities preserve tab buttons and generated DOM IDs when `items` is
+replaced or reordered. Duplicate identities warn and use a safe fallback, but
+cannot guarantee preservation.
+
 <!-- Auto Generated Below -->
 
 

@@ -27,6 +27,7 @@ import { getAllItemKeys, getSelectedItems, toggleSelectedKey } from './internals
  * @slot actions - Action controls displayed in the right toolbar group.
  * @slot empty - Empty-state content shown when no rows are available.
  * @slot footer - Footer content rendered below the scrollable table.
+ * @slot q-data-table-cell-* - Framework adapter cell content keyed by column and stable row key.
  * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
  * @cssprop --q-table-group-bg - Background color for row-group divider rows.
  * @cssprop --q-table-group-fg - Text color for row-group divider rows.
@@ -205,6 +206,7 @@ export class QDataTable {
 
   private handleRowKeyDown(item: DataTableItem, index: number, event: KeyboardEvent) {
     if (!this.rowClickable) return;
+    if (isInteractiveDataTableTarget(event)) return;
 
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();

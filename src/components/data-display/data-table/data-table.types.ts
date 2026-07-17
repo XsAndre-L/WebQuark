@@ -20,6 +20,13 @@ export interface TableColumn<T = unknown> {
   render?: (item: T, column: TableColumn<T>) => unknown;
 }
 
+export interface DataTableCellContext<T = unknown> {
+  row: T;
+  value: unknown;
+  rowIndex: number;
+  column: TableColumn<T>;
+}
+
 export interface DataTableRowAction<T = unknown> {
   key: string;
   icon: string;
