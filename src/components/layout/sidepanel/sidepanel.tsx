@@ -5,6 +5,7 @@ import { seedExpandedGroups, toggleGroup } from './internals/groups';
 import { renderNavItems } from './internals/nav-items';
 import type {
   QSidepanelCollapseControl,
+  QSidepanelCollapseControlAppearance,
   QSidepanelCollapseMode,
   QSidepanelCollapsedChangeDetail,
   QSidepanelMode,
@@ -23,13 +24,15 @@ const DEFAULT_COLLAPSE_LABEL = 'Toggle sidebar';
  * @slot - Main content used by drawer and panel variants.
  * @slot header - Header content for all variants.
  * @slot footer - Footer content for all variants.
+ * @slot collapse-icon - Optional icon shown by the built-in control while the sidepanel is expanded.
+ * @slot expand-icon - Optional icon shown by the built-in control while the sidepanel is collapsed.
  * @part backdrop - Drawer backdrop click target.
  * @part drawer - Drawer dialog surface.
  * @part panel - Persistent panel surface.
  * @part header - Header region.
  * @part body - Body or navigation region.
  * @part footer - Footer region.
- * @part collapse-control - Built-in navigation collapse button.
+ * @part collapse-control - Built-in collapse button.
  */
 @Component({
   tag: 'q-sidepanel',
@@ -62,12 +65,16 @@ export class QSidepanel {
   @Prop() expanded: boolean = true;
   /** If true, opening one group collapses all sibling groups */
   @Prop() accordion: boolean = false;
-  /** Enables the collapse feature. Only takes effect when variant="nav". Reflected so host-level width CSS (e.g. the collapsed/rail width rule) can be gated on it, keeping it in sync with the inner is-collapsed/collapse-mode-* classes applied in render(). */
+  /** Enables the collapse feature for nav and panel variants. Reflected so host-level sizing CSS stays in sync with the rendered collapsed state. */
   @Prop({ reflect: true }) collapsible: boolean = false;
   /** Current collapsed state. Reflected + mutable: the component's own built-in control can flip it directly (same pattern as q-toggle's `checked`), while consumers can also drive it externally via property binding. */
   @Prop({ reflect: true, mutable: true }) collapsed: boolean = false;
   /** Where to render the built-in collapse toggle button. 'none' means the consumer supplies their own control and drives `collapsed` externally. */
   @Prop() collapseControl: QSidepanelCollapseControl = 'none';
+  /** Visual style of the built-in collapse control. `edge-tab` is intended for `collapse-control="edge"`; other placements retain icon-button geometry. */
+  @Prop({ reflect: true }) collapseControlAppearance: QSidepanelCollapseControlAppearance = 'icon-button';
+  /** Start-edge position of an edge control. For left/right sidepanels this is measured from the top; for top/bottom sidepanels it is measured from the left. Accepts CSS lengths and percentages. */
+  @Prop() collapseControlPosition: string = '';
   /** Visual behavior while collapsed: 'rail' shrinks to an icon-only rail, 'hidden' collapses to near-zero width. Reflected so light-DOM consumers can style slotted header/footer content differently per mode (e.g. q-sidepanel[collapsed][collapse-mode="rail"]). */
   @Prop({ reflect: true }) collapseMode: QSidepanelCollapseMode = 'rail';
   /** Accessible label override for the built-in collapse control (aria-label/title). */
@@ -189,7 +196,8 @@ export class QSidepanel {
     }
   };
 
-  private handleCollapseToggle = () => {
+  private handleCollapseToggle = (event: MouseEvent) => {
+    event.stopPropagation();
     const next = !this.collapsed;
     this.collapsed = next;
     this.qCollapsedChange.emit({ collapsed: next });
@@ -246,7 +254,7 @@ export class QSidepanel {
 
   // ===================== [6] RENDER (Visual Template Only) =====================
 
-  private getCollapseIconName(): string {
+  private getIconButtonCollapseIconName(): string {
     switch (this.side) {
       case 'right':
         return this.collapsed ? 'panel-right-open' : 'panel-right-close';
@@ -260,6 +268,26 @@ export class QSidepanel {
     }
   }
 
+  private getEdgeTabCollapseIconName(): string {
+    switch (this.side) {
+      case 'right':
+        return this.collapsed ? 'chevron-left' : 'chevron-right';
+      case 'top':
+        return this.collapsed ? 'chevron-down' : 'chevron-up';
+      case 'bottom':
+        return this.collapsed ? 'chevron-up' : 'chevron-down';
+      case 'left':
+      default:
+        return this.collapsed ? 'chevron-right' : 'chevron-left';
+    }
+  }
+
+  private getCollapseIconName(): string {
+    return this.collapseControlAppearance === 'edge-tab'
+      ? this.getEdgeTabCollapseIconName()
+      : this.getIconButtonCollapseIconName();
+  }
+
   private getCollapseControlLabel(): string {
     const label = this.collapseLabel.trim();
 
@@ -267,11 +295,17 @@ export class QSidepanel {
       return label;
     }
 
-    return this.collapsed ? 'Expand sidebar' : 'Collapse sidebar';
+    const target = this.variant === 'panel' ? 'panel' : 'sidebar';
+    return this.collapsed ? `Expand ${target}` : `Collapse ${target}`;
   }
 
   private renderCollapseControl(placement: QSidepanelCollapseControl) {
     const collapseControlLabel = this.getCollapseControlLabel();
+    const iconSlotName = this.collapsed ? 'expand-icon' : 'collapse-icon';
+    const isEdgeTab = placement === 'edge' && this.collapseControlAppearance === 'edge-tab';
+    const controlStyle = this.collapseControlPosition.trim()
+      ? { '--q-sidepanel-collapse-control-position': this.collapseControlPosition.trim() }
+      : undefined;
 
     return (
       <button
@@ -279,14 +313,19 @@ export class QSidepanel {
         class={{
           'collapse-control': true,
           [`collapse-control--${placement}`]: true,
+          'collapse-control--edge-tab': isEdgeTab,
+          'collapse-control--icon-button': !isEdgeTab,
         }}
+        style={controlStyle}
         part="collapse-control"
         aria-label={collapseControlLabel}
         title={collapseControlLabel}
         aria-expanded={String(!this.collapsed)}
         onClick={this.handleCollapseToggle}
       >
-        <q-icon name={this.getCollapseIconName()} lib="lucide" size="sm" />
+        <slot name={iconSlotName}>
+          <q-icon name={this.getCollapseIconName()} lib="lucide" size="sm" />
+        </slot>
       </button>
     );
   }
@@ -358,39 +397,58 @@ export class QSidepanel {
     }
 
     if (this.variant === 'panel') {
+      const isCollapseActive = this.collapsible;
+      const isCollapsed = isCollapseActive && this.collapsed;
+      const isHiddenCollapsed = isCollapsed && this.collapseMode === 'hidden';
+      const showHeader = this.hasHeaderContent || (isCollapseActive && this.collapseControl === 'header');
+      const showFooter = this.hasFooterContent || (isCollapseActive && this.collapseControl === 'footer');
+
       return (
         <div
           class={{
             'panel-shell': true,
             [`panel-side-${this.side}`]: true,
+            'is-collapsible': isCollapseActive,
+            'is-collapsed': isCollapsed,
+            [`collapse-mode-${this.collapseMode}`]: isCollapsed,
           }}
           part="panel"
           role={ariaLabel ? 'region' : undefined}
           aria-label={ariaLabel}
         >
           <div
-            class={{
-              'panel-header': true,
-              'is-hidden': !this.hasHeaderContent,
-            }}
-            part="header"
+            class="panel-content"
+            aria-hidden={isHiddenCollapsed ? 'true' : undefined}
+            inert={isHiddenCollapsed ? true : undefined}
           >
-            <slot name="header" onSlotchange={this.handleHeaderSlotChange} />
+            <div
+              class={{
+                'panel-header': true,
+                'is-hidden': !showHeader,
+              }}
+              part="header"
+            >
+              <slot name="header" onSlotchange={this.handleHeaderSlotChange} />
+              {isCollapseActive && this.collapseControl === 'header' && this.renderCollapseControl('header')}
+            </div>
+
+            <div class="panel-body" part="body">
+              <slot />
+            </div>
+
+            <div
+              class={{
+                'panel-footer': true,
+                'is-hidden': !showFooter,
+              }}
+              part="footer"
+            >
+              <slot name="footer" onSlotchange={this.handleFooterSlotChange} />
+              {isCollapseActive && this.collapseControl === 'footer' && this.renderCollapseControl('footer')}
+            </div>
           </div>
 
-          <div class="panel-body" part="body">
-            <slot />
-          </div>
-
-          <div
-            class={{
-              'panel-footer': true,
-              'is-hidden': !this.hasFooterContent,
-            }}
-            part="footer"
-          >
-            <slot name="footer" onSlotchange={this.handleFooterSlotChange} />
-          </div>
+          {isCollapseActive && this.collapseControl === 'edge' && this.renderCollapseControl('edge')}
         </div>
       );
     }

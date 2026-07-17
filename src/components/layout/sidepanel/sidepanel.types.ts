@@ -14,6 +14,7 @@ export type QSidepanelVariant = 'drawer' | 'nav' | 'panel';
 export type QSidepanelSide = 'left' | 'right' | 'top' | 'bottom';
 export type QSidepanelMode = 'flat' | 'grouped' | 'tree';
 export type QSidepanelCollapseControl = 'none' | 'header' | 'footer' | 'edge';
+export type QSidepanelCollapseControlAppearance = 'icon-button' | 'edge-tab';
 export type QSidepanelCollapseMode = 'rail' | 'hidden';
 
 export interface QSidepanelSelectDetail {

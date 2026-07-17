@@ -199,6 +199,7 @@
   --q-sidepanel-collapsed-width  default 65px  (collapse-mode="rail")
   --q-sidepanel-hidden-width     default 0px   (collapse-mode="hidden")
   --q-sidepanel-collapse-control-size default 32px
+  --q-sidepanel-collapse-control-position appearance-specific start-edge offset
 */
 
 :host([variant="nav"]) {
@@ -525,6 +526,17 @@ slot[name='footer'] {
   transition: background 80ms ease-out, color 80ms ease-out;
 }
 
+.collapse-control--edge-tab {
+  --q-sidepanel-collapse-control-inline-size: var(--q-sidepanel-edge-tab-width, 24px);
+  --q-sidepanel-collapse-control-block-size: var(--q-sidepanel-edge-tab-height, 52px);
+
+  width: var(--q-sidepanel-collapse-control-inline-size);
+  height: var(--q-sidepanel-collapse-control-block-size);
+  border: var(--q-sidepanel-edge-tab-border, var(--q-border, 1px solid var(--q-border-color, #374151)));
+  border-radius: var(--q-sidepanel-edge-tab-radius, 6px);
+  background: var(--q-sidepanel-edge-tab-bg, var(--q-bg-surface-1, #111827));
+}
+
 .collapse-control q-icon {
   width: var(--q-sidepanel-collapse-icon-size, 20px) !important;
   height: var(--q-sidepanel-collapse-icon-size, 20px) !important;
@@ -534,7 +546,25 @@ slot[name='footer'] {
 .collapse-control:focus-visible {
   background: var(--q-bg-surface-2, rgba(255, 255, 255, 0.05));
   color: var(--q-fg-base, #f9fafb);
+}
+
+.collapse-control:focus-visible {
+  outline: var(--q-focus-ring, 2px solid var(--q-color-primary, #60a5fa));
+  outline-offset: -2px;
+}
+
+.collapse-control:hover {
   outline: none;
+}
+
+.collapse-control--edge-tab:hover,
+.collapse-control--edge-tab:focus-visible {
+  background: var(--q-sidepanel-edge-tab-hover-bg, var(--q-bg-surface-2, rgba(255, 255, 255, 0.05)));
+}
+
+.collapse-control--edge-tab q-icon {
+  width: var(--q-sidepanel-edge-tab-icon-size, 16px) !important;
+  height: var(--q-sidepanel-edge-tab-icon-size, 16px) !important;
 }
 
 .collapse-control--edge {
@@ -561,6 +591,30 @@ slot[name='footer'] {
   left: 50%;
 }
 
+:host([side="left"]) .nav-sidebar > .collapse-control--edge-tab {
+  top: clamp(
+    0px,
+    var(--q-sidepanel-collapse-control-position, 12px),
+    calc(100% - var(--q-sidepanel-collapse-control-block-size))
+  );
+  right: calc(0px - var(--q-sidepanel-collapse-control-inline-size));
+  left: auto;
+  border-left: 0;
+  border-radius: 0 var(--q-sidepanel-edge-tab-radius, 6px) var(--q-sidepanel-edge-tab-radius, 6px) 0;
+}
+
+:host([side="right"]) .nav-sidebar > .collapse-control--edge-tab {
+  top: clamp(
+    0px,
+    var(--q-sidepanel-collapse-control-position, 12px),
+    calc(100% - var(--q-sidepanel-collapse-control-block-size))
+  );
+  right: auto;
+  left: calc(0px - var(--q-sidepanel-collapse-control-inline-size));
+  border-right: 0;
+  border-radius: var(--q-sidepanel-edge-tab-radius, 6px) 0 0 var(--q-sidepanel-edge-tab-radius, 6px);
+}
+
 /* ==========================================================================
    PANEL VARIANT — Persistent slotted side panel
    ========================================================================== */
@@ -571,12 +625,23 @@ slot[name='footer'] {
   width: var(--q-sidepanel-panel-width, var(--q-panel-width, 320px));
   height: 100%;
   flex-shrink: 0;
+  overflow: visible;
+  transition: width var(--q-transition-normal, 250ms ease);
+}
+
+:host([variant="panel"][collapsible][collapsed][collapse-mode="rail"]) {
+  width: var(--q-sidepanel-collapsed-width, 65px);
+}
+
+:host([variant="panel"][collapsible][collapsed][collapse-mode="hidden"]) {
+  width: var(--q-sidepanel-hidden-width, 0px);
 }
 
 .panel-shell {
+  position: relative;
   display: flex;
   flex-direction: column;
-  width: var(--q-sidepanel-panel-width, var(--q-panel-width, 100%));
+  width: 100%;
   height: 100%;
   min-width: 0;
   min-height: 0;
@@ -585,7 +650,22 @@ slot[name='footer'] {
   box-sizing: border-box;
   font-family: var(--q-font-family, inherit);
   color: var(--q-fg-base, #f9fafb);
+  overflow: visible;
+}
+
+.panel-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
   overflow: hidden;
+}
+
+.panel-shell.is-collapsed.collapse-mode-hidden .panel-content {
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .panel-side-left {
@@ -635,4 +715,93 @@ slot[name='footer'] {
 .panel-header.is-hidden,
 .panel-footer.is-hidden {
   display: none;
+}
+
+.panel-shell > .collapse-control--edge {
+  z-index: 2;
+}
+
+.panel-side-left > .collapse-control--edge,
+.panel-side-right > .collapse-control--edge {
+  top: clamp(
+    0px,
+    var(--q-sidepanel-collapse-control-position, 12px),
+    calc(100% - var(--q-sidepanel-collapse-control-size, 32px))
+  );
+}
+
+.panel-side-left > .collapse-control--edge {
+  right: calc(0px - var(--q-sidepanel-collapse-control-size, 32px));
+  left: auto;
+}
+
+.panel-side-right > .collapse-control--edge {
+  right: auto;
+  left: calc(0px - var(--q-sidepanel-collapse-control-size, 32px));
+}
+
+.panel-side-top > .collapse-control--edge,
+.panel-side-bottom > .collapse-control--edge {
+  top: auto;
+  left: clamp(
+    0px,
+    var(--q-sidepanel-collapse-control-position, 12px),
+    calc(100% - var(--q-sidepanel-collapse-control-size, 32px))
+  );
+}
+
+.panel-side-top > .collapse-control--edge {
+  bottom: calc(0px - var(--q-sidepanel-collapse-control-size, 32px));
+}
+
+.panel-side-bottom > .collapse-control--edge {
+  top: calc(0px - var(--q-sidepanel-collapse-control-size, 32px));
+  bottom: auto;
+}
+
+.panel-side-left > .collapse-control--edge-tab,
+.panel-side-right > .collapse-control--edge-tab {
+  top: clamp(
+    0px,
+    var(--q-sidepanel-collapse-control-position, 12px),
+    calc(100% - var(--q-sidepanel-collapse-control-block-size))
+  );
+}
+
+.panel-side-left > .collapse-control--edge-tab {
+  right: calc(0px - var(--q-sidepanel-collapse-control-inline-size));
+  border-left: 0;
+  border-radius: 0 var(--q-sidepanel-edge-tab-radius, 6px) var(--q-sidepanel-edge-tab-radius, 6px) 0;
+}
+
+.panel-side-right > .collapse-control--edge-tab {
+  left: calc(0px - var(--q-sidepanel-collapse-control-inline-size));
+  border-right: 0;
+  border-radius: var(--q-sidepanel-edge-tab-radius, 6px) 0 0 var(--q-sidepanel-edge-tab-radius, 6px);
+}
+
+.panel-side-top > .collapse-control--edge-tab,
+.panel-side-bottom > .collapse-control--edge-tab {
+  --q-sidepanel-collapse-control-inline-size: var(--q-sidepanel-edge-tab-height, 52px);
+  --q-sidepanel-collapse-control-block-size: var(--q-sidepanel-edge-tab-width, 24px);
+
+  width: var(--q-sidepanel-collapse-control-inline-size);
+  height: var(--q-sidepanel-collapse-control-block-size);
+  left: clamp(
+    0px,
+    var(--q-sidepanel-collapse-control-position, 12px),
+    calc(100% - var(--q-sidepanel-collapse-control-inline-size))
+  );
+}
+
+.panel-side-top > .collapse-control--edge-tab {
+  bottom: calc(0px - var(--q-sidepanel-collapse-control-block-size));
+  border-top: 0;
+  border-radius: 0 0 var(--q-sidepanel-edge-tab-radius, 6px) var(--q-sidepanel-edge-tab-radius, 6px);
+}
+
+.panel-side-bottom > .collapse-control--edge-tab {
+  top: calc(0px - var(--q-sidepanel-collapse-control-block-size));
+  border-bottom: 0;
+  border-radius: var(--q-sidepanel-edge-tab-radius, 6px) var(--q-sidepanel-edge-tab-radius, 6px) 0 0;
 }

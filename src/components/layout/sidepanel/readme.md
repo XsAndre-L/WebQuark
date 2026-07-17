@@ -1,6 +1,8 @@
 # q-sidepanel
 
-In `nav` variant, set `collapsible` to enable a collapsed state (`rail` or `hidden` via `collapse-mode`) that consumers can drive externally through the `collapsed` prop, or via a built-in toggle button placed with `collapse-control` (`header`, `footer`, or `edge`).
+In `nav` and `panel` variants, set `collapsible` to enable a collapsed state (`rail` or `hidden` via `collapse-mode`) that consumers can drive externally through the `collapsed` prop, or with a built-in toggle placed using `collapse-control` (`header`, `footer`, or `edge`).
+
+Use `collapse-control-appearance="icon-button"` for the standard square control or `collapse-control-appearance="edge-tab"` for an attached edge handle. `collapse-control-position` accepts a CSS length or percentage and measures from the top for left/right sidepanels, or from the left for top/bottom sidepanels.
 
 <!-- Auto Generated Below -->
 
@@ -11,23 +13,25 @@ Drawer, persistent panel, or hierarchical navigation side panel.
 
 ## Properties
 
-| Property          | Attribute          | Description                                                                                                                                                                                                                                                     | Type                                       | Default            |
-| ----------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ | ------------------ |
-| `accordion`       | `accordion`        | If true, opening one group collapses all sibling groups                                                                                                                                                                                                         | `boolean`                                  | `false`            |
-| `ariaLabel`       | `aria-label`       | Accessible name for the rendered navigation, panel, or drawer region.                                                                                                                                                                                           | `string`                                   | `null`             |
-| `collapseControl` | `collapse-control` | Where to render the built-in collapse toggle button. 'none' means the consumer supplies their own control and drives `collapsed` externally.                                                                                                                    | `"edge" \| "footer" \| "header" \| "none"` | `'none'`           |
-| `collapseLabel`   | `collapse-label`   | Accessible label override for the built-in collapse control (aria-label/title).                                                                                                                                                                                 | `string`                                   | `'Toggle sidebar'` |
-| `collapseMode`    | `collapse-mode`    | Visual behavior while collapsed: 'rail' shrinks to an icon-only rail, 'hidden' collapses to near-zero width. Reflected so light-DOM consumers can style slotted header/footer content differently per mode (e.g. q-sidepanel[collapsed][collapse-mode="rail"]). | `"hidden" \| "rail"`                       | `'rail'`           |
-| `collapsed`       | `collapsed`        | Current collapsed state. Reflected + mutable: the component's own built-in control can flip it directly (same pattern as q-toggle's `checked`), while consumers can also drive it externally via property binding.                                              | `boolean`                                  | `false`            |
-| `collapsible`     | `collapsible`      | Enables the collapse feature. Only takes effect when variant="nav". Reflected so host-level width CSS (e.g. the collapsed/rail width rule) can be gated on it, keeping it in sync with the inner is-collapsed/collapse-mode-* classes applied in render().      | `boolean`                                  | `false`            |
-| `expanded`        | `expanded`         |                                                                                                                                                                                                                                                                 | `boolean`                                  | `true`             |
-| `items`           | --                 | Navigation items rendered in nav mode.                                                                                                                                                                                                                          | `SidepanelItemInput[]`                     | `[]`               |
-| `mode`            | `mode`             | Item display mode: flat list, one-level groups, or deep tree                                                                                                                                                                                                    | `"flat" \| "grouped" \| "tree"`            | `'flat'`           |
-| `open`            | `open`             | Controls drawer visibility when variant="drawer".                                                                                                                                                                                                               | `boolean`                                  | `false`            |
-| `panelSize`       | `panel-size`       | Width or height depending on `side` (drawer mode only)                                                                                                                                                                                                          | `string`                                   | `'320px'`          |
-| `side`            | `side`             | Edge the drawer opens from.                                                                                                                                                                                                                                     | `"bottom" \| "left" \| "right" \| "top"`   | `'right'`          |
-| `value`           | `value`            | Active leaf item value.                                                                                                                                                                                                                                         | `string`                                   | `''`               |
-| `variant`         | `variant`          | 'drawer' = slide-in overlay, 'nav' = fixed navigation sidebar, 'panel' = persistent slotted side panel                                                                                                                                                          | `"drawer" \| "nav" \| "panel"`             | `'nav'`            |
+| Property                    | Attribute                     | Description                                                                                                                                                                                                                                                     | Type                                       | Default            |
+| --------------------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ | ------------------ |
+| `accordion`                 | `accordion`                   | If true, opening one group collapses all sibling groups                                                                                                                                                                                                         | `boolean`                                  | `false`            |
+| `ariaLabel`                 | `aria-label`                  | Accessible name for the rendered navigation, panel, or drawer region.                                                                                                                                                                                           | `string`                                   | `null`             |
+| `collapseControl`           | `collapse-control`            | Where to render the built-in collapse toggle button. 'none' means the consumer supplies their own control and drives `collapsed` externally.                                                                                                                    | `"edge" \| "footer" \| "header" \| "none"` | `'none'`           |
+| `collapseControlAppearance` | `collapse-control-appearance` | Visual style of the built-in collapse control. `edge-tab` is intended for `collapse-control="edge"`; other placements retain icon-button geometry.                                                                                                              | `"edge-tab" \| "icon-button"`              | `'icon-button'`    |
+| `collapseControlPosition`   | `collapse-control-position`   | Start-edge position of an edge control. For left/right sidepanels this is measured from the top; for top/bottom sidepanels it is measured from the left. Accepts CSS lengths and percentages.                                                                   | `string`                                   | `''`               |
+| `collapseLabel`             | `collapse-label`              | Accessible label override for the built-in collapse control (aria-label/title).                                                                                                                                                                                 | `string`                                   | `'Toggle sidebar'` |
+| `collapseMode`              | `collapse-mode`               | Visual behavior while collapsed: 'rail' shrinks to an icon-only rail, 'hidden' collapses to near-zero width. Reflected so light-DOM consumers can style slotted header/footer content differently per mode (e.g. q-sidepanel[collapsed][collapse-mode="rail"]). | `"hidden" \| "rail"`                       | `'rail'`           |
+| `collapsed`                 | `collapsed`                   | Current collapsed state. Reflected + mutable: the component's own built-in control can flip it directly (same pattern as q-toggle's `checked`), while consumers can also drive it externally via property binding.                                              | `boolean`                                  | `false`            |
+| `collapsible`               | `collapsible`                 | Enables the collapse feature for nav and panel variants. Reflected so host-level sizing CSS stays in sync with the rendered collapsed state.                                                                                                                    | `boolean`                                  | `false`            |
+| `expanded`                  | `expanded`                    |                                                                                                                                                                                                                                                                 | `boolean`                                  | `true`             |
+| `items`                     | --                            | Navigation items rendered in nav mode.                                                                                                                                                                                                                          | `SidepanelItemInput[]`                     | `[]`               |
+| `mode`                      | `mode`                        | Item display mode: flat list, one-level groups, or deep tree                                                                                                                                                                                                    | `"flat" \| "grouped" \| "tree"`            | `'flat'`           |
+| `open`                      | `open`                        | Controls drawer visibility when variant="drawer".                                                                                                                                                                                                               | `boolean`                                  | `false`            |
+| `panelSize`                 | `panel-size`                  | Width or height depending on `side` (drawer mode only)                                                                                                                                                                                                          | `string`                                   | `'320px'`          |
+| `side`                      | `side`                        | Edge the drawer opens from.                                                                                                                                                                                                                                     | `"bottom" \| "left" \| "right" \| "top"`   | `'right'`          |
+| `value`                     | `value`                       | Active leaf item value.                                                                                                                                                                                                                                         | `string`                                   | `''`               |
+| `variant`                   | `variant`                     | 'drawer' = slide-in overlay, 'nav' = fixed navigation sidebar, 'panel' = persistent slotted side panel                                                                                                                                                          | `"drawer" \| "nav" \| "panel"`             | `'nav'`            |
 
 
 ## Events
@@ -41,24 +45,26 @@ Drawer, persistent panel, or hierarchical navigation side panel.
 
 ## Slots
 
-| Slot       | Description                                     |
-| ---------- | ----------------------------------------------- |
-|            | Main content used by drawer and panel variants. |
-| `"footer"` | Footer content for all variants.                |
-| `"header"` | Header content for all variants.                |
+| Slot              | Description                                                                   |
+| ----------------- | ----------------------------------------------------------------------------- |
+|                   | Main content used by drawer and panel variants.                               |
+| `"collapse-icon"` | Optional icon shown by the built-in control while the sidepanel is expanded.  |
+| `"expand-icon"`   | Optional icon shown by the built-in control while the sidepanel is collapsed. |
+| `"footer"`        | Footer content for all variants.                                              |
+| `"header"`        | Header content for all variants.                                              |
 
 
 ## Shadow Parts
 
-| Part                 | Description                          |
-| -------------------- | ------------------------------------ |
-| `"backdrop"`         | Drawer backdrop click target.        |
-| `"body"`             | Body or navigation region.           |
-| `"collapse-control"` | Built-in navigation collapse button. |
-| `"drawer"`           | Drawer dialog surface.               |
-| `"footer"`           | Footer region.                       |
-| `"header"`           | Header region.                       |
-| `"panel"`            | Persistent panel surface.            |
+| Part                 | Description                   |
+| -------------------- | ----------------------------- |
+| `"backdrop"`         | Drawer backdrop click target. |
+| `"body"`             | Body or navigation region.    |
+| `"collapse-control"` | Built-in collapse button.     |
+| `"drawer"`           | Drawer dialog surface.        |
+| `"footer"`           | Footer region.                |
+| `"header"`           | Header region.                |
+| `"panel"`            | Persistent panel surface.     |
 
 
 ## Dependencies
