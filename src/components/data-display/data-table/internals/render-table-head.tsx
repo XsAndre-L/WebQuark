@@ -19,7 +19,7 @@ export function renderDataTableHead({ model, onSelectAllChange, onSortToggle }: 
     <thead>
       <tr role="row">
         {model.selectable && (
-          <th class="col-selection" role="columnheader">
+          <th key="selection" class="col-selection" role="columnheader">
             <input
               type="checkbox"
               class="checkbox-input"
@@ -32,7 +32,8 @@ export function renderDataTableHead({ model, onSelectAllChange, onSortToggle }: 
             />
           </th>
         )}
-        {model.columns.map(column => {
+        {model.columns.map(columnModel => {
+          const { column } = columnModel;
           const style: Record<string, string> = {};
           const sortable = isDataTableColumnSortable(column, model.sortable);
           const sortDirection = getColumnSortDirection(model, column, sortable);
@@ -47,7 +48,13 @@ export function renderDataTableHead({ model, onSelectAllChange, onSortToggle }: 
           }
 
           return (
-            <th style={style} class={headerClass} role="columnheader" aria-sort={sortable ? getAriaSort(sortDirection) : undefined}>
+            <th
+              key={columnModel.renderKey}
+              style={style}
+              class={headerClass}
+              role="columnheader"
+              aria-sort={sortable ? getAriaSort(sortDirection) : undefined}
+            >
               {sortable ? (
                 <button type="button" class="column-sort-button" onClick={() => onSortToggle(column)}>
                   <span class="column-sort-label">{getHeaderLabel(column)}</span>
@@ -59,7 +66,7 @@ export function renderDataTableHead({ model, onSelectAllChange, onSortToggle }: 
             </th>
           );
         })}
-        {model.hasRowActions && <th class="col-actions" role="columnheader" aria-label="Row actions"></th>}
+        {model.hasRowActions && <th key="actions" class="col-actions" role="columnheader" aria-label="Row actions"></th>}
       </tr>
     </thead>
   );

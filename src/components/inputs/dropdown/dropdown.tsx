@@ -1,4 +1,5 @@
 import { Component, Prop, State, Event, EventEmitter, Element, AttachInternals, Watch, Listen, h } from '@stencil/core';
+import { identifyItems } from '../../../utils/collection-identity';
 import type { DropdownOptionInput, Option, QDropdownPlacement, QDropdownSize } from './dropdown.types';
 import { computeDropdownDynamicWidth } from './internals/width';
 import { getDropdownOptions, getFilteredOptions, getOptionLabel, getSelectedOption, getVisibleOptions } from './internals/options';
@@ -551,6 +552,9 @@ export class QDropdown {
   render() {
     const allOptions = this.getAllOptions();
     const opts = this.parsedOptions;
+    const identifiedOptions = identifyItems(opts, option => option.value, {
+      warningContext: 'q-dropdown options',
+    });
     const selectedOption = this.getSelectedOption(allOptions);
     const selectedLabel = this.getOptionLabel(selectedOption);
     const displayLabel = selectedOption && selectedLabel ? selectedLabel : this.placeholder;
@@ -640,8 +644,9 @@ export class QDropdown {
               {opts.length === 0 && !this.loading ? (
                 <li class="menu-item is-empty">No matches found</li>
               ) : (
-                opts.map((option, index) => (
+                identifiedOptions.map(({ item: option, index, key }) => (
                   <li
+                    key={key}
                     id={`q-field-item-${index}`}
                     class={{
                       'menu-item': true,

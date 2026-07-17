@@ -21,6 +21,14 @@ describe('q-dropdown', () => {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
+  function getOptionItems(el: any): HTMLElement[] {
+    return Array.from(el.shadowRoot.querySelectorAll('.menu-item:not(.is-empty):not(.is-loading-more)'));
+  }
+
+  function getOptionItem(el: any, label: string): HTMLElement | undefined {
+    return getOptionItems(el).find(item => item.textContent?.trim() === label);
+  }
+
   const options = [
     { label: 'Alpha', value: 'alpha' },
     { label: 'Beta', value: 'beta' },
@@ -147,6 +155,83 @@ describe('q-dropdown', () => {
     expect(el.value).toBe('Beta');
     expect(selectHandler.mock.calls[0][0].detail).toEqual({ label: 'Beta', value: 'Beta' });
     el.remove();
+  });
+
+  it('preserves option DOM identity when equivalent options arrive in a new array', async () => {
+    const el = await createComponent({ options });
+    (el.shadowRoot.querySelector('.dropdown-trigger') as HTMLElement).click();
+    await wait(20);
+
+    const alpha = getOptionItem(el, 'Alpha');
+    const beta = getOptionItem(el, 'Beta');
+
+    el.options = options.map(option => ({ ...option }));
+    await wait(20);
+
+    expect(getOptionItem(el, 'Alpha')).toBe(alpha);
+    expect(getOptionItem(el, 'Beta')).toBe(beta);
+    el.remove();
+  });
+
+  it('moves existing option DOM nodes instead of recreating them when options reorder', async () => {
+    const el = await createComponent({ options });
+    (el.shadowRoot.querySelector('.dropdown-trigger') as HTMLElement).click();
+    await wait(20);
+
+    const alpha = getOptionItem(el, 'Alpha');
+    const beta = getOptionItem(el, 'Beta');
+
+    el.options = [options[1], options[0]];
+    await wait(20);
+
+    const reordered = getOptionItems(el);
+    expect(reordered).toEqual([beta, alpha]);
+    expect(reordered.map(item => item.textContent?.trim())).toEqual(['Beta', 'Alpha']);
+    el.remove();
+  });
+
+  it('reuses retained option DOM nodes while adding and removing options', async () => {
+    const el = await createComponent({ options });
+    (el.shadowRoot.querySelector('.dropdown-trigger') as HTMLElement).click();
+    await wait(20);
+
+    const alpha = getOptionItem(el, 'Alpha');
+    const beta = getOptionItem(el, 'Beta');
+
+    el.options = [
+      { label: 'Beta updated', value: 'beta' },
+      { label: 'Gamma', value: 'gamma' },
+    ];
+    await wait(20);
+
+    expect(getOptionItem(el, 'Beta updated')).toBe(beta);
+    expect(getOptionItem(el, 'Gamma')).toBeTruthy();
+    expect(alpha?.isConnected).toBe(false);
+    el.remove();
+  });
+
+  it('warns and renders every option when duplicate values require fallback identities', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const el = await createComponent({
+      options: [
+        { label: 'First duplicate', value: 'duplicate' },
+        { label: 'Second duplicate', value: 'duplicate' },
+      ],
+    });
+
+    (el.shadowRoot.querySelector('.dropdown-trigger') as HTMLElement).click();
+    await wait(20);
+
+    expect(getOptionItems(el).map(item => item.textContent?.trim())).toEqual([
+      'First duplicate',
+      'Second duplicate',
+    ]);
+    expect(warn.mock.calls.some(([message]) =>
+      String(message).includes('Duplicate identity "duplicate"'),
+    )).toBe(true);
+
+    el.remove();
+    warn.mockRestore();
   });
 
   it('forwards aria-label to the trigger and option list', async () => {

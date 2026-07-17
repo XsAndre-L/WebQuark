@@ -1,5 +1,17 @@
 # q-data-table
 
+`q-data-table` accepts framework-rendered cell content through generated named slots.
+Use `getDataTableCellSlotName(columnKey, rowKey)` when working directly with the
+custom element. Angular and React consumers should use the framework APIs from
+`@webquark/angular` and `@webquark/react`.
+
+Rich cells require a stable value in `keyField` (the default is `id`) so projected
+content remains attached to the correct row while rows are sorted or refreshed.
+
+Rows, columns, row-group dividers, row actions, and rich cells use Collection
+Identity. Valid unique identities preserve unchanged DOM and framework resources.
+Missing, invalid, or duplicate identities warn and use a deterministic fallback,
+but stable reuse is not guaranteed for those fallback items.
 
 
 ## CSS Custom Properties
@@ -58,13 +70,14 @@ Data grid with optional toolbar, search, row activation, and multi-row selection
 
 ## Slots
 
-| Slot             | Description                                           |
-| ---------------- | ----------------------------------------------------- |
-| `"actions"`      | Action controls displayed in the right toolbar group. |
-| `"empty"`        | Empty-state content shown when no rows are available. |
-| `"filters"`      | Filter controls displayed in the left toolbar group.  |
-| `"footer"`       | Footer content rendered below the scrollable table.   |
-| `"toolbar-left"` | Content placed before the search and filters area.    |
+| Slot                    | Description                                                        |
+| ----------------------- | ------------------------------------------------------------------ |
+| `"actions"`             | Action controls displayed in the right toolbar group.              |
+| `"empty"`               | Empty-state content shown when no rows are available.              |
+| `"filters"`             | Filter controls displayed in the left toolbar group.               |
+| `"footer"`              | Footer content rendered below the scrollable table.                |
+| `"q-data-table-cell-*"` | Framework adapter cell content keyed by column and stable row key. |
+| `"toolbar-left"`        | Content placed before the search and filters area.                 |
 
 
 ## Dependencies

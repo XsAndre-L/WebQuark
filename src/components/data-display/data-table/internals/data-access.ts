@@ -1,5 +1,6 @@
 import { safeParseJson } from '../../../../utils/utils';
 
+import { getDataTableCellValue, getDataTableItemKey } from '../data-table-cell';
 import type { DataTableItem, DataTableKey, DataTableRowAction, TableColumn } from '../data-table.types';
 
 export function parseDataTableColumns(columns: TableColumn[] | string): TableColumn[] {
@@ -14,25 +15,12 @@ export function parseDataTableRowActions(rowActions: DataTableRowAction[] | stri
   return safeParseJson<DataTableRowAction[]>(rowActions, [], 'QDataTable');
 }
 
-export function isRecord(value: unknown): value is Record<PropertyKey, unknown> {
-  return typeof value === 'object' && value !== null;
-}
-
 export function getItemKey(item: DataTableItem, index: number, keyField: string): DataTableKey {
-  if (isRecord(item) && Object.prototype.hasOwnProperty.call(item, keyField)) {
-    return item[keyField];
-  }
-  return index;
+  const key = getDataTableItemKey(item, index, keyField);
+  return key === undefined ? index : key;
 }
 
-export function getNestedValue(item: DataTableItem, path: string): unknown {
-  if (!path) return undefined;
-
-  return path.split('.').reduce<unknown>((current, segment) => {
-    if (!isRecord(current)) return undefined;
-    return current[segment];
-  }, item);
-}
+export const getNestedValue = getDataTableCellValue;
 
 export function getHeaderLabel(column: TableColumn): string {
   if (column.header !== undefined && column.header !== null) {

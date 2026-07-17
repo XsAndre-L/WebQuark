@@ -1,5 +1,11 @@
 import { h } from '@stencil/core';
 import { expect, describe, it, vi } from 'vitest';
+import { getDataTableCellSlotName } from '../data-table-cell';
+import { isInteractiveDataTableTarget } from '../internals/row-events';
+import {
+  getDataTableModel,
+  type GetDataTableModelOptions,
+} from '../internals/table-model';
 // @ts-ignore
 import { defineCustomElements } from '../../../../../dist/loader';
 
@@ -28,11 +34,31 @@ describe('q-data-table', () => {
     await new Promise(resolve => setTimeout(resolve, 10));
   }
 
+  async function updateComponent(el: any, props: Record<string, any>) {
+    Object.assign(el, props);
+    await new Promise(resolve => setTimeout(resolve, 50));
+  }
+
   const columns = [{ key: 'name', header: 'Name' }];
   const items = [
     { id: 1, name: 'Alpha' },
     { id: 2, name: 'Beta' },
   ];
+
+  function createIdentityModel(overrides: Partial<GetDataTableModelOptions> = {}) {
+    return getDataTableModel({
+      columns,
+      items,
+      rowActions: [],
+      rowClickable: true,
+      selectedKeys: [],
+      selectable: false,
+      keyField: 'id',
+      sortable: false,
+      sortMode: 'table',
+      ...overrides,
+    });
+  }
 
   it('marks selected rows from selectedKeys', async () => {
     const el = await createComponent({ columns, items, selectable: true, selectedKeys: [2] });
@@ -64,6 +90,207 @@ describe('q-data-table', () => {
 
     expect(rows).toHaveLength(2);
     expect(rows[0].getAttribute('aria-selected')).toBe('false');
+    el.remove();
+  });
+
+  it('projects rich cell content through stable row and column slots', async () => {
+    const el = document.createElement('q-data-table') as any;
+    const profile = document.createElement('img');
+    profile.alt = 'Alpha profile';
+    profile.setAttribute('slot', getDataTableCellSlotName('name', 1));
+    el.appendChild(profile);
+    Object.assign(el, { columns, items });
+    document.body.appendChild(el);
+    await el.componentOnReady();
+
+    const firstCellSlot = el.shadowRoot.querySelector('tbody td slot') as HTMLSlotElement;
+
+    expect(firstCellSlot.name).toBe(getDataTableCellSlotName('name', 1));
+    expect(el.querySelector(`[slot="${firstCellSlot.name}"]`)).toBe(profile);
+    expect(firstCellSlot.textContent?.trim()).toBe('Alpha');
+    expect(el.shadowRoot.querySelector('tbody td')?.getAttribute('part')).toBe('cell');
+    el.remove();
+  });
+
+  it('keeps string and numeric rich-cell identities distinct', () => {
+    expect(getDataTableCellSlotName(1, 'row')).not.toBe(
+      getDataTableCellSlotName('number:1', 'row'),
+    );
+    expect(getDataTableCellSlotName('column', 1)).not.toBe(
+      getDataTableCellSlotName('column', 'number:1'),
+    );
+  });
+
+  it('keeps rich cell content attached to its stable row key while sorting', async () => {
+    const unorderedItems = [
+      { id: 1, name: 'Beta' },
+      { id: 2, name: 'Alpha' },
+    ];
+    const el = document.createElement('q-data-table') as any;
+    const betaProfile = document.createElement('span');
+    betaProfile.textContent = 'Beta profile';
+    betaProfile.setAttribute('slot', getDataTableCellSlotName('name', 1));
+    const alphaProfile = document.createElement('span');
+    alphaProfile.textContent = 'Alpha profile';
+    alphaProfile.setAttribute('slot', getDataTableCellSlotName('name', 2));
+    el.append(betaProfile, alphaProfile);
+    Object.assign(el, { columns, items: unorderedItems, sortable: true });
+    document.body.appendChild(el);
+    await el.componentOnReady();
+
+    await clickFirstSortButton(el);
+
+    const slots = Array.from(el.shadowRoot.querySelectorAll('tbody td slot')) as HTMLSlotElement[];
+    expect(slots.map(slot => el.querySelector(`[slot="${slot.name}"]`)?.textContent)).toEqual(['Alpha profile', 'Beta profile']);
+    el.remove();
+  });
+
+  it('reuses row, cell, slot, and header DOM for unchanged identities', async () => {
+    const identityColumns = [
+      { key: 'name', header: 'Name' },
+      { key: 'id', header: 'ID' },
+    ];
+    const el = await createComponent({ columns: identityColumns, items });
+    const firstRow = el.shadowRoot.querySelectorAll('.row-el')[0];
+    const firstCell = firstRow.querySelectorAll('td')[0];
+    const firstSlot = firstCell.querySelector('slot');
+    const nameHeader = el.shadowRoot.querySelectorAll('thead th')[0];
+
+    await updateComponent(el, {
+      columns: identityColumns.map(column => ({ ...column })),
+      items: items.map(item => ({ ...item })),
+    });
+
+    expect(el.shadowRoot.querySelectorAll('.row-el')[0]).toBe(firstRow);
+    expect(el.shadowRoot.querySelectorAll('.row-el')[0].querySelectorAll('td')[0]).toBe(firstCell);
+    expect(el.shadowRoot.querySelectorAll('.row-el')[0].querySelector('slot')).toBe(firstSlot);
+    expect(el.shadowRoot.querySelectorAll('thead th')[0]).toBe(nameHeader);
+    el.remove();
+  });
+
+  it('reuses rows through reorder while creating additions and removing missing rows', async () => {
+    const el = await createComponent({ columns, items });
+    const initialRows = Array.from(el.shadowRoot.querySelectorAll('.row-el')) as HTMLTableRowElement[];
+    const alphaRow = initialRows[0];
+    const betaRow = initialRows[1];
+
+    await updateComponent(el, { items: [items[1], items[0]] });
+
+    let renderedRows = Array.from(el.shadowRoot.querySelectorAll('.row-el')) as HTMLTableRowElement[];
+    expect(renderedRows[0]).toBe(betaRow);
+    expect(renderedRows[1]).toBe(alphaRow);
+
+    await updateComponent(el, {
+      items: [
+        { id: 2, name: 'Beta updated' },
+        { id: 3, name: 'Gamma' },
+      ],
+    });
+
+    renderedRows = Array.from(el.shadowRoot.querySelectorAll('.row-el')) as HTMLTableRowElement[];
+    expect(renderedRows[0]).toBe(betaRow);
+    expect(renderedRows[0].textContent).toContain('Beta updated');
+    expect(renderedRows[1]).not.toBe(alphaRow);
+    expect(alphaRow.isConnected).toBe(false);
+    el.remove();
+  });
+
+  it('keeps duplicate row identities distinct and reports the fallback', async () => {
+    const warning = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const duplicateItems = [
+      { id: 1, name: 'First' },
+      { id: 1, name: 'Second' },
+    ];
+    const model = createIdentityModel({ items: duplicateItems });
+
+    expect(model.rows[0].renderKey).not.toBe(model.rows[1].renderKey);
+    expect(warning).toHaveBeenCalledWith(expect.stringContaining('Duplicate identity'));
+
+    const el = await createComponent({ columns, items: duplicateItems });
+    const initialRows = Array.from(el.shadowRoot.querySelectorAll('.row-el'));
+
+    expect(initialRows).toHaveLength(2);
+    expect(initialRows[0]).not.toBe(initialRows[1]);
+
+    await updateComponent(el, {
+      items: duplicateItems.map(item => ({ ...item })),
+    });
+
+    const refreshedRows = Array.from(el.shadowRoot.querySelectorAll('.row-el'));
+    expect(refreshedRows[0]).toBe(initialRows[0]);
+    expect(refreshedRows[1]).toBe(initialRows[1]);
+    warning.mockRestore();
+    el.remove();
+  });
+
+  it('keeps column identities stable while rendering reordered columns', async () => {
+    const identityColumns = [
+      { key: 'name', header: 'Name' },
+      { key: 'id', header: 'ID' },
+    ];
+    const initialModel = createIdentityModel({ columns: identityColumns });
+    const reorderedModel = createIdentityModel({
+      columns: [identityColumns[1], identityColumns[0]],
+    });
+    const initialIdentityByColumn = new Map(
+      initialModel.columns.map(column => [column.column.key, column.renderKey]),
+    );
+
+    expect(reorderedModel.columns.map(column => column.renderKey)).toEqual([
+      initialIdentityByColumn.get('id'),
+      initialIdentityByColumn.get('name'),
+    ]);
+
+    const el = await createComponent({ columns: identityColumns, items: [items[0]] });
+
+    await updateComponent(el, {
+      columns: [identityColumns[1], identityColumns[0]],
+    });
+
+    const reorderedHeaders = Array.from(
+      el.shadowRoot.querySelectorAll('thead th'),
+    ) as HTMLTableCellElement[];
+    const reorderedCells = Array.from(
+      el.shadowRoot.querySelectorAll('.row-el td'),
+    ) as HTMLTableCellElement[];
+    expect(reorderedHeaders.map(header => header.textContent?.trim())).toEqual(['ID', 'Name']);
+    expect(reorderedCells.map(cell => cell.textContent?.trim())).toEqual(['1', 'Alpha']);
+    el.remove();
+  });
+
+  it('reuses row action elements when actions are reordered', async () => {
+    const actions = [
+      { key: 'edit', icon: 'pencil', tooltip: 'Edit' },
+      { key: 'delete', icon: 'trash-2', tooltip: 'Delete' },
+    ];
+    const el = await createComponent({ columns, items: [items[0]], rowActions: actions });
+    const initialButtons = Array.from(el.shadowRoot.querySelectorAll('.cell-actions q-button'));
+
+    await updateComponent(el, { rowActions: [actions[1], actions[0]] });
+
+    const reorderedButtons = Array.from(el.shadowRoot.querySelectorAll('.cell-actions q-button'));
+    expect(reorderedButtons[0]).toBe(initialButtons[1]);
+    expect(reorderedButtons[1]).toBe(initialButtons[0]);
+    el.remove();
+  });
+
+  it('reuses group divider DOM when grouped rows are reordered', async () => {
+    const groupedItems = [
+      { id: 1, name: 'Alpha', day: 'one' },
+      { id: 2, name: 'Beta', day: 'one' },
+      { id: 3, name: 'Gamma', day: 'two' },
+    ];
+    const rowGroup = (item: any) => ({ key: item.day, label: item.day });
+    const el = await createComponent({ columns, items: groupedItems, rowGroup });
+    const initialGroups = Array.from(el.shadowRoot.querySelectorAll('.row-group'));
+
+    await updateComponent(el, {
+      items: [groupedItems[2], groupedItems[0], groupedItems[1]],
+    });
+
+    const reorderedGroups = Array.from(el.shadowRoot.querySelectorAll('.row-group'));
+    expect(reorderedGroups[0]).toBe(initialGroups[1]);
+    expect(reorderedGroups[1]).toBe(initialGroups[0]);
     el.remove();
   });
 
@@ -331,6 +558,14 @@ describe('q-data-table', () => {
     expect(handler).toHaveBeenCalledTimes(1);
     expect(handler.mock.calls[0][0].detail.item.name).toBe('Beta');
     el.remove();
+  });
+
+  it('classifies nested keyboard targets as interactive', () => {
+    const button = document.createElement('button');
+    const row = document.createElement('tr');
+
+    expect(isInteractiveDataTableTarget({ composedPath: () => [button] } as unknown as Event)).toBe(true);
+    expect(isInteractiveDataTableTarget({ composedPath: () => [row] } as unknown as Event)).toBe(false);
   });
 
   it('emits search input changes', async () => {

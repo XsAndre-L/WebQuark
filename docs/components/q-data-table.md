@@ -59,6 +59,16 @@ table.rowGroup = item => ({
 });
 ```
 
+### Collection identity
+
+Use a stable, unique `string` or `number` in `keyField` for every row. Column keys,
+row-group boundaries, and row-action keys must also remain stable and unique.
+
+`q-data-table` uses Collection Identity to preserve unchanged rows, cells, actions,
+and rich-cell resources during refreshes and reordering. Missing, invalid, or
+duplicate identities produce a development warning and a deterministic fallback;
+resource reuse is only guaranteed for valid unique identities.
+
 ---
 
 ## 3. Events

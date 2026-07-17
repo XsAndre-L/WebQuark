@@ -89,6 +89,50 @@ describe('q-sidepanel', () => {
     expect(handler.mock.calls[0][0].detail.value).toBe('Reports');
   });
 
+  it('preserves navigation item DOM identity through replacement and reorder', async () => {
+    const items = [
+      { label: 'Home', value: 'home' },
+      { label: 'Reports', value: 'reports' },
+    ];
+    const el = await createComponent({ variant: 'nav', items });
+    const initialGroups = Array.from(
+      el.shadowRoot.querySelectorAll('.nav-item-group'),
+    ) as HTMLElement[];
+
+    el.items = [
+      { label: 'Reports updated', value: 'reports' },
+      { label: 'Home', value: 'home' },
+    ];
+    await wait(50);
+
+    const reorderedGroups = Array.from(
+      el.shadowRoot.querySelectorAll('.nav-item-group'),
+    ) as HTMLElement[];
+
+    expect(reorderedGroups[0]).toBe(initialGroups[1]);
+    expect(reorderedGroups[1]).toBe(initialGroups[0]);
+    expect(reorderedGroups[0].textContent).toContain('Reports updated');
+  });
+
+  it('warns and keeps duplicate navigation identities distinct', async () => {
+    const warning = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const el = await createComponent({
+      variant: 'nav',
+      items: [
+        { label: 'First', value: 'duplicate' },
+        { label: 'Second', value: 'duplicate' },
+      ],
+    });
+
+    const groups = el.shadowRoot.querySelectorAll('.nav-item-group');
+
+    expect(groups).toHaveLength(2);
+    expect(groups[0]).not.toBe(groups[1]);
+    expect(warning).toHaveBeenCalledWith(
+      expect.stringContaining('Duplicate identity "duplicate"'),
+    );
+  });
+
   it('forwards aria-label to navigation, panel, and drawer regions', async () => {
     const nav = await createComponent({ variant: 'nav', ariaLabel: 'Account sections' });
     const panel = await createComponent({ variant: 'panel', ariaLabel: 'Filters' });
