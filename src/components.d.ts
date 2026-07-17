@@ -821,6 +821,9 @@ export namespace Components {
      * @cssprop --q-map-marker-danger - Danger marker color.
      * @cssprop --q-map-marker-muted - Muted marker color.
      * @cssprop --q-map-marker-selected-color - Selected-marker ring color.
+     * @cssprop --q-map-marker-content-gap - Space exposing the marker status color around image or text content.
+     * @cssprop --q-map-marker-content-bg - Background behind marker image or fallback text.
+     * @cssprop --q-map-marker-content-color - Marker fallback-text color.
      * @cssprop --q-map-attribution-bg - Attribution background.
      * @cssprop --q-map-attribution-color - Attribution foreground.
      */
@@ -831,12 +834,12 @@ export namespace Components {
          */
         "ariaLabel": string;
         /**
-          * Renders plain-text attribution whenever tiles are the active imagery provider.
+          * Renders plain-text attribution whenever raster tiles or styled vectors are active.
           * @default ''
          */
         "attribution": string;
         /**
-          * Links tile attribution only when the value resolves to an HTTP(S) URL.
+          * Links map attribution only when the value resolves to an HTTP(S) URL.
           * @default ''
          */
         "attributionUrl": string;
@@ -885,7 +888,7 @@ export namespace Components {
          */
         "minZoom": number;
         /**
-          * Selects tile imagery or Google imagery; Google failures may use tileUrl as a fallback.
+          * Selects raster tiles, styled vector data, or Google imagery; non-tile failures may use tileUrl as a fallback.
           * @default 'tiles'
          */
         "provider": QMapProvider;
@@ -894,10 +897,15 @@ export namespace Components {
          */
         "selectedMarkerId"?: QMapMarkerId;
         /**
-          * Supplies the tile URL template for the tiles provider and optional Google fallback.
+          * Supplies the tile URL template for the tiles provider and optional vector/Google fallback.
           * @default ''
          */
         "tileUrl": string;
+        /**
+          * Supplies a MapLibre Style Specification URL for the vector provider.
+          * @default ''
+         */
+        "vectorStyleUrl": string;
         /**
           * Controls the viewport zoom and is clamped between the normalized zoom limits.
           * @default 2
@@ -2017,6 +2025,9 @@ declare global {
      * @cssprop --q-map-marker-danger - Danger marker color.
      * @cssprop --q-map-marker-muted - Muted marker color.
      * @cssprop --q-map-marker-selected-color - Selected-marker ring color.
+     * @cssprop --q-map-marker-content-gap - Space exposing the marker status color around image or text content.
+     * @cssprop --q-map-marker-content-bg - Background behind marker image or fallback text.
+     * @cssprop --q-map-marker-content-color - Marker fallback-text color.
      * @cssprop --q-map-attribution-bg - Attribution background.
      * @cssprop --q-map-attribution-color - Attribution foreground.
      */
@@ -3214,6 +3225,9 @@ declare namespace LocalJSX {
      * @cssprop --q-map-marker-danger - Danger marker color.
      * @cssprop --q-map-marker-muted - Muted marker color.
      * @cssprop --q-map-marker-selected-color - Selected-marker ring color.
+     * @cssprop --q-map-marker-content-gap - Space exposing the marker status color around image or text content.
+     * @cssprop --q-map-marker-content-bg - Background behind marker image or fallback text.
+     * @cssprop --q-map-marker-content-color - Marker fallback-text color.
      * @cssprop --q-map-attribution-bg - Attribution background.
      * @cssprop --q-map-attribution-color - Attribution foreground.
      */
@@ -3224,12 +3238,12 @@ declare namespace LocalJSX {
          */
         "ariaLabel"?: string;
         /**
-          * Renders plain-text attribution whenever tiles are the active imagery provider.
+          * Renders plain-text attribution whenever raster tiles or styled vectors are active.
           * @default ''
          */
         "attribution"?: string;
         /**
-          * Links tile attribution only when the value resolves to an HTTP(S) URL.
+          * Links map attribution only when the value resolves to an HTTP(S) URL.
           * @default ''
          */
         "attributionUrl"?: string;
@@ -3294,7 +3308,7 @@ declare namespace LocalJSX {
          */
         "onQStatusChange"?: (event: QMapCustomEvent<QMapStatusChangeDetail>) => void;
         /**
-          * Selects tile imagery or Google imagery; Google failures may use tileUrl as a fallback.
+          * Selects raster tiles, styled vector data, or Google imagery; non-tile failures may use tileUrl as a fallback.
           * @default 'tiles'
          */
         "provider"?: QMapProvider;
@@ -3303,10 +3317,15 @@ declare namespace LocalJSX {
          */
         "selectedMarkerId"?: QMapMarkerId;
         /**
-          * Supplies the tile URL template for the tiles provider and optional Google fallback.
+          * Supplies the tile URL template for the tiles provider and optional vector/Google fallback.
           * @default ''
          */
         "tileUrl"?: string;
+        /**
+          * Supplies a MapLibre Style Specification URL for the vector provider.
+          * @default ''
+         */
+        "vectorStyleUrl"?: string;
         /**
           * Controls the viewport zoom and is clamped between the normalized zoom limits.
           * @default 2
@@ -4280,6 +4299,7 @@ declare namespace LocalJSX {
     interface QMapAttributes {
         "provider": QMapProvider;
         "tileUrl": string;
+        "vectorStyleUrl": string;
         "googleApiKey": string;
         "googleMapType": QMapGoogleMapType;
         "attribution": string;
@@ -4571,6 +4591,9 @@ declare module "@stencil/core" {
              * @cssprop --q-map-marker-danger - Danger marker color.
              * @cssprop --q-map-marker-muted - Muted marker color.
              * @cssprop --q-map-marker-selected-color - Selected-marker ring color.
+             * @cssprop --q-map-marker-content-gap - Space exposing the marker status color around image or text content.
+             * @cssprop --q-map-marker-content-bg - Background behind marker image or fallback text.
+             * @cssprop --q-map-marker-content-color - Marker fallback-text color.
              * @cssprop --q-map-attribution-bg - Attribution background.
              * @cssprop --q-map-attribution-color - Attribution foreground.
              */

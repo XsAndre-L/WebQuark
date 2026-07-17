@@ -26,12 +26,20 @@ function getMarkerVariant(value: unknown): QMapMarkerVariant {
   return typeof value === 'string' && MARKER_VARIANTS.has(value) ? (value as QMapMarkerVariant) : 'default';
 }
 
+function getOptionalText(value: unknown): string | undefined {
+  if (typeof value !== 'string') return undefined;
+  const normalized = value.trim();
+  return normalized.length > 0 ? normalized : undefined;
+}
+
 function normalizeMarker(value: unknown): QMapMarker | undefined {
   if (!isRecord(value) || !isMarkerId(value.id)) return undefined;
   if (typeof value.latitude !== 'number' || !Number.isFinite(value.latitude) || value.latitude < -90 || value.latitude > 90) return undefined;
   if (typeof value.longitude !== 'number' || !Number.isFinite(value.longitude) || value.longitude < -180 || value.longitude > 180) return undefined;
 
   const label = typeof value.label === 'string' && value.label.trim().length > 0 ? value.label : String(value.id);
+  const imageUrl = getOptionalText(value.imageUrl);
+  const fallbackText = getOptionalText(value.fallbackText);
 
   return {
     id: value.id,
@@ -39,6 +47,8 @@ function normalizeMarker(value: unknown): QMapMarker | undefined {
     longitude: value.longitude,
     label,
     variant: getMarkerVariant(value.variant),
+    ...(imageUrl ? { imageUrl } : {}),
+    ...(fallbackText ? { fallbackText } : {}),
   };
 }
 

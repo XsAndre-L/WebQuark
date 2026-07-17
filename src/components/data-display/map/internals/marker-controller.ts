@@ -58,9 +58,7 @@ export class MapMarkerController {
   }
 
   private add(key: string, marker: QMapMarker): void {
-    const markerContent = document.createElement('span');
-    markerContent.className = 'q-map-marker__center';
-    markerContent.setAttribute('aria-hidden', 'true');
+    const markerContent = this.createMarkerContent();
 
     const icon = this.options.leaflet.divIcon({
       className: 'q-map-marker',
@@ -101,6 +99,7 @@ export class MapMarkerController {
 
     for (const variant of Q_MAP_MARKER_VARIANTS) element.classList.remove(`variant-${variant}`);
     element.classList.add(`variant-${marker.variant ?? 'default'}`);
+    this.updateMarkerContent(element, marker);
     const selected = this.isSelected(marker.id);
     element.classList.toggle('is-selected', selected);
     element.setAttribute('part', 'marker');
@@ -110,6 +109,64 @@ export class MapMarkerController {
     element.setAttribute('aria-pressed', selected ? 'true' : 'false');
     element.setAttribute('data-marker-id', key);
     element.setAttribute('title', marker.label);
+  }
+
+  private createMarkerContent(): HTMLElement {
+    const center = document.createElement('span');
+    center.className = 'q-map-marker__center';
+    center.setAttribute('aria-hidden', 'true');
+
+    const fallback = document.createElement('span');
+    fallback.className = 'q-map-marker__fallback';
+    fallback.hidden = true;
+
+    const image = document.createElement('img');
+    image.className = 'q-map-marker__image';
+    image.alt = '';
+    image.decoding = 'async';
+    image.draggable = false;
+    image.hidden = true;
+    image.setAttribute('aria-hidden', 'true');
+    image.addEventListener('load', () => {
+      if (image.dataset.source !== image.getAttribute('src')) return;
+      image.hidden = false;
+      center.classList.add('has-image');
+    });
+    image.addEventListener('error', () => {
+      if (image.dataset.source !== image.getAttribute('src')) return;
+      image.hidden = true;
+      center.classList.remove('has-image');
+    });
+
+    center.append(fallback, image);
+    return center;
+  }
+
+  private updateMarkerContent(element: HTMLElement, marker: QMapMarker): void {
+    const center = element.querySelector<HTMLElement>('.q-map-marker__center');
+    const fallback = center?.querySelector<HTMLElement>('.q-map-marker__fallback');
+    const image = center?.querySelector<HTMLImageElement>('.q-map-marker__image');
+    if (!center || !fallback || !image) return;
+
+    const fallbackText = marker.fallbackText ?? '';
+    fallback.textContent = fallbackText;
+    fallback.hidden = fallbackText.length === 0;
+    element.classList.toggle('has-content', Boolean(marker.imageUrl || fallbackText));
+
+    if (!marker.imageUrl) {
+      image.hidden = true;
+      image.removeAttribute('src');
+      delete image.dataset.source;
+      center.classList.remove('has-image');
+      return;
+    }
+
+    if (image.dataset.source === marker.imageUrl) return;
+
+    image.hidden = true;
+    center.classList.remove('has-image');
+    image.dataset.source = marker.imageUrl;
+    image.src = marker.imageUrl;
   }
 
   private isSelected(id: QMapMarkerId): boolean {

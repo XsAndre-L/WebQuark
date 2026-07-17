@@ -24,6 +24,7 @@ function createConfig(overrides: Partial<QMapBaseLayerConfig> = {}): QMapBaseLay
   return {
     requestedProvider: 'tiles',
     tileUrl: 'https://tiles.example/{z}/{x}/{y}.png',
+    vectorStyleUrl: 'https://styles.example/map.json',
     googleApiKey: 'key',
     googleApiAvailable: false,
     googleMapType: 'roadmap',
@@ -49,6 +50,7 @@ describe('q-map transactional base-layer controller', () => {
       attach: layer => lifecycle.push(`attach:${layer.name}`),
       createGoogle: async () => new TestLayer('google', lifecycle),
       createTiles: () => new TestLayer(`tiles-${++sequence}`, lifecycle),
+      createVector: async () => new TestLayer('vector', lifecycle),
     };
     const controller = new MapBaseLayerController(operations);
 
@@ -70,6 +72,7 @@ describe('q-map transactional base-layer controller', () => {
         if (shouldFail) throw new Error('tile creation failed');
         return working;
       },
+      createVector: async () => new TestLayer('vector', lifecycle),
     });
 
     await controller.sync(createConfig());
@@ -92,6 +95,7 @@ describe('q-map transactional base-layer controller', () => {
       },
       createGoogle: async () => new TestLayer('google', lifecycle),
       createTiles: () => nextLayer,
+      createVector: async () => new TestLayer('vector', lifecycle),
     });
 
     await controller.sync(createConfig());
@@ -112,6 +116,7 @@ describe('q-map transactional base-layer controller', () => {
       attach: layer => lifecycle.push(`attach:${layer.name}`),
       createGoogle: () => pendingGoogle.promise,
       createTiles: () => tiles,
+      createVector: async () => new TestLayer('vector', lifecycle),
     });
 
     const googleSync = controller.sync(createConfig({ requestedProvider: 'google' }));
@@ -134,6 +139,7 @@ describe('q-map transactional base-layer controller', () => {
       attach: layer => lifecycle.push(`attach:${layer.name}`),
       createGoogle: async () => { throw failure; },
       createTiles: () => fallback,
+      createVector: async () => new TestLayer('vector', lifecycle),
     });
 
     const result = await controller.sync(createConfig({ requestedProvider: 'google' }));
@@ -153,6 +159,7 @@ describe('q-map transactional base-layer controller', () => {
       attach: layer => lifecycle.push(`attach:${layer.name}`),
       createGoogle: async () => new TestLayer('external-google', lifecycle),
       createTiles: () => new TestLayer('tiles', lifecycle),
+      createVector: async () => new TestLayer('vector', lifecycle),
     });
 
     const result = await controller.sync(createConfig({
@@ -178,6 +185,7 @@ describe('q-map transactional base-layer controller', () => {
         if (failTiles) throw fallbackFailure;
         return working;
       },
+      createVector: async () => new TestLayer('vector', lifecycle),
     });
 
     await controller.sync(createConfig());
@@ -201,6 +209,7 @@ describe('q-map transactional base-layer controller', () => {
       attach: vi.fn(),
       createGoogle: () => pending.promise,
       createTiles: () => new TestLayer('tiles', lifecycle),
+      createVector: async () => new TestLayer('vector', lifecycle),
     });
 
     const sync = controller.sync(createConfig({ requestedProvider: 'google' }));

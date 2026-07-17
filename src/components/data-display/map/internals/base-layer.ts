@@ -5,14 +5,16 @@ export interface RemovableMapLayer {
 }
 
 export interface MapBaseLayerOperations<TLayer extends RemovableMapLayer> {
-  attach(layer: TLayer): unknown;
+  attach(layer: TLayer, provider: QMapProvider): Promise<unknown> | unknown;
   createGoogle(config: QMapBaseLayerConfig): Promise<TLayer>;
   createTiles(config: QMapBaseLayerConfig): TLayer;
+  createVector(config: QMapBaseLayerConfig): Promise<TLayer>;
 }
 
 export interface QMapBaseLayerConfig {
   requestedProvider: QMapProvider;
   tileUrl: string;
+  vectorStyleUrl: string;
   googleApiKey: string;
   googleApiAvailable: boolean;
   googleMapType: QMapGoogleMapType;
@@ -72,11 +74,11 @@ export class MapBaseLayerController<TLayer extends RemovableMapLayer> {
     if (primary.kind === 'stale') return primary;
 
     const primaryResult = primary.kind === 'ready'
-      ? this.commit(primary.candidate, config.requestedProvider, false, revision)
+      ? await this.commit(primary.candidate, config.requestedProvider, false, revision)
       : primary;
     if (primaryResult.kind === 'stale' || primaryResult.kind === 'ready') return primaryResult;
 
-    if (config.requestedProvider !== 'google' || !config.tileUrl.trim()) {
+    if (config.requestedProvider === 'tiles' || !config.tileUrl.trim()) {
       return { kind: 'error', error: primaryResult.error, ...this.getActiveState() };
     }
 
@@ -86,7 +88,7 @@ export class MapBaseLayerController<TLayer extends RemovableMapLayer> {
       return { kind: 'error', error: primaryResult.error, fallbackError: fallback.error, ...this.getActiveState() };
     }
 
-    const result = this.commit(fallback.candidate, 'tiles', true, revision);
+    const result = await this.commit(fallback.candidate, 'tiles', true, revision);
     if (result.kind === 'ready') return { ...result, warning: primaryResult.error };
     if (result.kind === 'error') {
       return { kind: 'error', error: primaryResult.error, fallbackError: result.error, ...this.getActiveState() };
@@ -100,9 +102,13 @@ export class MapBaseLayerController<TLayer extends RemovableMapLayer> {
   }
 
   private isConfigured(config: QMapBaseLayerConfig): boolean {
-    return config.requestedProvider === 'google'
-      ? config.googleApiAvailable || config.googleApiKey.trim().length > 0
-      : config.tileUrl.trim().length > 0;
+    if (config.requestedProvider === 'google') {
+      return config.googleApiAvailable || config.googleApiKey.trim().length > 0;
+    }
+    if (config.requestedProvider === 'vector') {
+      return config.vectorStyleUrl.trim().length > 0;
+    }
+    return config.tileUrl.trim().length > 0;
   }
 
   private async createCandidate(
@@ -113,7 +119,9 @@ export class MapBaseLayerController<TLayer extends RemovableMapLayer> {
     try {
       const candidate = provider === 'google'
         ? await this.operations.createGoogle(config)
-        : this.operations.createTiles(config);
+        : provider === 'vector'
+          ? await this.operations.createVector(config)
+          : this.operations.createTiles(config);
 
       if (revision !== this.revision) {
         this.removeLayer(candidate);
@@ -125,19 +133,19 @@ export class MapBaseLayerController<TLayer extends RemovableMapLayer> {
     }
   }
 
-  private commit(
+  private async commit(
     candidate: TLayer,
     provider: QMapProvider,
     usingFallback: boolean,
     revision: number,
-  ): LayerCommitResult {
+  ): Promise<LayerCommitResult> {
     if (revision !== this.revision) {
       this.removeLayer(candidate);
       return { kind: 'stale' };
     }
 
     try {
-      this.operations.attach(candidate);
+      await this.operations.attach(candidate, provider);
     } catch (error) {
       this.removeLayer(candidate);
       return { kind: 'error', error, ...this.getActiveState() };
