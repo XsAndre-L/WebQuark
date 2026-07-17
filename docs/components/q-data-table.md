@@ -132,6 +132,7 @@ Below is the complete list of styling tokens mapped to the component's internal 
 | `--q-color-primary`       | `#60a5fa`                                  | Selection checkbox fill and selected row hover color. |
 | `--q-color-primary-hover` | `#93c5fd`                                  | Confirm states/hover styles.                          |
 | `--q-table-max-height`    | `100%`                                     | Vertical scrollable viewport constraint boundary.     |
+| `--q-table-toolbar-padding-inline-end` | `16px`                      | Inline-end padding inside the table toolbar.           |
 | `--q-padding-md`          | `12px 16px`                                | Vertical and horizontal table cell padding.           |
 | `--q-padding-lg`          | `16px`                                     | Spacing padding inside toolbars and empty slot cells. |
 | `--q-transition-fast`     | `150ms ease`                               | State transition timing for hovers and checkboxes.    |

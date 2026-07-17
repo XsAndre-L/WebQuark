@@ -34,6 +34,7 @@ but stable reuse is not guaranteed for those fallback items.
 | `--q-table-sticky-column-hover-bg` | Background color for sticky start cells in a hovered row. |
 | `--q-table-sticky-column-selected-bg` | Background color for sticky start cells in a selected row. |
 | `--q-table-sticky-column-selected-hover-bg` | Background color for sticky start cells in a selected, hovered row. |
+| `--q-table-toolbar-padding-inline-end` | Inline-end padding for the toolbar. Defaults to `16px`. |
 
 
 <!-- Auto Generated Below -->
