@@ -86,6 +86,13 @@ for (const definition of packages.slice(1)) {
   run(['bun', 'run', 'build'], definition.directory);
 }
 
+console.log('\nVerifying packed Angular 21 and Angular 22 consumers...');
+const angularPackage = packages.find((definition) => definition.key === 'angular');
+if (!angularPackage) {
+  throw new Error('The Angular package definition is missing');
+}
+run(['bun', 'run', 'verify:compatibility'], angularPackage.directory);
+
 console.log('\nRunning the Vitest suite...');
 run(['bunx', 'vitest', 'run']);
 

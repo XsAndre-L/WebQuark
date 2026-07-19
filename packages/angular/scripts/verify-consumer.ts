@@ -28,6 +28,22 @@ const declarationFiles = [
   'dist/types/stencil-generated/boolean-value-accessor.d.ts',
 ];
 
+const valueAccessorSourceFiles = [
+  'src/stencil-generated/text-value-accessor.ts',
+  'src/stencil-generated/select-value-accessor.ts',
+  'src/stencil-generated/boolean-value-accessor.ts',
+];
+
+for (const sourceFile of valueAccessorSourceFiles) {
+  const source = readFileSync(resolve(packageDirectory, sourceFile), 'utf8');
+  if (source.includes('$event.target?.')) {
+    throw new Error(`${sourceFile} contains unsafe EventTarget property access`);
+  }
+  if (!source.includes('$any($event.target)?.')) {
+    throw new Error(`${sourceFile} does not contain a template-safe event target`);
+  }
+}
+
 let declarationCount = 0;
 for (const declarationFile of declarationFiles) {
   const filePath = resolve(packageDirectory, declarationFile);

@@ -4,6 +4,12 @@ Angular wrappers for the WebQuark component library.
 
 Install with `npm install @webquark/core @webquark/angular`.
 
+## Angular compatibility
+
+`@webquark/angular` supports Angular 21 and Angular 22. The published package is
+compiled with Angular 21 in partial-Ivy mode and is verified from its packed npm
+artifact in strict Angular 21 and Angular 22 consumer projects.
+
 ## Standalone components
 
 The generated WebQuark proxies and form value accessors are standalone Angular

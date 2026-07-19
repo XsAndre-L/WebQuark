@@ -4,6 +4,7 @@ import ts from 'typescript';
 
 type TextEdit = {
   position: number;
+  deleteLength?: number;
   text: string;
 };
 
@@ -138,8 +139,28 @@ function esmImportEdits(filePath: string, source: string): TextEdit[] {
   return edits;
 }
 
+function valueAccessorHostEdits(source: string): TextEdit[] {
+  const edits: TextEdit[] = [];
+  const unsafeTargetAccess = /\$event\.target\?\.\["(value|checked)"\]/g;
+
+  for (const match of source.matchAll(unsafeTargetAccess)) {
+    if (match.index === undefined) {
+      continue;
+    }
+
+    edits.push({
+      position: match.index,
+      deleteLength: match[0].length,
+      text: `$any($event.target)?.["${match[1]}"]`,
+    });
+  }
+
+  return edits;
+}
+
 let updatedDeclarationCount = 0;
 let updatedImportCount = 0;
+let updatedValueAccessorHostCount = 0;
 
 for (const generatedFile of generatedFiles) {
   const filePath = resolve(generatedDirectory, generatedFile);
@@ -152,7 +173,8 @@ for (const generatedFile of generatedFiles) {
   const source = readFileSync(filePath, 'utf8');
   const standalone = standaloneEdits(filePath, source);
   const esmImports = esmImportEdits(filePath, source);
-  const edits = [...standalone, ...esmImports];
+  const valueAccessorHosts = valueAccessorHostEdits(source);
+  const edits = [...standalone, ...esmImports, ...valueAccessorHosts];
   if (edits.length === 0) {
     continue;
   }
@@ -161,12 +183,15 @@ for (const generatedFile of generatedFiles) {
     .sort((left, right) => right.position - left.position)
     .reduce(
       (content, edit) =>
-        content.slice(0, edit.position) + edit.text + content.slice(edit.position),
+        content.slice(0, edit.position) +
+        edit.text +
+        content.slice(edit.position + (edit.deleteLength ?? 0)),
       source,
     );
   writeFileSync(filePath, updated);
   updatedDeclarationCount += standalone.length;
   updatedImportCount += esmImports.length;
+  updatedValueAccessorHostCount += valueAccessorHosts.length;
 }
 
 console.log(
@@ -177,5 +202,8 @@ console.log(
     updatedImportCount === 0
       ? 'Generated Angular relative imports already use ESM extensions.'
       : `Added ESM extensions to ${updatedImportCount} generated Angular relative imports.`,
+    updatedValueAccessorHostCount === 0
+      ? 'Generated Angular value-accessor hosts already use template-safe event targets.'
+      : `Made ${updatedValueAccessorHostCount} generated Angular value-accessor host expressions template-safe.`,
   ].join('\n'),
 );
