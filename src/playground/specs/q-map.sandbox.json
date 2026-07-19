@@ -74,6 +74,26 @@
       "default": "[]",
       "desc": "JSON array of marker records; application code should prefer property assignment"
     },
+    "clusterMarkers": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Group nearby markers into interactive clusters"
+    },
+    "clusterRadius": {
+      "type": "number",
+      "default": 48,
+      "desc": "Cluster radius in screen pixels"
+    },
+    "clusterMinPoints": {
+      "type": "number",
+      "default": 2,
+      "desc": "Minimum nearby markers required to form a cluster"
+    },
+    "clusterMaxZoom": {
+      "type": "number",
+      "default": 18,
+      "desc": "Last zoom level where clusters may remain"
+    },
     "selectedMarkerId": {
       "type": "string",
       "default": "",
