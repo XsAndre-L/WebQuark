@@ -31,7 +31,7 @@ export class QPagination {
   @Prop({ attribute: 'item-label' }) itemLabel: string = 'items';
 
   /** Accessible name for the pagination navigation landmark. */
-  @Prop({ attribute: 'aria-label' }) ariaLabel: string = 'Pagination';
+  @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = 'Pagination';
 
   /** Hides the item-range summary while retaining the page controls. */
   @Prop({ attribute: 'show-summary' }) showSummary: boolean = true;
@@ -88,7 +88,7 @@ export class QPagination {
       <nav
         class="pagination"
         part="container"
-        aria-label={this.ariaLabel.trim() || 'Pagination'}
+        aria-label={this.ariaLabel?.trim() || 'Pagination'}
       >
         {this.showSummary && (
           <span class="summary" part="summary" aria-live="polite">

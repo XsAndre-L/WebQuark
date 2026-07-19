@@ -29,7 +29,7 @@ export class QTabs {
   @Prop() value: string = '';
 
   /** Accessible name for the tab list. */
-  @Prop({ attribute: 'aria-label' }) ariaLabel: string = 'Sections';
+  @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = 'Sections';
 
   /** Direction of the tab list and its corresponding arrow-key navigation. */
   @Prop({ reflect: true }) orientation: QTabsOrientation = 'horizontal';
@@ -111,7 +111,7 @@ export class QTabs {
         }}
         part="tablist"
         role="tablist"
-        aria-label={this.ariaLabel.trim() || 'Sections'}
+        aria-label={this.ariaLabel?.trim() || 'Sections'}
         aria-orientation={this.orientation}
       >
         {identifiedItems.map(({ item, index, key, usesFallback }) => {

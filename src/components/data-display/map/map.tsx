@@ -123,7 +123,7 @@ export class QMap {
   @Prop() selectedMarkerId?: QMapMarkerId;
 
   /** Provides the accessible name announced for the interactive map region. */
-  @Prop({ attribute: 'aria-label' }) ariaLabel: string = 'Interactive map';
+  @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = 'Interactive map';
 
   /** Fires after Leaflet setup and the initial provider attempt complete. */
   @Event() qReady!: EventEmitter<void>;

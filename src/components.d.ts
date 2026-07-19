@@ -832,7 +832,7 @@ export namespace Components {
           * Provides the accessible name announced for the interactive map region.
           * @default 'Interactive map'
          */
-        "ariaLabel": string;
+        "ariaLabel": string | null;
         /**
           * Renders plain-text attribution whenever raster tiles or styled vectors are active.
           * @default ''
@@ -999,7 +999,7 @@ export namespace Components {
           * Accessible name for the pagination navigation landmark.
           * @default 'Pagination'
          */
-        "ariaLabel": string;
+        "ariaLabel": string | null;
         /**
           * Disables both navigation buttons.
           * @default false
@@ -1405,7 +1405,7 @@ export namespace Components {
           * Accessible name for the tab list.
           * @default 'Sections'
          */
-        "ariaLabel": string;
+        "ariaLabel": string | null;
         /**
           * Tab records; strings use the same text for label and value.
           * @default []
@@ -3236,7 +3236,7 @@ declare namespace LocalJSX {
           * Provides the accessible name announced for the interactive map region.
           * @default 'Interactive map'
          */
-        "ariaLabel"?: string;
+        "ariaLabel"?: string | null;
         /**
           * Renders plain-text attribution whenever raster tiles or styled vectors are active.
           * @default ''
@@ -3427,7 +3427,7 @@ declare namespace LocalJSX {
           * Accessible name for the pagination navigation landmark.
           * @default 'Pagination'
          */
-        "ariaLabel"?: string;
+        "ariaLabel"?: string | null;
         /**
           * Disables both navigation buttons.
           * @default false
@@ -3873,7 +3873,7 @@ declare namespace LocalJSX {
           * Accessible name for the tab list.
           * @default 'Sections'
          */
-        "ariaLabel"?: string;
+        "ariaLabel"?: string | null;
         /**
           * Tab records; strings use the same text for label and value.
           * @default []
@@ -4314,7 +4314,7 @@ declare namespace LocalJSX {
         "maxBoundsViscosity": number;
         "markers": QMapMarkerInput;
         "selectedMarkerId": string;
-        "ariaLabel": string;
+        "ariaLabel": string | null;
     }
     interface QNavbarAttributes {
         "brand": string;
@@ -4337,7 +4337,7 @@ declare namespace LocalJSX {
         "pageSize": number;
         "totalItems": number;
         "itemLabel": string;
-        "ariaLabel": string;
+        "ariaLabel": string | null;
         "showSummary": boolean;
         "disabled": boolean;
     }
@@ -4423,7 +4423,7 @@ declare namespace LocalJSX {
     interface QTabsAttributes {
         "items": TabItemInput[] | string;
         "value": string;
-        "ariaLabel": string;
+        "ariaLabel": string | null;
         "orientation": QTabsOrientation;
         "size": QTabsSize;
         "variant": QTabsVariant;
