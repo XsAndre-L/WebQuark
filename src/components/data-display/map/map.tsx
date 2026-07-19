@@ -11,9 +11,11 @@ import {
 import { hasGoogleMapsConfiguration, loadGoogleMapsApi } from './internals/google-maps';
 import { loadGoogleMutantConstructor } from './internals/google-mutant';
 import { loadMapLibreLayerFactory, waitForMapLibreLayerReady } from './internals/maplibre';
+import { normalizeMapMarkerClusteringOptions } from './internals/marker-cluster-index';
 import { MapMarkerController } from './internals/marker-controller';
 import type {
   QMapBoundsInput,
+  QMapClusterSelectDetail,
   QMapErrorCode,
   QMapErrorDetail,
   QMapGoogleMapType,
@@ -42,6 +44,9 @@ const VECTOR_SYMBOL_FADE_DURATION_MS = 750;
  * @part surface - Outer clipped map surface.
  * @part canvas - Leaflet map canvas.
  * @part marker - Each interactive map marker.
+ * @part cluster - Each interactive marker cluster.
+ * @part marker-badge - A marker's optional status badge.
+ * @part marker-callout - A marker's optional non-interactive callout.
  * @part attribution - Provider attribution text or link.
  * @part empty - Missing-configuration overlay.
  * @part error - Provider-error overlay.
@@ -57,6 +62,9 @@ const VECTOR_SYMBOL_FADE_DURATION_MS = 750;
  * @cssprop --q-map-marker-danger - Danger marker color.
  * @cssprop --q-map-marker-muted - Muted marker color.
  * @cssprop --q-map-marker-selected-color - Selected-marker ring color.
+ * @cssprop --q-map-marker-cluster-size - Cluster diameter.
+ * @cssprop --q-map-marker-ring-color - Optional solid or dashed status-ring color.
+ * @cssprop --q-map-marker-pulse-color - Optional pulse color.
  * @cssprop --q-map-marker-content-gap - Space exposing the marker status color around image or text content.
  * @cssprop --q-map-marker-content-bg - Background behind marker image or fallback text.
  * @cssprop --q-map-marker-content-color - Marker fallback-text color.
@@ -119,6 +127,18 @@ export class QMap {
   /** Reconciles marker records from an array or JSON string using type-stable IDs. */
   @Prop() markers: QMapMarkerInput = [];
 
+  /** Groups nearby markers while preserving their stable source IDs. */
+  @Prop() clusterMarkers: boolean = false;
+
+  /** Sets the clustering radius in screen pixels and is clamped from 1 to 200. */
+  @Prop() clusterRadius: number = 48;
+
+  /** Sets the minimum number of nearby markers needed to form a cluster. */
+  @Prop() clusterMinPoints: number = 2;
+
+  /** Sets the last zoom level where clusters may remain; defaults to one below maxZoom. */
+  @Prop() clusterMaxZoom?: number;
+
   /** Controls which marker exposes its selected visual and aria-pressed state. */
   @Prop() selectedMarkerId?: QMapMarkerId;
 
@@ -130,6 +150,9 @@ export class QMap {
 
   /** Reports marker activation without mutating selectedMarkerId. */
   @Event() qMarkerSelect!: EventEmitter<QMapMarkerSelectDetail>;
+
+  /** Reports cluster activation before the default centre-and-zoom action. */
+  @Event({ cancelable: true }) qClusterSelect!: EventEmitter<QMapClusterSelectDetail>;
 
   /** Reports provider lifecycle transitions, including the active fallback provider. */
   @Event() qStatusChange!: EventEmitter<QMapStatusChangeDetail>;
@@ -189,6 +212,14 @@ export class QMap {
     this.markerController?.sync(this.markers);
   }
 
+  @Watch('clusterMarkers')
+  @Watch('clusterRadius')
+  @Watch('clusterMinPoints')
+  @Watch('clusterMaxZoom')
+  handleMarkerClusteringChange() {
+    this.markerController?.sync(this.markers);
+  }
+
   @Watch('selectedMarkerId')
   handleSelectedMarkerChange() {
     this.markerController?.syncSelection();
@@ -210,6 +241,7 @@ export class QMap {
     this.map.setMaxZoom(maximum);
     this.syncView();
     void this.syncBaseLayer();
+    this.markerController?.sync(this.markers);
   }
 
   @Watch('maxBounds')
@@ -321,7 +353,16 @@ export class QMap {
       map,
       leaflet,
       getSelectedMarkerId: () => this.selectedMarkerId,
-      onSelect: (marker, originalEvent) => this.qMarkerSelect.emit({ marker, originalEvent }),
+      getClusteringOptions: () => normalizeMapMarkerClusteringOptions(
+        this.clusterMarkers,
+        this.clusterRadius,
+        this.clusterMinPoints,
+        this.clusterMaxZoom,
+        map.getMaxZoom(),
+      ),
+      prefersReducedMotion: () => this.prefersReducedMotion(),
+      onMarkerSelect: (marker, originalEvent) => this.qMarkerSelect.emit({ marker, originalEvent }),
+      onClusterSelect: detail => this.qClusterSelect.emit(detail).defaultPrevented,
     });
   }
 
@@ -521,6 +562,7 @@ export class QMap {
           aria-busy={this.providerStatus === 'initializing' ? 'true' : undefined}
           ref={this.setCanvas}
         />
+        <q-icon class="map-icon-registration" aria-hidden="true" />
         {this.providerStatus === 'empty' && (
           <div class="map-empty" part="empty" role="status">
             <slot name="empty">Map provider is not configured.</slot>

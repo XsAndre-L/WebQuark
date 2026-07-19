@@ -26,7 +26,13 @@ export type {
   ReconcileByIdentityOptions,
   ReconcileByIdentityResult,
 } from './utils/collection-identity';
-export { Q_MAP_MARKER_VARIANTS } from './components/data-display/map/map.types';
+export {
+  Q_MAP_MARKER_CALLOUT_PLACEMENTS,
+  Q_MAP_MARKER_CALLOUT_VISIBILITIES,
+  Q_MAP_MARKER_KINDS,
+  Q_MAP_MARKER_RINGS,
+  Q_MAP_MARKER_VARIANTS,
+} from './components/data-display/map/map.types';
 export {
   getDataTableCellSlotName,
   getDataTableCellValue,
@@ -53,12 +59,19 @@ export type {
 export type {
   QMapBounds,
   QMapBoundsInput,
+  QMapClusterSelectDetail,
   QMapErrorCode,
   QMapErrorDetail,
   QMapGoogleMapType,
   QMapMarker,
+  QMapMarkerBadge,
+  QMapMarkerCallout,
+  QMapMarkerCalloutPlacement,
+  QMapMarkerCalloutVisibility,
   QMapMarkerId,
   QMapMarkerInput,
+  QMapMarkerKind,
+  QMapMarkerRing,
   QMapMarkerSelectDetail,
   QMapMarkerVariant,
   QMapProvider,

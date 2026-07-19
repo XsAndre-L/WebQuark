@@ -17,7 +17,7 @@ import { DropdownOptionInput, Option, QDropdownPlacement, QDropdownSize } from "
 import { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/layout/form/form.types";
 import { QInputSize, QInputType } from "./components/inputs/input/input.types";
 import { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
-import { QMapBoundsInput, QMapErrorDetail, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapProvider, QMapStatusChangeDetail } from "./components/data-display/map/map.types";
+import { QMapBoundsInput, QMapClusterSelectDetail, QMapErrorDetail, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapProvider, QMapStatusChangeDetail } from "./components/data-display/map/map.types";
 import { NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode } from "./components/layout/navbar/navbar.types";
 import { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
 import { QProgressSize, QProgressTone, QProgressVariant } from "./components/indicators/progress/progress.types";
@@ -46,7 +46,7 @@ export { DropdownOptionInput, Option, QDropdownPlacement, QDropdownSize } from "
 export { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/layout/form/form.types";
 export { QInputSize, QInputType } from "./components/inputs/input/input.types";
 export { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
-export { QMapBoundsInput, QMapErrorDetail, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapProvider, QMapStatusChangeDetail } from "./components/data-display/map/map.types";
+export { QMapBoundsInput, QMapClusterSelectDetail, QMapErrorDetail, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapProvider, QMapStatusChangeDetail } from "./components/data-display/map/map.types";
 export { NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode } from "./components/layout/navbar/navbar.types";
 export { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
 export { QProgressSize, QProgressTone, QProgressVariant } from "./components/indicators/progress/progress.types";
@@ -821,6 +821,9 @@ export namespace Components {
      * @cssprop --q-map-marker-danger - Danger marker color.
      * @cssprop --q-map-marker-muted - Muted marker color.
      * @cssprop --q-map-marker-selected-color - Selected-marker ring color.
+     * @cssprop --q-map-marker-cluster-size - Cluster diameter.
+     * @cssprop --q-map-marker-ring-color - Optional solid or dashed status-ring color.
+     * @cssprop --q-map-marker-pulse-color - Optional pulse color.
      * @cssprop --q-map-marker-content-gap - Space exposing the marker status color around image or text content.
      * @cssprop --q-map-marker-content-bg - Background behind marker image or fallback text.
      * @cssprop --q-map-marker-content-color - Marker fallback-text color.
@@ -853,6 +856,25 @@ export namespace Components {
           * @default 0
          */
         "centerLongitude": number;
+        /**
+          * Groups nearby markers while preserving their stable source IDs.
+          * @default false
+         */
+        "clusterMarkers": boolean;
+        /**
+          * Sets the last zoom level where clusters may remain; defaults to one below maxZoom.
+         */
+        "clusterMaxZoom"?: number;
+        /**
+          * Sets the minimum number of nearby markers needed to form a cluster.
+          * @default 2
+         */
+        "clusterMinPoints": number;
+        /**
+          * Sets the clustering radius in screen pixels and is clamped from 1 to 200.
+          * @default 48
+         */
+        "clusterRadius": number;
         /**
           * Supplies the browser-restricted key used only when WebQuark must load Google Maps.
           * @default ''
@@ -2008,6 +2030,7 @@ declare global {
     interface HTMLQMapElementEventMap {
         "qReady": void;
         "qMarkerSelect": QMapMarkerSelectDetail;
+        "qClusterSelect": QMapClusterSelectDetail;
         "qStatusChange": QMapStatusChangeDetail;
         "qError": QMapErrorDetail;
     }
@@ -2025,6 +2048,9 @@ declare global {
      * @cssprop --q-map-marker-danger - Danger marker color.
      * @cssprop --q-map-marker-muted - Muted marker color.
      * @cssprop --q-map-marker-selected-color - Selected-marker ring color.
+     * @cssprop --q-map-marker-cluster-size - Cluster diameter.
+     * @cssprop --q-map-marker-ring-color - Optional solid or dashed status-ring color.
+     * @cssprop --q-map-marker-pulse-color - Optional pulse color.
      * @cssprop --q-map-marker-content-gap - Space exposing the marker status color around image or text content.
      * @cssprop --q-map-marker-content-bg - Background behind marker image or fallback text.
      * @cssprop --q-map-marker-content-color - Marker fallback-text color.
@@ -3225,6 +3251,9 @@ declare namespace LocalJSX {
      * @cssprop --q-map-marker-danger - Danger marker color.
      * @cssprop --q-map-marker-muted - Muted marker color.
      * @cssprop --q-map-marker-selected-color - Selected-marker ring color.
+     * @cssprop --q-map-marker-cluster-size - Cluster diameter.
+     * @cssprop --q-map-marker-ring-color - Optional solid or dashed status-ring color.
+     * @cssprop --q-map-marker-pulse-color - Optional pulse color.
      * @cssprop --q-map-marker-content-gap - Space exposing the marker status color around image or text content.
      * @cssprop --q-map-marker-content-bg - Background behind marker image or fallback text.
      * @cssprop --q-map-marker-content-color - Marker fallback-text color.
@@ -3257,6 +3286,25 @@ declare namespace LocalJSX {
           * @default 0
          */
         "centerLongitude"?: number;
+        /**
+          * Groups nearby markers while preserving their stable source IDs.
+          * @default false
+         */
+        "clusterMarkers"?: boolean;
+        /**
+          * Sets the last zoom level where clusters may remain; defaults to one below maxZoom.
+         */
+        "clusterMaxZoom"?: number;
+        /**
+          * Sets the minimum number of nearby markers needed to form a cluster.
+          * @default 2
+         */
+        "clusterMinPoints"?: number;
+        /**
+          * Sets the clustering radius in screen pixels and is clamped from 1 to 200.
+          * @default 48
+         */
+        "clusterRadius"?: number;
         /**
           * Supplies the browser-restricted key used only when WebQuark must load Google Maps.
           * @default ''
@@ -3291,6 +3339,10 @@ declare namespace LocalJSX {
           * @default 0
          */
         "minZoom"?: number;
+        /**
+          * Reports cluster activation before the default centre-and-zoom action.
+         */
+        "onQClusterSelect"?: (event: QMapCustomEvent<QMapClusterSelectDetail>) => void;
         /**
           * Reports serializable configuration and initialization failures.
          */
@@ -4313,6 +4365,10 @@ declare namespace LocalJSX {
         "maxBounds": QMapBoundsInput;
         "maxBoundsViscosity": number;
         "markers": QMapMarkerInput;
+        "clusterMarkers": boolean;
+        "clusterRadius": number;
+        "clusterMinPoints": number;
+        "clusterMaxZoom": number;
         "selectedMarkerId": string;
         "ariaLabel": string | null;
     }
@@ -4591,6 +4647,9 @@ declare module "@stencil/core" {
              * @cssprop --q-map-marker-danger - Danger marker color.
              * @cssprop --q-map-marker-muted - Muted marker color.
              * @cssprop --q-map-marker-selected-color - Selected-marker ring color.
+             * @cssprop --q-map-marker-cluster-size - Cluster diameter.
+             * @cssprop --q-map-marker-ring-color - Optional solid or dashed status-ring color.
+             * @cssprop --q-map-marker-pulse-color - Optional pulse color.
              * @cssprop --q-map-marker-content-gap - Space exposing the marker status color around image or text content.
              * @cssprop --q-map-marker-content-bg - Background behind marker image or fallback text.
              * @cssprop --q-map-marker-content-color - Marker fallback-text color.
