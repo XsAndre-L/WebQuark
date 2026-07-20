@@ -1,0 +1,117 @@
+{
+  "name": "Progress",
+  "tag": "q-progress",
+  "props": {
+    "variant": {
+      "type": "select",
+      "options": [
+        "linear",
+        "circular"
+      ],
+      "default": "linear",
+      "desc": "Switches between the horizontal bar and circular ring"
+    },
+    "size": {
+      "type": "select",
+      "options": [
+        "sm",
+        "md",
+        "lg"
+      ],
+      "default": "md",
+      "desc": "Controls the bar height or circular dimensions"
+    },
+    "tone": {
+      "type": "select",
+      "options": [
+        "neutral",
+        "primary",
+        "success",
+        "warning",
+        "danger"
+      ],
+      "default": "primary",
+      "desc": "Applies a semantic fill colour"
+    },
+    "label": {
+      "type": "string",
+      "default": "",
+      "desc": "Overrides the visible text in the circular variant"
+    },
+    "value": {
+      "type": "number",
+      "min": 0,
+      "max": 100,
+      "default": 35,
+      "desc": "Progress percentage from 0 to 100"
+    },
+    "indeterminate": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Shows progress without a known completion percentage"
+    }
+  },
+  "slots": {},
+  "variants": [
+    {
+      "name": "Linear Progress",
+      "props": {
+        "variant": "linear",
+        "value": 35
+      }
+    },
+    {
+      "name": "Circular Progress",
+      "props": {
+        "variant": "circular",
+        "value": 35
+      }
+    },
+    {
+      "name": "Circular Custom Label",
+      "props": {
+        "variant": "circular",
+        "value": 75,
+        "label": "Running",
+        "size": "lg"
+      }
+    },
+    {
+      "name": "Successful Linear Progress",
+      "props": {
+        "variant": "linear",
+        "value": 100,
+        "tone": "success"
+      }
+    },
+    {
+      "name": "Indeterminate Circular Progress",
+      "props": {
+        "variant": "circular",
+        "indeterminate": true
+      }
+    }
+  ],
+  "edgeCases": [
+    {
+      "name": "Negative Value Clamp",
+      "props": {
+        "value": -40
+      }
+    },
+    {
+      "name": "Overflow Value Clamp",
+      "props": {
+        "value": 160
+      }
+    },
+    {
+      "name": "Long Circular Label",
+      "props": {
+        "variant": "circular",
+        "value": 50,
+        "label": "UPLOADING_SYSTEM_ASSETS_NOW"
+      }
+    }
+  ]
+}

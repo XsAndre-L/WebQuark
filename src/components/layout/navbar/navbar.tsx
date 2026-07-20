@@ -1,4 +1,5 @@
 import { Component, Element, Event, EventEmitter, Prop, State, h } from '@stencil/core';
+import { identifyItems, type IdentifiedCollectionItem } from '../../../utils/collection-identity';
 import type { NavbarItem, NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode } from './navbar.types';
 import { getNavbarItems } from './navbar.utils';
 
@@ -202,7 +203,7 @@ export class QNavbar {
     );
   }
 
-  private renderNavItem(item: NavbarItem) {
+  private renderNavItem({ item, key }: IdentifiedCollectionItem<NavbarItem>) {
     const active = item.active || (!!this.activeValue && (item.value === this.activeValue || item.href === this.activeValue));
     const iconOnly = !!item.iconOnly && !!item.icon;
     const accessibleLabel = iconOnly ? item.ariaLabel || item.label : undefined;
@@ -231,6 +232,7 @@ export class QNavbar {
     if (item.href) {
       return (
         <a
+          key={key}
           class={classes}
           href={item.disabled ? undefined : item.href}
           target={item.disabled ? undefined : item.target}
@@ -247,6 +249,7 @@ export class QNavbar {
 
     return (
       <button
+        key={key}
         class={classes}
         type="button"
         disabled={item.disabled}
@@ -259,12 +262,16 @@ export class QNavbar {
     );
   }
 
-  private renderNavItems(items: NavbarItem[]) {
-    return items.map((item) => this.renderNavItem(item));
+  private renderNavItems(items: readonly IdentifiedCollectionItem<NavbarItem>[]) {
+    return items.map(item => this.renderNavItem(item));
   }
 
   render() {
-    const items = this.parsedItems;
+    const items = identifyItems(
+      this.parsedItems,
+      item => item.value,
+      { warningContext: 'q-navbar.items' },
+    );
     const hasItems = items.length > 0;
     const ariaLabel = this.ariaLabel?.trim() || undefined;
 

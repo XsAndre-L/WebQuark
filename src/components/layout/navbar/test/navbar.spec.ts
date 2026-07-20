@@ -9,6 +9,7 @@ describe('q-navbar', () => {
 
   afterEach(() => {
     document.body.innerHTML = '';
+    vi.restoreAllMocks();
   });
 
   async function createComponent(props: Record<string, any> = {}): Promise<any> {
@@ -41,6 +42,69 @@ describe('q-navbar', () => {
 
     expect(items.map(item => item.textContent?.trim())).toEqual(['Home', 'Docs']);
     expect(handler.mock.calls[0][0].detail.value).toBe('Docs');
+  });
+
+  it('preserves desktop and mobile item nodes when a new array keeps the same values', async () => {
+    const items = [
+      { label: 'Home', value: 'home' },
+      { label: 'Docs', value: 'docs' },
+    ];
+    const el = await createComponent({ items });
+    const desktopBefore = Array.from(el.shadowRoot.querySelectorAll('.desktop-nav .nav-item')) as HTMLElement[];
+    const mobileBefore = Array.from(el.shadowRoot.querySelectorAll('.mobile-nav .nav-item')) as HTMLElement[];
+
+    el.items = items.map(item => ({ ...item }));
+    await waitForUpdate();
+
+    const desktopAfter = Array.from(el.shadowRoot.querySelectorAll('.desktop-nav .nav-item')) as HTMLElement[];
+    const mobileAfter = Array.from(el.shadowRoot.querySelectorAll('.mobile-nav .nav-item')) as HTMLElement[];
+    expect(desktopAfter[0]).toBe(desktopBefore[0]);
+    expect(desktopAfter[1]).toBe(desktopBefore[1]);
+    expect(mobileAfter[0]).toBe(mobileBefore[0]);
+    expect(mobileAfter[1]).toBe(mobileBefore[1]);
+  });
+
+  it('reuses reordered items while adding and removing only changed values', async () => {
+    const el = await createComponent({
+      items: [
+        { label: 'Alpha', value: 'a' },
+        { label: 'Bravo', value: 'b' },
+        { label: 'Charlie', value: 'c' },
+      ],
+    });
+    const before = Array.from(el.shadowRoot.querySelectorAll('.desktop-nav .nav-item')) as HTMLElement[];
+
+    el.items = [
+      { label: 'Charlie updated', value: 'c' },
+      { label: 'Alpha', value: 'a' },
+      { label: 'Delta', value: 'd' },
+    ];
+    await waitForUpdate();
+
+    const after = Array.from(el.shadowRoot.querySelectorAll('.desktop-nav .nav-item')) as HTMLElement[];
+    expect(after.map(item => item.textContent?.trim())).toEqual(['Charlie updated', 'Alpha', 'Delta']);
+    expect(after[0]).toBe(before[2]);
+    expect(after[1]).toBe(before[0]);
+    expect(after[2]).not.toBe(before[1]);
+    expect(before[1].isConnected).toBe(false);
+  });
+
+  it('warns and keeps rendering when item values are missing or duplicated', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    const el = await createComponent({
+      items: [
+        { label: 'First', value: 'same' },
+        { label: 'Duplicate', value: 'same' },
+        { label: 'Missing' },
+      ],
+    });
+
+    const rendered = Array.from(el.shadowRoot.querySelectorAll('.desktop-nav .nav-item')) as HTMLElement[];
+    const messages = warn.mock.calls.map(([message]) => String(message));
+
+    expect(rendered.map(item => item.textContent?.trim())).toEqual(['First', 'Duplicate', 'Missing']);
+    expect(messages.some(message => message.includes('Duplicate identity "same"'))).toBe(true);
+    expect(messages.some(message => message.includes('index 2 returned undefined'))).toBe(true);
   });
 
   it('uses a custom aria-label for both responsive navigation regions', async () => {

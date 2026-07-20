@@ -79,6 +79,21 @@ th {
   user-select: none;
 }
 
+th.is-sticky-start,
+td.is-sticky-start {
+  position: sticky;
+  left: 0;
+}
+
+th.is-sticky-start {
+  z-index: 11;
+}
+
+td.is-sticky-start {
+  z-index: 2;
+  background: var(--q-table-sticky-column-bg, var(--q-bg-base, #111827));
+}
+
 .column-sort-button {
   appearance: none;
   border: 0;
@@ -153,6 +168,7 @@ th {
   justify-content: space-between;
   gap: 12px;
   padding: 12px 16px;
+  padding-inline-end: var(--q-table-toolbar-padding-inline-end, 16px);
   border-bottom: var(--q-border, 1px solid var(--q-border-color, #374151));
   background: var(--q-bg-surface-1, #1f2937);
   box-sizing: border-box;
@@ -246,6 +262,10 @@ th {
   background: var(--q-bg-surface-1, #1f2937);
 }
 
+.row-el:hover td.is-sticky-start {
+  background: var(--q-table-sticky-column-hover-bg, var(--q-bg-surface-1, #1f2937));
+}
+
 .row-el.is-clickable:focus-visible {
   outline: var(--q-focus-ring, 2px solid var(--q-color-primary, #60a5fa));
   outline-offset: -2px;
@@ -256,8 +276,22 @@ th {
   background: color-mix(in srgb, var(--q-color-primary, #60a5fa) 8%, var(--q-bg-base, #111827));
 }
 
+.row-el.is-selected td.is-sticky-start {
+  background: var(
+    --q-table-sticky-column-selected-bg,
+    color-mix(in srgb, var(--q-color-primary, #60a5fa) 8%, var(--q-bg-base, #111827))
+  );
+}
+
 .row-el.is-selected:hover {
   background: color-mix(in srgb, var(--q-color-primary, #60a5fa) 12%, var(--q-bg-base, #111827));
+}
+
+.row-el.is-selected:hover td.is-sticky-start {
+  background: var(
+    --q-table-sticky-column-selected-hover-bg,
+    color-mix(in srgb, var(--q-color-primary, #60a5fa) 12%, var(--q-bg-base, #111827))
+  );
 }
 
 .row-group {
@@ -304,12 +338,12 @@ tbody .row-group:first-child .row-group-cell {
   background: var(--q-bg-surface-1, #1f2937);
   border-top: var(--q-border, 1px solid var(--q-border-color, #374151));
   box-sizing: border-box;
-  height: 36px;
+  min-height: 36px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 var(--q-padding-lg, 16px);
-  padding-bottom: 1px;
+  padding: 2px var(--q-padding-lg, 16px);
+  padding-bottom: 3px;
 }
 
 ::slotted(q-dropdown) {

@@ -27,6 +27,7 @@ import { getAllItemKeys, getSelectedItems, toggleSelectedKey } from './internals
  * @slot actions - Action controls displayed in the right toolbar group.
  * @slot empty - Empty-state content shown when no rows are available.
  * @slot footer - Footer content rendered below the scrollable table.
+ * @slot q-data-table-cell-* - Framework adapter cell content keyed by column and stable row key.
  * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
  * @cssprop --q-table-group-bg - Background color for row-group divider rows.
  * @cssprop --q-table-group-fg - Text color for row-group divider rows.
@@ -37,6 +38,10 @@ import { getAllItemKeys, getSelectedItems, toggleSelectedKey } from './internals
  * @cssprop --q-table-dropdown-border - Border style forwarded to slotted q-dropdown controls.
  * @cssprop --q-table-dropdown-primary - Primary color forwarded to slotted q-dropdown controls.
  * @cssprop --q-table-dropdown-fg - Foreground color forwarded to slotted q-dropdown controls.
+ * @cssprop --q-table-sticky-column-bg - Background color for body cells in a sticky start column.
+ * @cssprop --q-table-sticky-column-hover-bg - Background color for sticky start cells in a hovered row.
+ * @cssprop --q-table-sticky-column-selected-bg - Background color for sticky start cells in a selected row.
+ * @cssprop --q-table-sticky-column-selected-hover-bg - Background color for sticky start cells in a selected, hovered row.
  */
 @Component({
   tag: 'q-data-table',
@@ -205,6 +210,7 @@ export class QDataTable {
 
   private handleRowKeyDown(item: DataTableItem, index: number, event: KeyboardEvent) {
     if (!this.rowClickable) return;
+    if (isInteractiveDataTableTarget(event)) return;
 
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();

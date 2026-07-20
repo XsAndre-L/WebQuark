@@ -1,0 +1,202 @@
+import { afterEach, describe, expect, it } from 'vitest';
+
+import type { QMapErrorDetail, QMapMarkerSelectDetail, QMapStatusChangeDetail } from '../map.types';
+import '../map';
+
+let pendingGoogleScript: HTMLScriptElement | undefined;
+let restoreHeadAppend: (() => void) | undefined;
+
+async function waitForReady(element: HTMLQMapElement): Promise<void> {
+  await new Promise<void>(resolve => element.addEventListener('qReady', () => resolve(), { once: true }));
+  await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+}
+
+async function failGoogleLoader(): Promise<void> {
+  for (let attempt = 0; attempt < 120; attempt += 1) {
+    if (pendingGoogleScript?.onerror) {
+      pendingGoogleScript.onerror(new Event('error'));
+      return;
+    }
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+  }
+  throw new Error('Google Maps loader script was not created.');
+}
+
+function interceptGoogleLoaderScript(): void {
+  const originalAppend = document.head.append.bind(document.head);
+  document.head.append = (...nodes: (Node | string)[]) => {
+    const loader = nodes.find(node => node instanceof HTMLScriptElement && node.dataset.webquarkGoogleMaps === 'true');
+    if (loader instanceof HTMLScriptElement) {
+      pendingGoogleScript = loader;
+      return;
+    }
+    originalAppend(...nodes);
+  };
+  restoreHeadAppend = () => {
+    document.head.append = originalAppend;
+    pendingGoogleScript = undefined;
+    restoreHeadAppend = undefined;
+  };
+}
+
+describe('q-map in Chromium', () => {
+  afterEach(() => {
+    restoreHeadAppend?.();
+    Reflect.deleteProperty(window, 'google');
+    document.body.replaceChildren();
+  });
+
+  it('renders accessible configuration state and reports lifecycle transitions', async () => {
+    const element = document.createElement('q-map');
+    const statuses: QMapStatusChangeDetail[] = [];
+    element.ariaLabel = 'Team locations';
+    element.addEventListener('qStatusChange', event => {
+      statuses.push((event as CustomEvent<QMapStatusChangeDetail>).detail);
+    });
+    const ready = waitForReady(element);
+    document.body.append(element);
+    await ready;
+
+    const canvas = element.shadowRoot?.querySelector<HTMLElement>('[part="canvas"]');
+    const empty = element.shadowRoot?.querySelector<HTMLElement>('[part="empty"]');
+    expect(canvas?.getAttribute('role')).toBe('region');
+    expect(canvas?.getAttribute('aria-label')).toBe('Team locations');
+    expect(canvas?.getAttribute('aria-busy')).toBeNull();
+    expect(empty?.textContent).toContain('Map provider is not configured.');
+    expect(statuses.map(status => status.status)).toEqual(['initializing', 'empty']);
+  });
+
+  it('keeps numeric and string marker IDs independent for rendering and selection', async () => {
+    const element = document.createElement('q-map');
+    element.markers = [
+      { id: 1, latitude: -26.2041, longitude: 28.0473, label: 'Numeric marker' },
+      { id: '1', latitude: -26.21, longitude: 28.05, label: 'String marker', variant: 'success' },
+    ];
+    element.selectedMarkerId = '1';
+    const selections: QMapMarkerSelectDetail[] = [];
+    element.addEventListener('qMarkerSelect', event => {
+      selections.push((event as CustomEvent<QMapMarkerSelectDetail>).detail);
+    });
+    const ready = waitForReady(element);
+    document.body.append(element);
+    await ready;
+
+    const markers = element.shadowRoot?.querySelectorAll<HTMLElement>('[part~="marker"]');
+    expect(markers).toHaveLength(2);
+    expect(markers?.[0].dataset.markerId).toBe('number:1');
+    expect(markers?.[0].getAttribute('aria-pressed')).toBe('false');
+    expect(markers?.[1].dataset.markerId).toBe('string:1');
+    expect(markers?.[1].getAttribute('aria-pressed')).toBe('true');
+
+    markers?.[1].click();
+    expect(selections).toHaveLength(1);
+    expect(selections[0].marker.id).toBe('1');
+    expect(selections[0].originalEvent).toBeInstanceOf(MouseEvent);
+  });
+
+  it('renders attribution as text and refuses unsafe link schemes', async () => {
+    const element = document.createElement('q-map');
+    element.attribution = '<strong>Map provider</strong>';
+    element.attributionUrl = 'javascript:alert(1)';
+    element.tileUrl = 'https://tiles.example/{z}/{x}/{y}.png';
+    const ready = waitForReady(element);
+    document.body.append(element);
+    await ready;
+
+    const attribution = element.shadowRoot?.querySelector<HTMLElement>('[part="attribution"]');
+    expect(attribution?.tagName).toBe('SPAN');
+    expect(attribution?.textContent).toBe('<strong>Map provider</strong>');
+    expect(attribution?.querySelector('strong')).toBeNull();
+  });
+
+  it('reports malformed initial and runtime bounds without turning them into clears', async () => {
+    const element = document.createElement('q-map');
+    const errors: QMapErrorDetail[] = [];
+    element.maxBounds = '{}';
+    element.addEventListener('qError', event => {
+      errors.push((event as CustomEvent<QMapErrorDetail>).detail);
+    });
+    const ready = waitForReady(element);
+    document.body.append(element);
+    await ready;
+
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toMatchObject({ code: 'invalid-max-bounds', recoverable: true });
+
+    element.maxBounds = {
+      southLatitude: -26.65,
+      westLongitude: 27.54,
+      northLatitude: -25.75,
+      eastLongitude: 28.55,
+    };
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    element.maxBounds = '{';
+    await new Promise(resolve => requestAnimationFrame(resolve));
+
+    expect(errors).toHaveLength(2);
+    expect(errors[1].message).toContain('valid JSON');
+  });
+
+  it('renders an explicit error and emits typed failure state when no provider can activate', async () => {
+    const element = document.createElement('q-map');
+    const errors: QMapErrorDetail[] = [];
+    const statuses: QMapStatusChangeDetail[] = [];
+    element.provider = 'google';
+    element.googleApiKey = 'invalid-key';
+    element.addEventListener('qError', event => {
+      errors.push((event as CustomEvent<QMapErrorDetail>).detail);
+    });
+    element.addEventListener('qStatusChange', event => {
+      statuses.push((event as CustomEvent<QMapStatusChangeDetail>).detail);
+    });
+    interceptGoogleLoaderScript();
+    const ready = waitForReady(element);
+    document.body.append(element);
+    await failGoogleLoader();
+    await ready;
+
+    const error = element.shadowRoot?.querySelector<HTMLElement>('[part="error"]');
+    expect(error?.getAttribute('role')).toBe('alert');
+    expect(error?.textContent).toContain('Map imagery failed to load.');
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toMatchObject({ code: 'provider-initialization-failed', requestedProvider: 'google' });
+    expect(statuses.at(-1)).toEqual({
+      status: 'error',
+      requestedProvider: 'google',
+      activeProvider: undefined,
+      usingFallback: false,
+    });
+  });
+
+  it('reports a Google failure while exposing a successful tile fallback', async () => {
+    const element = document.createElement('q-map');
+    const errors: QMapErrorDetail[] = [];
+    const statuses: QMapStatusChangeDetail[] = [];
+    element.provider = 'google';
+    element.googleApiKey = 'invalid-key';
+    element.tileUrl = 'https://tiles.example/{z}/{x}/{y}.png';
+    element.attribution = 'Fallback tiles';
+    element.addEventListener('qError', event => {
+      errors.push((event as CustomEvent<QMapErrorDetail>).detail);
+    });
+    element.addEventListener('qStatusChange', event => {
+      statuses.push((event as CustomEvent<QMapStatusChangeDetail>).detail);
+    });
+    interceptGoogleLoaderScript();
+    const ready = waitForReady(element);
+    document.body.append(element);
+    await failGoogleLoader();
+    await ready;
+
+    expect(element.shadowRoot?.querySelector('[part="error"]')).toBeNull();
+    expect(element.shadowRoot?.querySelector('[part="attribution"]')?.textContent).toBe('Fallback tiles');
+    expect(errors).toHaveLength(1);
+    expect(errors[0].code).toBe('provider-initialization-failed');
+    expect(statuses.at(-1)).toEqual({
+      status: 'ready',
+      requestedProvider: 'google',
+      activeProvider: 'tiles',
+      usingFallback: true,
+    });
+  });
+});

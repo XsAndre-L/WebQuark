@@ -1,5 +1,6 @@
 import { h } from '@stencil/core';
 
+import { getDataTableCellSlotName } from '../data-table-cell';
 import type { DataTableItem, DataTableRowAction, TableColumn } from '../data-table.types';
 import { renderDataTableRowActions } from './render-row-actions';
 import type { DataTableModel, DataTableRowModel } from './table-model';
@@ -23,7 +24,12 @@ export function renderDataTableBody(options: RenderDataTableBodyOptions) {
         <tr role="row">
           <td colSpan={model.columnSpan} class="loading-placeholder-cell" role="gridcell">
             <div class="table-loading-state">
-              <q-circular-progress indeterminate={true} size="sm" />
+              <q-progress
+                variant="circular"
+                indeterminate={true}
+                size="sm"
+                ariaLabel="Loading table data"
+              />
             </div>
           </td>
         </tr>
@@ -46,7 +52,7 @@ function renderDataTableGroupRow(row: DataTableRowModel, columnSpan: number) {
   if (!row.group) return null;
 
   return (
-    <tr key={`group-${String(row.group.key)}-${String(row.renderKey)}`} class="row-group" role="row" aria-label={row.group.label}>
+    <tr key={`group:${row.renderKey}`} class="row-group" role="row" aria-label={row.group.label}>
       <td class="row-group-cell" colSpan={columnSpan} role="gridcell">
         {row.group.label}
       </td>
@@ -72,7 +78,7 @@ function renderDataTableRow(row: DataTableRowModel, options: RenderDataTableBody
       onKeyDown={model.rowClickable ? event => options.onRowKeyDown(row.item, row.index, event) : undefined}
     >
       {model.selectable && (
-        <td class="cell-selection" role="gridcell">
+        <td key="selection" class="cell-selection" role="gridcell">
           <input
             type="checkbox"
             class="checkbox-input"
@@ -82,11 +88,26 @@ function renderDataTableRow(row: DataTableRowModel, options: RenderDataTableBody
           />
         </td>
       )}
-      {model.columns.map(column => (
-        <td class={column.className || ''} role="gridcell">
-          {options.renderCell(row.item, column)}
-        </td>
-      ))}
+      {model.columns.map(columnModel => {
+        const className = getCellClassName(
+          columnModel.column,
+          row.item,
+          row.index,
+        );
+
+        return (
+          <td
+            key={columnModel.renderKey}
+            class={className}
+            part={getCellPartNames(className)}
+            role="gridcell"
+          >
+            <slot name={getDataTableCellSlotName(columnModel.identity, row.identity)}>
+              {options.renderCell(row.item, columnModel.column)}
+            </slot>
+          </td>
+        );
+      })}
       {renderDataTableRowActions({
         actions: model.rowActions,
         item: row.item,
@@ -95,4 +116,32 @@ function renderDataTableRow(row: DataTableRowModel, options: RenderDataTableBody
       })}
     </tr>
   );
+}
+
+function getCellClassName(
+  column: TableColumn,
+  item: DataTableItem,
+  rowIndex: number,
+): string {
+  const classes = [
+    column.className,
+    column.sticky === 'start' ? 'is-sticky-start' : undefined,
+  ];
+
+  try {
+    classes.push(
+      typeof column.cellClassName === 'function'
+        ? column.cellClassName(item, rowIndex, column)
+        : column.cellClassName,
+    );
+  } catch (error) {
+    console.error('QDataTable: Cell class function failed', error);
+  }
+
+  return classes.filter(Boolean).join(' ');
+}
+
+function getCellPartNames(className: string): string {
+  const classParts = className.split(/\s+/).filter(Boolean);
+  return ['cell', ...new Set(classParts)].join(' ');
 }

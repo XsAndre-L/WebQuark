@@ -97,20 +97,32 @@
 
 /* Options Dropdown Menu (Overlay List) */
 .dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  margin: 4px 0 0 0;
+  position: fixed;
+  inset: auto;
+  display: flex;
+  flex-direction: column;
+  width: auto;
+  max-width: calc(100vw - 16px);
+  margin: 0;
   padding: 4px 0;
+  overflow: hidden;
   list-style: none;
   z-index: 1000;
+  visibility: hidden;
 
   background: var(--q-dropdown-menu-bg, var(--q-bg-surface-3, #4b5563));
   border: var(--q-dropdown-border, var(--q-border, 1px solid var(--q-border-color, #4b5563)));
   border-radius: var(--q-dropdown-radius, var(--q-radius-md, 8px));
   box-shadow: var(--q-shadow-medium, 0 8px 16px rgba(0, 0, 0, 0.3));
   box-sizing: border-box;
+}
+
+.dropdown-menu[data-placement='top'] {
+  transform-origin: bottom center;
+}
+
+.dropdown-menu[data-placement='bottom'] {
+  transform-origin: top center;
 }
 
 /* Options Items */
@@ -268,6 +280,8 @@
 
 /* Dropdown items scroll container */
 .dropdown-items-list {
+  flex: 1 1 auto;
+  min-height: 0;
   margin: 0;
   padding: 4px 0;
   list-style: none;

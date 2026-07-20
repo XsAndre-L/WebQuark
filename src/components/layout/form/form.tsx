@@ -1,5 +1,6 @@
 import { Component, Element, Event, EventEmitter, Listen, Method, Prop, State, h } from '@stencil/core';
 import { handleEnterBehavior } from './internals/enter-behavior';
+import { getNamedControls, shouldSkipControl } from './internals/controls';
 import { applyValues, collectValues, createFormData, resetValues } from './internals/values';
 import type {
   NamedFormControl,
@@ -18,6 +19,9 @@ let formIds = 0;
 
 /**
  * Form wrapper that bridges slotted WebQuark controls to a native form element.
+ * Named controls in the light DOM and assigned slots participate in validation,
+ * value collection, reset, and `FormData`. Controls hidden inside a
+ * consumer-owned nested shadow root are outside this explicit boundary.
  *
  * @slot - Form fields and body content.
  * @slot header - Optional custom header content.
@@ -80,6 +84,7 @@ export class QForm {
   private handledButtonClicks = new WeakSet<Event>();
   private readonly titleId = `q-form-title-${++formIds}`;
   private initialValues: QFormValues = {};
+  private submitTask?: Promise<void>;
 
   // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
@@ -123,6 +128,7 @@ export class QForm {
   @Method()
   async submitForm(): Promise<void> {
     this.requestSubmit();
+    await this.submitTask;
   }
 
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
@@ -222,12 +228,16 @@ export class QForm {
     });
   }
 
-  private handleSubmit = (ev: Event) => {
+  private handleSubmit = (ev: Event): void => {
+    this.submitTask = this.processSubmit(ev);
+  };
+
+  private async processSubmit(ev: Event): Promise<void> {
     if (this.preventDefault) {
       ev.preventDefault();
     }
 
-    if (!this.noValidate && this.formEl && typeof this.formEl.reportValidity === 'function' && !this.formEl.reportValidity()) {
+    if (!this.noValidate && !(await this.reportControlValidity())) {
       return;
     }
 
@@ -241,7 +251,39 @@ export class QForm {
       form: this.formEl,
       originalEvent: ev,
     });
-  };
+  }
+
+  private async reportControlValidity(): Promise<boolean> {
+    if (
+      this.formEl &&
+      typeof this.formEl.reportValidity === 'function' &&
+      !this.formEl.reportValidity()
+    ) {
+      return false;
+    }
+
+    const controls = getNamedControls(this.formEl, this.el);
+    for (const control of controls) {
+      const validate =
+        typeof control.reportValidity === 'function'
+          ? control.reportValidity
+          : control.checkValidity;
+
+      if (
+        control.disabled ||
+        shouldSkipControl(control) ||
+        typeof validate !== 'function'
+      ) {
+        continue;
+      }
+
+      if (!(await validate.call(control))) {
+        return false;
+      }
+    }
+
+    return true;
+  }
 
   private handleReset = (ev: Event) => {
     if (!this.formEl) return;

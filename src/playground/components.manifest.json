@@ -7,7 +7,7 @@
   { "tag": "q-map",               "name": "Map",               "category": "data-display" },
   { "tag": "q-syntax-box",        "name": "Syntax Box",        "category": "data-display" },
 
-  { "tag": "q-circular-progress", "name": "Circular Progress", "category": "indicators" },
+  { "tag": "q-progress",          "name": "Progress",          "category": "indicators" },
   { "tag": "q-step-diagram",      "name": "Step Diagram",      "category": "indicators" },
 
   { "tag": "q-dropdown",          "name": "Dropdown",          "category": "inputs" },

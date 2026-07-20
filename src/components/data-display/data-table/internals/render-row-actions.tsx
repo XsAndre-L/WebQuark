@@ -1,9 +1,10 @@
 import { h } from '@stencil/core';
 
 import type { DataTableItem, DataTableRowAction } from '../data-table.types';
+import type { DataTableRowActionModel } from './table-model';
 
 export interface RenderDataTableRowActionsOptions {
-  actions: DataTableRowAction[];
+  actions: DataTableRowActionModel[];
   item: DataTableItem;
   index: number;
   onRowAction: (action: DataTableRowAction, event: MouseEvent) => void;
@@ -13,14 +14,15 @@ export function renderDataTableRowActions(options: RenderDataTableRowActionsOpti
   if (options.actions.length === 0) return null;
 
   return (
-    <td class="cell-actions" role="gridcell">
+    <td key="actions" class="cell-actions" role="gridcell">
       <div class="row-actions">
-        {options.actions.map(action => {
+        {options.actions.map(actionModel => {
+          const { action } = actionModel;
           const disabled = isDataTableRowActionDisabled(action, options.item, options.index);
 
           return (
             <q-button
-              key={action.key}
+              key={actionModel.renderKey}
               variant="text"
               size="sm"
               iconOnly={true}

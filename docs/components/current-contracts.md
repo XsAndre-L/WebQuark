@@ -93,11 +93,11 @@ For array and object inputs, assign the JavaScript property unless the contract 
 ### `q-sidepanel`
 
 - API: [generated reference](../../src/components/layout/sidepanel/readme.md)
-- Properties: `variant`, `open`, `side`, `panelSize`, `items`, `ariaLabel`, `value`, `mode`, `expanded`, `accordion`, `collapsible`, `collapsed`, `collapseControl`, `collapseMode`, `collapseLabel`.
+- Properties: `variant`, `open`, `side`, `panelSize`, `items`, `ariaLabel`, `value`, `mode`, `expanded`, `accordion`, `collapsible`, `collapsed`, `collapseControl`, `collapseControlAppearance`, `collapseControlPosition`, `collapseMode`, `collapseLabel`.
 - Events: `qClose`, `qSelect`, `qCollapsedChange`.
-- Slots: `header`, default body, `footer`.
-- Behavior: `drawer` is modal, `panel` is persistent slotted content, and `nav` renders item trees. Top-level string items normalize to matching labels and values. An item-level `alwaysExpanded` value of `true` turns a parent into a persistent, non-interactive category heading; it overrides `expanded=false` and accordion mode, is not inherited, and is ignored for leaf items. The built-in collapse control mutates `collapsed` and emits `qCollapsedChange`; direct consumer assignments do not emit it.
-- Accessibility: the drawer traps focus and restores it after closing. Use `ariaLabel` to name the navigation, panel region, or drawer dialog.
+- Slots: `header`, default body, `footer`, `collapse-icon`, `expand-icon`, `collapse-control-adornment`.
+- Behavior: `drawer` is modal, `panel` is persistent slotted content, and `nav` renders item trees. Top-level string items normalize to matching labels and values. An item-level `alwaysExpanded` value of `true` turns a parent into a persistent, non-interactive category heading; it overrides `expanded=false` and accordion mode, is not inherited, and is ignored for leaf items. The built-in collapse control mutates `collapsed` and emits `qCollapsedChange`; direct consumer assignments do not emit it. `collapse-control-adornment` provides a non-interactive visual badge or label anchored over the control's top-left corner.
+- Accessibility: the drawer traps focus and restores it after closing. Use `ariaLabel` to name the navigation, panel region, or drawer dialog. Keep `collapseLabel` synchronized with meaningful visual adornment content.
 - Known limitation: `mode` is exposed but currently does not change rendering; do not depend on distinct `flat`, `grouped`, or `tree` behavior until that contract is implemented.
 
 ### `q-toolbar`
@@ -172,11 +172,11 @@ For array and object inputs, assign the JavaScript property unless the contract 
 ### `q-map`
 
 - API: [generated reference](../../src/components/data-display/map/readme.md)
-- Properties: `provider`, `tileUrl`, `googleApiKey`, `googleMapType`, `attribution`, `attributionUrl`, `centerLatitude`, `centerLongitude`, `zoom`, `minZoom`, `maxZoom`, `markers`, `selectedMarkerId`, `ariaLabel`.
-- Events: `qReady`, `qMarkerSelect`.
-- Slot: `empty` replaces the missing-configuration state when the active provider lacks its URL or key.
-- Shadow parts: `surface`, `canvas`, `marker`, `attribution`, `empty`.
-- Behavior: wraps Leaflet behind a framework-neutral Web Component contract. The `tiles` provider uses a consumer-supplied URL and attribution; the optional `google` provider lazily loads the Maps JavaScript API through GoogleMutant and preserves Google's legal controls. A failed Google initialization falls back to `tileUrl` when one is configured. Assign `markers` as a JavaScript array of records containing a stable `id`, finite `latitude` and `longitude`, a `label`, and an optional visual `variant`. Marker selection is controlled through `selectedMarkerId`; activation emits `qMarkerSelect` without mutating application data.
+- Properties: `provider`, `tileUrl`, `googleApiKey`, `googleMapType`, `attribution`, `attributionUrl`, `centerLatitude`, `centerLongitude`, `zoom`, `minZoom`, `maxZoom`, `maxBounds`, `maxBoundsViscosity`, `markers`, `selectedMarkerId`, `ariaLabel`.
+- Events: `qReady`, `qMarkerSelect`, `qStatusChange`, `qError`.
+- Slots: `empty` replaces missing provider configuration; `error` replaces the visible failure message when no requested or fallback provider can be activated.
+- Shadow parts: `surface`, `canvas`, `marker`, `attribution`, `empty`, `error`.
+- Behavior: wraps Leaflet behind a framework-neutral Web Component contract. Provider swaps are transactional, preserve the previous working layer until replacement succeeds, discard stale async results, and report serializable status/errors. The `tiles` provider uses a consumer-supplied URL and attribution; the optional `google` provider loads the official Maps JavaScript API through GoogleMutant, preserves Google's legal controls, and falls back to `tileUrl` when configured. `maxBounds` accepts an object or JSON string; malformed non-empty updates emit `qError` and preserve the last valid boundary. Assign `markers` as a JavaScript array of records containing a stable type-sensitive `id`, finite coordinates, a `label`, and an optional visual `variant`. Marker selection is controlled through `selectedMarkerId`; activation emits `qMarkerSelect` without mutating application data.
 - Accessibility: `ariaLabel` names the map region and markers are keyboard operable. Important locations and actions must also be available outside the map because a spatial canvas is not an accessible replacement for structured content.
 - Performance: marker layers are reconciled by stable ID and map sizing follows its host container. Paginate, cluster, or otherwise limit very large marker collections in the consuming application.
 - Limitations: consumers provide and license the imagery service, API key and CSP where applicable, attribution, location data, real-time transport, geocoding, routing, clustering, and domain-specific popups. `q-map` does not call an application backend. Google imagery is network-only and GoogleMutant's legal controls require visual validation in each supported runtime.
@@ -221,7 +221,7 @@ For array and object inputs, assign the JavaScript property unless the contract 
 
 - API: [generated reference](../../src/components/media/icon/readme.md)
 - Properties: `name`, `lib`, `size`, `color`, `localPath`, `libVersion`, `fetchTimeout`, `label`.
-- Behavior: `lucide` and `font-awesome` resolve pinned CDN URLs; `local` resolves from `localPath`; custom libraries may be base URLs or `{name}` templates. SVG is fetched, sanitized, and inlined; common raster formats use `<img>`.
+- Behavior: `lucide` and `font-awesome` resolve pinned CDN URLs; `local` resolves from `localPath`; custom libraries may be base URLs or `{name}` templates. SVG is fetched, sanitized, and inlined without blocking component or parent hydration; the sized host renders first and fills when the request completes. Common raster formats use `<img>`.
 - Accessibility: icons without `label` are decorative. Supplying `label` gives the host `role="img"` and an accessible name.
 - CEF/offline: prefer `lib="local"` for offline, deterministic, or restricted webviews.
 

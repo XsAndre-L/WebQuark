@@ -49,6 +49,9 @@ describe('q-icon', () => {
     `);
 
     const el = await createComponent({ name: 'settings' });
+    await vi.waitFor(() => {
+      expect(el.shadowRoot.querySelector('.svg-container')?.innerHTML).toContain('<svg');
+    });
     const url = String(fetchMock.mock.calls[0][0]);
     const init = fetchMock.mock.calls[0][1] as RequestInit;
     const html = (el.shadowRoot.querySelector('.svg-container') as HTMLElement).innerHTML.toLowerCase();
@@ -75,12 +78,35 @@ describe('q-icon', () => {
     mockSvgFetch('<svg viewBox="0 0 24 24"><path d="M1 1" /></svg>');
 
     const el = await createComponent({ name: 'settings', label: 'Settings' });
+    await vi.waitFor(() => {
+      expect(el.shadowRoot.querySelector('.svg-container svg')).not.toBeNull();
+    });
     const svg = el.shadowRoot.querySelector('.svg-container svg') as SVGElement;
 
     expect(el.getAttribute('role')).toBe('img');
     expect(el.getAttribute('aria-label')).toBe('Settings');
     expect(el.getAttribute('aria-hidden')).toBe('false');
     expect(svg.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  it('hydrates without waiting for the SVG request to finish', async () => {
+    let resolveFetch!: (response: { ok: boolean; text: () => Promise<string> }) => void;
+    vi.stubGlobal('fetch', vi.fn(() => new Promise(resolve => {
+      resolveFetch = resolve;
+    })));
+
+    const el = await createComponent({ name: 'settings' });
+
+    expect(el.classList.contains('hydrated')).toBe(true);
+    expect(el.shadowRoot.querySelector('.svg-container')?.innerHTML).toBe('');
+
+    resolveFetch({
+      ok: true,
+      text: async () => '<svg viewBox="0 0 24 24"><path d="M1 1" /></svg>',
+    });
+    await vi.waitFor(() => {
+      expect(el.shadowRoot.querySelector('.svg-container')?.innerHTML).toContain('<svg');
+    });
   });
 
   it('renders binary local assets without fetching SVG content', async () => {

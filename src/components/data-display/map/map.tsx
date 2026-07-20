@@ -1,43 +1,55 @@
 import { Component, Element, Event, EventEmitter, h, Prop, State, Watch } from '@stencil/core';
-import type { GridLayer as LeafletGridLayer, Map as LeafletMap, Marker as LeafletMarker } from 'leaflet';
+import type { Layer as LeafletLayer, Map as LeafletMap } from 'leaflet';
 
-import { loadGoogleMapsApi } from './internals/google-maps';
+import { MapBaseLayerController } from './internals/base-layer';
+import {
+  applyMapBounds,
+  getInitialLeafletMapBounds,
+  getMapBoundsViscosity,
+  resolveMapBounds,
+} from './internals/bounds';
+import { hasGoogleMapsConfiguration, loadGoogleMapsApi } from './internals/google-maps';
 import { loadGoogleMutantConstructor } from './internals/google-mutant';
-import { getMapMarkerKey, getMapMarkers } from './internals/markers';
+import { loadMapLibreLayerFactory, waitForMapLibreLayerReady } from './internals/maplibre';
+import { normalizeMapMarkerClusteringOptions } from './internals/marker-cluster-index';
+import { MapMarkerController } from './internals/marker-controller';
 import type {
+  QMapBoundsInput,
+  QMapClusterSelectDetail,
+  QMapErrorCode,
+  QMapErrorDetail,
   QMapGoogleMapType,
-  QMapMarker,
   QMapMarkerId,
   QMapMarkerInput,
   QMapMarkerSelectDetail,
-  QMapMarkerVariant,
   QMapProvider,
+  QMapStatus,
+  QMapStatusChangeDetail,
 } from './map.types';
 
 type LeafletModule = typeof import('leaflet');
 
-interface LeafletWindow extends Window {
-  L_DISABLE_3D?: boolean;
-}
-
-interface MarkerElementListeners {
-  element: HTMLElement;
-  click: (event: MouseEvent) => void;
-  keydown: (event: KeyboardEvent) => void;
-}
-
-const MARKER_VARIANTS: QMapMarkerVariant[] = ['default', 'success', 'warning', 'danger', 'muted'];
 const GOOGLE_MAP_TYPES: QMapGoogleMapType[] = ['roadmap', 'satellite', 'terrain', 'hybrid'];
+const SMOOTH_ZOOM_DELTA = 0.5;
+const SMOOTH_ZOOM_SNAP = 0.25;
+const SMOOTH_WHEEL_DEBOUNCE_MS = 16;
+const SMOOTH_WHEEL_PIXELS_PER_LEVEL = 120;
+const VECTOR_SYMBOL_FADE_DURATION_MS = 750;
 
 /**
  * Framework-neutral interactive map powered by Leaflet.
  *
- * @slot empty - Content shown when the selected map provider is not configured.
+ * @slot empty - Content shown when the requested provider is missing required configuration.
+ * @slot error - Content shown after provider initialization fails without a usable fallback.
  * @part surface - Outer clipped map surface.
  * @part canvas - Leaflet map canvas.
  * @part marker - Each interactive map marker.
+ * @part cluster - Each interactive marker cluster.
+ * @part marker-badge - A marker's optional status badge.
+ * @part marker-callout - A marker's optional non-interactive callout.
  * @part attribution - Provider attribution text or link.
  * @part empty - Missing-configuration overlay.
+ * @part error - Provider-error overlay.
  * @cssprop --q-map-height - Component height.
  * @cssprop --q-map-min-height - Minimum component height.
  * @cssprop --q-map-bg - Background behind map tiles.
@@ -50,6 +62,12 @@ const GOOGLE_MAP_TYPES: QMapGoogleMapType[] = ['roadmap', 'satellite', 'terrain'
  * @cssprop --q-map-marker-danger - Danger marker color.
  * @cssprop --q-map-marker-muted - Muted marker color.
  * @cssprop --q-map-marker-selected-color - Selected-marker ring color.
+ * @cssprop --q-map-marker-cluster-size - Cluster diameter.
+ * @cssprop --q-map-marker-ring-color - Optional solid or dashed status-ring color.
+ * @cssprop --q-map-marker-pulse-color - Optional pulse color.
+ * @cssprop --q-map-marker-content-gap - Space exposing the marker status color around image or text content.
+ * @cssprop --q-map-marker-content-bg - Background behind marker image or fallback text.
+ * @cssprop --q-map-marker-content-color - Marker fallback-text color.
  * @cssprop --q-map-attribution-bg - Attribution background.
  * @cssprop --q-map-attribution-color - Attribution foreground.
  */
@@ -59,76 +77,106 @@ const GOOGLE_MAP_TYPES: QMapGoogleMapType[] = ['roadmap', 'satellite', 'terrain'
   shadow: true,
 })
 export class QMap {
-  // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
-
   @Element() el!: HTMLElement;
 
-  /** Map imagery provider. */
+  /** Selects raster tiles, styled vector data, or Google imagery; non-tile failures may use tileUrl as a fallback. */
   @Prop() provider: QMapProvider = 'tiles';
 
-  /** URL template used by the tiles provider and as an optional Google-provider fallback. */
+  /** Supplies the tile URL template for the tiles provider and optional vector/Google fallback. */
   @Prop() tileUrl: string = '';
 
-  /** Browser-restricted Google Maps JavaScript API key used by the Google provider. */
+  /** Supplies a MapLibre Style Specification URL for the vector provider. */
+  @Prop() vectorStyleUrl: string = '';
+
+  /** Supplies the browser-restricted key used only when WebQuark must load Google Maps. */
   @Prop() googleApiKey: string = '';
 
-  /** Google base-map style used by the Google provider. */
+  /** Chooses the Google base-map style, normalizing unsupported values to roadmap. */
   @Prop() googleMapType: QMapGoogleMapType = 'roadmap';
 
-  /** Plain-text tile-provider attribution. */
+  /** Renders plain-text attribution whenever raster tiles or styled vectors are active. */
   @Prop() attribution: string = '';
 
-  /** Optional HTTP(S) destination for the attribution text. */
+  /** Links map attribution only when the value resolves to an HTTP(S) URL. */
   @Prop() attributionUrl: string = '';
 
-  /** Initial and controlled center latitude. */
+  /** Controls viewport latitude; finite values are clamped to the geographic range. */
   @Prop() centerLatitude: number = 0;
 
-  /** Initial and controlled center longitude. */
+  /** Controls viewport longitude; finite values are clamped to the geographic range. */
   @Prop() centerLongitude: number = 0;
 
-  /** Initial and controlled zoom level. */
+  /** Controls the viewport zoom and is clamped between the normalized zoom limits. */
   @Prop() zoom: number = 2;
 
-  /** Lowest permitted zoom level. */
+  /** Controls whether the built-in plus/minus zoom control is rendered. */
+  @Prop() zoomControls: boolean = true;
+
+  /** Sets the lowest permitted zoom; non-finite values normalize to zero. */
   @Prop() minZoom: number = 0;
 
-  /** Highest permitted zoom level. */
+  /** Sets the highest permitted zoom and never resolves below minZoom. */
   @Prop() maxZoom: number = 19;
 
-  /** Marker records, or a JSON string containing marker records. */
+  /** Constrains panning from a bounds object or JSON string; malformed updates preserve the last valid boundary. */
+  @Prop() maxBounds?: QMapBoundsInput;
+
+  /** Controls drag resistance at maxBounds and is clamped from zero to one. */
+  @Prop() maxBoundsViscosity: number = 1;
+
+  /** Reconciles marker records from an array or JSON string using type-stable IDs. */
   @Prop() markers: QMapMarkerInput = [];
 
-  /** Identifier of the marker rendered in the selected state. */
+  /** Groups nearby markers while preserving their stable source IDs. */
+  @Prop() clusterMarkers: boolean = false;
+
+  /** Sets the clustering radius in screen pixels and is clamped from 1 to 200. */
+  @Prop() clusterRadius: number = 48;
+
+  /** Sets the minimum number of nearby markers needed to form a cluster. */
+  @Prop() clusterMinPoints: number = 2;
+
+  /** Sets the last zoom level where clusters may remain; defaults to one below maxZoom. */
+  @Prop() clusterMaxZoom?: number;
+
+  /** Controls which marker exposes its selected visual and aria-pressed state. */
   @Prop() selectedMarkerId?: QMapMarkerId;
 
-  /** Accessible name for the interactive map region. */
-  @Prop({ attribute: 'aria-label' }) ariaLabel: string = 'Interactive map';
+  /** Provides the accessible name announced for the interactive map region. */
+  @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = 'Interactive map';
 
-  /** Emitted after Leaflet and the initial provider setup have completed. */
+  /** Fires after Leaflet setup and the initial provider attempt complete. */
   @Event() qReady!: EventEmitter<void>;
 
-  /** Emitted when a marker is activated with a pointer or keyboard. */
+  /** Reports marker activation without mutating selectedMarkerId. */
   @Event() qMarkerSelect!: EventEmitter<QMapMarkerSelectDetail>;
 
-  // ========================= [2] INTERNAL STATE & REFS =========================
+  /** Reports cluster activation before the default centre-and-zoom action. */
+  @Event({ cancelable: true }) qClusterSelect!: EventEmitter<QMapClusterSelectDetail>;
+
+  /** Reports provider lifecycle transitions, including the active fallback provider. */
+  @Event() qStatusChange!: EventEmitter<QMapStatusChangeDetail>;
+
+  /** Reports serializable configuration and initialization failures. */
+  @Event() qError!: EventEmitter<QMapErrorDetail>;
+
+  @State() private providerStatus: QMapStatus = 'initializing';
+  @State() private activeProvider?: QMapProvider;
+  @State() private usingFallback = false;
+  @State() private errorMessage?: string;
 
   private leaflet?: LeafletModule;
   private map?: LeafletMap;
-  private baseLayer?: LeafletGridLayer;
   private canvas?: HTMLDivElement;
   private resizeObserver?: ResizeObserver;
   private resizeFrame?: number;
   private initializationToken = 0;
-  private baseLayerToken = 0;
-  @State() private isUsingTileFallback = false;
+  private layerController?: MapBaseLayerController<LeafletLayer>;
+  private markerController?: MapMarkerController;
+  private lastInvalidBoundsInput?: QMapBoundsInput;
+  private reportedRequestedProvider?: QMapProvider;
   private hasLoaded = false;
   private connected = false;
-  private markerLayers = new Map<string, LeafletMarker>();
-  private markerRecords = new Map<string, QMapMarker>();
-  private markerListeners = new Map<string, MarkerElementListeners>();
-
-  // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
   connectedCallback() {
     this.connected = true;
@@ -148,6 +196,7 @@ export class QMap {
 
   @Watch('provider')
   @Watch('tileUrl')
+  @Watch('vectorStyleUrl')
   @Watch('googleApiKey')
   @Watch('googleMapType')
   handleBaseLayerChange() {
@@ -155,86 +204,205 @@ export class QMap {
       void this.initializeMap();
       return;
     }
-
     void this.syncBaseLayer();
   }
 
   @Watch('markers')
   handleMarkersChange() {
-    this.syncMarkers();
+    this.markerController?.sync(this.markers);
+  }
+
+  @Watch('clusterMarkers')
+  @Watch('clusterRadius')
+  @Watch('clusterMinPoints')
+  @Watch('clusterMaxZoom')
+  handleMarkerClusteringChange() {
+    this.markerController?.sync(this.markers);
   }
 
   @Watch('selectedMarkerId')
   handleSelectedMarkerChange() {
-    this.syncSelectedMarkers();
+    this.markerController?.syncSelection();
   }
 
   @Watch('centerLatitude')
   @Watch('centerLongitude')
   @Watch('zoom')
   handleViewChange() {
-    this.syncView();
+    this.syncView(true);
   }
 
   @Watch('minZoom')
   @Watch('maxZoom')
   handleZoomLimitsChange() {
     if (!this.map) return;
-
     const { minimum, maximum } = this.getZoomLimits();
     this.map.setMinZoom(minimum);
     this.map.setMaxZoom(maximum);
     this.syncView();
     void this.syncBaseLayer();
+    this.markerController?.sync(this.markers);
   }
 
-  // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
+  @Watch('maxBounds')
+  @Watch('maxBoundsViscosity')
+  handleBoundsChange() {
+    this.syncBounds(true);
+  }
+
+  @Watch('zoomControls')
+  handleZoomControlsChange() {
+    if (!this.map) return;
+    this.destroyMap();
+    void this.initializeMap();
+  }
 
   private setCanvas = (element: HTMLDivElement | null) => {
-    this.canvas = element || undefined;
+    this.canvas = element ?? undefined;
   };
 
-  private async initializeMap() {
+  private async initializeMap(): Promise<void> {
     if (this.map || !this.canvas || !this.connected || typeof window === 'undefined') return;
 
     const token = ++this.initializationToken;
-    (window as LeafletWindow).L_DISABLE_3D = true;
+    this.setProviderStatus('initializing', undefined, false, true);
 
     try {
-      const leaflet = this.leaflet || (await import('leaflet'));
+      const leaflet = this.leaflet ?? (await import('leaflet'));
       this.leaflet = leaflet;
-
       if (token !== this.initializationToken || !this.canvas || !this.connected || !this.el.isConnected) return;
 
       const { minimum, maximum } = this.getZoomLimits();
+      const boundsResolution = resolveMapBounds(this.maxBounds);
+      const smoothMotion = !this.prefersReducedMotion();
       this.map = leaflet.map(this.canvas, {
         attributionControl: false,
-        fadeAnimation: false,
+        fadeAnimation: smoothMotion,
         inertia: false,
         keyboard: true,
-        markerZoomAnimation: false,
+        markerZoomAnimation: smoothMotion,
+        maxBounds: getInitialLeafletMapBounds(boundsResolution),
+        maxBoundsViscosity: getMapBoundsViscosity(this.maxBoundsViscosity),
         maxZoom: maximum,
         minZoom: minimum,
         trackResize: false,
-        zoomAnimation: false,
-        zoomControl: true,
+        wheelDebounceTime: smoothMotion ? SMOOTH_WHEEL_DEBOUNCE_MS : 40,
+        wheelPxPerZoomLevel: smoothMotion ? SMOOTH_WHEEL_PIXELS_PER_LEVEL : 60,
+        zoomAnimation: smoothMotion,
+        zoomControl: this.zoomControls,
+        zoomDelta: smoothMotion ? SMOOTH_ZOOM_DELTA : 1,
+        zoomSnap: smoothMotion ? SMOOTH_ZOOM_SNAP : 1,
       });
+      if (boundsResolution.kind === 'invalid') this.reportInvalidBounds(boundsResolution.message);
+      else this.lastInvalidBoundsInput = undefined;
 
+      this.createControllers(this.map, leaflet);
       this.syncView();
       await this.syncBaseLayer();
-
       if (token !== this.initializationToken || !this.map || !this.connected) return;
 
-      this.syncMarkers();
+      this.markerController?.sync(this.markers);
       this.observeResize();
       this.map.invalidateSize({ animate: false, pan: false });
       this.qReady.emit();
     } catch (error) {
-      if (token === this.initializationToken) {
-        this.destroyMap();
-        console.error('QMap: Leaflet failed to initialize', error);
-      }
+      if (token !== this.initializationToken) return;
+      this.destroyMap();
+      this.errorMessage = 'Map failed to initialize.';
+      this.setProviderStatus('error', undefined, false);
+      this.reportError('leaflet-initialization-failed', error, false);
     }
+  }
+
+  private createControllers(map: LeafletMap, leaflet: LeafletModule): void {
+    this.layerController = new MapBaseLayerController<LeafletLayer>({
+      attach: async (layer, provider) => {
+        layer.addTo(map);
+        if (provider === 'vector') await waitForMapLibreLayerReady(layer);
+      },
+      createGoogle: async config => {
+        await loadGoogleMapsApi(config.googleApiKey);
+        const GoogleMutant = await loadGoogleMutantConstructor(leaflet);
+        return new GoogleMutant({
+          type: config.googleMapType,
+          minZoom: config.minZoom,
+          maxZoom: config.maxZoom,
+        });
+      },
+      createTiles: config => leaflet.tileLayer(config.tileUrl, {
+        attribution: '',
+        minZoom: config.minZoom,
+        maxZoom: config.maxZoom,
+      }),
+      createVector: async config => {
+        const createMapLibreLayer = await loadMapLibreLayerFactory(leaflet);
+        return createMapLibreLayer({
+          attributionControl: false,
+          fadeDuration: VECTOR_SYMBOL_FADE_DURATION_MS,
+          interactive: false,
+          maxTileCacheZoomLevels: 6,
+          maxZoom: config.maxZoom,
+          minZoom: config.minZoom,
+          padding: 0.2,
+          style: config.vectorStyleUrl,
+          updateInterval: 16,
+        });
+      },
+    });
+    this.markerController = new MapMarkerController({
+      map,
+      leaflet,
+      getSelectedMarkerId: () => this.selectedMarkerId,
+      getClusteringOptions: () => normalizeMapMarkerClusteringOptions(
+        this.clusterMarkers,
+        this.clusterRadius,
+        this.clusterMinPoints,
+        this.clusterMaxZoom,
+        map.getMaxZoom(),
+      ),
+      prefersReducedMotion: () => this.prefersReducedMotion(),
+      onMarkerSelect: (marker, originalEvent) => this.qMarkerSelect.emit({ marker, originalEvent }),
+      onClusterSelect: detail => this.qClusterSelect.emit(detail).defaultPrevented,
+    });
+  }
+
+  private async syncBaseLayer(): Promise<void> {
+    const controller = this.layerController;
+    if (!controller) return;
+
+    const requestedProvider = this.getProvider();
+    const current = controller.getActiveState();
+    this.errorMessage = undefined;
+    this.setProviderStatus('initializing', current.activeProvider, current.usingFallback);
+    const { minimum, maximum } = this.getZoomLimits();
+    const result = await controller.sync({
+      requestedProvider,
+      tileUrl: this.tileUrl.trim(),
+      vectorStyleUrl: this.vectorStyleUrl.trim(),
+      googleApiKey: this.googleApiKey.trim(),
+      googleApiAvailable: hasGoogleMapsConfiguration(),
+      googleMapType: this.getGoogleMapType(),
+      minZoom: minimum,
+      maxZoom: maximum,
+    });
+    if (controller !== this.layerController || result.kind === 'stale') return;
+
+    if (result.kind === 'empty') {
+      this.setProviderStatus('empty', undefined, false);
+      return;
+    }
+    if (result.kind === 'ready') {
+      if (result.warning) this.reportError('provider-initialization-failed', result.warning, true);
+      this.setProviderStatus('ready', result.activeProvider, result.usingFallback);
+      return;
+    }
+
+    this.reportError('provider-initialization-failed', result.error, true);
+    if (result.fallbackError) this.reportError('fallback-initialization-failed', result.fallbackError, true);
+    this.errorMessage = result.activeProvider
+      ? 'The requested map provider failed. The previous map remains available.'
+      : 'Map imagery failed to load.';
+    this.setProviderStatus('error', result.activeProvider, result.usingFallback);
   }
 
   private getZoomLimits(): { minimum: number; maximum: number } {
@@ -256,246 +424,114 @@ export class QMap {
   }
 
   private getProvider(): QMapProvider {
-    return this.provider === 'google' ? 'google' : 'tiles';
+    return this.provider === 'google' || this.provider === 'vector' ? this.provider : 'tiles';
   }
 
   private getGoogleMapType(): QMapGoogleMapType {
     return GOOGLE_MAP_TYPES.includes(this.googleMapType) ? this.googleMapType : 'roadmap';
   }
 
-  private syncView() {
-    if (!this.map) return;
-    this.map.setView(this.getCenter(), this.getZoom(), { animate: false });
+  private syncView(animate = false): void {
+    this.map?.setView(this.getCenter(), this.getZoom(), {
+      animate: animate && !this.prefersReducedMotion(),
+    });
   }
 
-  private async syncBaseLayer(): Promise<void> {
-    const map = this.map;
-    const leaflet = this.leaflet;
-    const token = ++this.baseLayerToken;
+  private prefersReducedMotion(): boolean {
+    return typeof window !== 'undefined'
+      && typeof window.matchMedia === 'function'
+      && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
 
-    this.isUsingTileFallback = false;
-    this.removeBaseLayer();
-    if (!map || !leaflet) return;
-
-    try {
-      const layer = await this.createBaseLayer(leaflet);
-      if (!layer) return;
-
-      if (token !== this.baseLayerToken || map !== this.map || !this.connected) {
-        layer.remove();
-        return;
-      }
-
-      this.baseLayer = layer;
-      layer.addTo(map);
-    } catch (error) {
-      if (token !== this.baseLayerToken) return;
-
-      this.removeBaseLayer();
-      console.error(`QMap: ${this.getProvider()} map provider failed to initialize`, error);
-
-      if (this.getProvider() === 'google') this.useTileFallback(map, leaflet);
+  private syncBounds(reportInvalid: boolean): void {
+    if (!this.map) return;
+    const resolution = resolveMapBounds(this.maxBounds);
+    applyMapBounds(this.map, resolution, this.maxBoundsViscosity);
+    if (resolution.kind === 'invalid') {
+      if (reportInvalid) this.reportInvalidBounds(resolution.message);
+    } else {
+      this.lastInvalidBoundsInput = undefined;
     }
   }
 
-  private async createBaseLayer(leaflet: LeafletModule): Promise<LeafletGridLayer | undefined> {
-    const { minimum, maximum } = this.getZoomLimits();
+  private reportInvalidBounds(message: string): void {
+    if (this.lastInvalidBoundsInput === this.maxBounds) return;
+    this.lastInvalidBoundsInput = this.maxBounds;
+    this.reportError('invalid-max-bounds', new Error(message), true);
+  }
 
-    if (this.getProvider() === 'google') {
-      const apiKey = this.googleApiKey.trim();
-      if (!apiKey) return undefined;
-
-      await loadGoogleMapsApi(apiKey);
-      const GoogleMutant = await loadGoogleMutantConstructor(leaflet);
-      return new GoogleMutant({
-        type: this.getGoogleMapType(),
-        minZoom: minimum,
-        maxZoom: maximum,
+  private setProviderStatus(
+    status: QMapStatus,
+    activeProvider: QMapProvider | undefined,
+    usingFallback: boolean,
+    force = false,
+  ): void {
+    const changed = status !== this.providerStatus
+      || activeProvider !== this.activeProvider
+      || usingFallback !== this.usingFallback
+      || this.getProvider() !== this.reportedRequestedProvider;
+    this.providerStatus = status;
+    this.activeProvider = activeProvider;
+    this.usingFallback = usingFallback;
+    this.reportedRequestedProvider = this.getProvider();
+    if (changed || force) {
+      this.qStatusChange.emit({
+        status,
+        requestedProvider: this.getProvider(),
+        activeProvider,
+        usingFallback,
       });
     }
-
-    return this.createTileLayer(leaflet);
   }
 
-  private createTileLayer(leaflet: LeafletModule): LeafletGridLayer | undefined {
-    const tileUrl = this.tileUrl.trim();
-    if (!tileUrl) return undefined;
-
-    const { minimum, maximum } = this.getZoomLimits();
-    return leaflet.tileLayer(tileUrl, {
-      attribution: '',
-      minZoom: minimum,
-      maxZoom: maximum,
+  private reportError(code: QMapErrorCode, error: unknown, recoverable: boolean): void {
+    this.qError.emit({
+      code,
+      message: error instanceof Error ? error.message : String(error),
+      requestedProvider: this.getProvider(),
+      recoverable,
     });
   }
 
-  private useTileFallback(map: LeafletMap, leaflet: LeafletModule) {
-    const layer = this.createTileLayer(leaflet);
-    if (!layer) return;
-
-    try {
-      this.baseLayer = layer;
-      layer.addTo(map);
-      this.isUsingTileFallback = true;
-    } catch (error) {
-      this.removeBaseLayer();
-      console.error('QMap: fallback tile provider failed to initialize', error);
-    }
-  }
-
-  private removeBaseLayer() {
-    this.baseLayer?.remove();
-    this.baseLayer = undefined;
-  }
-
-  private syncMarkers() {
-    if (!this.map || !this.leaflet) return;
-
-    const nextRecords = new Map<string, QMapMarker>();
-    for (const marker of getMapMarkers(this.markers)) nextRecords.set(getMapMarkerKey(marker.id), marker);
-    this.markerRecords = nextRecords;
-
-    for (const key of this.markerLayers.keys()) {
-      if (!nextRecords.has(key)) this.removeMarker(key);
-    }
-
-    for (const [key, marker] of nextRecords) {
-      const layer = this.markerLayers.get(key);
-      if (layer) {
-        layer.setLatLng([marker.latitude, marker.longitude]);
-        this.updateMarkerElement(key, marker);
-      } else {
-        this.addMarker(key, marker);
-      }
-    }
-  }
-
-  private addMarker(key: string, marker: QMapMarker) {
-    if (!this.map || !this.leaflet) return;
-
-    const markerContent = document.createElement('span');
-    markerContent.className = 'q-map-marker__center';
-    markerContent.setAttribute('aria-hidden', 'true');
-
-    const icon = this.leaflet.divIcon({
-      className: 'q-map-marker',
-      html: markerContent,
-      iconAnchor: [0, 0],
-      iconSize: [0, 0],
-    });
-    const layer = this.leaflet.marker([marker.latitude, marker.longitude], {
-      icon,
-      keyboard: false,
-      riseOnHover: true,
-      riseOffset: 1000,
-      title: marker.label,
-    });
-    layer.addTo(this.map);
-    this.markerLayers.set(key, layer);
-
-    const element = layer.getElement();
-    if (!element) return;
-
-    const click = (event: MouseEvent) => this.selectMarker(key, event);
-    const keydown = (event: KeyboardEvent) => {
-      if (event.key !== 'Enter' && event.key !== ' ') return;
-      event.preventDefault();
-      event.stopPropagation();
-      this.selectMarker(key, event);
-    };
-
-    element.addEventListener('click', click);
-    element.addEventListener('keydown', keydown);
-    this.markerListeners.set(key, { element, click, keydown });
-    this.updateMarkerElement(key, marker);
-  }
-
-  private updateMarkerElement(key: string, marker: QMapMarker) {
-    const element = this.markerListeners.get(key)?.element;
-    if (!element) return;
-
-    for (const variant of MARKER_VARIANTS) element.classList.remove(`variant-${variant}`);
-    element.classList.add(`variant-${marker.variant || 'default'}`);
-    element.classList.toggle('is-selected', this.isMarkerSelected(marker.id));
-    element.setAttribute('part', 'marker');
-    element.setAttribute('role', 'button');
-    element.setAttribute('tabindex', '0');
-    element.setAttribute('aria-label', marker.label);
-    element.setAttribute('aria-pressed', this.isMarkerSelected(marker.id) ? 'true' : 'false');
-    element.setAttribute('data-marker-id', key);
-    element.setAttribute('title', marker.label);
-  }
-
-  private syncSelectedMarkers() {
-    for (const [key, marker] of this.markerRecords) this.updateMarkerElement(key, marker);
-  }
-
-  private isMarkerSelected(id: QMapMarkerId): boolean {
-    return this.selectedMarkerId !== undefined && getMapMarkerKey(this.selectedMarkerId) === getMapMarkerKey(id);
-  }
-
-  private selectMarker(key: string, originalEvent: MouseEvent | KeyboardEvent) {
-    const marker = this.markerRecords.get(key);
-    if (marker) this.qMarkerSelect.emit({ marker, originalEvent });
-  }
-
-  private removeMarker(key: string) {
-    const listeners = this.markerListeners.get(key);
-    if (listeners) {
-      listeners.element.removeEventListener('click', listeners.click);
-      listeners.element.removeEventListener('keydown', listeners.keydown);
-      this.markerListeners.delete(key);
-    }
-
-    const layer = this.markerLayers.get(key);
-    if (layer) {
-      layer.remove();
-      this.markerLayers.delete(key);
-    }
-  }
-
-  private observeResize() {
+  private observeResize(): void {
     if (!this.canvas || typeof ResizeObserver === 'undefined') return;
-
     this.resizeObserver?.disconnect();
     this.resizeObserver = new ResizeObserver(() => this.scheduleResize());
     this.resizeObserver.observe(this.canvas);
   }
 
-  private scheduleResize() {
+  private scheduleResize(): void {
     if (this.resizeFrame !== undefined) cancelAnimationFrame(this.resizeFrame);
     this.resizeFrame = requestAnimationFrame(() => {
       this.resizeFrame = undefined;
       this.map?.invalidateSize({ animate: false, debounceMoveend: true, pan: false });
+      this.syncBounds(false);
     });
   }
 
-  private destroyMap() {
-    this.baseLayerToken += 1;
+  private destroyMap(): void {
     this.resizeObserver?.disconnect();
     this.resizeObserver = undefined;
-
     if (this.resizeFrame !== undefined) {
       cancelAnimationFrame(this.resizeFrame);
       this.resizeFrame = undefined;
     }
 
-    for (const key of [...this.markerLayers.keys()]) this.removeMarker(key);
-    this.markerRecords.clear();
-    this.removeBaseLayer();
+    this.markerController?.destroy();
+    this.markerController = undefined;
+    this.layerController?.destroy();
+    this.layerController = undefined;
     this.map?.remove();
     this.map = undefined;
   }
 
   private renderAttribution() {
-    if (this.getProvider() !== 'tiles' && !this.isUsingTileFallback) return null;
-
+    if (this.activeProvider !== 'tiles' && this.activeProvider !== 'vector') return null;
     const attribution = this.attribution.trim();
     if (!attribution) return null;
 
     const attributionUrl = this.getAttributionUrl();
     if (!attributionUrl) return <span class="map-attribution" part="attribution">{attribution}</span>;
-
     return (
       <a class="map-attribution" part="attribution" href={attributionUrl} target="_blank" rel="noopener noreferrer">
         {attribution}
@@ -507,7 +543,6 @@ export class QMap {
   private getAttributionUrl(): string | undefined {
     const value = this.attributionUrl.trim();
     if (!value) return undefined;
-
     try {
       const url = new URL(value, this.el.ownerDocument.baseURI);
       return url.protocol === 'https:' || url.protocol === 'http:' ? value : undefined;
@@ -516,19 +551,26 @@ export class QMap {
     }
   }
 
-  // ===================== [6] RENDER (Visual Template Only) =====================
-
   render() {
-    const isEmpty = this.getProvider() === 'google'
-      ? this.googleApiKey.trim().length === 0
-      : this.tileUrl.trim().length === 0;
-
     return (
       <div class="map-surface" part="surface">
-        <div class="map-canvas" part="canvas" role="region" aria-label={this.ariaLabel} ref={this.setCanvas} />
-        {isEmpty && (
+        <div
+          class="map-canvas"
+          part="canvas"
+          role="region"
+          aria-label={this.ariaLabel}
+          aria-busy={this.providerStatus === 'initializing' ? 'true' : undefined}
+          ref={this.setCanvas}
+        />
+        <q-icon class="map-icon-registration" aria-hidden="true" />
+        {this.providerStatus === 'empty' && (
           <div class="map-empty" part="empty" role="status">
             <slot name="empty">Map provider is not configured.</slot>
+          </div>
+        )}
+        {this.providerStatus === 'error' && (
+          <div class="map-empty map-error" part="error" role="alert">
+            <slot name="error">{this.errorMessage ?? 'Map imagery is unavailable.'}</slot>
           </div>
         )}
         {this.renderAttribution()}

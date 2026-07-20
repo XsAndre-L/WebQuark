@@ -13,11 +13,15 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "bundler",
-    "baseUrl": ".",
+    "rootDir": "./src",
     "paths": {
       "@webquark/core": ["../../dist/types/index.d.ts"],
       "@webquark/core/*": ["../../dist/*"]
     }
+  },
+  "angularCompilerOptions": {
+    "compilationMode": "partial",
+    "strictTemplates": true
   },
   "include": [
     "src/**/*",

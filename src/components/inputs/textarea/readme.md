@@ -50,6 +50,16 @@ Type: `Promise<void>`
 
 
 
+### `checkValidity() => Promise<boolean>`
+
+Returns whether the control satisfies native and custom constraints.
+
+#### Returns
+
+Type: `Promise<boolean>`
+
+
+
 ### `focusElement() => Promise<void>`
 
 Moves focus to the native textarea.
@@ -57,6 +67,16 @@ Moves focus to the native textarea.
 #### Returns
 
 Type: `Promise<void>`
+
+
+
+### `reportValidity() => Promise<boolean>`
+
+Reports native or custom constraint violations and returns whether the control is valid.
+
+#### Returns
+
+Type: `Promise<boolean>`
 
 
 

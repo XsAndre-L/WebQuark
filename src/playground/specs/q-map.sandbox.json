@@ -59,10 +59,40 @@
       "default": 19,
       "desc": "Highest permitted zoom level"
     },
+    "maxBounds": {
+      "type": "textarea",
+      "default": "",
+      "desc": "JSON geographic bounds that constrain user panning"
+    },
+    "maxBoundsViscosity": {
+      "type": "number",
+      "default": 1,
+      "desc": "Boundary resistance from 0 (soft) to 1 (hard)"
+    },
     "markers": {
       "type": "textarea",
       "default": "[]",
       "desc": "JSON array of marker records; application code should prefer property assignment"
+    },
+    "clusterMarkers": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Group nearby markers into interactive clusters"
+    },
+    "clusterRadius": {
+      "type": "number",
+      "default": 48,
+      "desc": "Cluster radius in screen pixels"
+    },
+    "clusterMinPoints": {
+      "type": "number",
+      "default": 2,
+      "desc": "Minimum nearby markers required to form a cluster"
+    },
+    "clusterMaxZoom": {
+      "type": "number",
+      "default": 18,
+      "desc": "Last zoom level where clusters may remain"
     },
     "selectedMarkerId": {
       "type": "string",
@@ -79,7 +109,12 @@
     "empty": {
       "type": "html",
       "default": "<strong>Map unavailable</strong><span style=\"display:block;margin-top:4px\">Configure a tile provider to display locations.</span>",
-      "desc": "Missing-configuration content shown when the active provider lacks its URL or key"
+      "desc": "Missing-configuration content shown when the requested provider lacks its URL or key"
+    },
+    "error": {
+      "type": "html",
+      "default": "<strong>Map imagery unavailable</strong><span style=\"display:block;margin-top:4px\">Try again or choose another provider.</span>",
+      "desc": "Failure content shown when no requested or fallback provider can be activated"
     }
   },
   "variants": [
@@ -104,6 +139,8 @@
         "centerLatitude": -26.16,
         "centerLongitude": 28.05,
         "zoom": 11,
+        "maxBounds": "{ \"southLatitude\": -26.65, \"westLongitude\": 27.54, \"northLatitude\": -25.75, \"eastLongitude\": 28.55 }",
+        "maxBoundsViscosity": 1,
         "ariaLabel": "Johannesburg store locations",
         "markers": "[\n  { \"id\": \"rosebank\", \"latitude\": -26.1459, \"longitude\": 28.0416, \"label\": \"Rosebank store, active\", \"variant\": \"success\" },\n  { \"id\": \"sandton\", \"latitude\": -26.1076, \"longitude\": 28.0567, \"label\": \"Sandton store, attention required\", \"variant\": \"warning\" },\n  { \"id\": \"central\", \"latitude\": -26.2041, \"longitude\": 28.0473, \"label\": \"Johannesburg central, inactive\", \"variant\": \"muted\" }\n]"
       }
@@ -147,6 +184,13 @@
         "attributionUrl": "https://www.openstreetmap.org/copyright",
         "selectedMarkerId": "not-present",
         "markers": "[\n  { \"id\": \"visible\", \"latitude\": 0, \"longitude\": 0, \"label\": \"Visible marker\" }\n]"
+      }
+    },
+    {
+      "name": "Invalid Bounds",
+      "props": {
+        "tileUrl": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "maxBounds": "{ \"southLatitude\": 10, \"westLongitude\": 20, \"northLatitude\": 5, \"eastLongitude\": 30 }"
       }
     }
   ]
