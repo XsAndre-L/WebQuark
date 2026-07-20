@@ -26,6 +26,7 @@ const DEFAULT_COLLAPSE_LABEL = 'Toggle sidebar';
  * @slot footer - Footer content for all variants.
  * @slot collapse-icon - Optional icon shown by the built-in control while the sidepanel is expanded.
  * @slot expand-icon - Optional icon shown by the built-in control while the sidepanel is collapsed.
+ * @slot collapse-control-adornment - Optional notification badge or visible label positioned over the built-in control's top-left corner.
  * @part backdrop - Drawer backdrop click target.
  * @part drawer - Drawer dialog surface.
  * @part panel - Persistent panel surface.
@@ -33,6 +34,7 @@ const DEFAULT_COLLAPSE_LABEL = 'Toggle sidebar';
  * @part body - Body or navigation region.
  * @part footer - Footer region.
  * @part collapse-control - Built-in collapse button.
+ * @part collapse-control-adornment - Positioning wrapper for the built-in control's optional visual adornment.
  */
 @Component({
   tag: 'q-sidepanel',
@@ -326,6 +328,13 @@ export class QSidepanel {
         <slot name={iconSlotName}>
           <q-icon name={this.getCollapseIconName()} lib="lucide" size="sm" />
         </slot>
+        <span
+          class="collapse-control__adornment"
+          part="collapse-control-adornment"
+          aria-hidden="true"
+        >
+          <slot name="collapse-control-adornment" />
+        </span>
       </button>
     );
   }
