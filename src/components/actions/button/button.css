@@ -170,11 +170,11 @@
 .btn-content-wrap {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--q-btn-content-gap, 8px);
 }
 
 .size-sm .btn-content-wrap {
-  gap: 4px;
+  gap: var(--q-btn-content-gap-sm, var(--q-btn-content-gap, 4px));
 }
 
 .btn.is-icon-only .btn-label:not(.has-default-slot-icon) {

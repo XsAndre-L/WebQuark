@@ -4,6 +4,8 @@ In `nav` and `panel` variants, set `collapsible` to enable a collapsed state (`r
 
 Use `collapse-control-appearance="icon-button"` for the standard square control or `collapse-control-appearance="edge-tab"` for an attached edge handle. `collapse-control-position` accepts a CSS length or percentage and measures from the top for left/right sidepanels, or from the left for top/bottom sidepanels.
 
+Use the `collapse-control-adornment` slot for a visual notification badge or label. It straddles the control's top-left corner by default; keep `collapse-label` synchronized with meaningful adornment content for assistive technology.
+
 <!-- Auto Generated Below -->
 
 
@@ -45,26 +47,28 @@ Drawer, persistent panel, or hierarchical navigation side panel.
 
 ## Slots
 
-| Slot              | Description                                                                   |
-| ----------------- | ----------------------------------------------------------------------------- |
-|                   | Main content used by drawer and panel variants.                               |
-| `"collapse-icon"` | Optional icon shown by the built-in control while the sidepanel is expanded.  |
-| `"expand-icon"`   | Optional icon shown by the built-in control while the sidepanel is collapsed. |
-| `"footer"`        | Footer content for all variants.                                              |
-| `"header"`        | Header content for all variants.                                              |
+| Slot                           | Description                                                                                          |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------- |
+|                                | Main content used by drawer and panel variants.                                                      |
+| `"collapse-control-adornment"` | Optional notification badge or visible label positioned over the built-in control's top-left corner. |
+| `"collapse-icon"`              | Optional icon shown by the built-in control while the sidepanel is expanded.                         |
+| `"expand-icon"`                | Optional icon shown by the built-in control while the sidepanel is collapsed.                        |
+| `"footer"`                     | Footer content for all variants.                                                                     |
+| `"header"`                     | Header content for all variants.                                                                     |
 
 
 ## Shadow Parts
 
-| Part                 | Description                   |
-| -------------------- | ----------------------------- |
-| `"backdrop"`         | Drawer backdrop click target. |
-| `"body"`             | Body or navigation region.    |
-| `"collapse-control"` | Built-in collapse button.     |
-| `"drawer"`           | Drawer dialog surface.        |
-| `"footer"`           | Footer region.                |
-| `"header"`           | Header region.                |
-| `"panel"`            | Persistent panel surface.     |
+| Part                           | Description                                                               |
+| ------------------------------ | ------------------------------------------------------------------------- |
+| `"backdrop"`                   | Drawer backdrop click target.                                             |
+| `"body"`                       | Body or navigation region.                                                |
+| `"collapse-control"`           | Built-in collapse button.                                                 |
+| `"collapse-control-adornment"` | Positioning wrapper for the built-in control's optional visual adornment. |
+| `"drawer"`                     | Drawer dialog surface.                                                    |
+| `"footer"`                     | Footer region.                                                            |
+| `"header"`                     | Header region.                                                            |
+| `"panel"`                      | Persistent panel surface.                                                 |
 
 
 ## Dependencies

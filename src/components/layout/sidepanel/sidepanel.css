@@ -512,18 +512,35 @@ slot[name='footer'] {
 /* ── Collapse control button ─────────────────────────────────────────────── */
 
 .collapse-control {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: var(--q-sidepanel-collapse-control-size, 32px);
   height: var(--q-sidepanel-collapse-control-size, 32px);
   padding: 0;
+  overflow: visible;
   border: none;
   border-radius: 6px;
   background: transparent;
   color: var(--q-fg-muted, #9ca3af);
   cursor: pointer;
   transition: background 80ms ease-out, color 80ms ease-out;
+}
+
+.collapse-control__adornment {
+  position: absolute;
+  z-index: 1;
+  top: var(--q-sidepanel-collapse-control-adornment-top, 0);
+  left: var(--q-sidepanel-collapse-control-adornment-left, 0);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate(
+    var(--q-sidepanel-collapse-control-adornment-translate-x, -50%),
+    var(--q-sidepanel-collapse-control-adornment-translate-y, -50%)
+  );
+  pointer-events: none;
 }
 
 .collapse-control--edge-tab {

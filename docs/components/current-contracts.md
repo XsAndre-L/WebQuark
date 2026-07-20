@@ -93,11 +93,11 @@ For array and object inputs, assign the JavaScript property unless the contract 
 ### `q-sidepanel`
 
 - API: [generated reference](../../src/components/layout/sidepanel/readme.md)
-- Properties: `variant`, `open`, `side`, `panelSize`, `items`, `ariaLabel`, `value`, `mode`, `expanded`, `accordion`, `collapsible`, `collapsed`, `collapseControl`, `collapseMode`, `collapseLabel`.
+- Properties: `variant`, `open`, `side`, `panelSize`, `items`, `ariaLabel`, `value`, `mode`, `expanded`, `accordion`, `collapsible`, `collapsed`, `collapseControl`, `collapseControlAppearance`, `collapseControlPosition`, `collapseMode`, `collapseLabel`.
 - Events: `qClose`, `qSelect`, `qCollapsedChange`.
-- Slots: `header`, default body, `footer`.
-- Behavior: `drawer` is modal, `panel` is persistent slotted content, and `nav` renders item trees. Top-level string items normalize to matching labels and values. An item-level `alwaysExpanded` value of `true` turns a parent into a persistent, non-interactive category heading; it overrides `expanded=false` and accordion mode, is not inherited, and is ignored for leaf items. The built-in collapse control mutates `collapsed` and emits `qCollapsedChange`; direct consumer assignments do not emit it.
-- Accessibility: the drawer traps focus and restores it after closing. Use `ariaLabel` to name the navigation, panel region, or drawer dialog.
+- Slots: `header`, default body, `footer`, `collapse-icon`, `expand-icon`, `collapse-control-adornment`.
+- Behavior: `drawer` is modal, `panel` is persistent slotted content, and `nav` renders item trees. Top-level string items normalize to matching labels and values. An item-level `alwaysExpanded` value of `true` turns a parent into a persistent, non-interactive category heading; it overrides `expanded=false` and accordion mode, is not inherited, and is ignored for leaf items. The built-in collapse control mutates `collapsed` and emits `qCollapsedChange`; direct consumer assignments do not emit it. `collapse-control-adornment` provides a non-interactive visual badge or label anchored over the control's top-left corner.
+- Accessibility: the drawer traps focus and restores it after closing. Use `ariaLabel` to name the navigation, panel region, or drawer dialog. Keep `collapseLabel` synchronized with meaningful visual adornment content.
 - Known limitation: `mode` is exposed but currently does not change rendering; do not depend on distinct `flat`, `grouped`, or `tree` behavior until that contract is implemented.
 
 ### `q-toolbar`
@@ -221,7 +221,7 @@ For array and object inputs, assign the JavaScript property unless the contract 
 
 - API: [generated reference](../../src/components/media/icon/readme.md)
 - Properties: `name`, `lib`, `size`, `color`, `localPath`, `libVersion`, `fetchTimeout`, `label`.
-- Behavior: `lucide` and `font-awesome` resolve pinned CDN URLs; `local` resolves from `localPath`; custom libraries may be base URLs or `{name}` templates. SVG is fetched, sanitized, and inlined; common raster formats use `<img>`.
+- Behavior: `lucide` and `font-awesome` resolve pinned CDN URLs; `local` resolves from `localPath`; custom libraries may be base URLs or `{name}` templates. SVG is fetched, sanitized, and inlined without blocking component or parent hydration; the sized host renders first and fills when the request completes. Common raster formats use `<img>`.
 - Accessibility: icons without `label` are decorative. Supplying `label` gives the host `role="img"` and an accessible name.
 - CEF/offline: prefer `lib="local"` for offline, deterministic, or restricted webviews.
 
