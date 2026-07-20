@@ -195,6 +195,10 @@ Exposes variables specialized for fine-tuning specific complex components.
 *   `--q-panel-bg`: `var(--q-bg-surface-1)` — Main side panel canvas background.
 *   `--q-panel-border`: `var(--q-border)` — Edge separating line.
 *   `--q-panel-shadow`: `var(--q-shadow-high)` — Floating shadow depth.
+*   `--q-sidepanel-collapse-control-adornment-top`: `0` — Notification or label anchor offset from the collapse control's top edge.
+*   `--q-sidepanel-collapse-control-adornment-left`: `0` — Notification or label anchor offset from the collapse control's left edge.
+*   `--q-sidepanel-collapse-control-adornment-translate-x`: `-50%` — Horizontal translation from the adornment anchor.
+*   `--q-sidepanel-collapse-control-adornment-translate-y`: `-50%` — Vertical translation from the adornment anchor.
 
 ### I. Map (`q-map`)
 *   `--q-map-height`: `100%` — Map host height within its containing layout.

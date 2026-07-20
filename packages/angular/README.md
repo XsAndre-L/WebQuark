@@ -3,3 +3,74 @@
 Angular wrappers for the WebQuark component library.
 
 Install with `npm install @webquark/core @webquark/angular`.
+
+## Angular compatibility
+
+`@webquark/angular` supports Angular 21 and Angular 22. The published package is
+compiled with Angular 21 in partial-Ivy mode and is verified from its packed npm
+artifact in strict Angular 21 and Angular 22 consumer projects.
+
+## Standalone components
+
+The generated WebQuark proxies and form value accessors are standalone Angular
+declarations. Import only the components used by the consumer:
+
+```ts
+import { Component } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import {
+  BooleanValueAccessor,
+  QButton,
+  QInput,
+  QToggle,
+  TextValueAccessor,
+} from '@webquark/angular';
+
+@Component({
+  standalone: true,
+  imports: [
+    ReactiveFormsModule,
+    QButton,
+    QInput,
+    QToggle,
+    TextValueAccessor,
+    BooleanValueAccessor,
+  ],
+  template: `
+    <q-input label="Name" [formControl]="name" />
+    <q-toggle label="Enabled" [formControl]="enabled" />
+    <q-button type="submit">Save</q-button>
+  `,
+})
+export class ExampleComponent {
+  readonly name = new FormControl('', { nonNullable: true });
+  readonly enabled = new FormControl(false, { nonNullable: true });
+}
+```
+
+`TextValueAccessor` updates controls on `qInput`, `SelectValueAccessor` supports
+`q-dropdown`, and `BooleanValueAccessor` supports `q-toggle`.
+
+## Rich data-table cells
+
+Import the standalone cell directives:
+
+```ts
+import {
+  QDataTableCellDef,
+  QDataTableCellOutlet,
+} from '@webquark/angular/data-table-cell';
+```
+
+```html
+<q-data-table key-field="id" [columns]="columns" [items]="rows">
+  <ng-template qTableCell="teamMember" let-row let-value="value">
+    <app-team-member-cell [member]="row.member" />
+  </ng-template>
+</q-data-table>
+```
+
+The template context provides `row`, `value`, `rowIndex`, and `column`. Keep
+`key-field` stable so cell content stays with the correct row during sorting and
+refreshes. Unchanged row-and-column identities reuse the existing wrapper and
+`EmbeddedViewRef`; additions are created and removals are destroyed.

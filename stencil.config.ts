@@ -13,12 +13,14 @@ export const config: Config = {
     {
       type: 'dist',
       esmLoaderPath: 'loader',
+      empty: true,
     },
     {
       type: 'dist-custom-elements',
       dir: 'dist/components',
       customElementsExportBehavior: 'auto-define-custom-elements',
       externalRuntime: false,
+      empty: true,
     },
     {
       type: 'docs-readme',
@@ -43,16 +45,18 @@ export const config: Config = {
     reactOutputTarget({
       componentCorePackage: '@webquark/core',
       outDir: 'packages/react/src/stencil-generated/',
+      excludeComponents: ['q-data-table'],
     }),
     angularOutputTarget({
       componentCorePackage: '@webquark/core',
       directivesProxyFile: 'packages/angular/src/stencil-generated/components.ts',
       directivesArrayFile: 'packages/angular/src/stencil-generated/index.ts',
       outputType: 'standalone',
+      inlineProperties: true,
       valueAccessorConfigs: [
         {
           elementSelectors: ['q-input', 'q-textarea'],
-          event: 'qChange',
+          event: 'qInput',
           targetAttr: 'value',
           type: 'text',
         },
@@ -61,6 +65,12 @@ export const config: Config = {
           event: 'qChange',
           targetAttr: 'value',
           type: 'select',
+        },
+        {
+          elementSelectors: ['q-toggle'],
+          event: 'qChange',
+          targetAttr: 'checked',
+          type: 'boolean',
         },
       ],
     }),

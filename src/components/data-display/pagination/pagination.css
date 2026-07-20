@@ -1,0 +1,81 @@
+:host {
+  display: block;
+  min-width: 0;
+  color: var(--q-pagination-fg, var(--q-fg-muted, #9ca3af));
+  font-family: var(--q-font-family, inherit);
+  font-size: var(--q-pagination-font-size, var(--q-font-size-sm, 0.8125rem));
+  font-weight: var(--q-pagination-font-weight, 600);
+}
+
+.pagination {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--q-pagination-gap, 12px);
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+}
+
+.summary {
+  min-width: 0;
+}
+
+.controls {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: var(--q-pagination-controls-gap, 8px);
+}
+
+.page-button {
+  box-sizing: border-box;
+  min-height: var(--q-pagination-button-height, 30px);
+  padding: var(--q-pagination-button-padding, 5px 8px);
+  color: var(--q-pagination-button-fg, var(--q-fg-base, #f9fafb));
+  border: var(--q-pagination-button-border, 1px solid var(--q-border-color, #374151));
+  border-radius: var(--q-pagination-button-radius, var(--q-radius-sm, 4px));
+  background: var(--q-pagination-button-bg, transparent);
+  font: inherit;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+
+.page-button:hover:not(:disabled) {
+  color: var(--q-pagination-button-hover-fg, var(--q-color-primary, #60a5fa));
+  border-color: var(--q-pagination-button-hover-border, var(--q-color-primary, #60a5fa));
+  background: var(
+    --q-pagination-button-hover-bg,
+    color-mix(in srgb, var(--q-fg-base, #f9fafb) 8%, transparent)
+  );
+}
+
+.page-button:focus-visible {
+  outline: var(--q-focus-ring, 2px solid var(--q-color-primary, #60a5fa));
+  outline-offset: 2px;
+}
+
+.page-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.page-count {
+  min-width: var(--q-pagination-page-count-width, 48px);
+  text-align: center;
+}
+
+@media (max-width: 480px) {
+  .pagination {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .controls {
+    align-self: flex-end;
+  }
+}

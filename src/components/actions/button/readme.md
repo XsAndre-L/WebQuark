@@ -52,6 +52,7 @@ Action button that renders a native button or anchor according to `href`.
 
 | Part        | Description                                      |
 | ----------- | ------------------------------------------------ |
+| `"button"`  | Native button or anchor element.                 |
 | `"icon"`    | Leading q-icon rendered by the `icon` shorthand. |
 | `"spinner"` | Loading spinner shown while `loading` is true.   |
 

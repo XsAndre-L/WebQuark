@@ -4,6 +4,10 @@
 
 The `<q-icon>` is a versatile icon rendering utility. It supports dynamic inline SVG injection from major remote libraries (Lucide, FontAwesome), customizable CDN source URLs, local offline assets (SVG or binary formats), preset sizing aliases, and auto-fallback error handling.
 
+Icon loading is intentionally non-blocking. The host hydrates at its configured
+size immediately, then fills in fetched SVG content when it becomes available,
+so icon network I/O cannot delay the hydration of a parent component.
+
 ---
 
 ## 1. Component API (Properties & Attributes)

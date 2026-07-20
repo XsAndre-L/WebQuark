@@ -5,61 +5,94 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { QAlertAnnouncement, QAlertVariant } from "./components/data-display/alert/alert.types";
 import { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
 import { QIconColor, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
 import { QCardElevation } from "./components/layout/card/card.types";
 import { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/layout/carousel/carousel.types";
 import { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/actions/chip/chip.types";
-import { QCircularProgressSize } from "./components/indicators/circular-progress/circular-progress.types";
 import { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
 import { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
-import { DropdownOptionInput, Option, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
+import { DropdownOptionInput, Option, QDropdownPlacement, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
 import { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/layout/form/form.types";
 import { QInputSize, QInputType } from "./components/inputs/input/input.types";
 import { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
-import { QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapProvider } from "./components/data-display/map/map.types";
+import { QMapBoundsInput, QMapClusterSelectDetail, QMapErrorDetail, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapProvider, QMapStatusChangeDetail } from "./components/data-display/map/map.types";
 import { NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode } from "./components/layout/navbar/navbar.types";
 import { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
+import { QProgressSize, QProgressTone, QProgressVariant } from "./components/indicators/progress/progress.types";
 import { QQuantitySelectorVariant } from "./components/inputs/quantity-selector/quantity-selector.types";
 import { QReelLayout } from "./components/media/reel/reel.types";
 import { QScrollableEventDetail, QScrollableMode } from "./components/layout/scrollable/scrollable.types";
-import { QSidepanelCollapseControl, QSidepanelCollapsedChangeDetail, QSidepanelCollapseMode, QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItemInput } from "./components/layout/sidepanel/sidepanel.types";
+import { QSidepanelCollapseControl, QSidepanelCollapseControlAppearance, QSidepanelCollapsedChangeDetail, QSidepanelCollapseMode, QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItemInput } from "./components/layout/sidepanel/sidepanel.types";
 import { QStepDiagramLayout } from "./components/indicators/step-diagram/step-diagram.types";
 import { QStepDiagramItemLayout, QStepDiagramItemLineStyle, QStepDiagramItemStatus } from "./components/indicators/step-diagram-item/step-diagram-item.types";
 import { QSyntaxBoxLanguage, QSyntaxBoxVariant } from "./components/data-display/syntax-box/syntax-box.types";
+import { QTabsOrientation, QTabsSize, QTabsVariant, TabItemInput } from "./components/layout/tabs/tabs.types";
 import { QTextareaResizeMode } from "./components/inputs/textarea/textarea.types";
 import { QThumbnailMaximizeDetail } from "./components/media/thumbnail/thumbnail.types";
 import { QToggleSize, QToggleType } from "./components/inputs/toggle/toggle.types";
 import { QToolbarEdge } from "./components/layout/toolbar/toolbar.types";
 import { QTooltipPosition } from "./components/overlays/tooltip/tooltip.types";
+export { QAlertAnnouncement, QAlertVariant } from "./components/data-display/alert/alert.types";
 export { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
 export { QIconColor, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
 export { QCardElevation } from "./components/layout/card/card.types";
 export { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/layout/carousel/carousel.types";
 export { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/actions/chip/chip.types";
-export { QCircularProgressSize } from "./components/indicators/circular-progress/circular-progress.types";
 export { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
 export { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
-export { DropdownOptionInput, Option, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
+export { DropdownOptionInput, Option, QDropdownPlacement, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
 export { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/layout/form/form.types";
 export { QInputSize, QInputType } from "./components/inputs/input/input.types";
 export { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
-export { QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapProvider } from "./components/data-display/map/map.types";
+export { QMapBoundsInput, QMapClusterSelectDetail, QMapErrorDetail, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapProvider, QMapStatusChangeDetail } from "./components/data-display/map/map.types";
 export { NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode } from "./components/layout/navbar/navbar.types";
 export { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
+export { QProgressSize, QProgressTone, QProgressVariant } from "./components/indicators/progress/progress.types";
 export { QQuantitySelectorVariant } from "./components/inputs/quantity-selector/quantity-selector.types";
 export { QReelLayout } from "./components/media/reel/reel.types";
 export { QScrollableEventDetail, QScrollableMode } from "./components/layout/scrollable/scrollable.types";
-export { QSidepanelCollapseControl, QSidepanelCollapsedChangeDetail, QSidepanelCollapseMode, QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItemInput } from "./components/layout/sidepanel/sidepanel.types";
+export { QSidepanelCollapseControl, QSidepanelCollapseControlAppearance, QSidepanelCollapsedChangeDetail, QSidepanelCollapseMode, QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItemInput } from "./components/layout/sidepanel/sidepanel.types";
 export { QStepDiagramLayout } from "./components/indicators/step-diagram/step-diagram.types";
 export { QStepDiagramItemLayout, QStepDiagramItemLineStyle, QStepDiagramItemStatus } from "./components/indicators/step-diagram-item/step-diagram-item.types";
 export { QSyntaxBoxLanguage, QSyntaxBoxVariant } from "./components/data-display/syntax-box/syntax-box.types";
+export { QTabsOrientation, QTabsSize, QTabsVariant, TabItemInput } from "./components/layout/tabs/tabs.types";
 export { QTextareaResizeMode } from "./components/inputs/textarea/textarea.types";
 export { QThumbnailMaximizeDetail } from "./components/media/thumbnail/thumbnail.types";
 export { QToggleSize, QToggleType } from "./components/inputs/toggle/toggle.types";
 export { QToolbarEdge } from "./components/layout/toolbar/toolbar.types";
 export { QTooltipPosition } from "./components/overlays/tooltip/tooltip.types";
 export namespace Components {
+    /**
+     * Inline contextual message with opt-in announcements and controlled dismissal.
+     */
+    interface QAlert {
+        /**
+          * Live-region behavior. Announcements are off by default to avoid noisy updates.
+          * @default 'off'
+         */
+        "announcement": QAlertAnnouncement;
+        /**
+          * Accessible label for the dismiss button.
+          * @default 'Dismiss alert'
+         */
+        "dismissLabel": string;
+        /**
+          * Shows a dismiss button. Consumers remove or hide the alert after `qDismiss`.
+          * @default false
+         */
+        "dismissible": boolean;
+        /**
+          * Optional heading rendered before the message content.
+         */
+        "heading"?: string;
+        /**
+          * Visual status of the message.
+          * @default 'info'
+         */
+        "variant": QAlertVariant;
+    }
     /**
      * Action button that renders a native button or anchor according to `href`.
      */
@@ -257,35 +290,6 @@ export namespace Components {
         "variant": QChipVariant;
     }
     /**
-     * Circular progress indicator for determinate percentages or indeterminate loading states.
-     */
-    interface QCircularProgress {
-        /**
-          * Accessible name for the progressbar.
-          * @default null
-         */
-        "ariaLabel": string | null;
-        /**
-          * Shows a spinning indeterminate state instead of a fixed progress value.
-          * @default false
-         */
-        "indeterminate": boolean;
-        /**
-          * Optional visible center text. Defaults to the clamped percentage.
-         */
-        "label"?: string;
-        /**
-          * Visual size preset for the SVG, stroke width, and label text.
-          * @default 'md'
-         */
-        "size": QCircularProgressSize;
-        /**
-          * Progress percentage from 0 to 100; values outside that range are clamped.
-          * @default 0
-         */
-        "value": number;
-    }
-    /**
      * Data grid with optional toolbar, search, row activation, and multi-row selection.
      * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
      * @cssprop --q-table-group-bg - Background color for row-group divider rows.
@@ -297,6 +301,10 @@ export namespace Components {
      * @cssprop --q-table-dropdown-border - Border style forwarded to slotted q-dropdown controls.
      * @cssprop --q-table-dropdown-primary - Primary color forwarded to slotted q-dropdown controls.
      * @cssprop --q-table-dropdown-fg - Foreground color forwarded to slotted q-dropdown controls.
+     * @cssprop --q-table-sticky-column-bg - Background color for body cells in a sticky start column.
+     * @cssprop --q-table-sticky-column-hover-bg - Background color for sticky start cells in a hovered row.
+     * @cssprop --q-table-sticky-column-selected-bg - Background color for sticky start cells in a selected row.
+     * @cssprop --q-table-sticky-column-selected-hover-bg - Background color for sticky start cells in a selected, hovered row.
      */
     interface QDataTable {
         /**
@@ -481,6 +489,11 @@ export namespace Components {
          */
         "ariaLabel": string | null;
         /**
+          * Minimum distance maintained between the open menu and viewport edges.
+          * @default 8
+         */
+        "collisionPadding": number;
+        /**
           * Disables the trigger and prevents selection changes.
           * @default false
          */
@@ -519,6 +532,11 @@ export namespace Components {
          */
         "placeholder": string;
         /**
+          * Preferred menu direction. Auto uses the side with enough viewport space.
+          * @default 'auto'
+         */
+        "placement": QDropdownPlacement;
+        /**
           * Shows a search input inside the menu.
           * @default false
          */
@@ -536,6 +554,9 @@ export namespace Components {
     }
     /**
      * Form wrapper that bridges slotted WebQuark controls to a native form element.
+     * Named controls in the light DOM and assigned slots participate in validation,
+     * value collection, reset, and `FormData`. Controls hidden inside a
+     * consumer-owned nested shadow root are outside this explicit boundary.
      */
     interface QForm {
         /**
@@ -649,6 +670,10 @@ export namespace Components {
          */
         "ariaLabel": string | null;
         /**
+          * Returns whether the control satisfies native and custom constraints.
+         */
+        "checkValidity": () => Promise<boolean>;
+        /**
           * Clears the current value and focuses the native input.
          */
         "clearValue": () => Promise<void>;
@@ -695,6 +720,10 @@ export namespace Components {
           * @default ""
          */
         "placeholder": string;
+        /**
+          * Reports native or custom constraint violations and returns whether the control is valid.
+         */
+        "reportValidity": () => Promise<boolean>;
         /**
           * Marks the field as required for native forms.
           * @default false
@@ -792,79 +821,123 @@ export namespace Components {
      * @cssprop --q-map-marker-danger - Danger marker color.
      * @cssprop --q-map-marker-muted - Muted marker color.
      * @cssprop --q-map-marker-selected-color - Selected-marker ring color.
+     * @cssprop --q-map-marker-cluster-size - Cluster diameter.
+     * @cssprop --q-map-marker-ring-color - Optional solid or dashed status-ring color.
+     * @cssprop --q-map-marker-pulse-color - Optional pulse color.
+     * @cssprop --q-map-marker-content-gap - Space exposing the marker status color around image or text content.
+     * @cssprop --q-map-marker-content-bg - Background behind marker image or fallback text.
+     * @cssprop --q-map-marker-content-color - Marker fallback-text color.
      * @cssprop --q-map-attribution-bg - Attribution background.
      * @cssprop --q-map-attribution-color - Attribution foreground.
      */
     interface QMap {
         /**
-          * Accessible name for the interactive map region.
+          * Provides the accessible name announced for the interactive map region.
           * @default 'Interactive map'
          */
-        "ariaLabel": string;
+        "ariaLabel": string | null;
         /**
-          * Plain-text tile-provider attribution.
+          * Renders plain-text attribution whenever raster tiles or styled vectors are active.
           * @default ''
          */
         "attribution": string;
         /**
-          * Optional HTTP(S) destination for the attribution text.
+          * Links map attribution only when the value resolves to an HTTP(S) URL.
           * @default ''
          */
         "attributionUrl": string;
         /**
-          * Initial and controlled center latitude.
+          * Controls viewport latitude; finite values are clamped to the geographic range.
           * @default 0
          */
         "centerLatitude": number;
         /**
-          * Initial and controlled center longitude.
+          * Controls viewport longitude; finite values are clamped to the geographic range.
           * @default 0
          */
         "centerLongitude": number;
         /**
-          * Browser-restricted Google Maps JavaScript API key used by the Google provider.
+          * Groups nearby markers while preserving their stable source IDs.
+          * @default false
+         */
+        "clusterMarkers": boolean;
+        /**
+          * Sets the last zoom level where clusters may remain; defaults to one below maxZoom.
+         */
+        "clusterMaxZoom"?: number;
+        /**
+          * Sets the minimum number of nearby markers needed to form a cluster.
+          * @default 2
+         */
+        "clusterMinPoints": number;
+        /**
+          * Sets the clustering radius in screen pixels and is clamped from 1 to 200.
+          * @default 48
+         */
+        "clusterRadius": number;
+        /**
+          * Supplies the browser-restricted key used only when WebQuark must load Google Maps.
           * @default ''
          */
         "googleApiKey": string;
         /**
-          * Google base-map style used by the Google provider.
+          * Chooses the Google base-map style, normalizing unsupported values to roadmap.
           * @default 'roadmap'
          */
         "googleMapType": QMapGoogleMapType;
         /**
-          * Marker records, or a JSON string containing marker records.
+          * Reconciles marker records from an array or JSON string using type-stable IDs.
           * @default []
          */
         "markers": QMapMarkerInput;
         /**
-          * Highest permitted zoom level.
+          * Constrains panning from a bounds object or JSON string; malformed updates preserve the last valid boundary.
+         */
+        "maxBounds"?: QMapBoundsInput;
+        /**
+          * Controls drag resistance at maxBounds and is clamped from zero to one.
+          * @default 1
+         */
+        "maxBoundsViscosity": number;
+        /**
+          * Sets the highest permitted zoom and never resolves below minZoom.
           * @default 19
          */
         "maxZoom": number;
         /**
-          * Lowest permitted zoom level.
+          * Sets the lowest permitted zoom; non-finite values normalize to zero.
           * @default 0
          */
         "minZoom": number;
         /**
-          * Map imagery provider.
+          * Selects raster tiles, styled vector data, or Google imagery; non-tile failures may use tileUrl as a fallback.
           * @default 'tiles'
          */
         "provider": QMapProvider;
         /**
-          * Identifier of the marker rendered in the selected state.
+          * Controls which marker exposes its selected visual and aria-pressed state.
          */
         "selectedMarkerId"?: QMapMarkerId;
         /**
-          * URL template used by the tiles provider and as an optional Google-provider fallback.
+          * Supplies the tile URL template for the tiles provider and optional vector/Google fallback.
           * @default ''
          */
         "tileUrl": string;
         /**
-          * Initial and controlled zoom level.
+          * Supplies a MapLibre Style Specification URL for the vector provider.
+          * @default ''
+         */
+        "vectorStyleUrl": string;
+        /**
+          * Controls the viewport zoom and is clamped between the normalized zoom limits.
           * @default 2
          */
         "zoom": number;
+        /**
+          * Controls whether the built-in plus/minus zoom control is rendered.
+          * @default true
+         */
+        "zoomControls": boolean;
     }
     /**
      * Edge-aware site navigation with optional brand content, actions, and mobile menu.
@@ -940,6 +1013,47 @@ export namespace Components {
         "transparent": boolean;
     }
     /**
+     * Controlled pagination for client-side or server-side collections.
+     * Consumers own the current page and update `page` after `qPageChange`.
+     */
+    interface QPagination {
+        /**
+          * Accessible name for the pagination navigation landmark.
+          * @default 'Pagination'
+         */
+        "ariaLabel": string | null;
+        /**
+          * Disables both navigation buttons.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Noun used in the visible range summary, for example "users" or "templates".
+          * @default 'items'
+         */
+        "itemLabel": string;
+        /**
+          * One-based current page. Out-of-range values are clamped for display and emitted navigation.
+          * @default 1
+         */
+        "page": number;
+        /**
+          * Number of items per page. Non-positive or non-finite values fall back to 1.
+          * @default 10
+         */
+        "pageSize": number;
+        /**
+          * Hides the item-range summary while retaining the page controls.
+          * @default true
+         */
+        "showSummary": boolean;
+        /**
+          * Total number of items in the collection. Negative or non-finite values are treated as zero.
+          * @default 0
+         */
+        "totalItems": number;
+    }
+    /**
      * Flexible panel surface with optional header, body, and footer regions.
      */
     interface QPanel {
@@ -983,6 +1097,50 @@ export namespace Components {
           * @default 'bordered'
          */
         "variant": QPanelVariant;
+    }
+    /**
+     * Progress indicator with linear and circular presentation variants.
+     */
+    interface QProgress {
+        /**
+          * Accessible name for the progressbar.
+          * @default null
+         */
+        "ariaLabel": string | null;
+        /**
+          * Optional accessible value description, such as "2 of 6 tasks completed".
+          * @default null
+         */
+        "ariaValueText": string | null;
+        /**
+          * Shows an indeterminate animation instead of a fixed progress value.
+          * @default false
+         */
+        "indeterminate": boolean;
+        /**
+          * Optional visible circular label. Defaults to the clamped percentage.
+         */
+        "label"?: string;
+        /**
+          * Visual size preset. Numeric values set a custom pixel size or height.
+          * @default 'md'
+         */
+        "size": QProgressSize;
+        /**
+          * Semantic color applied to the progress fill.
+          * @default 'primary'
+         */
+        "tone": QProgressTone;
+        /**
+          * Progress percentage from 0 to 100; values outside that range are clamped.
+          * @default 0
+         */
+        "value": number;
+        /**
+          * Visual presentation of the progress indicator.
+          * @default 'linear'
+         */
+        "variant": QProgressVariant;
     }
     /**
      * Numeric quantity control with increment/decrement buttons and a bounded editable value.
@@ -1090,6 +1248,16 @@ export namespace Components {
          */
         "collapseControl": QSidepanelCollapseControl;
         /**
+          * Visual style of the built-in collapse control. `edge-tab` is intended for `collapse-control="edge"`; other placements retain icon-button geometry.
+          * @default 'icon-button'
+         */
+        "collapseControlAppearance": QSidepanelCollapseControlAppearance;
+        /**
+          * Start-edge position of an edge control. For left/right sidepanels this is measured from the top; for top/bottom sidepanels it is measured from the left. Accepts CSS lengths and percentages.
+          * @default ''
+         */
+        "collapseControlPosition": string;
+        /**
           * Accessible label override for the built-in collapse control (aria-label/title).
           * @default 'Toggle sidebar'
          */
@@ -1105,7 +1273,7 @@ export namespace Components {
          */
         "collapsed": boolean;
         /**
-          * Enables the collapse feature. Only takes effect when variant="nav". Reflected so host-level width CSS (e.g. the collapsed/rail width rule) can be gated on it, keeping it in sync with the inner is-collapsed/collapse-mode-* classes applied in render().
+          * Enables the collapse feature for nav and panel variants. Reflected so host-level sizing CSS stays in sync with the rendered collapsed state.
           * @default false
          */
         "collapsible": boolean;
@@ -1189,6 +1357,10 @@ export namespace Components {
      */
     interface QSyntaxBox {
         /**
+          * Returns whether editable content satisfies native constraints.
+         */
+        "checkValidity": () => Promise<boolean>;
+        /**
           * Code content to display or edit. Kept in sync with `value`; prefer `code` for domain usage.
          */
         "code"?: string;
@@ -1225,6 +1397,10 @@ export namespace Components {
          */
         "name"?: string;
         /**
+          * Reports editable constraint violations and returns whether the control is valid.
+         */
+        "reportValidity": () => Promise<boolean>;
+        /**
           * Marks the editable textarea as required for form validation.
           * @default false
          */
@@ -1244,6 +1420,46 @@ export namespace Components {
         "variant": QSyntaxBoxVariant;
     }
     /**
+     * Accessible tab selector for switching between consumer-owned tab panels.
+     */
+    interface QTabs {
+        /**
+          * Accessible name for the tab list.
+          * @default 'Sections'
+         */
+        "ariaLabel": string | null;
+        /**
+          * Tab records; strings use the same text for label and value.
+          * @default []
+         */
+        "items": TabItemInput[] | string;
+        /**
+          * Direction of the tab list and its corresponding arrow-key navigation.
+          * @default 'horizontal'
+         */
+        "orientation": QTabsOrientation;
+        /**
+          * Visual size preset.
+          * @default 'md'
+         */
+        "size": QTabsSize;
+        /**
+          * Makes enabled tabs share the available width evenly.
+          * @default false
+         */
+        "stretch": boolean;
+        /**
+          * Value of the currently selected tab. The first enabled tab is used when it does not match an item.
+          * @default ''
+         */
+        "value": string;
+        /**
+          * Visual presentation of the tabs.
+          * @default 'underline'
+         */
+        "variant": QTabsVariant;
+    }
+    /**
      * Form-associated textarea with optional auto-grow behavior and validation messaging.
      */
     interface QTextarea {
@@ -1261,6 +1477,10 @@ export namespace Components {
           * @default true
          */
         "autoGrow": boolean;
+        /**
+          * Returns whether the control satisfies native and custom constraints.
+         */
+        "checkValidity": () => Promise<boolean>;
         /**
           * Disables textarea interaction.
           * @default false
@@ -1291,6 +1511,10 @@ export namespace Components {
           * @default ""
          */
         "placeholder": string;
+        /**
+          * Reports native or custom constraint violations and returns whether the control is valid.
+         */
+        "reportValidity": () => Promise<boolean>;
         /**
           * Marks the field as required for native forms.
           * @default false
@@ -1346,6 +1570,10 @@ export namespace Components {
      */
     interface QToggle {
         /**
+          * Returns whether the toggle satisfies its required constraint.
+         */
+        "checkValidity": () => Promise<boolean>;
+        /**
           * Current checked state.
           * @default false
          */
@@ -1367,6 +1595,10 @@ export namespace Components {
           * Native form field name.
          */
         "name"?: string;
+        /**
+          * Reports a required constraint violation and returns whether the toggle is valid.
+         */
+        "reportValidity": () => Promise<boolean>;
         /**
           * Marks the toggle as required for native forms.
           * @default false
@@ -1442,6 +1674,10 @@ export namespace Components {
         "position": QTooltipPosition;
     }
 }
+export interface QAlertCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQAlertElement;
+}
 export interface QButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLQButtonElement;
@@ -1486,6 +1722,10 @@ export interface QNavbarCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLQNavbarElement;
 }
+export interface QPaginationCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQPaginationElement;
+}
 export interface QQuantitySelectorCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLQQuantitySelectorElement;
@@ -1510,6 +1750,10 @@ export interface QSyntaxBoxCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLQSyntaxBoxElement;
 }
+export interface QTabsCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQTabsElement;
+}
 export interface QTextareaCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLQTextareaElement;
@@ -1523,6 +1767,26 @@ export interface QToggleCustomEvent<T> extends CustomEvent<T> {
     target: HTMLQToggleElement;
 }
 declare global {
+    interface HTMLQAlertElementEventMap {
+        "qDismiss": void;
+    }
+    /**
+     * Inline contextual message with opt-in announcements and controlled dismissal.
+     */
+    interface HTMLQAlertElement extends Components.QAlert, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQAlertElementEventMap>(type: K, listener: (this: HTMLQAlertElement, ev: QAlertCustomEvent<HTMLQAlertElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQAlertElementEventMap>(type: K, listener: (this: HTMLQAlertElement, ev: QAlertCustomEvent<HTMLQAlertElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLQAlertElement: {
+        prototype: HTMLQAlertElement;
+        new (): HTMLQAlertElement;
+    };
     interface HTMLQButtonElementEventMap {
         "qClick": MouseEvent;
         "qFocus": FocusEvent;
@@ -1597,15 +1861,6 @@ declare global {
         prototype: HTMLQChipElement;
         new (): HTMLQChipElement;
     };
-    /**
-     * Circular progress indicator for determinate percentages or indeterminate loading states.
-     */
-    interface HTMLQCircularProgressElement extends Components.QCircularProgress, HTMLStencilElement {
-    }
-    var HTMLQCircularProgressElement: {
-        prototype: HTMLQCircularProgressElement;
-        new (): HTMLQCircularProgressElement;
-    };
     interface HTMLQDataTableElementEventMap {
         "qRowClick": QDataTableRowClickDetail;
         "qRowAction": QDataTableRowActionDetail;
@@ -1625,6 +1880,10 @@ declare global {
      * @cssprop --q-table-dropdown-border - Border style forwarded to slotted q-dropdown controls.
      * @cssprop --q-table-dropdown-primary - Primary color forwarded to slotted q-dropdown controls.
      * @cssprop --q-table-dropdown-fg - Foreground color forwarded to slotted q-dropdown controls.
+     * @cssprop --q-table-sticky-column-bg - Background color for body cells in a sticky start column.
+     * @cssprop --q-table-sticky-column-hover-bg - Background color for sticky start cells in a hovered row.
+     * @cssprop --q-table-sticky-column-selected-bg - Background color for sticky start cells in a selected row.
+     * @cssprop --q-table-sticky-column-selected-hover-bg - Background color for sticky start cells in a selected, hovered row.
      */
     interface HTMLQDataTableElement extends Components.QDataTable, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQDataTableElementEventMap>(type: K, listener: (this: HTMLQDataTableElement, ev: QDataTableCustomEvent<HTMLQDataTableElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1695,6 +1954,9 @@ declare global {
     }
     /**
      * Form wrapper that bridges slotted WebQuark controls to a native form element.
+     * Named controls in the light DOM and assigned slots participate in validation,
+     * value collection, reset, and `FormData`. Controls hidden inside a
+     * consumer-owned nested shadow root are outside this explicit boundary.
      */
     interface HTMLQFormElement extends Components.QForm, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQFormElementEventMap>(type: K, listener: (this: HTMLQFormElement, ev: QFormCustomEvent<HTMLQFormElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1768,6 +2030,9 @@ declare global {
     interface HTMLQMapElementEventMap {
         "qReady": void;
         "qMarkerSelect": QMapMarkerSelectDetail;
+        "qClusterSelect": QMapClusterSelectDetail;
+        "qStatusChange": QMapStatusChangeDetail;
+        "qError": QMapErrorDetail;
     }
     /**
      * Framework-neutral interactive map powered by Leaflet.
@@ -1783,6 +2048,12 @@ declare global {
      * @cssprop --q-map-marker-danger - Danger marker color.
      * @cssprop --q-map-marker-muted - Muted marker color.
      * @cssprop --q-map-marker-selected-color - Selected-marker ring color.
+     * @cssprop --q-map-marker-cluster-size - Cluster diameter.
+     * @cssprop --q-map-marker-ring-color - Optional solid or dashed status-ring color.
+     * @cssprop --q-map-marker-pulse-color - Optional pulse color.
+     * @cssprop --q-map-marker-content-gap - Space exposing the marker status color around image or text content.
+     * @cssprop --q-map-marker-content-bg - Background behind marker image or fallback text.
+     * @cssprop --q-map-marker-content-color - Marker fallback-text color.
      * @cssprop --q-map-attribution-bg - Attribution background.
      * @cssprop --q-map-attribution-color - Attribution foreground.
      */
@@ -1821,6 +2092,27 @@ declare global {
         prototype: HTMLQNavbarElement;
         new (): HTMLQNavbarElement;
     };
+    interface HTMLQPaginationElementEventMap {
+        "qPageChange": number;
+    }
+    /**
+     * Controlled pagination for client-side or server-side collections.
+     * Consumers own the current page and update `page` after `qPageChange`.
+     */
+    interface HTMLQPaginationElement extends Components.QPagination, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQPaginationElementEventMap>(type: K, listener: (this: HTMLQPaginationElement, ev: QPaginationCustomEvent<HTMLQPaginationElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQPaginationElementEventMap>(type: K, listener: (this: HTMLQPaginationElement, ev: QPaginationCustomEvent<HTMLQPaginationElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLQPaginationElement: {
+        prototype: HTMLQPaginationElement;
+        new (): HTMLQPaginationElement;
+    };
     /**
      * Flexible panel surface with optional header, body, and footer regions.
      */
@@ -1829,6 +2121,15 @@ declare global {
     var HTMLQPanelElement: {
         prototype: HTMLQPanelElement;
         new (): HTMLQPanelElement;
+    };
+    /**
+     * Progress indicator with linear and circular presentation variants.
+     */
+    interface HTMLQProgressElement extends Components.QProgress, HTMLStencilElement {
+    }
+    var HTMLQProgressElement: {
+        prototype: HTMLQProgressElement;
+        new (): HTMLQProgressElement;
     };
     interface HTMLQQuantitySelectorElementEventMap {
         "qChange": number;
@@ -1966,6 +2267,26 @@ declare global {
         prototype: HTMLQSyntaxBoxElement;
         new (): HTMLQSyntaxBoxElement;
     };
+    interface HTMLQTabsElementEventMap {
+        "qChange": string;
+    }
+    /**
+     * Accessible tab selector for switching between consumer-owned tab panels.
+     */
+    interface HTMLQTabsElement extends Components.QTabs, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQTabsElementEventMap>(type: K, listener: (this: HTMLQTabsElement, ev: QTabsCustomEvent<HTMLQTabsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQTabsElementEventMap>(type: K, listener: (this: HTMLQTabsElement, ev: QTabsCustomEvent<HTMLQTabsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLQTabsElement: {
+        prototype: HTMLQTabsElement;
+        new (): HTMLQTabsElement;
+    };
     interface HTMLQTextareaElementEventMap {
         "qChange": string;
         "qInput": string;
@@ -2052,11 +2373,11 @@ declare global {
         new (): HTMLQTooltipElement;
     };
     interface HTMLElementTagNameMap {
+        "q-alert": HTMLQAlertElement;
         "q-button": HTMLQButtonElement;
         "q-card": HTMLQCardElement;
         "q-carousel": HTMLQCarouselElement;
         "q-chip": HTMLQChipElement;
-        "q-circular-progress": HTMLQCircularProgressElement;
         "q-data-table": HTMLQDataTableElement;
         "q-dialog": HTMLQDialogElement;
         "q-dropdown": HTMLQDropdownElement;
@@ -2066,7 +2387,9 @@ declare global {
         "q-link": HTMLQLinkElement;
         "q-map": HTMLQMapElement;
         "q-navbar": HTMLQNavbarElement;
+        "q-pagination": HTMLQPaginationElement;
         "q-panel": HTMLQPanelElement;
+        "q-progress": HTMLQProgressElement;
         "q-quantity-selector": HTMLQQuantitySelectorElement;
         "q-reel": HTMLQReelElement;
         "q-scrollable": HTMLQScrollableElement;
@@ -2074,6 +2397,7 @@ declare global {
         "q-step-diagram": HTMLQStepDiagramElement;
         "q-step-diagram-item": HTMLQStepDiagramItemElement;
         "q-syntax-box": HTMLQSyntaxBoxElement;
+        "q-tabs": HTMLQTabsElement;
         "q-textarea": HTMLQTextareaElement;
         "q-thumbnail": HTMLQThumbnailElement;
         "q-toggle": HTMLQToggleElement;
@@ -2082,6 +2406,39 @@ declare global {
     }
 }
 declare namespace LocalJSX {
+    /**
+     * Inline contextual message with opt-in announcements and controlled dismissal.
+     */
+    interface QAlert {
+        /**
+          * Live-region behavior. Announcements are off by default to avoid noisy updates.
+          * @default 'off'
+         */
+        "announcement"?: QAlertAnnouncement;
+        /**
+          * Accessible label for the dismiss button.
+          * @default 'Dismiss alert'
+         */
+        "dismissLabel"?: string;
+        /**
+          * Shows a dismiss button. Consumers remove or hide the alert after `qDismiss`.
+          * @default false
+         */
+        "dismissible"?: boolean;
+        /**
+          * Optional heading rendered before the message content.
+         */
+        "heading"?: string;
+        /**
+          * Emitted when the dismiss button is activated. The component remains rendered.
+         */
+        "onQDismiss"?: (event: QAlertCustomEvent<void>) => void;
+        /**
+          * Visual status of the message.
+          * @default 'info'
+         */
+        "variant"?: QAlertVariant;
+    }
     /**
      * Action button that renders a native button or anchor according to `href`.
      */
@@ -2303,35 +2660,6 @@ declare namespace LocalJSX {
         "variant"?: QChipVariant;
     }
     /**
-     * Circular progress indicator for determinate percentages or indeterminate loading states.
-     */
-    interface QCircularProgress {
-        /**
-          * Accessible name for the progressbar.
-          * @default null
-         */
-        "ariaLabel"?: string | null;
-        /**
-          * Shows a spinning indeterminate state instead of a fixed progress value.
-          * @default false
-         */
-        "indeterminate"?: boolean;
-        /**
-          * Optional visible center text. Defaults to the clamped percentage.
-         */
-        "label"?: string;
-        /**
-          * Visual size preset for the SVG, stroke width, and label text.
-          * @default 'md'
-         */
-        "size"?: QCircularProgressSize;
-        /**
-          * Progress percentage from 0 to 100; values outside that range are clamped.
-          * @default 0
-         */
-        "value"?: number;
-    }
-    /**
      * Data grid with optional toolbar, search, row activation, and multi-row selection.
      * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
      * @cssprop --q-table-group-bg - Background color for row-group divider rows.
@@ -2343,6 +2671,10 @@ declare namespace LocalJSX {
      * @cssprop --q-table-dropdown-border - Border style forwarded to slotted q-dropdown controls.
      * @cssprop --q-table-dropdown-primary - Primary color forwarded to slotted q-dropdown controls.
      * @cssprop --q-table-dropdown-fg - Foreground color forwarded to slotted q-dropdown controls.
+     * @cssprop --q-table-sticky-column-bg - Background color for body cells in a sticky start column.
+     * @cssprop --q-table-sticky-column-hover-bg - Background color for sticky start cells in a hovered row.
+     * @cssprop --q-table-sticky-column-selected-bg - Background color for sticky start cells in a selected row.
+     * @cssprop --q-table-sticky-column-selected-hover-bg - Background color for sticky start cells in a selected, hovered row.
      */
     interface QDataTable {
         /**
@@ -2543,6 +2875,11 @@ declare namespace LocalJSX {
          */
         "ariaLabel"?: string | null;
         /**
+          * Minimum distance maintained between the open menu and viewport edges.
+          * @default 8
+         */
+        "collisionPadding"?: number;
+        /**
           * Disables the trigger and prevents selection changes.
           * @default false
          */
@@ -2613,6 +2950,11 @@ declare namespace LocalJSX {
          */
         "placeholder"?: string;
         /**
+          * Preferred menu direction. Auto uses the side with enough viewport space.
+          * @default 'auto'
+         */
+        "placement"?: QDropdownPlacement;
+        /**
           * Shows a search input inside the menu.
           * @default false
          */
@@ -2630,6 +2972,9 @@ declare namespace LocalJSX {
     }
     /**
      * Form wrapper that bridges slotted WebQuark controls to a native form element.
+     * Named controls in the light DOM and assigned slots participate in validation,
+     * value collection, reset, and `FormData`. Controls hidden inside a
+     * consumer-owned nested shadow root are outside this explicit boundary.
      */
     interface QForm {
         /**
@@ -2906,87 +3251,143 @@ declare namespace LocalJSX {
      * @cssprop --q-map-marker-danger - Danger marker color.
      * @cssprop --q-map-marker-muted - Muted marker color.
      * @cssprop --q-map-marker-selected-color - Selected-marker ring color.
+     * @cssprop --q-map-marker-cluster-size - Cluster diameter.
+     * @cssprop --q-map-marker-ring-color - Optional solid or dashed status-ring color.
+     * @cssprop --q-map-marker-pulse-color - Optional pulse color.
+     * @cssprop --q-map-marker-content-gap - Space exposing the marker status color around image or text content.
+     * @cssprop --q-map-marker-content-bg - Background behind marker image or fallback text.
+     * @cssprop --q-map-marker-content-color - Marker fallback-text color.
      * @cssprop --q-map-attribution-bg - Attribution background.
      * @cssprop --q-map-attribution-color - Attribution foreground.
      */
     interface QMap {
         /**
-          * Accessible name for the interactive map region.
+          * Provides the accessible name announced for the interactive map region.
           * @default 'Interactive map'
          */
-        "ariaLabel"?: string;
+        "ariaLabel"?: string | null;
         /**
-          * Plain-text tile-provider attribution.
+          * Renders plain-text attribution whenever raster tiles or styled vectors are active.
           * @default ''
          */
         "attribution"?: string;
         /**
-          * Optional HTTP(S) destination for the attribution text.
+          * Links map attribution only when the value resolves to an HTTP(S) URL.
           * @default ''
          */
         "attributionUrl"?: string;
         /**
-          * Initial and controlled center latitude.
+          * Controls viewport latitude; finite values are clamped to the geographic range.
           * @default 0
          */
         "centerLatitude"?: number;
         /**
-          * Initial and controlled center longitude.
+          * Controls viewport longitude; finite values are clamped to the geographic range.
           * @default 0
          */
         "centerLongitude"?: number;
         /**
-          * Browser-restricted Google Maps JavaScript API key used by the Google provider.
+          * Groups nearby markers while preserving their stable source IDs.
+          * @default false
+         */
+        "clusterMarkers"?: boolean;
+        /**
+          * Sets the last zoom level where clusters may remain; defaults to one below maxZoom.
+         */
+        "clusterMaxZoom"?: number;
+        /**
+          * Sets the minimum number of nearby markers needed to form a cluster.
+          * @default 2
+         */
+        "clusterMinPoints"?: number;
+        /**
+          * Sets the clustering radius in screen pixels and is clamped from 1 to 200.
+          * @default 48
+         */
+        "clusterRadius"?: number;
+        /**
+          * Supplies the browser-restricted key used only when WebQuark must load Google Maps.
           * @default ''
          */
         "googleApiKey"?: string;
         /**
-          * Google base-map style used by the Google provider.
+          * Chooses the Google base-map style, normalizing unsupported values to roadmap.
           * @default 'roadmap'
          */
         "googleMapType"?: QMapGoogleMapType;
         /**
-          * Marker records, or a JSON string containing marker records.
+          * Reconciles marker records from an array or JSON string using type-stable IDs.
           * @default []
          */
         "markers"?: QMapMarkerInput;
         /**
-          * Highest permitted zoom level.
+          * Constrains panning from a bounds object or JSON string; malformed updates preserve the last valid boundary.
+         */
+        "maxBounds"?: QMapBoundsInput;
+        /**
+          * Controls drag resistance at maxBounds and is clamped from zero to one.
+          * @default 1
+         */
+        "maxBoundsViscosity"?: number;
+        /**
+          * Sets the highest permitted zoom and never resolves below minZoom.
           * @default 19
          */
         "maxZoom"?: number;
         /**
-          * Lowest permitted zoom level.
+          * Sets the lowest permitted zoom; non-finite values normalize to zero.
           * @default 0
          */
         "minZoom"?: number;
         /**
-          * Emitted when a marker is activated with a pointer or keyboard.
+          * Reports cluster activation before the default centre-and-zoom action.
+         */
+        "onQClusterSelect"?: (event: QMapCustomEvent<QMapClusterSelectDetail>) => void;
+        /**
+          * Reports serializable configuration and initialization failures.
+         */
+        "onQError"?: (event: QMapCustomEvent<QMapErrorDetail>) => void;
+        /**
+          * Reports marker activation without mutating selectedMarkerId.
          */
         "onQMarkerSelect"?: (event: QMapCustomEvent<QMapMarkerSelectDetail>) => void;
         /**
-          * Emitted after Leaflet and the initial provider setup have completed.
+          * Fires after Leaflet setup and the initial provider attempt complete.
          */
         "onQReady"?: (event: QMapCustomEvent<void>) => void;
         /**
-          * Map imagery provider.
+          * Reports provider lifecycle transitions, including the active fallback provider.
+         */
+        "onQStatusChange"?: (event: QMapCustomEvent<QMapStatusChangeDetail>) => void;
+        /**
+          * Selects raster tiles, styled vector data, or Google imagery; non-tile failures may use tileUrl as a fallback.
           * @default 'tiles'
          */
         "provider"?: QMapProvider;
         /**
-          * Identifier of the marker rendered in the selected state.
+          * Controls which marker exposes its selected visual and aria-pressed state.
          */
         "selectedMarkerId"?: QMapMarkerId;
         /**
-          * URL template used by the tiles provider and as an optional Google-provider fallback.
+          * Supplies the tile URL template for the tiles provider and optional vector/Google fallback.
           * @default ''
          */
         "tileUrl"?: string;
         /**
-          * Initial and controlled zoom level.
+          * Supplies a MapLibre Style Specification URL for the vector provider.
+          * @default ''
+         */
+        "vectorStyleUrl"?: string;
+        /**
+          * Controls the viewport zoom and is clamped between the normalized zoom limits.
           * @default 2
          */
         "zoom"?: number;
+        /**
+          * Controls whether the built-in plus/minus zoom control is rendered.
+          * @default true
+         */
+        "zoomControls"?: boolean;
     }
     /**
      * Edge-aware site navigation with optional brand content, actions, and mobile menu.
@@ -3070,6 +3471,51 @@ declare namespace LocalJSX {
         "transparent"?: boolean;
     }
     /**
+     * Controlled pagination for client-side or server-side collections.
+     * Consumers own the current page and update `page` after `qPageChange`.
+     */
+    interface QPagination {
+        /**
+          * Accessible name for the pagination navigation landmark.
+          * @default 'Pagination'
+         */
+        "ariaLabel"?: string | null;
+        /**
+          * Disables both navigation buttons.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Noun used in the visible range summary, for example "users" or "templates".
+          * @default 'items'
+         */
+        "itemLabel"?: string;
+        /**
+          * Emitted with a requested one-based page. The component does not mutate `page`.
+         */
+        "onQPageChange"?: (event: QPaginationCustomEvent<number>) => void;
+        /**
+          * One-based current page. Out-of-range values are clamped for display and emitted navigation.
+          * @default 1
+         */
+        "page"?: number;
+        /**
+          * Number of items per page. Non-positive or non-finite values fall back to 1.
+          * @default 10
+         */
+        "pageSize"?: number;
+        /**
+          * Hides the item-range summary while retaining the page controls.
+          * @default true
+         */
+        "showSummary"?: boolean;
+        /**
+          * Total number of items in the collection. Negative or non-finite values are treated as zero.
+          * @default 0
+         */
+        "totalItems"?: number;
+    }
+    /**
      * Flexible panel surface with optional header, body, and footer regions.
      */
     interface QPanel {
@@ -3113,6 +3559,50 @@ declare namespace LocalJSX {
           * @default 'bordered'
          */
         "variant"?: QPanelVariant;
+    }
+    /**
+     * Progress indicator with linear and circular presentation variants.
+     */
+    interface QProgress {
+        /**
+          * Accessible name for the progressbar.
+          * @default null
+         */
+        "ariaLabel"?: string | null;
+        /**
+          * Optional accessible value description, such as "2 of 6 tasks completed".
+          * @default null
+         */
+        "ariaValueText"?: string | null;
+        /**
+          * Shows an indeterminate animation instead of a fixed progress value.
+          * @default false
+         */
+        "indeterminate"?: boolean;
+        /**
+          * Optional visible circular label. Defaults to the clamped percentage.
+         */
+        "label"?: string;
+        /**
+          * Visual size preset. Numeric values set a custom pixel size or height.
+          * @default 'md'
+         */
+        "size"?: QProgressSize;
+        /**
+          * Semantic color applied to the progress fill.
+          * @default 'primary'
+         */
+        "tone"?: QProgressTone;
+        /**
+          * Progress percentage from 0 to 100; values outside that range are clamped.
+          * @default 0
+         */
+        "value"?: number;
+        /**
+          * Visual presentation of the progress indicator.
+          * @default 'linear'
+         */
+        "variant"?: QProgressVariant;
     }
     /**
      * Numeric quantity control with increment/decrement buttons and a bounded editable value.
@@ -3240,6 +3730,16 @@ declare namespace LocalJSX {
          */
         "collapseControl"?: QSidepanelCollapseControl;
         /**
+          * Visual style of the built-in collapse control. `edge-tab` is intended for `collapse-control="edge"`; other placements retain icon-button geometry.
+          * @default 'icon-button'
+         */
+        "collapseControlAppearance"?: QSidepanelCollapseControlAppearance;
+        /**
+          * Start-edge position of an edge control. For left/right sidepanels this is measured from the top; for top/bottom sidepanels it is measured from the left. Accepts CSS lengths and percentages.
+          * @default ''
+         */
+        "collapseControlPosition"?: string;
+        /**
           * Accessible label override for the built-in collapse control (aria-label/title).
           * @default 'Toggle sidebar'
          */
@@ -3255,7 +3755,7 @@ declare namespace LocalJSX {
          */
         "collapsed"?: boolean;
         /**
-          * Enables the collapse feature. Only takes effect when variant="nav". Reflected so host-level width CSS (e.g. the collapsed/rail width rule) can be gated on it, keeping it in sync with the inner is-collapsed/collapse-mode-* classes applied in render().
+          * Enables the collapse feature for nav and panel variants. Reflected so host-level sizing CSS stays in sync with the rendered collapsed state.
           * @default false
          */
         "collapsible"?: boolean;
@@ -3416,6 +3916,50 @@ declare namespace LocalJSX {
           * @default 'panel'
          */
         "variant"?: QSyntaxBoxVariant;
+    }
+    /**
+     * Accessible tab selector for switching between consumer-owned tab panels.
+     */
+    interface QTabs {
+        /**
+          * Accessible name for the tab list.
+          * @default 'Sections'
+         */
+        "ariaLabel"?: string | null;
+        /**
+          * Tab records; strings use the same text for label and value.
+          * @default []
+         */
+        "items"?: TabItemInput[] | string;
+        /**
+          * Emitted with the selected tab value after pointer or keyboard activation.
+         */
+        "onQChange"?: (event: QTabsCustomEvent<string>) => void;
+        /**
+          * Direction of the tab list and its corresponding arrow-key navigation.
+          * @default 'horizontal'
+         */
+        "orientation"?: QTabsOrientation;
+        /**
+          * Visual size preset.
+          * @default 'md'
+         */
+        "size"?: QTabsSize;
+        /**
+          * Makes enabled tabs share the available width evenly.
+          * @default false
+         */
+        "stretch"?: boolean;
+        /**
+          * Value of the currently selected tab. The first enabled tab is used when it does not match an item.
+          * @default ''
+         */
+        "value"?: string;
+        /**
+          * Visual presentation of the tabs.
+          * @default 'underline'
+         */
+        "variant"?: QTabsVariant;
     }
     /**
      * Form-associated textarea with optional auto-grow behavior and validation messaging.
@@ -3652,6 +4196,13 @@ declare namespace LocalJSX {
         "position"?: QTooltipPosition;
     }
 
+    interface QAlertAttributes {
+        "variant": QAlertVariant;
+        "heading": string;
+        "announcement": QAlertAnnouncement;
+        "dismissible": boolean;
+        "dismissLabel": string;
+    }
     interface QButtonAttributes {
         "variant": QButtonVariant;
         "size": QButtonSize;
@@ -3696,13 +4247,6 @@ declare namespace LocalJSX {
         "clickable": boolean;
         "removable": boolean;
     }
-    interface QCircularProgressAttributes {
-        "value": number;
-        "label": string;
-        "ariaLabel": string | null;
-        "indeterminate": boolean;
-        "size": QCircularProgressSize;
-    }
     interface QDataTableAttributes {
         "columns": TableColumn[] | string;
         "items": DataTableItem[] | string;
@@ -3745,6 +4289,8 @@ declare namespace LocalJSX {
         "options": DropdownOptionInput[] | string;
         "disabled": boolean;
         "size": QDropdownSize;
+        "placement": QDropdownPlacement;
+        "collisionPadding": number;
         "searchable": boolean;
         "externalSearch": boolean;
         "hasMore": boolean;
@@ -3805,6 +4351,7 @@ declare namespace LocalJSX {
     interface QMapAttributes {
         "provider": QMapProvider;
         "tileUrl": string;
+        "vectorStyleUrl": string;
         "googleApiKey": string;
         "googleMapType": QMapGoogleMapType;
         "attribution": string;
@@ -3812,11 +4359,18 @@ declare namespace LocalJSX {
         "centerLatitude": number;
         "centerLongitude": number;
         "zoom": number;
+        "zoomControls": boolean;
         "minZoom": number;
         "maxZoom": number;
+        "maxBounds": QMapBoundsInput;
+        "maxBoundsViscosity": number;
         "markers": QMapMarkerInput;
+        "clusterMarkers": boolean;
+        "clusterRadius": number;
+        "clusterMinPoints": number;
+        "clusterMaxZoom": number;
         "selectedMarkerId": string;
-        "ariaLabel": string;
+        "ariaLabel": string | null;
     }
     interface QNavbarAttributes {
         "brand": string;
@@ -3834,6 +4388,15 @@ declare namespace LocalJSX {
         "transparent": boolean;
         "bordered": boolean;
     }
+    interface QPaginationAttributes {
+        "page": number;
+        "pageSize": number;
+        "totalItems": number;
+        "itemLabel": string;
+        "ariaLabel": string | null;
+        "showSummary": boolean;
+        "disabled": boolean;
+    }
     interface QPanelAttributes {
         "variant": QPanelVariant;
         "noBorders": boolean;
@@ -3843,6 +4406,16 @@ declare namespace LocalJSX {
         "stickyHeader": boolean;
         "stickyFooter": boolean;
         "ariaLabel": string | null;
+    }
+    interface QProgressAttributes {
+        "variant": QProgressVariant;
+        "value": number;
+        "label": string;
+        "ariaLabel": string | null;
+        "ariaValueText": string | null;
+        "indeterminate": boolean;
+        "size": string;
+        "tone": QProgressTone;
     }
     interface QQuantitySelectorAttributes {
         "value": number;
@@ -3876,6 +4449,8 @@ declare namespace LocalJSX {
         "collapsible": boolean;
         "collapsed": boolean;
         "collapseControl": QSidepanelCollapseControl;
+        "collapseControlAppearance": QSidepanelCollapseControlAppearance;
+        "collapseControlPosition": string;
         "collapseMode": QSidepanelCollapseMode;
         "collapseLabel": string;
     }
@@ -3900,6 +4475,15 @@ declare namespace LocalJSX {
         "editable": boolean;
         "disabled": boolean;
         "required": boolean;
+    }
+    interface QTabsAttributes {
+        "items": TabItemInput[] | string;
+        "value": string;
+        "ariaLabel": string | null;
+        "orientation": QTabsOrientation;
+        "size": QTabsSize;
+        "variant": QTabsVariant;
+        "stretch": boolean;
     }
     interface QTextareaAttributes {
         "value": string;
@@ -3947,11 +4531,11 @@ declare namespace LocalJSX {
     }
 
     interface IntrinsicElements {
+        "q-alert": Omit<QAlert, keyof QAlertAttributes> & { [K in keyof QAlert & keyof QAlertAttributes]?: QAlert[K] } & { [K in keyof QAlert & keyof QAlertAttributes as `attr:${K}`]?: QAlertAttributes[K] } & { [K in keyof QAlert & keyof QAlertAttributes as `prop:${K}`]?: QAlert[K] };
         "q-button": Omit<QButton, keyof QButtonAttributes> & { [K in keyof QButton & keyof QButtonAttributes]?: QButton[K] } & { [K in keyof QButton & keyof QButtonAttributes as `attr:${K}`]?: QButtonAttributes[K] } & { [K in keyof QButton & keyof QButtonAttributes as `prop:${K}`]?: QButton[K] };
         "q-card": Omit<QCard, keyof QCardAttributes> & { [K in keyof QCard & keyof QCardAttributes]?: QCard[K] } & { [K in keyof QCard & keyof QCardAttributes as `attr:${K}`]?: QCardAttributes[K] } & { [K in keyof QCard & keyof QCardAttributes as `prop:${K}`]?: QCard[K] };
         "q-carousel": Omit<QCarousel, keyof QCarouselAttributes> & { [K in keyof QCarousel & keyof QCarouselAttributes]?: QCarousel[K] } & { [K in keyof QCarousel & keyof QCarouselAttributes as `attr:${K}`]?: QCarouselAttributes[K] } & { [K in keyof QCarousel & keyof QCarouselAttributes as `prop:${K}`]?: QCarousel[K] };
         "q-chip": Omit<QChip, keyof QChipAttributes> & { [K in keyof QChip & keyof QChipAttributes]?: QChip[K] } & { [K in keyof QChip & keyof QChipAttributes as `attr:${K}`]?: QChipAttributes[K] } & { [K in keyof QChip & keyof QChipAttributes as `prop:${K}`]?: QChip[K] };
-        "q-circular-progress": Omit<QCircularProgress, keyof QCircularProgressAttributes> & { [K in keyof QCircularProgress & keyof QCircularProgressAttributes]?: QCircularProgress[K] } & { [K in keyof QCircularProgress & keyof QCircularProgressAttributes as `attr:${K}`]?: QCircularProgressAttributes[K] } & { [K in keyof QCircularProgress & keyof QCircularProgressAttributes as `prop:${K}`]?: QCircularProgress[K] };
         "q-data-table": Omit<QDataTable, keyof QDataTableAttributes> & { [K in keyof QDataTable & keyof QDataTableAttributes]?: QDataTable[K] } & { [K in keyof QDataTable & keyof QDataTableAttributes as `attr:${K}`]?: QDataTableAttributes[K] } & { [K in keyof QDataTable & keyof QDataTableAttributes as `prop:${K}`]?: QDataTable[K] };
         "q-dialog": Omit<QDialog, keyof QDialogAttributes> & { [K in keyof QDialog & keyof QDialogAttributes]?: QDialog[K] } & { [K in keyof QDialog & keyof QDialogAttributes as `attr:${K}`]?: QDialogAttributes[K] } & { [K in keyof QDialog & keyof QDialogAttributes as `prop:${K}`]?: QDialog[K] };
         "q-dropdown": Omit<QDropdown, keyof QDropdownAttributes> & { [K in keyof QDropdown & keyof QDropdownAttributes]?: QDropdown[K] } & { [K in keyof QDropdown & keyof QDropdownAttributes as `attr:${K}`]?: QDropdownAttributes[K] } & { [K in keyof QDropdown & keyof QDropdownAttributes as `prop:${K}`]?: QDropdown[K] };
@@ -3961,7 +4545,9 @@ declare namespace LocalJSX {
         "q-link": Omit<QLink, keyof QLinkAttributes> & { [K in keyof QLink & keyof QLinkAttributes]?: QLink[K] } & { [K in keyof QLink & keyof QLinkAttributes as `attr:${K}`]?: QLinkAttributes[K] } & { [K in keyof QLink & keyof QLinkAttributes as `prop:${K}`]?: QLink[K] };
         "q-map": Omit<QMap, keyof QMapAttributes> & { [K in keyof QMap & keyof QMapAttributes]?: QMap[K] } & { [K in keyof QMap & keyof QMapAttributes as `attr:${K}`]?: QMapAttributes[K] } & { [K in keyof QMap & keyof QMapAttributes as `prop:${K}`]?: QMap[K] };
         "q-navbar": Omit<QNavbar, keyof QNavbarAttributes> & { [K in keyof QNavbar & keyof QNavbarAttributes]?: QNavbar[K] } & { [K in keyof QNavbar & keyof QNavbarAttributes as `attr:${K}`]?: QNavbarAttributes[K] } & { [K in keyof QNavbar & keyof QNavbarAttributes as `prop:${K}`]?: QNavbar[K] };
+        "q-pagination": Omit<QPagination, keyof QPaginationAttributes> & { [K in keyof QPagination & keyof QPaginationAttributes]?: QPagination[K] } & { [K in keyof QPagination & keyof QPaginationAttributes as `attr:${K}`]?: QPaginationAttributes[K] } & { [K in keyof QPagination & keyof QPaginationAttributes as `prop:${K}`]?: QPagination[K] };
         "q-panel": Omit<QPanel, keyof QPanelAttributes> & { [K in keyof QPanel & keyof QPanelAttributes]?: QPanel[K] } & { [K in keyof QPanel & keyof QPanelAttributes as `attr:${K}`]?: QPanelAttributes[K] } & { [K in keyof QPanel & keyof QPanelAttributes as `prop:${K}`]?: QPanel[K] };
+        "q-progress": Omit<QProgress, keyof QProgressAttributes> & { [K in keyof QProgress & keyof QProgressAttributes]?: QProgress[K] } & { [K in keyof QProgress & keyof QProgressAttributes as `attr:${K}`]?: QProgressAttributes[K] } & { [K in keyof QProgress & keyof QProgressAttributes as `prop:${K}`]?: QProgress[K] };
         "q-quantity-selector": Omit<QQuantitySelector, keyof QQuantitySelectorAttributes> & { [K in keyof QQuantitySelector & keyof QQuantitySelectorAttributes]?: QQuantitySelector[K] } & { [K in keyof QQuantitySelector & keyof QQuantitySelectorAttributes as `attr:${K}`]?: QQuantitySelectorAttributes[K] } & { [K in keyof QQuantitySelector & keyof QQuantitySelectorAttributes as `prop:${K}`]?: QQuantitySelector[K] };
         "q-reel": Omit<QReel, keyof QReelAttributes> & { [K in keyof QReel & keyof QReelAttributes]?: QReel[K] } & { [K in keyof QReel & keyof QReelAttributes as `attr:${K}`]?: QReelAttributes[K] } & { [K in keyof QReel & keyof QReelAttributes as `prop:${K}`]?: QReel[K] };
         "q-scrollable": Omit<QScrollable, keyof QScrollableAttributes> & { [K in keyof QScrollable & keyof QScrollableAttributes]?: QScrollable[K] } & { [K in keyof QScrollable & keyof QScrollableAttributes as `attr:${K}`]?: QScrollableAttributes[K] } & { [K in keyof QScrollable & keyof QScrollableAttributes as `prop:${K}`]?: QScrollable[K] };
@@ -3969,6 +4555,7 @@ declare namespace LocalJSX {
         "q-step-diagram": Omit<QStepDiagram, keyof QStepDiagramAttributes> & { [K in keyof QStepDiagram & keyof QStepDiagramAttributes]?: QStepDiagram[K] } & { [K in keyof QStepDiagram & keyof QStepDiagramAttributes as `attr:${K}`]?: QStepDiagramAttributes[K] } & { [K in keyof QStepDiagram & keyof QStepDiagramAttributes as `prop:${K}`]?: QStepDiagram[K] };
         "q-step-diagram-item": Omit<QStepDiagramItem, keyof QStepDiagramItemAttributes> & { [K in keyof QStepDiagramItem & keyof QStepDiagramItemAttributes]?: QStepDiagramItem[K] } & { [K in keyof QStepDiagramItem & keyof QStepDiagramItemAttributes as `attr:${K}`]?: QStepDiagramItemAttributes[K] } & { [K in keyof QStepDiagramItem & keyof QStepDiagramItemAttributes as `prop:${K}`]?: QStepDiagramItem[K] };
         "q-syntax-box": Omit<QSyntaxBox, keyof QSyntaxBoxAttributes> & { [K in keyof QSyntaxBox & keyof QSyntaxBoxAttributes]?: QSyntaxBox[K] } & { [K in keyof QSyntaxBox & keyof QSyntaxBoxAttributes as `attr:${K}`]?: QSyntaxBoxAttributes[K] } & { [K in keyof QSyntaxBox & keyof QSyntaxBoxAttributes as `prop:${K}`]?: QSyntaxBox[K] };
+        "q-tabs": Omit<QTabs, keyof QTabsAttributes> & { [K in keyof QTabs & keyof QTabsAttributes]?: QTabs[K] } & { [K in keyof QTabs & keyof QTabsAttributes as `attr:${K}`]?: QTabsAttributes[K] } & { [K in keyof QTabs & keyof QTabsAttributes as `prop:${K}`]?: QTabs[K] };
         "q-textarea": Omit<QTextarea, keyof QTextareaAttributes> & { [K in keyof QTextarea & keyof QTextareaAttributes]?: QTextarea[K] } & { [K in keyof QTextarea & keyof QTextareaAttributes as `attr:${K}`]?: QTextareaAttributes[K] } & { [K in keyof QTextarea & keyof QTextareaAttributes as `prop:${K}`]?: QTextarea[K] };
         "q-thumbnail": Omit<QThumbnail, keyof QThumbnailAttributes> & { [K in keyof QThumbnail & keyof QThumbnailAttributes]?: QThumbnail[K] } & { [K in keyof QThumbnail & keyof QThumbnailAttributes as `attr:${K}`]?: QThumbnailAttributes[K] } & { [K in keyof QThumbnail & keyof QThumbnailAttributes as `prop:${K}`]?: QThumbnail[K] };
         "q-toggle": Omit<QToggle, keyof QToggleAttributes> & { [K in keyof QToggle & keyof QToggleAttributes]?: QToggle[K] } & { [K in keyof QToggle & keyof QToggleAttributes as `attr:${K}`]?: QToggleAttributes[K] } & { [K in keyof QToggle & keyof QToggleAttributes as `prop:${K}`]?: QToggle[K] };
@@ -3980,6 +4567,10 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            /**
+             * Inline contextual message with opt-in announcements and controlled dismissal.
+             */
+            "q-alert": LocalJSX.IntrinsicElements["q-alert"] & JSXBase.HTMLAttributes<HTMLQAlertElement>;
             /**
              * Action button that renders a native button or anchor according to `href`.
              */
@@ -3997,10 +4588,6 @@ declare module "@stencil/core" {
              */
             "q-chip": LocalJSX.IntrinsicElements["q-chip"] & JSXBase.HTMLAttributes<HTMLQChipElement>;
             /**
-             * Circular progress indicator for determinate percentages or indeterminate loading states.
-             */
-            "q-circular-progress": LocalJSX.IntrinsicElements["q-circular-progress"] & JSXBase.HTMLAttributes<HTMLQCircularProgressElement>;
-            /**
              * Data grid with optional toolbar, search, row activation, and multi-row selection.
              * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
              * @cssprop --q-table-group-bg - Background color for row-group divider rows.
@@ -4012,6 +4599,10 @@ declare module "@stencil/core" {
              * @cssprop --q-table-dropdown-border - Border style forwarded to slotted q-dropdown controls.
              * @cssprop --q-table-dropdown-primary - Primary color forwarded to slotted q-dropdown controls.
              * @cssprop --q-table-dropdown-fg - Foreground color forwarded to slotted q-dropdown controls.
+             * @cssprop --q-table-sticky-column-bg - Background color for body cells in a sticky start column.
+             * @cssprop --q-table-sticky-column-hover-bg - Background color for sticky start cells in a hovered row.
+             * @cssprop --q-table-sticky-column-selected-bg - Background color for sticky start cells in a selected row.
+             * @cssprop --q-table-sticky-column-selected-hover-bg - Background color for sticky start cells in a selected, hovered row.
              */
             "q-data-table": LocalJSX.IntrinsicElements["q-data-table"] & JSXBase.HTMLAttributes<HTMLQDataTableElement>;
             /**
@@ -4025,6 +4616,9 @@ declare module "@stencil/core" {
             "q-dropdown": LocalJSX.IntrinsicElements["q-dropdown"] & JSXBase.HTMLAttributes<HTMLQDropdownElement>;
             /**
              * Form wrapper that bridges slotted WebQuark controls to a native form element.
+             * Named controls in the light DOM and assigned slots participate in validation,
+             * value collection, reset, and `FormData`. Controls hidden inside a
+             * consumer-owned nested shadow root are outside this explicit boundary.
              */
             "q-form": LocalJSX.IntrinsicElements["q-form"] & JSXBase.HTMLAttributes<HTMLQFormElement>;
             /**
@@ -4053,6 +4647,12 @@ declare module "@stencil/core" {
              * @cssprop --q-map-marker-danger - Danger marker color.
              * @cssprop --q-map-marker-muted - Muted marker color.
              * @cssprop --q-map-marker-selected-color - Selected-marker ring color.
+             * @cssprop --q-map-marker-cluster-size - Cluster diameter.
+             * @cssprop --q-map-marker-ring-color - Optional solid or dashed status-ring color.
+             * @cssprop --q-map-marker-pulse-color - Optional pulse color.
+             * @cssprop --q-map-marker-content-gap - Space exposing the marker status color around image or text content.
+             * @cssprop --q-map-marker-content-bg - Background behind marker image or fallback text.
+             * @cssprop --q-map-marker-content-color - Marker fallback-text color.
              * @cssprop --q-map-attribution-bg - Attribution background.
              * @cssprop --q-map-attribution-color - Attribution foreground.
              */
@@ -4062,9 +4662,18 @@ declare module "@stencil/core" {
              */
             "q-navbar": LocalJSX.IntrinsicElements["q-navbar"] & JSXBase.HTMLAttributes<HTMLQNavbarElement>;
             /**
+             * Controlled pagination for client-side or server-side collections.
+             * Consumers own the current page and update `page` after `qPageChange`.
+             */
+            "q-pagination": LocalJSX.IntrinsicElements["q-pagination"] & JSXBase.HTMLAttributes<HTMLQPaginationElement>;
+            /**
              * Flexible panel surface with optional header, body, and footer regions.
              */
             "q-panel": LocalJSX.IntrinsicElements["q-panel"] & JSXBase.HTMLAttributes<HTMLQPanelElement>;
+            /**
+             * Progress indicator with linear and circular presentation variants.
+             */
+            "q-progress": LocalJSX.IntrinsicElements["q-progress"] & JSXBase.HTMLAttributes<HTMLQProgressElement>;
             /**
              * Numeric quantity control with increment/decrement buttons and a bounded editable value.
              */
@@ -4093,6 +4702,10 @@ declare module "@stencil/core" {
              * Displays and optionally edits syntax-highlighted code, with form association in editable mode.
              */
             "q-syntax-box": LocalJSX.IntrinsicElements["q-syntax-box"] & JSXBase.HTMLAttributes<HTMLQSyntaxBoxElement>;
+            /**
+             * Accessible tab selector for switching between consumer-owned tab panels.
+             */
+            "q-tabs": LocalJSX.IntrinsicElements["q-tabs"] & JSXBase.HTMLAttributes<HTMLQTabsElement>;
             /**
              * Form-associated textarea with optional auto-grow behavior and validation messaging.
              */

@@ -1,8 +1,11 @@
 import { Component, Prop, State, Event, EventEmitter, Element, AttachInternals, Watch, Listen, h } from '@stencil/core';
-import { safeFocus } from '../../../utils/dom';
-import type { DropdownOptionInput, Option, QDropdownSize } from './dropdown.types';
+import { identifyItems } from '../../../utils/collection-identity';
+import type { DropdownOptionInput, Option, QDropdownPlacement, QDropdownSize } from './dropdown.types';
 import { computeDropdownDynamicWidth } from './internals/width';
 import { getDropdownOptions, getFilteredOptions, getOptionLabel, getSelectedOption, getVisibleOptions } from './internals/options';
+import { computeDropdownPosition } from './internals/position';
+
+const MENU_OFFSET = 4;
 
 /**
  * Form-associated dropdown/select control with optional search, incremental option rendering,
@@ -45,6 +48,12 @@ export class QDropdown {
 
   /** Visual size preset. */
   @Prop({ reflect: true }) size: QDropdownSize = 'md';
+
+  /** Preferred menu direction. Auto uses the side with enough viewport space. */
+  @Prop() placement: QDropdownPlacement = 'auto';
+
+  /** Minimum distance maintained between the open menu and viewport edges. */
+  @Prop() collisionPadding: number = 8;
 
   /** Shows a search input inside the menu. */
   @Prop() searchable: boolean = false;
@@ -93,13 +102,28 @@ export class QDropdown {
 
   private triggerEl?: HTMLButtonElement;
   private searchInputEl?: HTMLInputElement;
+  private menuEl?: HTMLDivElement;
+  private itemsListEl?: HTMLUListElement;
   private initialValue: string = '';
   private scrollTimeout: ReturnType<typeof setTimeout> | null = null;
+  private positionFrame: number | null = null;
+  private floatingCleanup?: () => void;
+  private floatingResizeObserver?: ResizeObserver;
 
   // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
   disconnectedCallback() {
     this.clearScrollLoading();
+    this.stopFloatingUpdates();
+  }
+
+  componentDidRender() {
+    if (this.isOpen) {
+      this.openFloatingMenu();
+      return;
+    }
+
+    this.stopFloatingUpdates();
   }
 
   @Watch('value')
@@ -187,7 +211,7 @@ export class QDropdown {
       this.visibleCount = 20;
       if (this.searchable) {
         this.focusedIndex = -1;
-        requestAnimationFrame(() => safeFocus(this.searchInputEl));
+        requestAnimationFrame(() => focusWithoutScroll(this.searchInputEl));
       } else {
         const activeIdx = this.parsedOptions.findIndex(opt => opt.value === this.value);
         const nextIdx = activeIdx >= 0 ? activeIdx : 0;
@@ -197,7 +221,7 @@ export class QDropdown {
       this.focusedIndex = -1;
       this.searchTerm = '';
       this.visibleCount = 20;
-      requestAnimationFrame(() => safeFocus(this.triggerEl));
+      requestAnimationFrame(() => focusWithoutScroll(this.triggerEl));
     }
   };
 
@@ -209,7 +233,7 @@ export class QDropdown {
     this.clearScrollLoading();
     this.qChange.emit(option.value);
     this.qSelect.emit(option);
-    requestAnimationFrame(() => this.triggerEl?.focus());
+    requestAnimationFrame(() => focusWithoutScroll(this.triggerEl));
   };
 
   private handleFocus = (ev: FocusEvent) => {
@@ -272,13 +296,31 @@ export class QDropdown {
 
   private updateFocusedIndex(index: number) {
     this.focusedIndex = index;
-    requestAnimationFrame(() => this.focusCurrentOption());
+    requestAnimationFrame(() => this.scrollFocusedOptionInsideList());
   }
 
-  private focusCurrentOption() {
-    if (this.focusedIndex >= 0 && this.isOpen) {
-      const listElement = this.el.shadowRoot?.querySelector(`#q-field-item-${this.focusedIndex}`) as HTMLElement;
-      listElement?.focus();
+  private scrollFocusedOptionInsideList() {
+    const list = this.itemsListEl;
+    if (!list || this.focusedIndex < 0 || !this.isOpen) {
+      return;
+    }
+
+    const option = this.el.shadowRoot?.querySelector<HTMLElement>(
+      `#q-field-item-${this.focusedIndex}`,
+    );
+    if (!option) {
+      return;
+    }
+
+    const optionTop = option.offsetTop;
+    const optionBottom = optionTop + option.offsetHeight;
+    const visibleTop = list.scrollTop;
+    const visibleBottom = visibleTop + list.clientHeight;
+
+    if (optionTop < visibleTop) {
+      list.scrollTop = optionTop;
+    } else if (optionBottom > visibleBottom) {
+      list.scrollTop = optionBottom - list.clientHeight;
     }
   }
 
@@ -290,6 +332,100 @@ export class QDropdown {
       selectedOption,
       placeholder: this.placeholder,
     });
+  }
+
+  private openFloatingMenu() {
+    if (!this.menuEl || !this.triggerEl) {
+      return;
+    }
+
+    showPopoverIfSupported(this.menuEl);
+    this.startFloatingUpdates();
+    this.scheduleMenuPosition();
+  }
+
+  private startFloatingUpdates() {
+    if (this.floatingCleanup || !this.menuEl || !this.triggerEl) {
+      return;
+    }
+
+    const update = () => this.scheduleMenuPosition();
+    window.addEventListener('resize', update);
+    window.addEventListener('scroll', update, true);
+
+    if (typeof ResizeObserver !== 'undefined') {
+      this.floatingResizeObserver = new ResizeObserver(update);
+      this.floatingResizeObserver.observe(this.triggerEl);
+      this.floatingResizeObserver.observe(this.menuEl);
+    }
+
+    this.floatingCleanup = () => {
+      window.removeEventListener('resize', update);
+      window.removeEventListener('scroll', update, true);
+      this.floatingResizeObserver?.disconnect();
+      this.floatingResizeObserver = undefined;
+    };
+  }
+
+  private stopFloatingUpdates() {
+    if (this.positionFrame !== null) {
+      cancelAnimationFrame(this.positionFrame);
+      this.positionFrame = null;
+    }
+
+    this.floatingCleanup?.();
+    this.floatingCleanup = undefined;
+
+    if (this.menuEl) {
+      hidePopoverIfOpen(this.menuEl);
+      this.menuEl = undefined;
+    }
+    this.itemsListEl = undefined;
+  }
+
+  private scheduleMenuPosition() {
+    if (this.positionFrame !== null) {
+      return;
+    }
+
+    this.positionFrame = requestAnimationFrame(() => {
+      this.positionFrame = null;
+      this.positionFloatingMenu();
+    });
+  }
+
+  private positionFloatingMenu() {
+    const trigger = this.triggerEl;
+    const menu = this.menuEl;
+    if (!this.isOpen || !trigger || !menu) {
+      return;
+    }
+
+    showPopoverIfSupported(menu);
+    const triggerRect = trigger.getBoundingClientRect();
+    menu.style.visibility = 'hidden';
+    menu.style.left = '0px';
+    menu.style.top = '0px';
+    menu.style.width = `${triggerRect.width}px`;
+    menu.style.maxHeight = 'none';
+
+    const menuHeight = menu.getBoundingClientRect().height;
+    const position = computeDropdownPosition({
+      trigger: triggerRect,
+      menuHeight,
+      viewportWidth: window.innerWidth,
+      viewportHeight: window.innerHeight,
+      placement: this.placement,
+      collisionPadding: this.collisionPadding,
+      offset: MENU_OFFSET,
+    });
+
+    menu.dataset['placement'] = position.placement;
+    menu.style.left = `${position.left}px`;
+    menu.style.top = `${position.top}px`;
+    menu.style.width = `${position.width}px`;
+    menu.style.maxHeight = `${position.maxHeight}px`;
+    menu.style.visibility = 'visible';
   }
 
   private handleKeyDown = (ev: KeyboardEvent) => {
@@ -306,7 +442,7 @@ export class QDropdown {
           this.isOpen = true;
           if (this.searchable) {
             this.focusedIndex = -1;
-            requestAnimationFrame(() => this.searchInputEl?.focus());
+            requestAnimationFrame(() => focusWithoutScroll(this.searchInputEl));
           } else {
             const activeIdx = this.parsedOptions.findIndex(opt => opt.value === this.value);
             const nextIdx = activeIdx >= 0 ? activeIdx : 0;
@@ -333,7 +469,7 @@ export class QDropdown {
         } else {
           if (this.focusedIndex === 0 && this.searchable) {
             this.focusedIndex = -1;
-            requestAnimationFrame(() => safeFocus(this.searchInputEl));
+            requestAnimationFrame(() => focusWithoutScroll(this.searchInputEl));
           } else if (this.focusedIndex > 0) {
             const nextIdx = this.focusedIndex - 1;
             this.updateFocusedIndex(nextIdx);
@@ -384,7 +520,7 @@ export class QDropdown {
           this.focusedIndex = -1;
           this.searchTerm = '';
           this.clearScrollLoading();
-          requestAnimationFrame(() => safeFocus(this.triggerEl));
+          requestAnimationFrame(() => focusWithoutScroll(this.triggerEl));
         }
         break;
       case 'Tab':
@@ -416,6 +552,9 @@ export class QDropdown {
   render() {
     const allOptions = this.getAllOptions();
     const opts = this.parsedOptions;
+    const identifiedOptions = identifyItems(opts, option => option.value, {
+      warningContext: 'q-dropdown options',
+    });
     const selectedOption = this.getSelectedOption(allOptions);
     const selectedLabel = this.getOptionLabel(selectedOption);
     const displayLabel = selectedOption && selectedLabel ? selectedLabel : this.placeholder;
@@ -469,13 +608,15 @@ export class QDropdown {
           </svg>
         </button>
 
-        {/* Options List Menu (Absolute Overlay inside Webview Canvas) */}
+        {/* Viewport-positioned menu promoted to the browser top layer when supported. */}
         {this.isOpen && (
           <div 
+            ref={(el) => (this.menuEl = el)}
             id="q-field-menu"
             class="dropdown-menu" 
             part="menu" 
             role="listbox"
+            popover="manual"
             aria-label={ariaLabel || this.label || 'Options'}
           >
             {this.searchable && (
@@ -495,19 +636,24 @@ export class QDropdown {
                 />
               </div>
             )}
-            <ul class="dropdown-items-list" onScroll={this.handleScroll}>
+            <ul
+              ref={(el) => (this.itemsListEl = el)}
+              class="dropdown-items-list"
+              onScroll={this.handleScroll}
+            >
               {opts.length === 0 && !this.loading ? (
                 <li class="menu-item is-empty">No matches found</li>
               ) : (
-                opts.map((option, index) => (
+                identifiedOptions.map(({ item: option, index, key }) => (
                   <li
+                    key={key}
                     id={`q-field-item-${index}`}
                     class={{
                       'menu-item': true,
                       'is-selected': option.value === this.value,
                       'is-focused': index === this.focusedIndex
                     }}
-                    tabindex={index === this.focusedIndex ? 0 : -1}
+                    tabindex={-1}
                     part={`item ${option.value === this.value ? 'selected-item' : ''} ${index === this.focusedIndex ? 'focused-item' : ''}`}
                     role="option"
                     aria-selected={option.value === this.value ? 'true' : 'false'}
@@ -528,5 +674,50 @@ export class QDropdown {
         )}
       </div>
     );
+  }
+}
+
+type PopoverElement = HTMLElement & {
+  hidePopover?: () => void;
+  showPopover?: () => void;
+};
+
+function focusWithoutScroll(element: HTMLElement | null | undefined): void {
+  if (!element || typeof element.focus !== 'function') {
+    return;
+  }
+
+  try {
+    element.focus({ preventScroll: true });
+  } catch {
+    element.focus();
+  }
+}
+
+function showPopoverIfSupported(element: PopoverElement): void {
+  if (typeof element.showPopover !== 'function') {
+    return;
+  }
+
+  try {
+    if (!element.matches(':popover-open')) {
+      element.showPopover();
+    }
+  } catch {
+    // Fixed positioning remains the fallback when the top-layer API is unavailable.
+  }
+}
+
+function hidePopoverIfOpen(element: PopoverElement): void {
+  if (typeof element.hidePopover !== 'function') {
+    return;
+  }
+
+  try {
+    if (element.matches(':popover-open')) {
+      element.hidePopover();
+    }
+  } catch {
+    // Removing the rendered menu also removes it from the top layer.
   }
 }

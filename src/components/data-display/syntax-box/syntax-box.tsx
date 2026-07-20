@@ -1,5 +1,6 @@
 import { AttachInternals, Component, Element, Event, EventEmitter, Host, Method, Prop, State, Watch, h } from '@stencil/core';
 import { formatCode } from '../../../utils/formatter';
+import { syncNativeControlValidity } from '../../../utils/form-control-validity';
 import { highlight as highlightSyntax } from '../../../utils/syntax';
 
 import type { QSyntaxBoxLanguage, QSyntaxBoxVariant } from './syntax-box.types';
@@ -136,6 +137,10 @@ export class QSyntaxBox {
     this.syncFormValue(this.code);
   }
 
+  componentDidRender() {
+    this.syncValidity();
+  }
+
   disconnectedCallback() {
     this.clearCopiedTimeout();
   }
@@ -153,10 +158,46 @@ export class QSyntaxBox {
     await this.scrollableEl?.scrollToBottom();
   }
 
+  /** Returns whether editable content satisfies native constraints. */
+  @Method()
+  async checkValidity(): Promise<boolean> {
+    this.syncValidity();
+    if (typeof this.internals.checkValidity === 'function') {
+      return this.internals.checkValidity();
+    }
+    return this.el.shadowRoot?.querySelector('textarea')?.checkValidity?.() ?? true;
+  }
+
+  /** Reports editable constraint violations and returns whether the control is valid. */
+  @Method()
+  async reportValidity(): Promise<boolean> {
+    this.syncValidity();
+    if (typeof this.internals.reportValidity === 'function') {
+      return this.internals.reportValidity();
+    }
+    return this.el.shadowRoot?.querySelector('textarea')?.reportValidity?.() ?? true;
+  }
+
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
   private syncFormValue(value: string | undefined) {
     if (!this.internals || typeof this.internals.setFormValue !== 'function') return;
     this.internals.setFormValue(this.editable ? value || '' : null);
+  }
+
+  private syncValidity(): void {
+    const textarea = this.el.shadowRoot?.querySelector('textarea');
+    if (!this.internals || !textarea || !this.editable) {
+      if (typeof this.internals?.setValidity === 'function') {
+        this.internals.setValidity({});
+      }
+      return;
+    }
+
+    syncNativeControlValidity({
+      internals: this.internals,
+      control: textarea,
+      disabled: this.disabled,
+    });
   }
 
   private clearCopiedTimeout() {

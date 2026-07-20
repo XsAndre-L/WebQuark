@@ -7,3 +7,5 @@ export interface Option {
 export type DropdownOptionInput = Option | string;
 
 export type QDropdownSize = 'sm' | 'md' | 'lg';
+
+export type QDropdownPlacement = 'auto' | 'top' | 'bottom';

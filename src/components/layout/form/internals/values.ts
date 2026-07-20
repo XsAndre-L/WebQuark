@@ -4,13 +4,23 @@ import { getNamedControls, shouldSkipControl } from './controls';
 export function createFormData(formEl: HTMLFormElement | undefined, hostEl: HTMLElement): FormData {
   if (!formEl) return new FormData();
 
+  let formData: FormData;
   try {
-    return new FormData(formEl);
+    formData = new FormData(formEl);
   } catch {
-    const formData = new FormData();
-    getNamedControls(formEl, hostEl).forEach((control) => appendControlToFormData(formData, control));
-    return formData;
+    formData = new FormData();
   }
+
+  const nativelyAssociatedControls = new Set(
+    formEl.elements ? Array.from(formEl.elements) : [],
+  );
+  getNamedControls(formEl, hostEl).forEach((control) => {
+    if (!nativelyAssociatedControls.has(control)) {
+      appendControlToFormData(formData, control);
+    }
+  });
+
+  return formData;
 }
 
 export function collectValues(
@@ -111,6 +121,28 @@ function appendControlToFormData(formData: FormData, control: NamedFormControl) 
 
   if (tagName === 'q-toggle') {
     if (control.checked) formData.append(name, 'true');
+    return;
+  }
+
+  if (tagName === 'input') {
+    const input = control as HTMLInputElement;
+    if (['button', 'image', 'reset', 'submit'].includes(input.type)) return;
+
+    if (input.type === 'checkbox' || input.type === 'radio') {
+      if (input.checked) formData.append(name, input.value || 'on');
+      return;
+    }
+
+    if (input.type === 'file') {
+      Array.from(input.files ?? []).forEach(file => formData.append(name, file));
+      return;
+    }
+  }
+
+  if (tagName === 'select' && (control as HTMLSelectElement).multiple) {
+    Array.from((control as HTMLSelectElement).selectedOptions).forEach(option => {
+      if (!option.disabled) formData.append(name, option.value);
+    });
     return;
   }
 

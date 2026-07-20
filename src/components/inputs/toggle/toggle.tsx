@@ -1,5 +1,6 @@
 import { Component, Prop, State, Event, EventEmitter, Element, Method, AttachInternals, Watch, h } from '@stencil/core';
 
+import { syncRequiredBooleanValidity } from '../../../utils/form-control-validity';
 import type { QToggleSize, QToggleType } from './toggle.types';
 import { isToggleActivationKey } from './toggle.utils';
 
@@ -70,6 +71,7 @@ export class QToggle {
   @State() hasDefaultSlot: boolean = false;
 
   private initialValue: boolean = false;
+  private controlEl?: HTMLElement;
 
   // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
@@ -78,6 +80,7 @@ export class QToggle {
     if (this.internals && typeof this.internals.setFormValue === 'function') {
       this.internals.setFormValue(newValue ? 'true' : null);
     }
+    this.syncValidity();
   }
 
   componentWillLoad() {
@@ -85,7 +88,12 @@ export class QToggle {
     if (this.internals && typeof this.internals.setFormValue === 'function') {
       this.internals.setFormValue(this.checked ? 'true' : null);
     }
+    this.syncValidity();
     this.checkSlots();
+  }
+
+  componentDidRender() {
+    this.syncValidity();
   }
 
   formResetCallback() {
@@ -93,6 +101,7 @@ export class QToggle {
     if (this.internals && typeof this.internals.setFormValue === 'function') {
       this.internals.setFormValue(this.checked ? 'true' : null);
     }
+    this.syncValidity();
   }
 
   // ============================ [4] EXPOSED METHODS ============================
@@ -104,6 +113,26 @@ export class QToggle {
       this.checked = !this.checked;
       this.qChange.emit(this.checked);
     }
+  }
+
+  /** Returns whether the toggle satisfies its required constraint. */
+  @Method()
+  async checkValidity(): Promise<boolean> {
+    this.syncValidity();
+    if (typeof this.internals.checkValidity === 'function') {
+      return this.internals.checkValidity();
+    }
+    return this.disabled || !this.required || this.checked;
+  }
+
+  /** Reports a required constraint violation and returns whether the toggle is valid. */
+  @Method()
+  async reportValidity(): Promise<boolean> {
+    this.syncValidity();
+    if (typeof this.internals.reportValidity === 'function') {
+      return this.internals.reportValidity();
+    }
+    return this.disabled || !this.required || this.checked;
   }
 
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
@@ -119,6 +148,17 @@ export class QToggle {
       if (node.nodeType === Node.TEXT_NODE) return node.textContent?.trim() !== '';
       return false;
     }) : false;
+  }
+
+  private syncValidity(): void {
+    if (!this.internals) return;
+
+    syncRequiredBooleanValidity(this.internals, {
+      required: this.required,
+      checked: this.checked,
+      disabled: this.disabled,
+      anchor: this.controlEl,
+    });
   }
 
   private handleClick = (e: MouseEvent) => {
@@ -165,6 +205,7 @@ export class QToggle {
     return (
       <div class="toggle-container">
         <div
+          ref={el => (this.controlEl = el as HTMLElement)}
           class={{
             'toggle-wrapper': true,
             'is-checked': this.checked,

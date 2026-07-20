@@ -8,6 +8,7 @@ import { shouldWarnForMissingButtonAccessibleName } from './button.utils';
  * @slot - Button label content.
  * @slot icon-left - Content placed before the label.
  * @slot icon-right - Content placed after the label.
+ * @part button - Native button or anchor element.
  * @part icon - Leading q-icon rendered by the `icon` shorthand.
  * @part spinner - Loading spinner shown while `loading` is true.
  */
@@ -207,6 +208,7 @@ export class QButton {
       return (
         <a
           class={classes}
+          part="button"
           href={this.href}
           target={this.target}
           rel={this.getResolvedRel()}
@@ -227,6 +229,7 @@ export class QButton {
     return (
       <button
         class={classes}
+        part="button"
         type={this.type}
         disabled={isBtnDisabled}
         aria-busy={this.loading ? 'true' : 'false'}

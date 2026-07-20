@@ -50,6 +50,9 @@ sidepanel.items = ['Home', 'Reports', 'Settings'];
 *   `header`: Top header section slot (drawer and nav modes).
 *   `footer`: Bottom footer section slot (nav mode only).
 *   `default` (unnamed): Core content container for nested elements (drawer mode only).
+*   `collapse-icon`: Optional icon shown by the built-in control while expanded.
+*   `expand-icon`: Optional icon shown by the built-in control while collapsed.
+*   `collapse-control-adornment`: Optional non-interactive notification badge or visible label anchored over the built-in control's top-left corner. Keep `collapse-label` synchronized with meaningful content.
 
 ---
 
@@ -106,6 +109,10 @@ Below is the complete list of styling tokens mapped to the component's internal 
 | `--q-color-primary` | `#6366f1` | Selected active item background glow & left indicator accent color. |
 | `--q-bg-surface-2` | `rgba(255, 255, 255, 0.05)` | Hover state background fill. |
 | `--q-fg-subtle` | `#6b7280` | Parent header/category text color. |
+| `--q-sidepanel-collapse-control-adornment-top` | `0` | Adornment anchor offset from the control's top edge. |
+| `--q-sidepanel-collapse-control-adornment-left` | `0` | Adornment anchor offset from the control's left edge. |
+| `--q-sidepanel-collapse-control-adornment-translate-x` | `-50%` | Horizontal translation from the adornment anchor. |
+| `--q-sidepanel-collapse-control-adornment-translate-y` | `-50%` | Vertical translation from the adornment anchor. |
 
 ---
 

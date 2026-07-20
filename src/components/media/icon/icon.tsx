@@ -76,11 +76,14 @@ export class QIcon {
   @Watch('localPath')
   @Watch('libVersion')
   watchHandler() {
-    this.loadIcon();
+    void this.loadIcon();
   }
 
-  async componentWillLoad() {
-    await this.loadIcon();
+  componentWillLoad() {
+    // Icon I/O must not hold up this component's hydration or the hydration of
+    // parent components (such as q-sidepanel). The initial render reserves the
+    // icon's dimensions; the fetched SVG is rendered when it becomes available.
+    void this.loadIcon();
   }
 
   componentWillRender() {

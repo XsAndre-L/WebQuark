@@ -1,10 +1,16 @@
 import { h } from '@stencil/core';
+import { identifyItems } from '../../../../utils/collection-identity';
 import type { RenderNavItemsOptions } from '../sidepanel.types';
 
 export function renderNavItems(options: RenderNavItemsOptions): any[] {
   const { items, expandedGroups, activeValue, onItemClick, depth = 0 } = options;
+  const identifiedItems = identifyItems(
+    items,
+    item => item.value,
+    { warningContext: `q-sidepanel items at depth ${depth}` },
+  );
 
-  return items.map((item) => {
+  return identifiedItems.map(({ item, key }) => {
     const hasChildren = item.children && item.children.length > 0;
     const isAlwaysExpanded = Boolean(hasChildren && item.alwaysExpanded === true);
     const isExpanded = isAlwaysExpanded || expandedGroups.has(item.value);
@@ -12,7 +18,7 @@ export function renderNavItems(options: RenderNavItemsOptions): any[] {
     const depthTone = depth % 2 === 0 ? 'primary' : 'secondary';
 
     return (
-      <div class="nav-item-group" key={item.value}>
+      <div class="nav-item-group" key={key}>
         <div
           class={{
             'nav-item': true,

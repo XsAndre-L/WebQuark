@@ -19,7 +19,7 @@ export function renderDataTableHead({ model, onSelectAllChange, onSortToggle }: 
     <thead>
       <tr role="row">
         {model.selectable && (
-          <th class="col-selection" role="columnheader">
+          <th key="selection" class="col-selection" role="columnheader">
             <input
               type="checkbox"
               class="checkbox-input"
@@ -32,12 +32,14 @@ export function renderDataTableHead({ model, onSelectAllChange, onSortToggle }: 
             />
           </th>
         )}
-        {model.columns.map(column => {
+        {model.columns.map(columnModel => {
+          const { column } = columnModel;
           const style: Record<string, string> = {};
           const sortable = isDataTableColumnSortable(column, model.sortable);
           const sortDirection = getColumnSortDirection(model, column, sortable);
           const headerClass = [
             column.className || '',
+            column.sticky === 'start' ? 'is-sticky-start' : '',
             sortable ? 'is-sortable' : '',
             sortDirection ? 'is-sorted' : '',
           ].filter(Boolean).join(' ');
@@ -47,7 +49,14 @@ export function renderDataTableHead({ model, onSelectAllChange, onSortToggle }: 
           }
 
           return (
-            <th style={style} class={headerClass} role="columnheader" aria-sort={sortable ? getAriaSort(sortDirection) : undefined}>
+            <th
+              key={columnModel.renderKey}
+              style={style}
+              class={headerClass}
+              part={getHeaderPartNames(headerClass)}
+              role="columnheader"
+              aria-sort={sortable ? getAriaSort(sortDirection) : undefined}
+            >
               {sortable ? (
                 <button type="button" class="column-sort-button" onClick={() => onSortToggle(column)}>
                   <span class="column-sort-label">{getHeaderLabel(column)}</span>
@@ -59,10 +68,15 @@ export function renderDataTableHead({ model, onSelectAllChange, onSortToggle }: 
             </th>
           );
         })}
-        {model.hasRowActions && <th class="col-actions" role="columnheader" aria-label="Row actions"></th>}
+        {model.hasRowActions && <th key="actions" class="col-actions" role="columnheader" aria-label="Row actions"></th>}
       </tr>
     </thead>
   );
+}
+
+function getHeaderPartNames(className: string): string {
+  const classParts = className.split(/\s+/).filter(Boolean);
+  return ['column-header', ...new Set(classParts)].join(' ');
 }
 
 function getColumnSortDirection(model: DataTableModel, column: TableColumn, sortable: boolean): DataTableSortDirection | undefined {

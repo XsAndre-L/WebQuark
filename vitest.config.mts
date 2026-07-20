@@ -1,12 +1,12 @@
-import { defineVitestConfig } from '@stencil/vitest/config';
 import { playwright } from '@vitest/browser-playwright';
+import { defineVitestConfig } from '@stencil/vitest/config';
+import { stencilVitestPlugin } from '@stencil/vitest/plugin';
 
 export default defineVitestConfig({
   stencilConfig: './stencil.config.ts',
   test: {
     oxc: false,
     projects: [
-      // Unit tests - stencil environment for component logic
       {
         test: {
           name: 'unit',
@@ -15,12 +15,14 @@ export default defineVitestConfig({
           environment: 'stencil',
         },
       },
-      // Component browser tests - real browser via Playwright
       {
+        plugins: [stencilVitestPlugin()],
+        optimizeDeps: {
+          include: ['@stencil/core/internal/client', 'leaflet'],
+        },
         test: {
           name: 'browser',
           include: ['src/**/*.cmp.test.{ts,tsx}'],
-          setupFiles: ['./vitest-setup.ts'],
           browser: {
             enabled: true,
             provider: playwright(),

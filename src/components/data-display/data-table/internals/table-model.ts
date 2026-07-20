@@ -1,3 +1,9 @@
+import {
+  identifyItems,
+  type CollectionIdentity,
+} from '../../../../utils/collection-identity';
+
+import { getDataTableItemKey } from '../data-table-cell';
 import type {
   DataTableItem,
   DataTableKey,
@@ -12,21 +18,34 @@ import { getItemKey, parseDataTableColumns, parseDataTableItems, parseDataTableR
 import { getSelectedKeySet, getSelectionState, type DataTableSelectionState } from './selection';
 import { isDataTableColumnSortable, sortDataTableItems } from './sort';
 
+export interface DataTableColumnModel {
+  column: TableColumn;
+  identity: CollectionIdentity;
+  renderKey: string;
+}
+
+export interface DataTableRowActionModel {
+  action: DataTableRowAction;
+  identity: CollectionIdentity;
+  renderKey: string;
+}
+
 export interface DataTableRowModel {
   item: DataTableItem;
   index: number;
   key: DataTableKey;
-  renderKey: string | number;
+  identity: CollectionIdentity;
+  renderKey: string;
   selected: boolean;
   group?: DataTableRowGroup;
   startsGroup: boolean;
 }
 
 export interface DataTableModel {
-  columns: TableColumn[];
+  columns: DataTableColumnModel[];
   items: DataTableItem[];
   rows: DataTableRowModel[];
-  rowActions: DataTableRowAction[];
+  rowActions: DataTableRowActionModel[];
   hasRowActions: boolean;
   rowClickable: boolean;
   selectionState: DataTableSelectionState;
@@ -53,15 +72,37 @@ export interface GetDataTableModelOptions {
 }
 
 export function getDataTableModel(options: GetDataTableModelOptions): DataTableModel {
-  const columns = parseDataTableColumns(options.columns);
+  const parsedColumns = parseDataTableColumns(options.columns);
   const parsedItems = parseDataTableItems(options.items);
-  const items = getRenderableDataTableItems(parsedItems, columns, options);
-  const rowActions = parseDataTableRowActions(options.rowActions);
+  const items = getRenderableDataTableItems(parsedItems, parsedColumns, options);
+  const columns = identifyItems(
+    parsedColumns,
+    column => column.key,
+    { warningContext: 'q-data-table columns' },
+  ).map(entry => ({
+    column: entry.item,
+    identity: entry.identity,
+    renderKey: entry.key,
+  }));
+  const rowActions = identifyItems(
+    parseDataTableRowActions(options.rowActions),
+    action => action.key,
+    { warningContext: 'q-data-table row actions' },
+  ).map(entry => ({
+    action: entry.item,
+    identity: entry.identity,
+    renderKey: entry.key,
+  }));
   const hasRowActions = rowActions.length > 0;
   const selectedKeySet = getSelectedKeySet(options.selectedKeys);
   let previousGroupKey: string | number | undefined;
   let previousRowWasGrouped = false;
-  const rows = items.map((item, index) => {
+  const rows = identifyItems(
+    items,
+    (item, index) => getDataTableItemKey(item, index, options.keyField),
+    { warningContext: 'q-data-table rows' },
+  ).map(entry => {
+    const { item, index, identity, key: renderKey } = entry;
     const key = getItemKey(item, index, options.keyField);
     const group = resolveDataTableRowGroup(options.rowGroup, item, index);
     const startsGroup = Boolean(group && (!previousRowWasGrouped || group.key !== previousGroupKey));
@@ -73,7 +114,8 @@ export function getDataTableModel(options: GetDataTableModelOptions): DataTableM
       item,
       index,
       key,
-      renderKey: getDataTableRenderKey(key),
+      identity,
+      renderKey,
       selected: selectedKeySet.has(key),
       group,
       startsGroup,
@@ -88,7 +130,7 @@ export function getDataTableModel(options: GetDataTableModelOptions): DataTableM
     hasRowActions,
     rowClickable: options.rowClickable,
     selectionState: getSelectionState(items, selectedKeySet, options.keyField),
-    columnSpan: columns.length + (options.selectable ? 1 : 0) + (hasRowActions ? 1 : 0) || 1,
+    columnSpan: parsedColumns.length + (options.selectable ? 1 : 0) + (hasRowActions ? 1 : 0) || 1,
     selectable: options.selectable,
     sortable: options.sortable,
     sortColumn: options.sortColumn,
@@ -110,10 +152,6 @@ function resolveDataTableRowGroup(rowGroup: DataTableRowGrouper | undefined, ite
     console.error('QDataTable: Row grouping function failed', error);
     return undefined;
   }
-}
-
-export function getDataTableRenderKey(key: DataTableKey): string | number {
-  return typeof key === 'string' || typeof key === 'number' ? key : String(key);
 }
 
 function getRenderableDataTableItems(items: DataTableItem[], columns: TableColumn[], options: GetDataTableModelOptions): DataTableItem[] {

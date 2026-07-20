@@ -14,6 +14,8 @@ For simple navigation, `items` accepts strings and uses each string as both labe
 navbar.items = ['Home', 'Docs', 'Support'];
 ```
 
+Give every object item a unique, stable `value`. The navbar uses that value to preserve each item's DOM node when arrays are replaced or reordered. String items receive their label as the value automatically. Missing or duplicate values produce a Collection Identity warning and use a fallback so every item still renders, but stable DOM reuse is not guaranteed for those invalid items.
+
 Set the component's `aria-label` to name both responsive navigation regions when “Primary navigation” is not specific enough.
 
 Set `mobileMode="inline"` when navigation items should stay visible at mobile widths instead of collapsing into the menu button.
