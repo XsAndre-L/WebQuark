@@ -145,6 +145,7 @@ export class MapMarkerController {
     const className = item.kind === 'marker' ? 'q-map-marker' : 'q-map-cluster';
     const label = item.kind === 'marker' ? item.marker.label : `${item.count} map markers`;
     const layer = this.options.leaflet.marker([this.getLatitude(item), this.getLongitude(item)], {
+      bubblingMouseEvents: false,
       icon: this.options.leaflet.divIcon({
         className,
         html: content,
@@ -163,7 +164,10 @@ export class MapMarkerController {
       return undefined;
     }
 
-    const click = (event: MouseEvent) => this.activate(item.key, event);
+    const click = (event: MouseEvent) => {
+      event.stopPropagation();
+      this.activate(item.key, event);
+    };
     const keydown = (event: KeyboardEvent) => {
       if (event.key !== 'Enter' && event.key !== ' ') return;
       event.preventDefault();
