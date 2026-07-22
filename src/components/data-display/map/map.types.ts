@@ -61,6 +61,12 @@ export interface QMapMarker {
 
 export type QMapMarkerInput = QMapMarker[] | string;
 
+export interface QMapClickDetail {
+  latitude: number;
+  longitude: number;
+  originalEvent: MouseEvent;
+}
+
 export interface QMapMarkerSelectDetail {
   marker: QMapMarker;
   originalEvent: MouseEvent | KeyboardEvent;

@@ -289,7 +289,10 @@ a.map-attribution:focus-visible {
 .q-map-marker.is-selected {
   box-shadow:
     0 0 0 3px var(--q-map-marker-selected-color, var(--q-fg-base, #f9fafb)),
-    var(--q-shadow-medium, 0 8px 16px rgba(0, 0, 0, 0.3));
+    var(
+      --q-map-marker-selected-shadow,
+      var(--q-shadow-medium, 0 8px 16px rgba(0, 0, 0, 0.3))
+    );
 }
 
 .q-map-marker:focus-visible {

@@ -1,5 +1,5 @@
 import { Component, Element, Event, EventEmitter, h, Prop, State, Watch } from '@stencil/core';
-import type { Layer as LeafletLayer, Map as LeafletMap } from 'leaflet';
+import type { Layer as LeafletLayer, LeafletMouseEvent, Map as LeafletMap } from 'leaflet';
 
 import { MapBaseLayerController } from './internals/base-layer';
 import {
@@ -16,6 +16,7 @@ import { MapMarkerController } from './internals/marker-controller';
 import type {
   QMapBoundsInput,
   QMapClusterSelectDetail,
+  QMapClickDetail,
   QMapErrorCode,
   QMapErrorDetail,
   QMapGoogleMapType,
@@ -62,6 +63,7 @@ const VECTOR_SYMBOL_FADE_DURATION_MS = 750;
  * @cssprop --q-map-marker-danger - Danger marker color.
  * @cssprop --q-map-marker-muted - Muted marker color.
  * @cssprop --q-map-marker-selected-color - Selected-marker ring color.
+ * @cssprop --q-map-marker-selected-shadow - Selected-marker elevation or glow shadow.
  * @cssprop --q-map-marker-cluster-size - Cluster diameter.
  * @cssprop --q-map-marker-ring-color - Optional solid or dashed status-ring color.
  * @cssprop --q-map-marker-pulse-color - Optional pulse color.
@@ -147,6 +149,9 @@ export class QMap {
 
   /** Fires after Leaflet setup and the initial provider attempt complete. */
   @Event() qReady!: EventEmitter<void>;
+
+  /** Reports genuine map-background clicks after Leaflet excludes drags and interactive layers. */
+  @Event() qMapClick!: EventEmitter<QMapClickDetail>;
 
   /** Reports marker activation without mutating selectedMarkerId. */
   @Event() qMarkerSelect!: EventEmitter<QMapMarkerSelectDetail>;
@@ -261,6 +266,14 @@ export class QMap {
     this.canvas = element ?? undefined;
   };
 
+  private handleMapClick = (event: LeafletMouseEvent): void => {
+    this.qMapClick.emit({
+      latitude: event.latlng.lat,
+      longitude: event.latlng.lng,
+      originalEvent: event.originalEvent,
+    });
+  };
+
   private async initializeMap(): Promise<void> {
     if (this.map || !this.canvas || !this.connected || typeof window === 'undefined') return;
 
@@ -296,6 +309,7 @@ export class QMap {
       if (boundsResolution.kind === 'invalid') this.reportInvalidBounds(boundsResolution.message);
       else this.lastInvalidBoundsInput = undefined;
 
+      this.bindMapEvents(this.map);
       this.createControllers(this.map, leaflet);
       this.syncView();
       await this.syncBaseLayer();
@@ -312,6 +326,14 @@ export class QMap {
       this.setProviderStatus('error', undefined, false);
       this.reportError('leaflet-initialization-failed', error, false);
     }
+  }
+
+  private bindMapEvents(map: LeafletMap): void {
+    map.on('click', this.handleMapClick);
+  }
+
+  private unbindMapEvents(map: LeafletMap): void {
+    map.off('click', this.handleMapClick);
   }
 
   private createControllers(map: LeafletMap, leaflet: LeafletModule): void {
@@ -521,7 +543,11 @@ export class QMap {
     this.markerController = undefined;
     this.layerController?.destroy();
     this.layerController = undefined;
-    this.map?.remove();
+    const map = this.map;
+    if (map) {
+      this.unbindMapEvents(map);
+      map.remove();
+    }
     this.map = undefined;
   }
 
