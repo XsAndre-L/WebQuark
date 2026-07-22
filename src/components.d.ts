@@ -17,7 +17,7 @@ import { DropdownOptionInput, Option, QDropdownPlacement, QDropdownSize } from "
 import { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/layout/form/form.types";
 import { QInputSize, QInputType } from "./components/inputs/input/input.types";
 import { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
-import { QMapBoundsInput, QMapClusterSelectDetail, QMapErrorDetail, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapProvider, QMapStatusChangeDetail } from "./components/data-display/map/map.types";
+import { QMapBoundsInput, QMapClickDetail, QMapClusterSelectDetail, QMapErrorDetail, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapProvider, QMapStatusChangeDetail } from "./components/data-display/map/map.types";
 import { NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode } from "./components/layout/navbar/navbar.types";
 import { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
 import { QProgressSize, QProgressTone, QProgressVariant } from "./components/indicators/progress/progress.types";
@@ -46,7 +46,7 @@ export { DropdownOptionInput, Option, QDropdownPlacement, QDropdownSize } from "
 export { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/layout/form/form.types";
 export { QInputSize, QInputType } from "./components/inputs/input/input.types";
 export { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
-export { QMapBoundsInput, QMapClusterSelectDetail, QMapErrorDetail, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapProvider, QMapStatusChangeDetail } from "./components/data-display/map/map.types";
+export { QMapBoundsInput, QMapClickDetail, QMapClusterSelectDetail, QMapErrorDetail, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapProvider, QMapStatusChangeDetail } from "./components/data-display/map/map.types";
 export { NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode } from "./components/layout/navbar/navbar.types";
 export { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
 export { QProgressSize, QProgressTone, QProgressVariant } from "./components/indicators/progress/progress.types";
@@ -821,6 +821,7 @@ export namespace Components {
      * @cssprop --q-map-marker-danger - Danger marker color.
      * @cssprop --q-map-marker-muted - Muted marker color.
      * @cssprop --q-map-marker-selected-color - Selected-marker ring color.
+     * @cssprop --q-map-marker-selected-shadow - Selected-marker elevation or glow shadow.
      * @cssprop --q-map-marker-cluster-size - Cluster diameter.
      * @cssprop --q-map-marker-ring-color - Optional solid or dashed status-ring color.
      * @cssprop --q-map-marker-pulse-color - Optional pulse color.
@@ -2029,6 +2030,7 @@ declare global {
     };
     interface HTMLQMapElementEventMap {
         "qReady": void;
+        "qMapClick": QMapClickDetail;
         "qMarkerSelect": QMapMarkerSelectDetail;
         "qClusterSelect": QMapClusterSelectDetail;
         "qStatusChange": QMapStatusChangeDetail;
@@ -2048,6 +2050,7 @@ declare global {
      * @cssprop --q-map-marker-danger - Danger marker color.
      * @cssprop --q-map-marker-muted - Muted marker color.
      * @cssprop --q-map-marker-selected-color - Selected-marker ring color.
+     * @cssprop --q-map-marker-selected-shadow - Selected-marker elevation or glow shadow.
      * @cssprop --q-map-marker-cluster-size - Cluster diameter.
      * @cssprop --q-map-marker-ring-color - Optional solid or dashed status-ring color.
      * @cssprop --q-map-marker-pulse-color - Optional pulse color.
@@ -3251,6 +3254,7 @@ declare namespace LocalJSX {
      * @cssprop --q-map-marker-danger - Danger marker color.
      * @cssprop --q-map-marker-muted - Muted marker color.
      * @cssprop --q-map-marker-selected-color - Selected-marker ring color.
+     * @cssprop --q-map-marker-selected-shadow - Selected-marker elevation or glow shadow.
      * @cssprop --q-map-marker-cluster-size - Cluster diameter.
      * @cssprop --q-map-marker-ring-color - Optional solid or dashed status-ring color.
      * @cssprop --q-map-marker-pulse-color - Optional pulse color.
@@ -3347,6 +3351,10 @@ declare namespace LocalJSX {
           * Reports serializable configuration and initialization failures.
          */
         "onQError"?: (event: QMapCustomEvent<QMapErrorDetail>) => void;
+        /**
+          * Reports genuine map-background clicks after Leaflet excludes drags and interactive layers.
+         */
+        "onQMapClick"?: (event: QMapCustomEvent<QMapClickDetail>) => void;
         /**
           * Reports marker activation without mutating selectedMarkerId.
          */
@@ -4647,6 +4655,7 @@ declare module "@stencil/core" {
              * @cssprop --q-map-marker-danger - Danger marker color.
              * @cssprop --q-map-marker-muted - Muted marker color.
              * @cssprop --q-map-marker-selected-color - Selected-marker ring color.
+             * @cssprop --q-map-marker-selected-shadow - Selected-marker elevation or glow shadow.
              * @cssprop --q-map-marker-cluster-size - Cluster diameter.
              * @cssprop --q-map-marker-ring-color - Optional solid or dashed status-ring color.
              * @cssprop --q-map-marker-pulse-color - Optional pulse color.
