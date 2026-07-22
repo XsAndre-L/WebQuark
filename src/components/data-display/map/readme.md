@@ -73,13 +73,14 @@ Framework-neutral interactive map powered by Leaflet.
 
 ## Events
 
-| Event            | Description                                                                     | Type                                   |
-| ---------------- | ------------------------------------------------------------------------------- | -------------------------------------- |
-| `qClusterSelect` | Reports cluster activation before the default centre-and-zoom action.           | `CustomEvent<QMapClusterSelectDetail>` |
-| `qError`         | Reports serializable configuration and initialization failures.                 | `CustomEvent<QMapErrorDetail>`         |
-| `qMarkerSelect`  | Reports marker activation without mutating selectedMarkerId.                    | `CustomEvent<QMapMarkerSelectDetail>`  |
-| `qReady`         | Fires after Leaflet setup and the initial provider attempt complete.            | `CustomEvent<void>`                    |
-| `qStatusChange`  | Reports provider lifecycle transitions, including the active fallback provider. | `CustomEvent<QMapStatusChangeDetail>`  |
+| Event            | Description                                                                                | Type                                   |
+| ---------------- | ------------------------------------------------------------------------------------------ | -------------------------------------- |
+| `qClusterSelect` | Reports cluster activation before the default centre-and-zoom action.                      | `CustomEvent<QMapClusterSelectDetail>` |
+| `qError`         | Reports serializable configuration and initialization failures.                            | `CustomEvent<QMapErrorDetail>`         |
+| `qMapClick`      | Reports genuine map-background clicks after Leaflet excludes drags and interactive layers. | `CustomEvent<QMapClickDetail>`         |
+| `qMarkerSelect`  | Reports marker activation without mutating selectedMarkerId.                               | `CustomEvent<QMapMarkerSelectDetail>`  |
+| `qReady`         | Fires after Leaflet setup and the initial provider attempt complete.                       | `CustomEvent<void>`                    |
+| `qStatusChange`  | Reports provider lifecycle transitions, including the active fallback provider.            | `CustomEvent<QMapStatusChangeDetail>`  |
 
 
 ## Slots

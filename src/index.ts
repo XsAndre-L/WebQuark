@@ -60,6 +60,7 @@ export type {
   QMapBounds,
   QMapBoundsInput,
   QMapClusterSelectDetail,
+  QMapClickDetail,
   QMapErrorCode,
   QMapErrorDetail,
   QMapGoogleMapType,

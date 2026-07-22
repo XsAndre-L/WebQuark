@@ -203,6 +203,7 @@
   --q-map-marker-danger: var(--q-color-danger);
   --q-map-marker-muted: var(--q-fg-muted);
   --q-map-marker-selected-color: var(--q-fg-base);
+  --q-map-marker-selected-shadow: var(--q-shadow-medium);
   --q-map-attribution-bg: var(--q-bg-base);
   --q-map-attribution-color: var(--q-fg-muted);
 
