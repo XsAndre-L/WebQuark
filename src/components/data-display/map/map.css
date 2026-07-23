@@ -176,6 +176,10 @@ a.map-attribution:focus-visible {
   padding: 0;
 }
 
+.leaflet-tile-pane {
+  filter: var(--q-map-tile-filter, none);
+}
+
 .leaflet-tile {
   visibility: hidden;
 }

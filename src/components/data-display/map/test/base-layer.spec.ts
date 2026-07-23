@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import {
+  isTilePreloadBufferRelevant,
+  isVectorPaddingRelevant,
   MapBaseLayerController,
   type MapBaseLayerOperations,
   type QMapBaseLayerConfig,
@@ -24,7 +26,9 @@ function createConfig(overrides: Partial<QMapBaseLayerConfig> = {}): QMapBaseLay
   return {
     requestedProvider: 'tiles',
     tileUrl: 'https://tiles.example/{z}/{x}/{y}.png',
+    tilePreloadBuffer: 0,
     vectorStyleUrl: 'https://styles.example/map.json',
+    vectorPadding: 0.2,
     googleApiKey: 'key',
     googleApiAvailable: false,
     googleMapType: 'roadmap',
@@ -43,11 +47,15 @@ function deferred<T>() {
 }
 
 describe('q-map transactional base-layer controller', () => {
-  it('attaches a replacement before removing the working layer', async () => {
+  it('waits for replacement readiness before removing the working layer', async () => {
     const lifecycle: string[] = [];
+    const replacementReady = deferred<void>();
     let sequence = 0;
     const operations: MapBaseLayerOperations<TestLayer> = {
-      attach: layer => lifecycle.push(`attach:${layer.name}`),
+      attach: (layer, _provider, context) => {
+        lifecycle.push(`attach:${layer.name}:${context.replacing}`);
+        if (context.replacing) return replacementReady.promise;
+      },
       createGoogle: async () => new TestLayer('google', lifecycle),
       createTiles: () => new TestLayer(`tiles-${++sequence}`, lifecycle),
       createVector: async () => new TestLayer('vector', lifecycle),
@@ -55,9 +63,24 @@ describe('q-map transactional base-layer controller', () => {
     const controller = new MapBaseLayerController(operations);
 
     await controller.sync(createConfig());
-    await controller.sync(createConfig({ tileUrl: 'https://other.example/{z}/{x}/{y}.png' }));
+    const replacement = controller.sync(
+      createConfig({ tileUrl: 'https://other.example/{z}/{x}/{y}.png' }),
+    );
+    await Promise.resolve();
 
-    expect(lifecycle).toEqual(['attach:tiles-1', 'attach:tiles-2', 'remove:tiles-1']);
+    expect(lifecycle).toEqual([
+      'attach:tiles-1:false',
+      'attach:tiles-2:true',
+    ]);
+
+    replacementReady.resolve();
+    await replacement;
+
+    expect(lifecycle).toEqual([
+      'attach:tiles-1:false',
+      'attach:tiles-2:true',
+      'remove:tiles-1',
+    ]);
     expect(controller.getActiveState()).toEqual({ activeProvider: 'tiles', usingFallback: false });
   });
 
@@ -219,5 +242,19 @@ describe('q-map transactional base-layer controller', () => {
 
     expect(await sync).toEqual({ kind: 'stale' });
     expect(candidate.removed).toBe(true);
+  });
+});
+
+describe('q-map base-layer quality relevance', () => {
+  it('limits raster buffering and vector padding to relevant providers', () => {
+    expect(isTilePreloadBufferRelevant('tiles', undefined)).toBe(true);
+    expect(isTilePreloadBufferRelevant('vector', 'tiles')).toBe(true);
+    expect(isTilePreloadBufferRelevant('vector', 'vector')).toBe(false);
+    expect(isTilePreloadBufferRelevant('google', 'google')).toBe(false);
+
+    expect(isVectorPaddingRelevant('vector', undefined)).toBe(true);
+    expect(isVectorPaddingRelevant('tiles', 'vector')).toBe(true);
+    expect(isVectorPaddingRelevant('tiles', 'tiles')).toBe(false);
+    expect(isVectorPaddingRelevant('google', 'google')).toBe(false);
   });
 });

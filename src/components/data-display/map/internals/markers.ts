@@ -112,6 +112,7 @@ function normalizeMarker(value: unknown): QMapMarker | undefined {
     latitude: value.latitude,
     longitude: value.longitude,
     label,
+    clusterable: value.clusterable !== false,
     variant: getMarkerVariant(value.variant),
     ...(imageUrl ? { imageUrl } : {}),
     ...(fallbackText ? { fallbackText } : {}),

@@ -1,7 +1,15 @@
 import { Component, Element, Event, EventEmitter, h, Prop, State, Watch } from '@stencil/core';
 import type { Layer as LeafletLayer, LeafletMouseEvent, Map as LeafletMap } from 'leaflet';
 
-import { MapBaseLayerController } from './internals/base-layer';
+import {
+  isTilePreloadBufferRelevant,
+  isVectorPaddingRelevant,
+  MapBaseLayerController,
+} from './internals/base-layer';
+import {
+  createBufferedTileLayer,
+  createRasterTileLayerOptions,
+} from './internals/buffered-tile-layer';
 import {
   applyMapBounds,
   getInitialLeafletMapBounds,
@@ -13,6 +21,15 @@ import { loadGoogleMutantConstructor } from './internals/google-mutant';
 import { loadMapLibreLayerFactory, waitForMapLibreLayerReady } from './internals/maplibre';
 import { normalizeMapMarkerClusteringOptions } from './internals/marker-cluster-index';
 import { MapMarkerController } from './internals/marker-controller';
+import {
+  DEFAULT_TILE_PRELOAD_BUFFER,
+  normalizeTilePreloadBuffer,
+} from './internals/tile-preload-buffer';
+import { waitForInitialTileLayerReady } from './internals/tile-layer-readiness';
+import {
+  DEFAULT_VECTOR_PADDING,
+  normalizeVectorPadding,
+} from './internals/vector-padding';
 import type {
   QMapBoundsInput,
   QMapClusterSelectDetail,
@@ -72,6 +89,7 @@ const VECTOR_SYMBOL_FADE_DURATION_MS = 750;
  * @cssprop --q-map-marker-content-color - Marker fallback-text color.
  * @cssprop --q-map-attribution-bg - Attribution background.
  * @cssprop --q-map-attribution-color - Attribution foreground.
+ * @cssprop --q-map-tile-filter - CSS filter applied once to the raster tile pane.
  */
 @Component({
   tag: 'q-map',
@@ -87,8 +105,14 @@ export class QMap {
   /** Supplies the tile URL template for the tiles provider and optional vector/Google fallback. */
   @Prop() tileUrl: string = '';
 
+  /** Preloads zero to four whole raster-tile rows and columns beyond the visible viewport. */
+  @Prop() tilePreloadBuffer: number = DEFAULT_TILE_PRELOAD_BUFFER;
+
   /** Supplies a MapLibre Style Specification URL for the vector provider. */
   @Prop() vectorStyleUrl: string = '';
+
+  /** Extends vector rendering beyond the visible viewport and is clamped from zero to one-half. */
+  @Prop() vectorPadding: number = DEFAULT_VECTOR_PADDING;
 
   /** Supplies the browser-restricted key used only when WebQuark must load Google Maps. */
   @Prop() googleApiKey: string = '';
@@ -180,6 +204,7 @@ export class QMap {
   private markerController?: MapMarkerController;
   private lastInvalidBoundsInput?: QMapBoundsInput;
   private reportedRequestedProvider?: QMapProvider;
+  private baseLayerSyncQueued = false;
   private hasLoaded = false;
   private connected = false;
 
@@ -205,11 +230,38 @@ export class QMap {
   @Watch('googleApiKey')
   @Watch('googleMapType')
   handleBaseLayerChange() {
+    this.scheduleBaseLayerSync();
+  }
+
+  @Watch('tilePreloadBuffer')
+  handleTilePreloadBufferChange() {
+    const requestedProvider = this.getProvider();
+    const activeProvider = this.layerController?.getActiveState().activeProvider;
+    if (isTilePreloadBufferRelevant(requestedProvider, activeProvider)) {
+      this.scheduleBaseLayerSync();
+    }
+  }
+
+  @Watch('vectorPadding')
+  handleVectorPaddingChange() {
+    const requestedProvider = this.getProvider();
+    const activeProvider = this.layerController?.getActiveState().activeProvider;
+    if (isVectorPaddingRelevant(requestedProvider, activeProvider)) {
+      this.scheduleBaseLayerSync();
+    }
+  }
+
+  private scheduleBaseLayerSync(): void {
     if (!this.map) {
       void this.initializeMap();
       return;
     }
-    void this.syncBaseLayer();
+    if (this.baseLayerSyncQueued) return;
+    this.baseLayerSyncQueued = true;
+    queueMicrotask(() => {
+      this.baseLayerSyncQueued = false;
+      if (this.connected && this.map) void this.syncBaseLayer();
+    });
   }
 
   @Watch('markers')
@@ -338,8 +390,16 @@ export class QMap {
 
   private createControllers(map: LeafletMap, leaflet: LeafletModule): void {
     this.layerController = new MapBaseLayerController<LeafletLayer>({
-      attach: async (layer, provider) => {
+      attach: async (layer, provider, context) => {
         layer.addTo(map);
+        if (provider === 'tiles') {
+          const tileLayer = layer as import('leaflet').TileLayer;
+          if (context.replacing && tileLayer.isLoading()) {
+            await waitForInitialTileLayerReady(tileLayer, {
+              signal: context.signal,
+            });
+          }
+        }
         if (provider === 'vector') await waitForMapLibreLayerReady(layer);
       },
       createGoogle: async config => {
@@ -351,11 +411,16 @@ export class QMap {
           maxZoom: config.maxZoom,
         });
       },
-      createTiles: config => leaflet.tileLayer(config.tileUrl, {
-        attribution: '',
-        minZoom: config.minZoom,
-        maxZoom: config.maxZoom,
-      }),
+      createTiles: config => createBufferedTileLayer(
+        leaflet,
+        config.tileUrl,
+        createRasterTileLayerOptions(
+          config.minZoom,
+          config.maxZoom,
+          config.tilePreloadBuffer,
+        ),
+        config.tilePreloadBuffer,
+      ),
       createVector: async config => {
         const createMapLibreLayer = await loadMapLibreLayerFactory(leaflet);
         return createMapLibreLayer({
@@ -365,7 +430,7 @@ export class QMap {
           maxTileCacheZoomLevels: 6,
           maxZoom: config.maxZoom,
           minZoom: config.minZoom,
-          padding: 0.2,
+          padding: config.vectorPadding,
           style: config.vectorStyleUrl,
           updateInterval: 16,
         });
@@ -400,7 +465,9 @@ export class QMap {
     const result = await controller.sync({
       requestedProvider,
       tileUrl: this.tileUrl.trim(),
+      tilePreloadBuffer: normalizeTilePreloadBuffer(this.tilePreloadBuffer),
       vectorStyleUrl: this.vectorStyleUrl.trim(),
+      vectorPadding: normalizeVectorPadding(this.vectorPadding),
       googleApiKey: this.googleApiKey.trim(),
       googleApiAvailable: hasGoogleMapsConfiguration(),
       googleMapType: this.getGoogleMapType(),
