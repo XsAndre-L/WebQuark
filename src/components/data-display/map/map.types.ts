@@ -48,6 +48,8 @@ export interface QMapMarker {
   latitude: number;
   longitude: number;
   label: string;
+  /** Excludes this marker from clusters when explicitly false. Defaults to true. */
+  clusterable?: boolean;
   variant?: QMapMarkerVariant;
   imageUrl?: string;
   fallbackText?: string;

@@ -1,6 +1,13 @@
 import { afterEach, describe, expect, it } from 'vitest';
 
-import type { QMapErrorDetail, QMapMarkerSelectDetail, QMapStatusChangeDetail } from '../map.types';
+import type {
+  QMapClusterSelectDetail,
+  QMapErrorDetail,
+  QMapMarker,
+  QMapMarkerSelectDetail,
+  QMapStatusChangeDetail,
+} from '../map.types';
+import mapStyles from '../map.css?inline';
 import '../map';
 
 let pendingGoogleScript: HTMLScriptElement | undefined;
@@ -9,6 +16,27 @@ let restoreHeadAppend: (() => void) | undefined;
 async function waitForReady(element: HTMLQMapElement): Promise<void> {
   await new Promise<void>(resolve => element.addEventListener('qReady', () => resolve(), { once: true }));
   await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+}
+
+async function waitForReadyOrError(
+  element: HTMLQMapElement,
+): Promise<void> {
+  await new Promise<void>((resolve, reject) => {
+    element.addEventListener('qReady', () => resolve(), { once: true });
+    element.addEventListener(
+      'qError',
+      event =>
+        reject(
+          new Error(
+            (event as CustomEvent<QMapErrorDetail>).detail.message,
+          ),
+        ),
+      { once: true },
+    );
+  });
+  await new Promise<void>(resolve =>
+    requestAnimationFrame(() => resolve()),
+  );
 }
 
 async function failGoogleLoader(): Promise<void> {
@@ -94,6 +122,123 @@ describe('q-map in Chromium', () => {
     expect(selections[0].originalEvent).toBeInstanceOf(MouseEvent);
   });
 
+  it('keeps standalone markers at their true position above eligible clusters', async () => {
+    const element = document.createElement('q-map');
+    const markers: QMapMarker[] = [
+      {
+        id: 'store:1',
+        latitude: -33.9249,
+        longitude: 18.4241,
+        label: 'Store one',
+      },
+      {
+        id: 'store:2',
+        latitude: -33.9249,
+        longitude: 18.4241,
+        label: 'Store two',
+      },
+      {
+        id: 'merchandiser:1',
+        latitude: -33.9249,
+        longitude: 18.4241,
+        label: 'Merchandiser one',
+        clusterable: false,
+      },
+    ];
+    element.centerLatitude = -33.9249;
+    element.centerLongitude = 18.4241;
+    element.zoom = 7;
+    element.clusterMarkers = true;
+    element.markers = markers;
+    const clusters: QMapClusterSelectDetail[] = [];
+    const selections: QMapMarkerSelectDetail[] = [];
+    element.addEventListener('qClusterSelect', event => {
+      clusters.push((event as CustomEvent<QMapClusterSelectDetail>).detail);
+    });
+    element.addEventListener('qMarkerSelect', event => {
+      selections.push((event as CustomEvent<QMapMarkerSelectDetail>).detail);
+    });
+    const ready = waitForReadyOrError(element);
+    document.body.append(element);
+    await ready;
+    const style = document.createElement('style');
+    style.textContent = mapStyles;
+    element.shadowRoot?.prepend(style);
+    await new Promise<void>(resolve =>
+      requestAnimationFrame(() => resolve()),
+    );
+
+    const cluster = element.shadowRoot?.querySelector<HTMLElement>(
+      '[part~="cluster"]',
+    );
+    const standalone = element.shadowRoot?.querySelector<HTMLElement>(
+      '[data-marker-id="string:merchandiser:1"]',
+    );
+    expect(cluster?.textContent).toContain('2');
+    expect(standalone).not.toBeNull();
+    const clusterBounds = cluster?.getBoundingClientRect();
+    const standaloneBounds = standalone?.getBoundingClientRect();
+    expect(clusterBounds && standaloneBounds).toBeTruthy();
+    expect(
+      clusterBounds
+      && standaloneBounds
+      && Math.abs(
+        (clusterBounds.left + clusterBounds.width / 2)
+        - (standaloneBounds.left + standaloneBounds.width / 2),
+      ),
+    ).toBeLessThan(1);
+    expect(
+      clusterBounds
+      && standaloneBounds
+      && Math.abs(
+        (clusterBounds.top + clusterBounds.height / 2)
+        - (standaloneBounds.top + standaloneBounds.height / 2),
+      ),
+    ).toBeLessThan(1);
+    expect(Number(standalone?.style.zIndex)).toBeGreaterThan(
+      Number(cluster?.style.zIndex),
+    );
+
+    const standaloneHit = standaloneBounds
+      ? element.shadowRoot?.elementFromPoint(
+          standaloneBounds.left + standaloneBounds.width / 2,
+          standaloneBounds.top + standaloneBounds.height / 2,
+        )
+      : undefined;
+    expect(standaloneHit).toBe(standalone);
+    standaloneHit?.dispatchEvent(new MouseEvent('click', {
+      bubbles: true,
+      clientX: standaloneBounds?.left,
+      clientY: standaloneBounds?.top,
+    }));
+    expect(selections.map(selection => selection.marker.id)).toEqual([
+      'merchandiser:1',
+    ]);
+
+    cluster?.dispatchEvent(new MouseEvent('click', {
+      bubbles: true,
+      clientX: clusterBounds?.left,
+      clientY: clusterBounds?.top,
+    }));
+    expect(clusters).toHaveLength(1);
+    expect(clusters[0].markerIds).toEqual(['store:1', 'store:2']);
+
+    element.markers = markers.map(marker => ({
+      ...marker,
+      clusterable: false,
+    }));
+    await new Promise<void>(resolve =>
+      requestAnimationFrame(() => resolve()),
+    );
+
+    expect(
+      element.shadowRoot?.querySelectorAll('[part~="cluster"]'),
+    ).toHaveLength(0);
+    expect(
+      element.shadowRoot?.querySelectorAll('[part~="marker"]'),
+    ).toHaveLength(3);
+  });
+
   it('renders attribution as text and refuses unsafe link schemes', async () => {
     const element = document.createElement('q-map');
     element.attribution = '<strong>Map provider</strong>';
@@ -107,6 +252,30 @@ describe('q-map in Chromium', () => {
     expect(attribution?.tagName).toBe('SPAN');
     expect(attribution?.textContent).toBe('<strong>Map provider</strong>');
     expect(attribution?.querySelector('strong')).toBeNull();
+  });
+
+  it('applies raster filtering once at the tile-pane level', async () => {
+    const element = document.createElement('q-map');
+    element.tileUrl =
+      'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+    element.style.setProperty('--q-map-tile-filter', 'grayscale(1)');
+    const ready = waitForReady(element);
+    document.body.append(element);
+    await ready;
+    const style = document.createElement('style');
+    style.textContent = mapStyles;
+    element.shadowRoot?.prepend(style);
+    await new Promise<void>(resolve =>
+      requestAnimationFrame(() => resolve()),
+    );
+
+    const pane = element.shadowRoot?.querySelector<HTMLElement>(
+      '.leaflet-tile-pane',
+    );
+    const tile = pane?.querySelector<HTMLElement>('.leaflet-tile');
+
+    expect(getComputedStyle(pane as HTMLElement).filter).toBe('grayscale(1)');
+    expect(tile && getComputedStyle(tile).filter).toBe('none');
   });
 
   it('reports malformed initial and runtime bounds without turning them into clears', async () => {

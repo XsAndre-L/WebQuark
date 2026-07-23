@@ -10,8 +10,11 @@ Canonical API: [generated Stencil reference](../../src/components/data-display/m
 
 | Property | Attribute | Type | Default | Purpose |
 | :--- | :--- | :--- | :--- | :--- |
-| `provider` | `provider` | `'tiles' \| 'google'` | `'tiles'` | Map imagery provider. |
-| `tileUrl` | `tile-url` | `string` | `''` | Tile URL template used when `provider` is `tiles`, and as an optional fallback if Google initialization fails. An empty value shows the tiles-provider empty state. |
+| `provider` | `provider` | `'tiles' \| 'vector' \| 'google'` | `'tiles'` | Map imagery provider. |
+| `tileUrl` | `tile-url` | `string` | `''` | Tile URL template used when `provider` is `tiles`, and as an optional fallback if vector or Google initialization fails. An empty value shows the tiles-provider empty state. |
+| `tilePreloadBuffer` | `tile-preload-buffer` | `number` | `0` | Whole raster-tile rings preloaded beyond each viewport edge, rounded and clamped to `0`–`4`. Higher values use more network, decode memory, and rendering work. |
+| `vectorStyleUrl` | `vector-style-url` | `string` | `''` | MapLibre Style Specification URL required by the vector provider. |
+| `vectorPadding` | `vector-padding` | `number` | `0.2` | Relative offscreen vector-rendering padding clamped to `0`–`0.5`. |
 | `googleApiKey` | `google-api-key` | `string` | `''` | Browser-restricted key used when WebQuark must load Google Maps. It may remain empty when the application already exposes `google.maps.Map` or `google.maps.importLibrary`. |
 | `googleMapType` | `google-map-type` | `'roadmap' \| 'satellite' \| 'terrain' \| 'hybrid'` | `'roadmap'` | Google base-map style. |
 | `attribution` | `attribution` | `string` | `''` | Visible attribution label for the tiles provider. |
@@ -27,7 +30,7 @@ Canonical API: [generated Stencil reference](../../src/components/data-display/m
 | `selectedMarkerId` | `selected-marker-id` | `string \| number` | `undefined` | ID of the marker rendered in the selected state. |
 | `ariaLabel` | `aria-label` | `string` | `'Interactive map'` | Accessible name for the map region. |
 
-`QMapMarker` contains a stable `id` (`string` or `number`), finite `latitude` and `longitude`, a human-readable `label`, and an optional `variant` of `default`, `success`, `warning`, `danger`, or `muted`. Unsupported variants normalize to `default`. ID identity is type-stable, so numeric `1` and string `'1'` are independent markers and selection values.
+`QMapMarker` contains a stable `id` (`string` or `number`), finite `latitude` and `longitude`, a human-readable `label`, and an optional `variant` of `default`, `success`, `warning`, `danger`, or `muted`. Unsupported variants normalize to `default`. ID identity is type-stable, so numeric `1` and string `'1'` are independent markers and selection values. When clustering is enabled, `clusterable: false` keeps that marker independently visible; omitted or invalid values default to `true`. Standalone markers never contribute to a cluster's count or `markerIds`.
 
 `QMapBounds` contains `southLatitude`, `westLongitude`, `northLatitude`, and `eastLongitude`. Coordinates must be finite and in the normal latitude/longitude ranges, the south value must be below the north value, and the west value must be below the east value. `undefined` and an empty string intentionally clear the boundary. Invalid non-empty or antimeridian-crossing input emits `qError` and preserves the last valid runtime boundary.
 
@@ -56,7 +59,7 @@ Shadow parts:
 
 Provider changes are transactional. `q-map` keeps the current layer mounted while a replacement loads, attaches the replacement before removing the old layer, and discards stale asynchronous results when configuration changes again. A missing required URL or key is an intentional `empty` state and removes the active layer.
 
-If Google initialization fails and `tileUrl` is configured, the component emits `qError` for the Google failure and then reports `ready` with `activeProvider: 'tiles'` and `usingFallback: true`. If no fallback succeeds, the component reports `error`, exposes a visible alert, and preserves the last working layer when one exists. Applications should log or surface `qError` as appropriate and use `qStatusChange` to drive surrounding loading/status UI.
+If vector or Google initialization fails and `tileUrl` is configured, the component emits `qError` for the requested-provider failure and then reports `ready` with `activeProvider: 'tiles'` and `usingFallback: true`. If no fallback succeeds, the component reports `error`, exposes a visible alert, and preserves the last working layer when one exists. Applications should log or surface `qError` as appropriate and use `qStatusChange` to drive surrounding loading/status UI.
 
 ```js
 map.addEventListener('qStatusChange', event => {
@@ -80,7 +83,7 @@ map.addEventListener('qError', event => {
 
 ## Styling
 
-Component tokens include `--q-map-height`, `--q-map-min-height`, `--q-map-bg`, `--q-map-border`, `--q-map-radius`, `--q-map-marker-size`, `--q-map-marker-color`, `--q-map-marker-success`, `--q-map-marker-warning`, `--q-map-marker-danger`, `--q-map-marker-muted`, `--q-map-marker-selected-color`, `--q-map-attribution-bg`, and `--q-map-attribution-color`.
+Component tokens include `--q-map-height`, `--q-map-min-height`, `--q-map-bg`, `--q-map-border`, `--q-map-radius`, `--q-map-marker-size`, `--q-map-marker-color`, `--q-map-marker-success`, `--q-map-marker-warning`, `--q-map-marker-danger`, `--q-map-marker-muted`, `--q-map-marker-selected-color`, `--q-map-attribution-bg`, `--q-map-attribution-color`, and `--q-map-tile-filter`. The tile filter is applied once to Leaflet's raster tile pane.
 
 The `surface`, `canvas`, `marker`, `attribution`, `empty`, and `error` shadow parts support focused overrides that cannot be expressed through tokens. Prefer tokens for theme-level changes and parts for one-off composition.
 
@@ -88,11 +91,11 @@ The host must have usable dimensions. The defaults provide a minimum height, whi
 
 ## CEF/Unreal and performance
 
-`q-map` lazy-loads Leaflet when connected, disables Leaflet 3D positioning before initialization, and disables fade, inertia, marker-zoom, and zoom animations. It uses ordinary DOM markers and solid theme surfaces without `backdrop-filter`. Map providers still rely on network access and image decoding, so validate delivery in the target CEF build and use the tiles provider with an appropriate source when offline support is required.
+`q-map` lazy-loads Leaflet when connected, disables inertia, and uses smooth fade, marker-zoom, and zoom animations unless the user prefers reduced motion. It uses ordinary DOM markers and solid theme surfaces without `backdrop-filter`. Map providers still rely on network access and image decoding, so validate delivery in the target CEF build and use the tiles provider with an appropriate source when offline support is required.
 
-The component reconciles markers by stable ID and observes container resizing rather than rebuilding the map for every application update. Keep marker IDs stable and assign a new marker array when its content changes. Large collections are not clustered or virtualized; filter, aggregate, or cluster them before supplying them to `q-map`.
+The component reconciles markers by stable ID and observes container resizing rather than rebuilding the map for every application update. Keep marker IDs stable and assign a new marker array when its content changes. Enable `clusterMarkers` for large point collections, and use `clusterable: false` only for markers that must remain independent.
 
-Avoid rapid whole-array replacement when positions have not changed. Tile images and large marker collections can increase decode memory and compositing cost in off-screen rendering environments.
+Avoid rapid whole-array replacement when positions have not changed. Tile images and large marker collections can increase decode memory and compositing cost in off-screen rendering environments. Keep `tilePreloadBuffer` at `0` on constrained clients unless the smoother edge coverage is worth the additional tile work.
 
 ## Basic example
 
@@ -174,7 +177,7 @@ Angular, React, Vue, and other consumers should retrieve their own data, map it 
 
 ## Known limitations
 
-- `q-map` renders tile layers and point markers only; it does not provide paths, polygons, popups, clustering, heatmaps, geocoding, directions, or route optimization.
+- `q-map` renders tile layers and point markers only; it does not provide paths, polygons, heatmaps, geocoding, directions, or route optimization.
 - It does not collect GPS positions, store history, determine online status, enforce permissions, or provide polling/WebSocket transport.
 - Provider availability, licensing, attribution, rate limits, caching, and offline behavior belong to the consuming application and provider. Google Maps imagery must not be cached for offline use.
 - `ready` means the provider layer was created and attached; later per-tile HTTP or image failures are handled by Leaflet and do not transition `qStatusChange`. Applications that need service-level availability should monitor their imagery provider separately.
