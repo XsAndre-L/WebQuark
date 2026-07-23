@@ -830,6 +830,7 @@ export namespace Components {
      * @cssprop --q-map-marker-content-color - Marker fallback-text color.
      * @cssprop --q-map-attribution-bg - Attribution background.
      * @cssprop --q-map-attribution-color - Attribution foreground.
+     * @cssprop --q-map-tile-filter - CSS filter applied once to the raster tile pane.
      */
     interface QMap {
         /**
@@ -920,10 +921,20 @@ export namespace Components {
          */
         "selectedMarkerId"?: QMapMarkerId;
         /**
+          * Preloads zero to four whole raster-tile rows and columns beyond the visible viewport.
+          * @default 0
+         */
+        "tilePreloadBuffer": number;
+        /**
           * Supplies the tile URL template for the tiles provider and optional vector/Google fallback.
           * @default ''
          */
         "tileUrl": string;
+        /**
+          * Extends vector rendering beyond the visible viewport and is clamped from zero to one-half.
+          * @default 0.2
+         */
+        "vectorPadding": number;
         /**
           * Supplies a MapLibre Style Specification URL for the vector provider.
           * @default ''
@@ -2059,6 +2070,7 @@ declare global {
      * @cssprop --q-map-marker-content-color - Marker fallback-text color.
      * @cssprop --q-map-attribution-bg - Attribution background.
      * @cssprop --q-map-attribution-color - Attribution foreground.
+     * @cssprop --q-map-tile-filter - CSS filter applied once to the raster tile pane.
      */
     interface HTMLQMapElement extends Components.QMap, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQMapElementEventMap>(type: K, listener: (this: HTMLQMapElement, ev: QMapCustomEvent<HTMLQMapElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -3263,6 +3275,7 @@ declare namespace LocalJSX {
      * @cssprop --q-map-marker-content-color - Marker fallback-text color.
      * @cssprop --q-map-attribution-bg - Attribution background.
      * @cssprop --q-map-attribution-color - Attribution foreground.
+     * @cssprop --q-map-tile-filter - CSS filter applied once to the raster tile pane.
      */
     interface QMap {
         /**
@@ -3377,10 +3390,20 @@ declare namespace LocalJSX {
          */
         "selectedMarkerId"?: QMapMarkerId;
         /**
+          * Preloads zero to four whole raster-tile rows and columns beyond the visible viewport.
+          * @default 0
+         */
+        "tilePreloadBuffer"?: number;
+        /**
           * Supplies the tile URL template for the tiles provider and optional vector/Google fallback.
           * @default ''
          */
         "tileUrl"?: string;
+        /**
+          * Extends vector rendering beyond the visible viewport and is clamped from zero to one-half.
+          * @default 0.2
+         */
+        "vectorPadding"?: number;
         /**
           * Supplies a MapLibre Style Specification URL for the vector provider.
           * @default ''
@@ -4359,7 +4382,9 @@ declare namespace LocalJSX {
     interface QMapAttributes {
         "provider": QMapProvider;
         "tileUrl": string;
+        "tilePreloadBuffer": number;
         "vectorStyleUrl": string;
+        "vectorPadding": number;
         "googleApiKey": string;
         "googleMapType": QMapGoogleMapType;
         "attribution": string;
@@ -4664,6 +4689,7 @@ declare module "@stencil/core" {
              * @cssprop --q-map-marker-content-color - Marker fallback-text color.
              * @cssprop --q-map-attribution-bg - Attribution background.
              * @cssprop --q-map-attribution-color - Attribution foreground.
+             * @cssprop --q-map-tile-filter - CSS filter applied once to the raster tile pane.
              */
             "q-map": LocalJSX.IntrinsicElements["q-map"] & JSXBase.HTMLAttributes<HTMLQMapElement>;
             /**

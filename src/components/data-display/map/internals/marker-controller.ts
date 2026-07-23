@@ -43,6 +43,8 @@ interface FocusIntent {
   markerKey: string;
 }
 
+const STANDALONE_MARKER_Z_INDEX_OFFSET = 2_000;
+
 export interface MapMarkerControllerOptions {
   map: LeafletMap;
   leaflet: LeafletModule;
@@ -156,6 +158,7 @@ export class MapMarkerController {
       riseOnHover: true,
       riseOffset: 1000,
       title: label,
+      zIndexOffset: this.getZIndexOffset(item),
     });
     layer.addTo(this.options.map);
     const element = layer.getElement();
@@ -191,6 +194,7 @@ export class MapMarkerController {
 
   private update(record: RenderedLayer, item: MapMarkerViewportItem): void {
     record.layer.setLatLng([this.getLatitude(item), this.getLongitude(item)]);
+    record.layer.setZIndexOffset(this.getZIndexOffset(item));
     record.markerKeys = item.kind === 'marker'
       ? [getMapMarkerKey(item.marker.id)]
       : item.markerKeys;
@@ -221,6 +225,12 @@ export class MapMarkerController {
     record.element.setAttribute('data-cluster-id', item.clusterId);
     record.element.setAttribute('title', `${item.count} map markers`);
     record.element.removeAttribute('aria-pressed');
+  }
+
+  private getZIndexOffset(item: MapMarkerViewportItem): number {
+    return item.kind === 'marker' && item.marker.clusterable === false
+      ? STANDALONE_MARKER_Z_INDEX_OFFSET
+      : 0;
   }
 
   private syncCallout(record: RenderedLayer, marker: QMapMarker, selected: boolean): void {

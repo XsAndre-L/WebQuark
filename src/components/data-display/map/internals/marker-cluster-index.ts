@@ -73,18 +73,35 @@ function isClusterFeature(
   return 'cluster' in feature.properties && feature.properties.cluster === true;
 }
 
+function createEmptyClusterIndex(): Supercluster<MarkerPointProperties> {
+  const index = new Supercluster<MarkerPointProperties>();
+  index.load([]);
+  return index;
+}
+
 /** Keeps the clustering library private and returns deterministic q-map records. */
 export class MapMarkerClusterIndex {
-  private index = new Supercluster<MarkerPointProperties>();
+  private index = createEmptyClusterIndex();
   private readonly markers = new Map<string, QMapMarker>();
+  private readonly standaloneMarkers = new Map<string, QMapMarker>();
   private signature = '';
 
   load(markers: QMapMarker[], options: MapMarkerClusteringOptions): void {
     const ordered = [...markers].sort((left, right) => getMapMarkerKey(left.id).localeCompare(getMapMarkerKey(right.id)));
     this.markers.clear();
-    for (const marker of ordered) this.markers.set(getMapMarkerKey(marker.id), marker);
+    this.standaloneMarkers.clear();
+    const clusterableMarkers: QMapMarker[] = [];
+    for (const marker of ordered) {
+      const key = getMapMarkerKey(marker.id);
+      if (marker.clusterable === false) {
+        this.standaloneMarkers.set(key, marker);
+      } else {
+        this.markers.set(key, marker);
+        clusterableMarkers.push(marker);
+      }
+    }
 
-    const nextSignature = sourceSignature(ordered, options);
+    const nextSignature = sourceSignature(clusterableMarkers, options);
     if (nextSignature === this.signature) return;
     this.signature = nextSignature;
     this.index = new Supercluster<MarkerPointProperties>({
@@ -92,7 +109,7 @@ export class MapMarkerClusterIndex {
       minPoints: options.minPoints,
       maxZoom: options.maxZoom,
     });
-    this.index.load(ordered.map(marker => ({
+    this.index.load(clusterableMarkers.map(marker => ({
       type: 'Feature',
       geometry: {
         type: 'Point',
@@ -147,12 +164,30 @@ export class MapMarkerClusterIndex {
       });
     }
 
+    for (const [key, marker] of this.standaloneMarkers) {
+      if (!isMarkerInBounds(marker, bounds)) continue;
+      items.set(key, { kind: 'marker', key, marker });
+    }
+
     return [...items.values()].sort((left, right) => left.key.localeCompare(right.key));
   }
 
   clear(): void {
-    this.index = new Supercluster<MarkerPointProperties>();
+    this.index = createEmptyClusterIndex();
     this.markers.clear();
+    this.standaloneMarkers.clear();
     this.signature = '';
   }
+}
+
+function isMarkerInBounds(
+  marker: QMapMarker,
+  [west, south, east, north]: MapMarkerClusterBounds,
+): boolean {
+  return (
+    marker.longitude >= west &&
+    marker.longitude <= east &&
+    marker.latitude >= south &&
+    marker.latitude <= north
+  );
 }
