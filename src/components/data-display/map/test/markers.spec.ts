@@ -28,4 +28,52 @@ describe('q-map marker normalization', () => {
     expect(Q_MAP_MARKER_VARIANTS).toEqual(['default', 'success', 'warning', 'danger', 'muted']);
     expect(markers.map(marker => marker.variant)).toEqual(['success', 'default']);
   });
+
+  it('defaults omitted and invalid clusterable values to true for array input', () => {
+    const markers = getMapMarkers([
+      { id: 'omitted', latitude: 0, longitude: 0, label: 'Omitted' },
+      {
+        id: 'invalid',
+        latitude: 1,
+        longitude: 1,
+        label: 'Invalid',
+        clusterable: 'false' as unknown as boolean,
+      },
+      {
+        id: 'standalone',
+        latitude: 2,
+        longitude: 2,
+        label: 'Standalone',
+        clusterable: false,
+      },
+    ]);
+
+    expect(markers.map(marker => marker.clusterable)).toEqual([
+      true,
+      true,
+      false,
+    ]);
+  });
+
+  it('preserves explicit false and defaults omitted values for JSON input', () => {
+    const markers = getMapMarkers(
+      JSON.stringify([
+        {
+          id: 'clustered',
+          latitude: 0,
+          longitude: 0,
+          label: 'Clustered',
+        },
+        {
+          id: 'standalone',
+          latitude: 1,
+          longitude: 1,
+          label: 'Standalone',
+          clusterable: false,
+        },
+      ]),
+    );
+
+    expect(markers.map(marker => marker.clusterable)).toEqual([true, false]);
+  });
 });

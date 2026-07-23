@@ -4,8 +4,17 @@ export interface RemovableMapLayer {
   remove(): unknown;
 }
 
+export interface MapBaseLayerAttachContext {
+  replacing: boolean;
+  signal: AbortSignal;
+}
+
 export interface MapBaseLayerOperations<TLayer extends RemovableMapLayer> {
-  attach(layer: TLayer, provider: QMapProvider): Promise<unknown> | unknown;
+  attach(
+    layer: TLayer,
+    provider: QMapProvider,
+    context: MapBaseLayerAttachContext,
+  ): Promise<unknown> | unknown;
   createGoogle(config: QMapBaseLayerConfig): Promise<TLayer>;
   createTiles(config: QMapBaseLayerConfig): TLayer;
   createVector(config: QMapBaseLayerConfig): Promise<TLayer>;
@@ -14,7 +23,9 @@ export interface MapBaseLayerOperations<TLayer extends RemovableMapLayer> {
 export interface QMapBaseLayerConfig {
   requestedProvider: QMapProvider;
   tileUrl: string;
+  tilePreloadBuffer: number;
   vectorStyleUrl: string;
+  vectorPadding: number;
   googleApiKey: string;
   googleApiAvailable: boolean;
   googleMapType: QMapGoogleMapType;
@@ -49,10 +60,25 @@ type LayerCommitResult =
   | ({ kind: 'error'; error: unknown } & ActiveLayerState)
   | { kind: 'stale' };
 
+export function isTilePreloadBufferRelevant(
+  requestedProvider: QMapProvider,
+  activeProvider: QMapProvider | undefined,
+): boolean {
+  return requestedProvider === 'tiles' || activeProvider === 'tiles';
+}
+
+export function isVectorPaddingRelevant(
+  requestedProvider: QMapProvider,
+  activeProvider: QMapProvider | undefined,
+): boolean {
+  return requestedProvider === 'vector' || activeProvider === 'vector';
+}
+
 /** Coordinates asynchronous provider creation and atomic base-layer replacement. */
 export class MapBaseLayerController<TLayer extends RemovableMapLayer> {
   private revision = 0;
   private active?: ActiveLayer<TLayer>;
+  private pendingAttachController?: AbortController;
 
   constructor(private readonly operations: MapBaseLayerOperations<TLayer>) {}
 
@@ -65,6 +91,7 @@ export class MapBaseLayerController<TLayer extends RemovableMapLayer> {
 
   async sync(config: QMapBaseLayerConfig): Promise<QMapBaseLayerSyncResult> {
     const revision = ++this.revision;
+    this.abortPendingAttach();
     if (!this.isConfigured(config)) {
       this.clearActiveLayer();
       return { kind: 'empty', activeProvider: undefined, usingFallback: false };
@@ -98,6 +125,7 @@ export class MapBaseLayerController<TLayer extends RemovableMapLayer> {
 
   destroy(): void {
     this.revision += 1;
+    this.abortPendingAttach();
     this.clearActiveLayer();
   }
 
@@ -144,12 +172,22 @@ export class MapBaseLayerController<TLayer extends RemovableMapLayer> {
       return { kind: 'stale' };
     }
 
+    const attachController = new AbortController();
+    this.pendingAttachController = attachController;
     try {
-      await this.operations.attach(candidate, provider);
+      await this.operations.attach(candidate, provider, {
+        replacing: this.active !== undefined,
+        signal: attachController.signal,
+      });
     } catch (error) {
+      this.clearPendingAttach(attachController);
       this.removeLayer(candidate);
+      if (revision !== this.revision || attachController.signal.aborted) {
+        return { kind: 'stale' };
+      }
       return { kind: 'error', error, ...this.getActiveState() };
     }
+    this.clearPendingAttach(attachController);
 
     if (revision !== this.revision) {
       this.removeLayer(candidate);
@@ -166,6 +204,17 @@ export class MapBaseLayerController<TLayer extends RemovableMapLayer> {
   private clearActiveLayer(): void {
     this.removeLayer(this.active?.layer);
     this.active = undefined;
+  }
+
+  private abortPendingAttach(): void {
+    this.pendingAttachController?.abort();
+    this.pendingAttachController = undefined;
+  }
+
+  private clearPendingAttach(controller: AbortController): void {
+    if (this.pendingAttachController === controller) {
+      this.pendingAttachController = undefined;
+    }
   }
 
   private removeLayer(layer: TLayer | undefined): void {
