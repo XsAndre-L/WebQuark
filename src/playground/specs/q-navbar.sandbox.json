@@ -12,17 +12,18 @@
     "compact": { "type": "boolean", "default": false, "desc": "Reduces navbar height" },
     "transparent": { "type": "boolean", "default": false, "desc": "Removes the default background" },
     "bordered": { "type": "boolean", "default": true, "desc": "Shows an inward-facing border" },
-    "items": { "type": "json", "default": "[{\"label\":\"Docs\",\"value\":\"docs\",\"href\":\"/docs\",\"icon\":\"book-open\"},{\"label\":\"Components\",\"value\":\"components\",\"href\":\"/components\",\"icon\":\"blocks\"},{\"label\":\"Blog\",\"value\":\"blog\",\"href\":\"/blog\",\"icon\":\"newspaper\"}]", "desc": "String labels or advanced navigation item objects" }
+    "items": { "type": "json", "default": "[{\"label\":\"Docs\",\"value\":\"docs\",\"href\":\"/docs\",\"icon\":\"book-open\"},{\"label\":\"Components\",\"value\":\"components\",\"href\":\"/components\",\"icon\":\"blocks\"},{\"label\":\"Blog\",\"value\":\"blog\",\"href\":\"/blog\",\"icon\":\"newspaper\"}]", "desc": "String labels or advanced navigation item objects, including add-on slots and placement" }
   },
   "slots": {
     "actions": { "type": "html", "default": "<q-button size=\"sm\" variant=\"primary\">Sign in</q-button>", "desc": "Desktop action slot" },
-    "mobile-actions": { "type": "html", "default": "<q-button size=\"sm\" variant=\"primary\" expand>Sign in</q-button>", "desc": "Mobile action slot" }
+    "mobile-actions": { "type": "html", "default": "<q-button size=\"sm\" variant=\"primary\" expand>Sign in</q-button>", "desc": "Mobile action slot" },
+    "messages-addon": { "type": "html", "default": "<span style=\"display:inline-flex;min-width:18px;height:18px;padding:0 4px;align-items:center;justify-content:center;border-radius:999px;background:#ef4444;color:white;font-size:11px;font-weight:700\">3</span>", "desc": "Example per-item add-on slot" }
   },
   "variants": [
     { "name": "Default Navbar", "props": { "brand": "WebQuark" } },
     { "name": "Compact Sticky", "props": { "brand": "Docs", "compact": true, "sticky": true } },
     { "name": "Transparent", "props": { "brand": "Landing", "transparent": true, "bordered": false } },
-    { "name": "Bottom Navigation", "props": { "brand": "", "edge": "bottom", "activeValue": "home", "mobileMode": "inline", "items": "[{\"label\":\"Home\",\"value\":\"home\",\"icon\":\"house\",\"iconOnly\":true},{\"label\":\"Messages\",\"value\":\"messages\",\"icon\":\"message-circle\",\"iconOnly\":true},{\"label\":\"Tasks\",\"value\":\"tasks\",\"icon\":\"clipboard-list\",\"iconOnly\":true}]" } },
+    { "name": "Bottom Navigation", "props": { "brand": "", "edge": "bottom", "activeValue": "home", "mobileMode": "inline", "items": "[{\"label\":\"Home\",\"value\":\"home\",\"icon\":\"house\",\"iconOnly\":true},{\"label\":\"Messages\",\"value\":\"messages\",\"icon\":\"message-circle\",\"iconOnly\":true,\"addonSlot\":\"messages-addon\",\"addonPlacement\":\"top-end\"},{\"label\":\"Tasks\",\"value\":\"tasks\",\"icon\":\"clipboard-list\",\"iconOnly\":true}]" } },
     { "name": "Icon Only", "props": { "brand": "Mobile", "activeValue": "home", "mobileMode": "inline", "items": "[{\"label\":\"Home\",\"value\":\"home\",\"icon\":\"house\",\"iconOnly\":true},{\"label\":\"Messages\",\"value\":\"messages\",\"icon\":\"message-circle\",\"iconOnly\":true},{\"label\":\"Tasks\",\"value\":\"tasks\",\"icon\":\"clipboard-list\",\"iconOnly\":true}]" } }
   ],
   "edgeCases": [

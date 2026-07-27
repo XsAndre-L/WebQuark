@@ -1,6 +1,13 @@
 import { Component, Element, Event, EventEmitter, Prop, State, h } from '@stencil/core';
 import { identifyItems, type IdentifiedCollectionItem } from '../../../utils/collection-identity';
-import type { NavbarItem, NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode } from './navbar.types';
+import type {
+  NavbarItem,
+  NavbarItemInput,
+  NavbarSelectDetail,
+  QNavbarAddonPlacement,
+  QNavbarEdge,
+  QNavbarMobileMode,
+} from './navbar.types';
 import { getNavbarItems } from './navbar.utils';
 
 let navbarIds = 0;
@@ -19,6 +26,7 @@ let navbarIds = 0;
  * @part actions - Desktop action container.
  * @part menu-button - Mobile menu toggle button.
  * @part mobile-panel - Mobile menu panel.
+ * @part item-addon - Per-item slotted add-on container.
  */
 @Component({
   tag: 'q-navbar',
@@ -80,8 +88,11 @@ export class QNavbar {
   // ========================= [2] INTERNAL STATE & REFS =========================
 
   @State() menuOpen: boolean = false;
+  @State() hasMobileContent: boolean = false;
 
-  private readonly mobilePanelId = `q-navbar-mobile-panel-${++navbarIds}`;
+  private readonly instanceId = ++navbarIds;
+  private readonly primaryNavId = `q-navbar-primary-nav-${this.instanceId}`;
+  private readonly mobilePanelId = `q-navbar-mobile-panel-${this.instanceId}`;
   private dismissListenersActive = false;
 
   // ========================= [3] LIFECYCLE & WATCHERS ==========================
@@ -164,6 +175,10 @@ export class QNavbar {
     this.handleMenuClose();
   };
 
+  private handleMobileSlotChange = () => {
+    this.hasMobileContent = !!this.el.querySelector('[slot="mobile-nav"], [slot="mobile-actions"]');
+  };
+
   private setIconAttribute(el: HTMLElement, name: string, value?: string | number) {
     if (value === undefined || value === null || value === '') {
       el.removeAttribute(name);
@@ -207,6 +222,7 @@ export class QNavbar {
     const active = item.active || (!!this.activeValue && (item.value === this.activeValue || item.href === this.activeValue));
     const iconOnly = !!item.iconOnly && !!item.icon;
     const accessibleLabel = iconOnly ? item.ariaLabel || item.label : undefined;
+    const addonPlacement: QNavbarAddonPlacement = item.addonPlacement || 'top-end';
     const classes = {
       'nav-item': true,
       'is-active': active,
@@ -228,37 +244,46 @@ export class QNavbar {
         {item.label}
       </span>,
     ];
+    const addon = item.addonSlot ? (
+      <span class={`nav-item__addon is-${addonPlacement}`} part="item-addon">
+        <slot name={item.addonSlot} />
+      </span>
+    ) : null;
 
     if (item.href) {
       return (
-        <a
-          key={key}
-          class={classes}
-          href={item.disabled ? undefined : item.href}
-          target={item.disabled ? undefined : item.target}
-          rel={item.target === '_blank' ? 'noopener noreferrer' : undefined}
-          aria-current={active ? 'page' : undefined}
-          aria-disabled={item.disabled ? 'true' : 'false'}
-          aria-label={accessibleLabel}
-          onClick={(ev) => this.handleItemClick(item, ev)}
-        >
-          {content}
-        </a>
+        <span key={key} class={{ 'nav-item-shell': true, 'is-icon-only': iconOnly }}>
+          <a
+            class={classes}
+            href={item.disabled ? undefined : item.href}
+            target={item.disabled ? undefined : item.target}
+            rel={item.target === '_blank' ? 'noopener noreferrer' : undefined}
+            aria-current={active ? 'page' : undefined}
+            aria-disabled={item.disabled ? 'true' : 'false'}
+            aria-label={accessibleLabel}
+            onClick={(ev) => this.handleItemClick(item, ev)}
+          >
+            {content}
+          </a>
+          {addon}
+        </span>
       );
     }
 
     return (
-      <button
-        key={key}
-        class={classes}
-        type="button"
-        disabled={item.disabled}
-        aria-current={active ? 'page' : undefined}
-        aria-label={accessibleLabel}
-        onClick={(ev) => this.handleItemClick(item, ev)}
-      >
-        {content}
-      </button>
+      <span key={key} class={{ 'nav-item-shell': true, 'is-icon-only': iconOnly }}>
+        <button
+          class={classes}
+          type="button"
+          disabled={item.disabled}
+          aria-current={active ? 'page' : undefined}
+          aria-label={accessibleLabel}
+          onClick={(ev) => this.handleItemClick(item, ev)}
+        >
+          {content}
+        </button>
+        {addon}
+      </span>
     );
   }
 
@@ -290,7 +315,7 @@ export class QNavbar {
         <div class="navbar-row">
           {this.renderBrand()}
 
-          <nav class="desktop-nav" aria-label={ariaLabel || 'Primary navigation'} part="nav">
+          <nav id={this.primaryNavId} class="desktop-nav" aria-label={ariaLabel || 'Primary navigation'} part="nav">
             {hasItems && this.renderNavItems(items)}
             <slot name="nav" />
           </nav>
@@ -304,7 +329,7 @@ export class QNavbar {
             type="button"
             aria-label={this.mobileLabel}
             aria-expanded={this.menuOpen ? 'true' : 'false'}
-            aria-controls={this.mobilePanelId}
+            aria-controls={`${this.primaryNavId} ${this.mobilePanelId}`}
             aria-haspopup="true"
             onClick={this.handleMenuToggle}
             part="menu-button"
@@ -315,13 +340,16 @@ export class QNavbar {
           </button>
         </div>
 
-        <div id={this.mobilePanelId} class="mobile-panel" part="mobile-panel">
+        <div
+          id={this.mobilePanelId}
+          class={{ 'mobile-panel': true, 'has-content': this.hasMobileContent }}
+          part="mobile-panel"
+        >
           <nav class="mobile-nav" aria-label={ariaLabel || 'Mobile navigation'}>
-            {hasItems && this.renderNavItems(items)}
-            <slot name="mobile-nav" />
+            <slot name="mobile-nav" onSlotchange={this.handleMobileSlotChange} />
           </nav>
           <div class="mobile-actions">
-            <slot name="mobile-actions" />
+            <slot name="mobile-actions" onSlotchange={this.handleMobileSlotChange} />
           </div>
         </div>
       </div>
