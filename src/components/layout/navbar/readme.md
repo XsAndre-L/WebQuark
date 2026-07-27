@@ -1,5 +1,25 @@
 # q-navbar
 
+## Item add-ons
+
+Set `addonSlot` on a navigation item, then assign any custom element to that named slot. Use `addonPlacement` to position it at `top-start`, `top-center`, `top-end`, `bottom-start`, `bottom-center`, or `bottom-end`.
+
+```html
+<q-navbar id="app-navigation">
+  <span slot="messages-addon">3</span>
+</q-navbar>
+
+<script>
+  document.querySelector('#app-navigation').items = [
+    {
+      label: 'Messages',
+      value: 'messages',
+      addonSlot: 'messages-addon',
+      addonPlacement: 'top-end'
+    }
+  ];
+</script>
+```
 
 
 <!-- Auto Generated Below -->
@@ -50,14 +70,15 @@ Edge-aware site navigation with optional brand content, actions, and mobile menu
 
 ## Shadow Parts
 
-| Part             | Description                   |
-| ---------------- | ----------------------------- |
-| `"actions"`      | Desktop action container.     |
-| `"brand"`        | Brand link.                   |
-| `"menu-button"`  | Mobile menu toggle button.    |
-| `"mobile-panel"` | Mobile menu panel.            |
-| `"nav"`          | Desktop navigation container. |
-| `"navbar"`       | Navbar container.             |
+| Part             | Description                        |
+| ---------------- | ---------------------------------- |
+| `"actions"`      | Desktop action container.          |
+| `"brand"`        | Brand link.                        |
+| `"item-addon"`   | Per-item slotted add-on container. |
+| `"menu-button"`  | Mobile menu toggle button.         |
+| `"mobile-panel"` | Mobile menu panel.                 |
+| `"nav"`          | Desktop navigation container.      |
+| `"navbar"`       | Navbar container.                  |
 
 
 ## Dependencies
