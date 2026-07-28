@@ -21,6 +21,12 @@ Set `addonSlot` on a navigation item, then assign any custom element to that nam
 </script>
 ```
 
+## CSS Custom Properties
+
+| Name                    | Description                                                        |
+| ----------------------- | ------------------------------------------------------------------ |
+| `--q-navbar-item-width` | Width of each navigation item wrapper and interactive item. |
+
 
 <!-- Auto Generated Below -->
 
