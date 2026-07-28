@@ -21,6 +21,10 @@ function updateIcon(icon: QIconElement, name: string | undefined): void {
 }
 
 export function createMarkerContent(document: Document): HTMLElement {
+  const surface = document.createElement('span');
+  surface.className = 'q-map-marker';
+  surface.setAttribute('part', 'marker');
+
   const content = document.createElement('span');
   content.className = 'q-map-marker__content';
   content.setAttribute('aria-hidden', 'true');
@@ -66,7 +70,8 @@ export function createMarkerContent(document: Document): HTMLElement {
   center.append(fallback, image, icon);
   badge.append(badgeIcon, badgeText);
   content.append(center, badge);
-  return content;
+  surface.append(content);
+  return surface;
 }
 
 function updateImage(center: HTMLElement, image: HTMLImageElement, imageUrl: string | undefined): void {
@@ -127,13 +132,18 @@ export function updateMarkerPresentation(element: HTMLElement, marker: QMapMarke
 }
 
 export function createClusterContent(document: Document): HTMLElement {
+  const surface = document.createElement('span');
+  surface.className = 'q-map-cluster';
+  surface.setAttribute('part', 'cluster');
+
   const content = document.createElement('span');
   content.className = 'q-map-cluster__content';
   content.setAttribute('aria-hidden', 'true');
   const count = document.createElement('span');
   count.className = 'q-map-cluster__count';
   content.append(count);
-  return content;
+  surface.append(content);
+  return surface;
 }
 
 export function updateClusterPresentation(element: HTMLElement, count: number, containsSelection: boolean): void {

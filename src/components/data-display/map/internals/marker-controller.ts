@@ -141,16 +141,18 @@ export class MapMarkerController {
 
   private add(item: MapMarkerViewportItem): RenderedLayer | undefined {
     const document = this.options.map.getContainer().ownerDocument;
-    const content = item.kind === 'marker'
+    const surface = item.kind === 'marker'
       ? createMarkerContent(document)
       : createClusterContent(document);
-    const className = item.kind === 'marker' ? 'q-map-marker' : 'q-map-cluster';
+    const className = item.kind === 'marker'
+      ? 'q-map-marker-position'
+      : 'q-map-cluster-position';
     const label = item.kind === 'marker' ? item.marker.label : `${item.count} map markers`;
     const layer = this.options.leaflet.marker([this.getLatitude(item), this.getLongitude(item)], {
       bubblingMouseEvents: false,
       icon: this.options.leaflet.divIcon({
         className,
-        html: content,
+        html: surface,
         iconAnchor: [0, 0],
         iconSize: [0, 0],
       }),
@@ -166,6 +168,10 @@ export class MapMarkerController {
       layer.remove();
       return undefined;
     }
+    if (!element.contains(surface)) {
+      layer.remove();
+      return undefined;
+    }
 
     const click = (event: MouseEvent) => {
       event.stopPropagation();
@@ -177,13 +183,13 @@ export class MapMarkerController {
       event.stopPropagation();
       this.activate(item.key, event);
     };
-    element.addEventListener('click', click);
-    element.addEventListener('keydown', keydown);
+    surface.addEventListener('click', click);
+    surface.addEventListener('keydown', keydown);
 
     const record: RenderedLayer = {
       kind: item.kind,
       layer,
-      element,
+      element: surface,
       markerKeys: [],
       click,
       keydown,
@@ -202,7 +208,6 @@ export class MapMarkerController {
     if (item.kind === 'marker') {
       const selected = this.isSelected(item.marker.id);
       updateMarkerPresentation(record.element, item.marker, selected);
-      record.element.setAttribute('part', 'marker');
       record.element.setAttribute('role', 'button');
       record.element.setAttribute('tabindex', '0');
       record.element.setAttribute('aria-label', getMarkerAccessibleLabel(item.marker));
@@ -215,7 +220,6 @@ export class MapMarkerController {
 
     this.unbindCallout(record);
     updateClusterPresentation(record.element, item.count, item.containsSelection);
-    record.element.setAttribute('part', 'cluster');
     record.element.setAttribute('role', 'button');
     record.element.setAttribute('tabindex', '0');
     record.element.setAttribute(

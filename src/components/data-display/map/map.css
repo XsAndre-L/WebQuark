@@ -144,11 +144,15 @@ a.map-attribution:focus-visible {
 
 .leaflet-zoom-animated {
   transform-origin: 0 0;
+}
+
+.leaflet-tile-container.leaflet-zoom-animated {
   will-change: transform;
 }
 
 .leaflet-zoom-anim .leaflet-zoom-animated {
   transition: transform 250ms cubic-bezier(0, 0, 0.25, 1);
+  will-change: transform;
 }
 
 .leaflet-zoom-anim .leaflet-tile,
@@ -270,12 +274,18 @@ a.map-attribution:focus-visible {
   cursor: default;
 }
 
-.q-map-marker {
-  display: grid !important;
+.q-map-marker-position {
   width: var(--q-map-marker-size, 20px) !important;
   height: var(--q-map-marker-size, 20px) !important;
   margin-top: calc(var(--q-map-marker-size, 20px) * -0.5) !important;
   margin-left: calc(var(--q-map-marker-size, 20px) * -0.5) !important;
+}
+
+.q-map-marker {
+  position: relative;
+  display: grid;
+  width: 100%;
+  height: 100%;
   place-items: center;
   box-sizing: border-box;
   border: 3px solid var(--q-bg-base, #111827);
@@ -283,6 +293,7 @@ a.map-attribution:focus-visible {
   background: var(--q-map-marker-color, var(--q-color-primary, #60a5fa));
   box-shadow: var(--q-shadow-low, 0 2px 4px rgba(0, 0, 0, 0.3));
   outline: none;
+  transition: box-shadow 160ms ease;
 }
 
 .q-map-marker.variant-success { background: var(--q-map-marker-success, var(--q-color-success, #22c55e)); }
@@ -459,12 +470,18 @@ a.map-attribution:focus-visible {
   display: none;
 }
 
-.q-map-cluster {
-  display: grid !important;
+.q-map-cluster-position {
   width: var(--q-map-marker-cluster-size, 32px) !important;
   height: var(--q-map-marker-cluster-size, 32px) !important;
   margin-top: calc(var(--q-map-marker-cluster-size, 32px) * -0.5) !important;
   margin-left: calc(var(--q-map-marker-cluster-size, 32px) * -0.5) !important;
+}
+
+.q-map-cluster {
+  position: relative;
+  display: grid;
+  width: 100%;
+  height: 100%;
   place-items: center;
   box-sizing: border-box;
   border: 2px solid color-mix(in srgb, var(--q-color-primary, #60a5fa) 70%, white);
@@ -475,6 +492,7 @@ a.map-attribution:focus-visible {
     var(--q-shadow-medium, 0 8px 16px rgba(0, 0, 0, 0.3));
   color: var(--q-fg-base, #f9fafb);
   outline: none;
+  transition: box-shadow 160ms ease;
 }
 
 .q-map-cluster.contains-selection {
@@ -560,6 +578,11 @@ a.map-attribution:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .q-map-marker,
+  .q-map-cluster {
+    transition: none;
+  }
+
   .q-map-marker.is-pulsing::before {
     opacity: 0.65;
     animation: none;
