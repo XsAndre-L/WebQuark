@@ -167,14 +167,16 @@
   align-items: center;
   justify-content: center;
   justify-self: center;
-  width: fit-content;
+  width: var(--q-navbar-item-width, fit-content);
   min-width: 0;
 }
 
 .nav-item {
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: var(--q-navbar-item-width, auto);
   gap: var(--q-navbar-item-gap, 8px);
   min-height: 36px;
   padding: var(--q-navbar-item-padding, 7px 10px);
