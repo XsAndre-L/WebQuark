@@ -79,4 +79,13 @@ export type {
   QMapStatus,
   QMapStatusChangeDetail,
 } from './components/data-display/map/map.types';
+export type {
+  NavbarItem,
+  NavbarItemInput,
+  NavbarSelectDetail,
+  QNavbarAddonPlacement,
+  QNavbarEdge,
+  QNavbarMobileMode,
+  QNavbarTarget,
+} from './components/layout/navbar/navbar.types';
 export type { QTabsOrientation, QTabsSize, QTabsVariant, TabItem, TabItemInput } from './components/layout/tabs/tabs.types';
