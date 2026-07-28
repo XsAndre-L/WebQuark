@@ -44,24 +44,20 @@ describe('q-navbar', () => {
     expect(handler.mock.calls[0][0].detail.value).toBe('Docs');
   });
 
-  it('preserves desktop and mobile item nodes when a new array keeps the same values', async () => {
+  it('preserves item nodes when a new array keeps the same values', async () => {
     const items = [
       { label: 'Home', value: 'home' },
       { label: 'Docs', value: 'docs' },
     ];
     const el = await createComponent({ items });
     const desktopBefore = Array.from(el.shadowRoot.querySelectorAll('.desktop-nav .nav-item')) as HTMLElement[];
-    const mobileBefore = Array.from(el.shadowRoot.querySelectorAll('.mobile-nav .nav-item')) as HTMLElement[];
 
     el.items = items.map(item => ({ ...item }));
     await waitForUpdate();
 
     const desktopAfter = Array.from(el.shadowRoot.querySelectorAll('.desktop-nav .nav-item')) as HTMLElement[];
-    const mobileAfter = Array.from(el.shadowRoot.querySelectorAll('.mobile-nav .nav-item')) as HTMLElement[];
     expect(desktopAfter[0]).toBe(desktopBefore[0]);
     expect(desktopAfter[1]).toBe(desktopBefore[1]);
-    expect(mobileAfter[0]).toBe(mobileBefore[0]);
-    expect(mobileAfter[1]).toBe(mobileBefore[1]);
   });
 
   it('reuses reordered items while adding and removing only changed values', async () => {
@@ -211,9 +207,10 @@ describe('q-navbar', () => {
 
     const button = el.shadowRoot.querySelector('.menu-button') as HTMLButtonElement;
     const panel = el.shadowRoot.querySelector('.mobile-panel') as HTMLElement;
+    const primaryNav = el.shadowRoot.querySelector('.desktop-nav') as HTMLElement;
 
     expect(panel.id).toMatch(/^q-navbar-mobile-panel-/);
-    expect(button.getAttribute('aria-controls')).toBe(panel.id);
+    expect(button.getAttribute('aria-controls')).toBe(`${primaryNav.id} ${panel.id}`);
     expect(button.getAttribute('aria-haspopup')).toBe('true');
 
     button.click();
@@ -261,8 +258,8 @@ describe('q-navbar', () => {
     button.click();
     await waitForUpdate();
 
-    const mobileItem = el.shadowRoot.querySelector('.mobile-nav .nav-item') as HTMLElement;
-    mobileItem.click();
+    const item = el.shadowRoot.querySelector('.desktop-nav .nav-item') as HTMLElement;
+    item.click();
     await waitForUpdate();
 
     expect(button.getAttribute('aria-expanded')).toBe('false');

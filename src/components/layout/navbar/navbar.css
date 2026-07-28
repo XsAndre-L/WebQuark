@@ -161,10 +161,22 @@
   flex: 0 0 auto;
 }
 
-.nav-item {
+.nav-item-shell {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  justify-self: center;
+  width: var(--q-navbar-item-width, fit-content);
+  min-width: 0;
+}
+
+.nav-item {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--q-navbar-item-width, auto);
   gap: var(--q-navbar-item-gap, 8px);
   min-height: 36px;
   padding: var(--q-navbar-item-padding, 7px 10px);
@@ -181,6 +193,49 @@
   transition:
     color var(--q-transition-fast, 150ms ease),
     background var(--q-transition-fast, 150ms ease);
+}
+
+.nav-item__addon {
+  position: absolute;
+  z-index: 1;
+  display: inline-flex;
+  max-width: none;
+}
+
+.nav-item__addon.is-top-start {
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  transform: translateY(-50%);
+}
+
+.nav-item__addon.is-top-center {
+  inset-block-start: 0;
+  inset-inline-start: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.nav-item__addon.is-top-end {
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  transform: translateY(-50%);
+}
+
+.nav-item__addon.is-bottom-start {
+  inset-block-end: 0;
+  inset-inline-start: 0;
+  transform: translateY(50%);
+}
+
+.nav-item__addon.is-bottom-center {
+  inset-block-end: 0;
+  inset-inline-start: 50%;
+  transform: translate(-50%, 50%);
+}
+
+.nav-item__addon.is-bottom-end {
+  inset-block-end: 0;
+  inset-inline-end: 0;
+  transform: translateY(50%);
 }
 
 .nav-item:hover,
@@ -238,6 +293,18 @@
   justify-content: flex-start;
 }
 
+:host([edge='left']) .nav-item-shell,
+:host([edge='right']) .nav-item-shell {
+  justify-self: stretch;
+  width: 100%;
+}
+
+:host([edge='left']) .nav-item-shell.is-icon-only,
+:host([edge='right']) .nav-item-shell.is-icon-only {
+  width: var(--q-navbar-item-icon-only-size, 40px);
+  align-self: center;
+}
+
 :host([edge='left']) .nav-item.is-icon-only,
 :host([edge='right']) .nav-item.is-icon-only {
   width: var(--q-navbar-item-icon-only-size, 40px);
@@ -290,17 +357,52 @@
 }
 
 @media (max-width: 720px) {
-  :host([edge='top']) .desktop-nav,
   :host([edge='top']) .desktop-actions,
-  :host([edge='bottom']) .desktop-nav,
   :host([edge='bottom']) .desktop-actions {
     display: none;
   }
 
   :host([edge='top']) .navbar-row,
   :host([edge='bottom']) .navbar-row {
+    flex-wrap: wrap;
     justify-content: space-between;
     padding: var(--q-navbar-mobile-padding, var(--q-navbar-edge-mobile-padding, 0 16px));
+  }
+
+  :host([edge='top'][mobile-mode='menu']) .desktop-nav,
+  :host([edge='bottom'][mobile-mode='menu']) .desktop-nav {
+    display: none;
+    order: 3;
+    flex: 1 0 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
+
+  :host([edge='bottom'][mobile-mode='menu']) .desktop-nav {
+    order: -1;
+  }
+
+  :host([edge='top'][mobile-mode='menu']) .navbar.is-open .desktop-nav,
+  :host([edge='bottom'][mobile-mode='menu']) .navbar.is-open .desktop-nav {
+    display: flex;
+  }
+
+  :host([edge='top'][mobile-mode='menu']) .desktop-nav .nav-item-shell,
+  :host([edge='bottom'][mobile-mode='menu']) .desktop-nav .nav-item-shell,
+  :host([edge='top'][mobile-mode='menu']) .desktop-nav .nav-item,
+  :host([edge='bottom'][mobile-mode='menu']) .desktop-nav .nav-item {
+    width: 100%;
+  }
+
+  :host([edge='top'][mobile-mode='menu']) .desktop-nav .nav-item,
+  :host([edge='bottom'][mobile-mode='menu']) .desktop-nav .nav-item {
+    justify-content: flex-start;
+  }
+
+  :host([edge='top'][mobile-mode='menu']) .desktop-nav slot[name='nav'],
+  :host([edge='bottom'][mobile-mode='menu']) .desktop-nav slot[name='nav'] {
+    display: none;
   }
 
   :host([edge='top']) .menu-button,
@@ -328,8 +430,8 @@
     border-bottom: var(--q-navbar-border, 1px solid var(--q-border-color, #374151));
   }
 
-  :host([edge='top']) .navbar.is-open .mobile-panel,
-  :host([edge='bottom']) .navbar.is-open .mobile-panel {
+  :host([edge='top']) .navbar.is-open .mobile-panel.has-content,
+  :host([edge='bottom']) .navbar.is-open .mobile-panel.has-content {
     display: block;
   }
 
