@@ -261,6 +261,7 @@ export class MapMarkerController {
       });
       record.calloutBound = true;
     }
+    record.layer.setTooltipContent(record.calloutContent);
     record.layer.openTooltip();
     const tooltip = record.layer.getTooltip()?.getElement();
     tooltip?.setAttribute('part', 'marker-callout');

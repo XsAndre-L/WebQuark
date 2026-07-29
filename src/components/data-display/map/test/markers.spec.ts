@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { Q_MAP_MARKER_VARIANTS } from '../map.types';
+import type { QMapMarker } from '../map.types';
 import { getMapMarkerKey, getMapMarkers } from '../internals/markers';
 
 describe('q-map marker normalization', () => {
@@ -75,5 +76,87 @@ describe('q-map marker normalization', () => {
     );
 
     expect(markers.map(marker => marker.clusterable)).toEqual([true, false]);
+  });
+
+  it('normalizes callout text and defaults its presentation options', () => {
+    const [marker] = getMapMarkers([
+      {
+        id: 'store',
+        latitude: 0,
+        longitude: 0,
+        label: 'Store',
+        callout: {
+          title: '  Main Street Store  ',
+          subtitle: '  CUST-001 | Johannesburg  ',
+          meta: '  Visit due  ',
+          status: {
+            label: '  Attention  ',
+            variant: 'warning',
+          },
+        },
+      },
+    ]);
+
+    expect(marker.callout).toEqual({
+      title: 'Main Street Store',
+      subtitle: 'CUST-001 | Johannesburg',
+      meta: 'Visit due',
+      status: {
+        label: 'Attention',
+        variant: 'warning',
+      },
+      variant: 'default',
+      placement: 'auto',
+      visibility: 'always',
+    });
+  });
+
+  it('removes callouts without a meaningful title', () => {
+    const markers = getMapMarkers([
+      {
+        id: 'blank',
+        latitude: 0,
+        longitude: 0,
+        label: 'Blank callout',
+        callout: {
+          title: '   ',
+          subtitle: 'Ignored subtitle',
+        },
+      },
+      {
+        id: 'invalid',
+        latitude: 1,
+        longitude: 1,
+        label: 'Invalid callout',
+        callout: 'Store details' as unknown as QMapMarker['callout'],
+      },
+    ]);
+
+    expect(markers.map(marker => marker.callout)).toEqual([undefined, undefined]);
+  });
+
+  it('removes callout statuses without a meaningful label', () => {
+    const [marker] = getMapMarkers([
+      {
+        id: 'store',
+        latitude: 0,
+        longitude: 0,
+        label: 'Store',
+        callout: {
+          title: 'Store',
+          status: {
+            label: '   ',
+            variant: 'warning',
+          },
+        },
+      },
+    ]);
+
+    expect(marker.callout).toEqual({
+      title: 'Store',
+      variant: 'default',
+      placement: 'auto',
+      visibility: 'always',
+    });
   });
 });

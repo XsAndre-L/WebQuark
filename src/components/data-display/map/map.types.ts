@@ -10,12 +10,14 @@ export const Q_MAP_MARKER_VARIANTS = ['default', 'success', 'warning', 'danger',
 export const Q_MAP_MARKER_KINDS = ['dot', 'avatar', 'icon'] as const;
 export const Q_MAP_MARKER_RINGS = ['none', 'solid', 'dashed'] as const;
 export const Q_MAP_MARKER_CALLOUT_PLACEMENTS = ['auto', 'left', 'right', 'top', 'bottom'] as const;
+export const Q_MAP_MARKER_CALLOUT_STAT_LAYOUTS = ['compact', 'wide'] as const;
 export const Q_MAP_MARKER_CALLOUT_VISIBILITIES = ['always', 'selected'] as const;
 
 export type QMapMarkerVariant = (typeof Q_MAP_MARKER_VARIANTS)[number];
 export type QMapMarkerKind = (typeof Q_MAP_MARKER_KINDS)[number];
 export type QMapMarkerRing = (typeof Q_MAP_MARKER_RINGS)[number];
 export type QMapMarkerCalloutPlacement = (typeof Q_MAP_MARKER_CALLOUT_PLACEMENTS)[number];
+export type QMapMarkerCalloutStatLayout = (typeof Q_MAP_MARKER_CALLOUT_STAT_LAYOUTS)[number];
 export type QMapMarkerCalloutVisibility = (typeof Q_MAP_MARKER_CALLOUT_VISIBILITIES)[number];
 
 export interface QMapBounds {
@@ -34,10 +36,23 @@ export interface QMapMarkerBadge {
   ariaLabel: string;
 }
 
+export interface QMapMarkerCalloutStatus {
+  label: string;
+  variant?: QMapMarkerVariant;
+}
+
+export interface QMapMarkerCalloutStat {
+  label: string;
+  value: string | number;
+  layout?: QMapMarkerCalloutStatLayout;
+}
+
 export interface QMapMarkerCallout {
   title: string;
   subtitle?: string;
   meta?: string;
+  stats?: readonly QMapMarkerCalloutStat[];
+  status?: QMapMarkerCalloutStatus;
   variant?: QMapMarkerVariant;
   placement?: QMapMarkerCalloutPlacement;
   visibility?: QMapMarkerCalloutVisibility;

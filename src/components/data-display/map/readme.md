@@ -5,7 +5,7 @@
 - `kind`: `dot`, `avatar`, or `icon`
 - `ring` and `pulse`: independent status emphasis
 - `badge`: compact icon/text status with a required accessible label
-- `callout`: plain-text, non-interactive context shown always or only while selected
+- `callout`: plain-text, non-interactive context with an optional status pill and structured stats
 - `clusterMarkers`: deterministic, keyboard-accessible clustering
 
 ```ts
@@ -26,14 +26,27 @@ map.markers = [{
   },
   callout: {
     title: 'Rosebank location',
-    subtitle: 'Live now',
+    subtitle: 'CUST-001 | Rosebank',
+    status: {
+      label: 'In Progress',
+      variant: 'success',
+    },
     meta: 'Updated eight minutes ago',
+    stats: [
+      { label: 'Visits', value: '2 of 4' },
+      { label: 'Last update', value: '8m' },
+      {
+        label: 'Current activity',
+        value: 'Shelf audit at Rosebank',
+        layout: 'wide',
+      },
+    ],
     placement: 'right',
   },
 }];
 ```
 
-Cancel `qClusterSelect` to replace the default centre-and-zoom behaviour. Callout and badge strings are inserted as text, never interpreted as HTML.
+Cancel `qClusterSelect` to replace the default centre-and-zoom behaviour. Callout, status, badge, and stat strings are inserted as text, never interpreted as HTML. A callout status is rendered as a pill beside the title, while the optional subtitle remains on its own line. Callout stats render in two compact columns; a stat with `layout: 'wide'` spans both columns.
 
 
 <!-- Auto Generated Below -->
