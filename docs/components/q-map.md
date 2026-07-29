@@ -32,6 +32,8 @@ Canonical API: [generated Stencil reference](../../src/components/data-display/m
 
 `QMapMarker` contains a stable `id` (`string` or `number`), finite `latitude` and `longitude`, a human-readable `label`, and an optional `variant` of `default`, `success`, `warning`, `danger`, or `muted`. Unsupported variants normalize to `default`. ID identity is type-stable, so numeric `1` and string `'1'` are independent markers and selection values. When clustering is enabled, `clusterable: false` keeps that marker independently visible; omitted or invalid values default to `true`. Standalone markers never contribute to a cluster's count or `markerIds`.
 
+Marker callouts accept plain-text `title`, `subtitle`, `meta`, and `status` content plus up to six structured `stats`. Each stat has a `label`, a finite number or non-empty text `value`, and an optional `layout` of `compact` or `wide`. Compact stats share a two-column grid; wide stats span the full callout width. The consuming application owns all domain labels and values.
+
 `QMapBounds` contains `southLatitude`, `westLongitude`, `northLatitude`, and `eastLongitude`. Coordinates must be finite and in the normal latitude/longitude ranges, the south value must be below the north value, and the west value must be below the east value. `undefined` and an empty string intentionally clear the boundary. Invalid non-empty or antimeridian-crossing input emits `qError` and preserves the last valid runtime boundary.
 
 Events:

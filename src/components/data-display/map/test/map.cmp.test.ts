@@ -122,6 +122,96 @@ describe('q-map in Chromium', () => {
     expect(selections[0].originalEvent).toBeInstanceOf(MouseEvent);
   });
 
+  it('renders and updates a selected marker callout with measurable text', async () => {
+    const element = document.createElement('q-map');
+    element.markers = [
+      {
+        id: 'store:1',
+        latitude: -26.2041,
+        longitude: 28.0473,
+        label: 'Store',
+        callout: {
+          title: 'Store',
+          subtitle: 'CUST-001 | JHB',
+          status: {
+            label: 'Upcoming',
+            variant: 'default',
+          },
+          visibility: 'selected',
+        },
+      },
+    ];
+    element.selectedMarkerId = 'store:1';
+    const ready = waitForReady(element);
+    document.body.append(element);
+    await ready;
+    const style = document.createElement('style');
+    style.textContent = mapStyles;
+    element.shadowRoot?.prepend(style);
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+
+    const callout = element.shadowRoot?.querySelector<HTMLElement>('[part~="marker-callout"]');
+    const title = callout?.querySelector<HTMLElement>('.q-map-callout__title');
+    const subtitle = callout?.querySelector<HTMLElement>('.q-map-callout__subtitle');
+    const status = callout?.querySelector<HTMLElement>('.q-map-callout__status');
+    expect(callout?.textContent).toContain('Store');
+    expect(subtitle?.textContent).toBe('CUST-001 | JHB');
+    expect(status?.textContent).toBe('Upcoming');
+    expect(title?.getBoundingClientRect().width).toBeGreaterThan(0);
+    expect(subtitle?.getBoundingClientRect().width).toBeGreaterThan(0);
+    expect(status?.getBoundingClientRect().left).toBeGreaterThan(
+      title?.getBoundingClientRect().right ?? 0,
+    );
+    const calloutStyle = getComputedStyle(callout as HTMLElement);
+    const directionalOffset = Math.max(
+      ...[
+        calloutStyle.marginTop,
+        calloutStyle.marginRight,
+        calloutStyle.marginBottom,
+        calloutStyle.marginLeft,
+      ].map(value => Math.abs(Number.parseFloat(value))),
+    );
+    expect(directionalOffset).toBe(20);
+    const initialWidth = callout?.getBoundingClientRect().width ?? 0;
+    const initialTransform = callout?.style.transform;
+
+    element.markers = [
+      {
+        id: 'store:1',
+        latitude: -26.2041,
+        longitude: 28.0473,
+        label: 'Updated Main Street Supermarket',
+        callout: {
+          title: 'Updated Main Street Supermarket',
+          subtitle: 'CUST-002 | Pretoria Central',
+          status: {
+            label: 'Attention',
+            variant: 'warning',
+          },
+          visibility: 'selected',
+        },
+      },
+    ];
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+
+    const updatedCallout = element.shadowRoot?.querySelector<HTMLElement>('[part~="marker-callout"]');
+    expect(updatedCallout?.textContent).toContain('Updated Main Street Supermarket');
+    expect(updatedCallout?.textContent).toContain('CUST-002 | Pretoria Central');
+    expect(updatedCallout?.textContent).toContain('Attention');
+    expect(
+      updatedCallout
+        ?.querySelector('.q-map-callout__status')
+        ?.classList.contains('variant-warning'),
+    ).toBe(true);
+    expect(updatedCallout?.getBoundingClientRect().width).toBeGreaterThan(initialWidth);
+    expect(updatedCallout?.style.transform).not.toBe(initialTransform);
+
+    element.selectedMarkerId = undefined;
+    await expect.poll(
+      () => element.shadowRoot?.querySelector('[part~="marker-callout"]'),
+    ).toBeNull();
+  });
+
   it('keeps standalone markers at their true position above eligible clusters', async () => {
     const element = document.createElement('q-map');
     const markers: QMapMarker[] = [
