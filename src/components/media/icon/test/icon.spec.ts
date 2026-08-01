@@ -56,7 +56,7 @@ describe('q-icon', () => {
     const init = fetchMock.mock.calls[0][1] as RequestInit;
     const html = (el.shadowRoot.querySelector('.svg-container') as HTMLElement).innerHTML.toLowerCase();
 
-    expect(url).toContain('lucide-static@0.400.0');
+    expect(url).toContain('lucide-static@0.416.0');
     expect(url).not.toContain('@latest');
     expect(init.signal).toBeDefined();
     expect(html).toContain('<svg');
