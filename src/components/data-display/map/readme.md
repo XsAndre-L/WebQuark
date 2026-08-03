@@ -7,6 +7,7 @@
 - `badge`: compact icon/text status with a required accessible label
 - `callout`: plain-text, non-interactive context with an optional status pill and structured stats
 - `clusterMarkers`: deterministic, keyboard-accessible clustering
+- `clusterGroup`: clusters nearby markers only when their normalized group matches; markers from different source layers may share a group
 
 ```ts
 map.markers = [{
@@ -14,6 +15,7 @@ map.markers = [{
   latitude: -26.1459,
   longitude: 28.0416,
   label: 'Rosebank location, live',
+  clusterGroup: 'field-activity',
   kind: 'avatar',
   fallbackText: 'RL',
   variant: 'success',
@@ -46,7 +48,13 @@ map.markers = [{
 }];
 ```
 
-Cancel `qClusterSelect` to replace the default centre-and-zoom behaviour. Callout, status, badge, and stat strings are inserted as text, never interpreted as HTML. A callout status is rendered as a pill beside the title, while the optional subtitle remains on its own line. Callout stats render in two compact columns; a stat with `layout: 'wide'` spans both columns.
+Markers without a `clusterGroup` use the `default` group. Layer membership does not limit clustering: any visible markers supplied to the same `q-map` may cluster when their normalized group matches. Visible clusters from different groups use a collision footprint equal to 75% of their rendered diameter, so they push apart after their circles overlap by one quarter. Each cluster exposes a normalized `cluster-group-<group>` CSS part, so consumers can style groups independently. Cancel `qClusterSelect` to replace the default centre-and-zoom behaviour; its detail includes the activated `clusterGroup`. Callout, status, badge, and stat strings are inserted as text, never interpreted as HTML. A callout status is rendered as a pill beside the title, while the optional subtitle remains on its own line. Callout stats render in two compact columns; a stat with `layout: 'wide'` spans both columns.
+
+```css
+q-map::part(cluster-group-field-activity) {
+  background: var(--field-activity-cluster-background);
+}
+```
 
 
 <!-- Auto Generated Below -->

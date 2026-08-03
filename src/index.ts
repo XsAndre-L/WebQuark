@@ -27,6 +27,7 @@ export type {
   ReconcileByIdentityResult,
 } from './utils/collection-identity';
 export {
+  Q_MAP_DEFAULT_CLUSTER_GROUP,
   Q_MAP_MARKER_CALLOUT_PLACEMENTS,
   Q_MAP_MARKER_CALLOUT_STAT_LAYOUTS,
   Q_MAP_MARKER_CALLOUT_VISIBILITIES,

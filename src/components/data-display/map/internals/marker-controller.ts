@@ -7,6 +7,10 @@ import type {
   QMapMarkerInput,
 } from '../map.types';
 import {
+  resolveMapClusterCollisionOffsets,
+  type MapClusterCollisionItem,
+} from './cluster-collision';
+import {
   MapMarkerClusterIndex,
   type MapMarkerClusteringOptions,
   type MapMarkerViewportCluster,
@@ -44,6 +48,7 @@ interface FocusIntent {
 }
 
 const STANDALONE_MARKER_Z_INDEX_OFFSET = 2_000;
+const DEFAULT_CLUSTER_DIAMETER = 32;
 
 export interface MapMarkerControllerOptions {
   map: LeafletMap;
@@ -107,6 +112,7 @@ export class MapMarkerController {
       const record = this.layers.get(item.key) ?? this.add(item);
       if (record) this.update(record, item);
     }
+    this.syncClusterCollisionOffsets(items);
 
     const preservedFocus = focusIntent
       && this.layers.get(focusIntent.renderKey)?.element === focusIntent.element;
@@ -226,7 +232,12 @@ export class MapMarkerController {
       'aria-label',
       `${item.count} map markers${item.containsSelection ? ', including the selected marker' : ''}`,
     );
+    record.element.setAttribute(
+      'part',
+      `cluster ${clusterGroupPartName(item.clusterGroup)}`,
+    );
     record.element.setAttribute('data-cluster-id', item.clusterId);
+    record.element.setAttribute('data-cluster-group', item.clusterGroup);
     record.element.setAttribute('title', `${item.count} map markers`);
     record.element.removeAttribute('aria-pressed');
   }
@@ -235,6 +246,45 @@ export class MapMarkerController {
     return item.kind === 'marker' && item.marker.clusterable === false
       ? STANDALONE_MARKER_Z_INDEX_OFFSET
       : 0;
+  }
+
+  private syncClusterCollisionOffsets(items: MapMarkerViewportItem[]): void {
+    const collisionItems: MapClusterCollisionItem[] = [];
+    for (const item of items) {
+      if (item.kind !== 'cluster') continue;
+      const record = this.layers.get(item.key);
+      if (!record || record.kind !== 'cluster') continue;
+      const point = this.options.map.latLngToContainerPoint([
+        item.latitude,
+        item.longitude,
+      ]);
+      const position = record.layer.getElement();
+      const bounds = position?.getBoundingClientRect();
+      const diameter = Math.max(bounds?.width ?? 0, bounds?.height ?? 0)
+        || DEFAULT_CLUSTER_DIAMETER;
+      collisionItems.push({
+        key: item.key,
+        clusterGroup: item.clusterGroup,
+        x: point.x,
+        y: point.y,
+        diameter,
+      });
+    }
+
+    const offsets = resolveMapClusterCollisionOffsets(collisionItems);
+    for (const item of collisionItems) {
+      const record = this.layers.get(item.key);
+      if (!record) continue;
+      const offset = offsets.get(item.key);
+      if (!offset || (Math.abs(offset.x) < 0.01 && Math.abs(offset.y) < 0.01)) {
+        record.element.style.removeProperty('translate');
+        continue;
+      }
+      record.element.style.setProperty(
+        'translate',
+        `${formatCollisionOffset(offset.x)}px ${formatCollisionOffset(offset.y)}px`,
+      );
+    }
   }
 
   private syncCallout(record: RenderedLayer, marker: QMapMarker, selected: boolean): void {
@@ -291,6 +341,7 @@ export class MapMarkerController {
     );
     const prevented = this.options.onClusterSelect({
       clusterId: item.clusterId,
+      clusterGroup: item.clusterGroup,
       markerIds: item.markerIds,
       latitude: item.latitude,
       longitude: item.longitude,
@@ -365,4 +416,18 @@ export class MapMarkerController {
     record.layer.remove();
     this.layers.delete(key);
   }
+}
+
+function clusterGroupPartName(clusterGroup: string): string {
+  const normalizedGroup = clusterGroup
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+
+  return `cluster-group-${normalizedGroup || 'default'}`;
+}
+
+function formatCollisionOffset(value: number): number {
+  return Math.round(value * 100) / 100;
 }
