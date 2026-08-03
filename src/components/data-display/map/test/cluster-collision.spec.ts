@@ -1,15 +1,15 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-  resolveMapClusterCollisionOffsets,
-  type MapClusterCollisionItem,
+  resolveMapMarkerCollisionOffsets,
+  type MapMarkerCollisionItem,
 } from '../internals/cluster-collision';
 
-describe('q-map cross-group cluster collision spacing', () => {
-  it('uses 75% of the visible cluster diameter as the collision distance', () => {
-    const offsets = resolveMapClusterCollisionOffsets([
-      cluster('stores'),
-      cluster('merchandisers'),
+describe('q-map marker collision spacing', () => {
+  it('uses 75% of the visible item diameter as the collision distance', () => {
+    const offsets = resolveMapMarkerCollisionOffsets([
+      item('stores'),
+      item('merchandisers'),
     ]);
     const stores = offsets.get('stores');
     const merchandisers = offsets.get('merchandisers');
@@ -25,20 +25,20 @@ describe('q-map cross-group cluster collision spacing', () => {
     expect(centerDistance).toBeLessThan(32);
   });
 
-  it('does not separate clusters from the same group', () => {
-    const offsets = resolveMapClusterCollisionOffsets([
-      cluster('store-one', 'stores'),
-      cluster('store-two', 'stores'),
+  it('separates every overlapping item without a group exemption', () => {
+    const offsets = resolveMapMarkerCollisionOffsets([
+      item('store-one'),
+      item('store-two'),
     ]);
 
-    expect(offsets.get('store-one')).toEqual({ x: 0, y: 0 });
-    expect(offsets.get('store-two')).toEqual({ x: 0, y: 0 });
+    expect(offsets.get('store-one')).not.toEqual({ x: 0, y: 0 });
+    expect(offsets.get('store-two')).not.toEqual({ x: 0, y: 0 });
   });
 
-  it('does not move different groups that already have enough spacing', () => {
-    const offsets = resolveMapClusterCollisionOffsets([
-      cluster('stores'),
-      { ...cluster('merchandisers'), x: 24 },
+  it('does not move items that already have enough spacing', () => {
+    const offsets = resolveMapMarkerCollisionOffsets([
+      item('stores'),
+      { ...item('merchandisers'), x: 24 },
     ]);
 
     expect(offsets.get('stores')).toEqual({ x: 0, y: 0 });
@@ -46,10 +46,9 @@ describe('q-map cross-group cluster collision spacing', () => {
   });
 });
 
-function cluster(key: string, clusterGroup = key): MapClusterCollisionItem {
+function item(key: string): MapMarkerCollisionItem {
   return {
     key,
-    clusterGroup,
     x: 0,
     y: 0,
     diameter: 32,

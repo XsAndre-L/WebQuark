@@ -325,7 +325,62 @@ describe('q-map in Chromium', () => {
     expect(centerDistance).toBeLessThan(visibleDiameter);
   });
 
-  it('keeps standalone markers at their true position above eligible clusters', async () => {
+  it('separates overlapping individual markers regardless of group', async () => {
+    const element = document.createElement('q-map');
+    element.centerLatitude = -33.9249;
+    element.centerLongitude = 18.4241;
+    element.zoom = 15;
+    element.clusterMarkers = false;
+    element.markers = [
+      {
+        id: 'store:1',
+        latitude: -33.9249,
+        longitude: 18.4241,
+        label: 'Store one',
+        clusterGroup: 'stores',
+      },
+      {
+        id: 'merchandiser:1',
+        latitude: -33.9249,
+        longitude: 18.4241,
+        label: 'Merchandiser one',
+        clusterGroup: 'merchandisers',
+      },
+    ];
+    const ready = waitForReadyOrError(element);
+    document.body.append(element);
+    await ready;
+    const style = document.createElement('style');
+    style.textContent = mapStyles;
+    element.shadowRoot?.prepend(style);
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+
+    const store = element.shadowRoot?.querySelector<HTMLElement>(
+      '[data-marker-id="string:store:1"]',
+    );
+    const merchandiser = element.shadowRoot?.querySelector<HTMLElement>(
+      '[data-marker-id="string:merchandiser:1"]',
+    );
+    const storeBounds = store?.getBoundingClientRect();
+    const merchandiserBounds = merchandiser?.getBoundingClientRect();
+    expect(storeBounds && merchandiserBounds).toBeTruthy();
+
+    const visibleDiameter = Math.max(
+      storeBounds?.width ?? 0,
+      storeBounds?.height ?? 0,
+    );
+    const centerDistance = storeBounds && merchandiserBounds
+      ? Math.hypot(
+          (merchandiserBounds.left + merchandiserBounds.width / 2)
+            - (storeBounds.left + storeBounds.width / 2),
+          (merchandiserBounds.top + merchandiserBounds.height / 2)
+            - (storeBounds.top + storeBounds.height / 2),
+        )
+      : 0;
+    expect(centerDistance).toBeCloseTo(visibleDiameter * 0.75, 0);
+  });
+
+  it('separates standalone markers from eligible clusters while keeping both interactive', async () => {
     const element = document.createElement('q-map');
     const markers: QMapMarker[] = [
       {
@@ -382,24 +437,27 @@ describe('q-map in Chromium', () => {
     const clusterBounds = cluster?.getBoundingClientRect();
     const standaloneBounds = standalone?.getBoundingClientRect();
     expect(clusterBounds && standaloneBounds).toBeTruthy();
-    expect(
-      clusterBounds
-      && standaloneBounds
-      && Math.abs(
-        (clusterBounds.left + clusterBounds.width / 2)
-        - (standaloneBounds.left + standaloneBounds.width / 2),
-      ),
-    ).toBeLessThan(1);
-    expect(
-      clusterBounds
-      && standaloneBounds
-      && Math.abs(
-        (clusterBounds.top + clusterBounds.height / 2)
-        - (standaloneBounds.top + standaloneBounds.height / 2),
-      ),
-    ).toBeLessThan(1);
-    expect(Number(standalone?.style.zIndex)).toBeGreaterThan(
-      Number(cluster?.style.zIndex),
+    const centerDistance = clusterBounds && standaloneBounds
+      ? Math.hypot(
+          (standaloneBounds.left + standaloneBounds.width / 2)
+            - (clusterBounds.left + clusterBounds.width / 2),
+          (standaloneBounds.top + standaloneBounds.height / 2)
+            - (clusterBounds.top + clusterBounds.height / 2),
+        )
+      : 0;
+    const minimumCollisionDistance = clusterBounds && standaloneBounds
+      ? (Math.max(clusterBounds.width, clusterBounds.height)
+        + Math.max(standaloneBounds.width, standaloneBounds.height)) * 0.375
+      : 0;
+    expect(centerDistance).toBeCloseTo(minimumCollisionDistance, 0);
+    const standalonePosition = standalone?.closest<HTMLElement>(
+      '.leaflet-marker-icon',
+    );
+    const clusterPosition = cluster?.closest<HTMLElement>(
+      '.leaflet-marker-icon',
+    );
+    expect(Number(standalonePosition?.style.zIndex)).toBeGreaterThan(
+      Number(clusterPosition?.style.zIndex),
     );
 
     const standaloneHit = standaloneBounds
