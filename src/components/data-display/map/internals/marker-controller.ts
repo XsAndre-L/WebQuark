@@ -7,8 +7,8 @@ import type {
   QMapMarkerInput,
 } from '../map.types';
 import {
-  resolveMapClusterCollisionOffsets,
-  type MapClusterCollisionItem,
+  resolveMapMarkerCollisionOffsets,
+  type MapMarkerCollisionItem,
 } from './cluster-collision';
 import {
   MapMarkerClusterIndex,
@@ -39,6 +39,7 @@ interface RenderedLayer {
   calloutContent?: HTMLElement;
   calloutPlacement?: string;
   calloutBound?: boolean;
+  calloutCollisionOffset?: string;
 }
 
 interface FocusIntent {
@@ -48,6 +49,7 @@ interface FocusIntent {
 }
 
 const STANDALONE_MARKER_Z_INDEX_OFFSET = 2_000;
+const DEFAULT_MARKER_DIAMETER = 20;
 const DEFAULT_CLUSTER_DIAMETER = 32;
 
 export interface MapMarkerControllerOptions {
@@ -112,7 +114,7 @@ export class MapMarkerController {
       const record = this.layers.get(item.key) ?? this.add(item);
       if (record) this.update(record, item);
     }
-    this.syncClusterCollisionOffsets(items);
+    this.syncCollisionOffsets(items);
 
     const preservedFocus = focusIntent
       && this.layers.get(focusIntent.renderKey)?.element === focusIntent.element;
@@ -248,43 +250,69 @@ export class MapMarkerController {
       : 0;
   }
 
-  private syncClusterCollisionOffsets(items: MapMarkerViewportItem[]): void {
-    const collisionItems: MapClusterCollisionItem[] = [];
+  private syncCollisionOffsets(items: MapMarkerViewportItem[]): void {
+    const collisionItems: MapMarkerCollisionItem[] = [];
     for (const item of items) {
-      if (item.kind !== 'cluster') continue;
       const record = this.layers.get(item.key);
-      if (!record || record.kind !== 'cluster') continue;
+      if (!record || record.kind !== item.kind) continue;
       const point = this.options.map.latLngToContainerPoint([
-        item.latitude,
-        item.longitude,
+        this.getLatitude(item),
+        this.getLongitude(item),
       ]);
       const position = record.layer.getElement();
       const bounds = position?.getBoundingClientRect();
       const diameter = Math.max(bounds?.width ?? 0, bounds?.height ?? 0)
-        || DEFAULT_CLUSTER_DIAMETER;
+        || (item.kind === 'cluster'
+          ? DEFAULT_CLUSTER_DIAMETER
+          : DEFAULT_MARKER_DIAMETER);
       collisionItems.push({
         key: item.key,
-        clusterGroup: item.clusterGroup,
         x: point.x,
         y: point.y,
         diameter,
       });
     }
 
-    const offsets = resolveMapClusterCollisionOffsets(collisionItems);
+    const offsets = resolveMapMarkerCollisionOffsets(collisionItems);
     for (const item of collisionItems) {
       const record = this.layers.get(item.key);
       if (!record) continue;
       const offset = offsets.get(item.key);
       if (!offset || (Math.abs(offset.x) < 0.01 && Math.abs(offset.y) < 0.01)) {
         record.element.style.removeProperty('translate');
+        this.syncCalloutCollisionOffset(record, 0, 0);
         continue;
       }
       record.element.style.setProperty(
         'translate',
         `${formatCollisionOffset(offset.x)}px ${formatCollisionOffset(offset.y)}px`,
       );
+      this.syncCalloutCollisionOffset(record, offset.x, offset.y);
     }
+  }
+
+  private syncCalloutCollisionOffset(
+    record: RenderedLayer,
+    x: number,
+    y: number,
+  ): void {
+    const tooltip = record.layer.getTooltip();
+    if (!tooltip) return;
+    const normalizedX = formatCollisionOffset(x);
+    const normalizedY = formatCollisionOffset(y);
+    const collisionOffset = `${normalizedX}:${normalizedY}`;
+    if (
+      record.calloutCollisionOffset === collisionOffset
+      || (
+        record.calloutCollisionOffset === undefined
+        && normalizedX === 0
+        && normalizedY === 0
+      )
+    ) return;
+
+    record.calloutCollisionOffset = collisionOffset;
+    tooltip.options.offset = this.options.leaflet.point(normalizedX, normalizedY);
+    tooltip.update();
   }
 
   private syncCallout(record: RenderedLayer, marker: QMapMarker, selected: boolean): void {
@@ -322,6 +350,7 @@ export class MapMarkerController {
     if (!record.calloutBound) return;
     record.layer.unbindTooltip();
     record.calloutBound = false;
+    record.calloutCollisionOffset = undefined;
   }
 
   private activate(key: string, originalEvent: MouseEvent | KeyboardEvent): void {

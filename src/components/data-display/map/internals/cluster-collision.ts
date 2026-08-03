@@ -1,12 +1,11 @@
-export interface MapClusterCollisionItem {
+export interface MapMarkerCollisionItem {
   key: string;
-  clusterGroup: string;
   x: number;
   y: number;
   diameter: number;
 }
 
-export interface MapClusterCollisionOffset {
+export interface MapMarkerCollisionOffset {
   x: number;
   y: number;
 }
@@ -15,18 +14,18 @@ const COLLISION_FOOTPRINT_DIAMETER_RATIO = 0.75;
 const COLLISION_RESOLUTION_PASSES = 12;
 const COLLISION_EPSILON = 0.01;
 
-interface CollisionNode extends MapClusterCollisionItem {
+interface CollisionNode extends MapMarkerCollisionItem {
   collisionRadius: number;
-  offset: MapClusterCollisionOffset;
+  offset: MapMarkerCollisionOffset;
 }
 
 /**
- * Separates visible clusters from different groups while allowing their full
+ * Separates every visible map marker and cluster while allowing their full
  * circles to overlap. The collision footprint is 75% of the rendered diameter.
  */
-export function resolveMapClusterCollisionOffsets(
-  items: readonly MapClusterCollisionItem[],
-): Map<string, MapClusterCollisionOffset> {
+export function resolveMapMarkerCollisionOffsets(
+  items: readonly MapMarkerCollisionItem[],
+): Map<string, MapMarkerCollisionOffset> {
   const nodes = items
     .filter(item => (
       Number.isFinite(item.x)
@@ -63,8 +62,6 @@ export function resolveMapClusterCollisionOffsets(
         if (!right) continue;
         const xDistance = centerX(right) - centerX(left);
         if (xDistance >= left.collisionRadius + largestCollisionRadius) break;
-        if (left.clusterGroup === right.clusterGroup) continue;
-
         const xDelta = centerX(right) - centerX(left);
         const yDelta = centerY(right) - centerY(left);
         const distance = Math.hypot(xDelta, yDelta);
@@ -97,7 +94,7 @@ function centerY(node: CollisionNode): number {
   return node.y + node.offset.y;
 }
 
-function stableCollisionDirection(leftKey: string, rightKey: string): MapClusterCollisionOffset {
+function stableCollisionDirection(leftKey: string, rightKey: string): MapMarkerCollisionOffset {
   let hash = 2_166_136_261;
   for (const character of `${leftKey}\u0000${rightKey}`) {
     hash ^= character.charCodeAt(0);
