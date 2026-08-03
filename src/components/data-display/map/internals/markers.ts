@@ -1,4 +1,5 @@
 import {
+  Q_MAP_DEFAULT_CLUSTER_GROUP,
   Q_MAP_MARKER_CALLOUT_PLACEMENTS,
   Q_MAP_MARKER_CALLOUT_STAT_LAYOUTS,
   Q_MAP_MARKER_CALLOUT_VISIBILITIES,
@@ -76,6 +77,14 @@ function normalizeBadge(value: unknown): QMapMarkerBadge | undefined {
     ...(icon ? { icon } : {}),
     ...(text ? { text } : {}),
   };
+}
+
+function normalizeClusterGroup(value: unknown): string {
+  return getOptionalText(value) ?? Q_MAP_DEFAULT_CLUSTER_GROUP;
+}
+
+export function getMapMarkerClusterGroup(marker: Pick<QMapMarker, 'clusterGroup'>): string {
+  return normalizeClusterGroup(marker.clusterGroup);
 }
 
 function normalizeCalloutStatus(
@@ -168,6 +177,7 @@ function normalizeMarker(value: unknown): QMapMarker | undefined {
     longitude: value.longitude,
     label,
     clusterable: value.clusterable !== false,
+    clusterGroup: normalizeClusterGroup(value.clusterGroup),
     variant: getMarkerVariant(value.variant),
     ...(imageUrl ? { imageUrl } : {}),
     ...(fallbackText ? { fallbackText } : {}),

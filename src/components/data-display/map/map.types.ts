@@ -2,6 +2,8 @@ import type { QIconName } from '../../media/icon/icon.types';
 
 export type QMapMarkerId = string | number;
 
+export const Q_MAP_DEFAULT_CLUSTER_GROUP = 'default';
+
 export type QMapProvider = 'tiles' | 'vector' | 'google';
 
 export type QMapGoogleMapType = 'roadmap' | 'satellite' | 'terrain' | 'hybrid';
@@ -65,6 +67,8 @@ export interface QMapMarker {
   label: string;
   /** Excludes this marker from clusters when explicitly false. Defaults to true. */
   clusterable?: boolean;
+  /** Clusters only with markers using the same normalized group. Defaults to "default". */
+  clusterGroup?: string;
   variant?: QMapMarkerVariant;
   imageUrl?: string;
   fallbackText?: string;
@@ -91,6 +95,7 @@ export interface QMapMarkerSelectDetail {
 
 export interface QMapClusterSelectDetail {
   clusterId: string;
+  clusterGroup: string;
   markerIds: QMapMarkerId[];
   latitude: number;
   longitude: number;

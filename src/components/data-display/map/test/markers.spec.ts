@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { Q_MAP_MARKER_VARIANTS } from '../map.types';
+import { Q_MAP_DEFAULT_CLUSTER_GROUP, Q_MAP_MARKER_VARIANTS } from '../map.types';
 import type { QMapMarker } from '../map.types';
 import { getMapMarkerKey, getMapMarkers } from '../internals/markers';
 
@@ -56,6 +56,28 @@ describe('q-map marker normalization', () => {
     ]);
   });
 
+  it('trims cluster groups and defaults omitted, blank, or invalid values', () => {
+    const markers = getMapMarkers([
+      { id: 'omitted', latitude: 0, longitude: 0, label: 'Omitted' },
+      { id: 'named', latitude: 1, longitude: 1, label: 'Named', clusterGroup: '  field-activity  ' },
+      { id: 'blank', latitude: 2, longitude: 2, label: 'Blank', clusterGroup: '   ' },
+      {
+        id: 'invalid',
+        latitude: 3,
+        longitude: 3,
+        label: 'Invalid',
+        clusterGroup: 42 as unknown as string,
+      },
+    ]);
+
+    expect(markers.map(marker => marker.clusterGroup)).toEqual([
+      Q_MAP_DEFAULT_CLUSTER_GROUP,
+      'field-activity',
+      Q_MAP_DEFAULT_CLUSTER_GROUP,
+      Q_MAP_DEFAULT_CLUSTER_GROUP,
+    ]);
+  });
+
   it('preserves explicit false and defaults omitted values for JSON input', () => {
     const markers = getMapMarkers(
       JSON.stringify([
@@ -64,6 +86,7 @@ describe('q-map marker normalization', () => {
           latitude: 0,
           longitude: 0,
           label: 'Clustered',
+          clusterGroup: '  field-activity  ',
         },
         {
           id: 'standalone',
@@ -76,6 +99,7 @@ describe('q-map marker normalization', () => {
     );
 
     expect(markers.map(marker => marker.clusterable)).toEqual([true, false]);
+    expect(markers.map(marker => marker.clusterGroup)).toEqual(['field-activity', Q_MAP_DEFAULT_CLUSTER_GROUP]);
   });
 
   it('normalizes callout text and defaults its presentation options', () => {
