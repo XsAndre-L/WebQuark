@@ -122,7 +122,265 @@ describe('q-map in Chromium', () => {
     expect(selections[0].originalEvent).toBeInstanceOf(MouseEvent);
   });
 
-  it('keeps standalone markers at their true position above eligible clusters', async () => {
+  it('renders and updates a selected marker callout with measurable text', async () => {
+    const element = document.createElement('q-map');
+    element.markers = [
+      {
+        id: 'store:1',
+        latitude: -26.2041,
+        longitude: 28.0473,
+        label: 'Store',
+        callout: {
+          title: 'Store',
+          subtitle: 'CUST-001 | JHB',
+          status: {
+            label: 'Upcoming',
+            variant: 'default',
+          },
+          visibility: 'selected',
+        },
+      },
+    ];
+    element.selectedMarkerId = 'store:1';
+    const ready = waitForReady(element);
+    document.body.append(element);
+    await ready;
+    const style = document.createElement('style');
+    style.textContent = mapStyles;
+    element.shadowRoot?.prepend(style);
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+
+    const callout = element.shadowRoot?.querySelector<HTMLElement>('[part~="marker-callout"]');
+    const title = callout?.querySelector<HTMLElement>('.q-map-callout__title');
+    const subtitle = callout?.querySelector<HTMLElement>('.q-map-callout__subtitle');
+    const status = callout?.querySelector<HTMLElement>('.q-map-callout__status');
+    expect(callout?.textContent).toContain('Store');
+    expect(subtitle?.textContent).toBe('CUST-001 | JHB');
+    expect(status?.textContent).toBe('Upcoming');
+    expect(title?.getBoundingClientRect().width).toBeGreaterThan(0);
+    expect(subtitle?.getBoundingClientRect().width).toBeGreaterThan(0);
+    expect(status?.getBoundingClientRect().left).toBeGreaterThan(
+      title?.getBoundingClientRect().right ?? 0,
+    );
+    const calloutStyle = getComputedStyle(callout as HTMLElement);
+    const directionalOffset = Math.max(
+      ...[
+        calloutStyle.marginTop,
+        calloutStyle.marginRight,
+        calloutStyle.marginBottom,
+        calloutStyle.marginLeft,
+      ].map(value => Math.abs(Number.parseFloat(value))),
+    );
+    expect(directionalOffset).toBe(20);
+    const initialWidth = callout?.getBoundingClientRect().width ?? 0;
+    const initialTransform = callout?.style.transform;
+
+    element.markers = [
+      {
+        id: 'store:1',
+        latitude: -26.2041,
+        longitude: 28.0473,
+        label: 'Updated Main Street Supermarket',
+        callout: {
+          title: 'Updated Main Street Supermarket',
+          subtitle: 'CUST-002 | Pretoria Central',
+          status: {
+            label: 'Attention',
+            variant: 'warning',
+          },
+          visibility: 'selected',
+        },
+      },
+    ];
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+
+    const updatedCallout = element.shadowRoot?.querySelector<HTMLElement>('[part~="marker-callout"]');
+    expect(updatedCallout?.textContent).toContain('Updated Main Street Supermarket');
+    expect(updatedCallout?.textContent).toContain('CUST-002 | Pretoria Central');
+    expect(updatedCallout?.textContent).toContain('Attention');
+    expect(
+      updatedCallout
+        ?.querySelector('.q-map-callout__status')
+        ?.classList.contains('variant-warning'),
+    ).toBe(true);
+    expect(updatedCallout?.getBoundingClientRect().width).toBeGreaterThan(initialWidth);
+    expect(updatedCallout?.style.transform).not.toBe(initialTransform);
+
+    element.selectedMarkerId = undefined;
+    await expect.poll(
+      () => element.shadowRoot?.querySelector('[part~="marker-callout"]'),
+    ).toBeNull();
+  });
+
+  it('reports the shared cluster group for markers from different sources', async () => {
+    const element = document.createElement('q-map');
+    element.centerLatitude = -33.9249;
+    element.centerLongitude = 18.4241;
+    element.zoom = 7;
+    element.clusterMarkers = true;
+    element.markers = [
+      {
+        id: 'store:1',
+        latitude: -33.9249,
+        longitude: 18.4241,
+        label: 'Store one',
+        clusterGroup: 'field-activity',
+      },
+      {
+        id: 'merchandiser:1',
+        latitude: -33.9249,
+        longitude: 18.4241,
+        label: 'Merchandiser one',
+        clusterGroup: 'field-activity',
+      },
+    ];
+    const clusters: QMapClusterSelectDetail[] = [];
+    element.addEventListener('qClusterSelect', event => {
+      clusters.push((event as CustomEvent<QMapClusterSelectDetail>).detail);
+    });
+    const ready = waitForReadyOrError(element);
+    document.body.append(element);
+    await ready;
+
+    const cluster = element.shadowRoot?.querySelector<HTMLElement>('[part~="cluster"]');
+    expect(cluster?.dataset.clusterGroup).toBe('field-activity');
+    expect(cluster?.getAttribute('part')?.split(/\s+/)).toContain(
+      'cluster-group-field-activity',
+    );
+    cluster?.click();
+    expect(clusters).toHaveLength(1);
+    expect(clusters[0]).toEqual(expect.objectContaining({
+      clusterGroup: 'field-activity',
+      markerIds: ['merchandiser:1', 'store:1'],
+    }));
+  });
+
+  it('separates overlapping cluster groups by 75% of the visible diameter', async () => {
+    const element = document.createElement('q-map');
+    element.centerLatitude = -33.9249;
+    element.centerLongitude = 18.4241;
+    element.zoom = 7;
+    element.clusterMarkers = true;
+    element.markers = [
+      {
+        id: 'store:1',
+        latitude: -33.9249,
+        longitude: 18.4241,
+        label: 'Store one',
+        clusterGroup: 'stores',
+      },
+      {
+        id: 'store:2',
+        latitude: -33.9249,
+        longitude: 18.4241,
+        label: 'Store two',
+        clusterGroup: 'stores',
+      },
+      {
+        id: 'merchandiser:1',
+        latitude: -33.9249,
+        longitude: 18.4241,
+        label: 'Merchandiser one',
+        clusterGroup: 'merchandisers',
+      },
+      {
+        id: 'merchandiser:2',
+        latitude: -33.9249,
+        longitude: 18.4241,
+        label: 'Merchandiser two',
+        clusterGroup: 'merchandisers',
+      },
+    ];
+    const ready = waitForReadyOrError(element);
+    document.body.append(element);
+    await ready;
+    const style = document.createElement('style');
+    style.textContent = mapStyles;
+    element.shadowRoot?.prepend(style);
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+
+    const stores = element.shadowRoot?.querySelector<HTMLElement>(
+      '[data-cluster-group="stores"]',
+    );
+    const merchandisers = element.shadowRoot?.querySelector<HTMLElement>(
+      '[data-cluster-group="merchandisers"]',
+    );
+    const storeBounds = stores?.getBoundingClientRect();
+    const merchandiserBounds = merchandisers?.getBoundingClientRect();
+    expect(storeBounds && merchandiserBounds).toBeTruthy();
+
+    const visibleDiameter = Math.max(
+      storeBounds?.width ?? 0,
+      storeBounds?.height ?? 0,
+    );
+    const centerDistance = storeBounds && merchandiserBounds
+      ? Math.hypot(
+          (merchandiserBounds.left + merchandiserBounds.width / 2)
+            - (storeBounds.left + storeBounds.width / 2),
+          (merchandiserBounds.top + merchandiserBounds.height / 2)
+            - (storeBounds.top + storeBounds.height / 2),
+        )
+      : 0;
+    expect(centerDistance).toBeCloseTo(visibleDiameter * 0.75, 0);
+    expect(centerDistance).toBeLessThan(visibleDiameter);
+  });
+
+  it('separates overlapping individual markers regardless of group', async () => {
+    const element = document.createElement('q-map');
+    element.centerLatitude = -33.9249;
+    element.centerLongitude = 18.4241;
+    element.zoom = 15;
+    element.clusterMarkers = false;
+    element.markers = [
+      {
+        id: 'store:1',
+        latitude: -33.9249,
+        longitude: 18.4241,
+        label: 'Store one',
+        clusterGroup: 'stores',
+      },
+      {
+        id: 'merchandiser:1',
+        latitude: -33.9249,
+        longitude: 18.4241,
+        label: 'Merchandiser one',
+        clusterGroup: 'merchandisers',
+      },
+    ];
+    const ready = waitForReadyOrError(element);
+    document.body.append(element);
+    await ready;
+    const style = document.createElement('style');
+    style.textContent = mapStyles;
+    element.shadowRoot?.prepend(style);
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+
+    const store = element.shadowRoot?.querySelector<HTMLElement>(
+      '[data-marker-id="string:store:1"]',
+    );
+    const merchandiser = element.shadowRoot?.querySelector<HTMLElement>(
+      '[data-marker-id="string:merchandiser:1"]',
+    );
+    const storeBounds = store?.getBoundingClientRect();
+    const merchandiserBounds = merchandiser?.getBoundingClientRect();
+    expect(storeBounds && merchandiserBounds).toBeTruthy();
+
+    const visibleDiameter = Math.max(
+      storeBounds?.width ?? 0,
+      storeBounds?.height ?? 0,
+    );
+    const centerDistance = storeBounds && merchandiserBounds
+      ? Math.hypot(
+          (merchandiserBounds.left + merchandiserBounds.width / 2)
+            - (storeBounds.left + storeBounds.width / 2),
+          (merchandiserBounds.top + merchandiserBounds.height / 2)
+            - (storeBounds.top + storeBounds.height / 2),
+        )
+      : 0;
+    expect(centerDistance).toBeCloseTo(visibleDiameter * 0.75, 0);
+  });
+
+  it('separates standalone markers from eligible clusters while keeping both interactive', async () => {
     const element = document.createElement('q-map');
     const markers: QMapMarker[] = [
       {
@@ -179,24 +437,27 @@ describe('q-map in Chromium', () => {
     const clusterBounds = cluster?.getBoundingClientRect();
     const standaloneBounds = standalone?.getBoundingClientRect();
     expect(clusterBounds && standaloneBounds).toBeTruthy();
-    expect(
-      clusterBounds
-      && standaloneBounds
-      && Math.abs(
-        (clusterBounds.left + clusterBounds.width / 2)
-        - (standaloneBounds.left + standaloneBounds.width / 2),
-      ),
-    ).toBeLessThan(1);
-    expect(
-      clusterBounds
-      && standaloneBounds
-      && Math.abs(
-        (clusterBounds.top + clusterBounds.height / 2)
-        - (standaloneBounds.top + standaloneBounds.height / 2),
-      ),
-    ).toBeLessThan(1);
-    expect(Number(standalone?.style.zIndex)).toBeGreaterThan(
-      Number(cluster?.style.zIndex),
+    const centerDistance = clusterBounds && standaloneBounds
+      ? Math.hypot(
+          (standaloneBounds.left + standaloneBounds.width / 2)
+            - (clusterBounds.left + clusterBounds.width / 2),
+          (standaloneBounds.top + standaloneBounds.height / 2)
+            - (clusterBounds.top + clusterBounds.height / 2),
+        )
+      : 0;
+    const minimumCollisionDistance = clusterBounds && standaloneBounds
+      ? (Math.max(clusterBounds.width, clusterBounds.height)
+        + Math.max(standaloneBounds.width, standaloneBounds.height)) * 0.375
+      : 0;
+    expect(centerDistance).toBeCloseTo(minimumCollisionDistance, 0);
+    const standalonePosition = standalone?.closest<HTMLElement>(
+      '.leaflet-marker-icon',
+    );
+    const clusterPosition = cluster?.closest<HTMLElement>(
+      '.leaflet-marker-icon',
+    );
+    expect(Number(standalonePosition?.style.zIndex)).toBeGreaterThan(
+      Number(clusterPosition?.style.zIndex),
     );
 
     const standaloneHit = standaloneBounds

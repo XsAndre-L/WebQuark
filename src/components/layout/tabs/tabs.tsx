@@ -116,16 +116,23 @@ export class QTabs {
       >
         {identifiedItems.map(({ item, index, key, usesFallback }) => {
           const selected = index === activeIndex;
+          const iconOnly = Boolean(item.icon && item.iconOnly);
 
           return (
             <button
               key={key}
               id={getTabDomId(this.instanceId, item, key, usesFallback)}
-              class={{ 'tab': true, 'is-selected': selected }}
+              class={{
+                'tab': true,
+                'has-icon': Boolean(item.icon),
+                'is-icon-only': iconOnly,
+                'is-selected': selected,
+              }}
               type="button"
               role="tab"
               part={`tab${selected ? ' selected-tab' : ''}`}
               disabled={item.disabled}
+              aria-label={iconOnly ? item.label : undefined}
               aria-selected={selected ? 'true' : 'false'}
               aria-controls={item.panelId}
               tabindex={selected ? 0 : -1}
@@ -133,7 +140,16 @@ export class QTabs {
               onClick={() => this.selectItem(item)}
               onKeyDown={event => this.handleKeyDown(event, index)}
             >
-              {item.label}
+              {item.icon && (
+                <q-icon
+                  class="tab__icon"
+                  name={item.icon}
+                  lib="lucide"
+                  size={this.size}
+                  aria-hidden="true"
+                />
+              )}
+              {!iconOnly && <span class="tab__label">{item.label}</span>}
             </button>
           );
         })}

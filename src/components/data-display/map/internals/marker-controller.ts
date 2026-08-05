@@ -7,6 +7,10 @@ import type {
   QMapMarkerInput,
 } from '../map.types';
 import {
+  resolveMapMarkerCollisionOffsets,
+  type MapMarkerCollisionItem,
+} from './cluster-collision';
+import {
   MapMarkerClusterIndex,
   type MapMarkerClusteringOptions,
   type MapMarkerViewportCluster,
@@ -35,6 +39,7 @@ interface RenderedLayer {
   calloutContent?: HTMLElement;
   calloutPlacement?: string;
   calloutBound?: boolean;
+  calloutCollisionOffset?: string;
 }
 
 interface FocusIntent {
@@ -44,6 +49,8 @@ interface FocusIntent {
 }
 
 const STANDALONE_MARKER_Z_INDEX_OFFSET = 2_000;
+const DEFAULT_MARKER_DIAMETER = 20;
+const DEFAULT_CLUSTER_DIAMETER = 32;
 
 export interface MapMarkerControllerOptions {
   map: LeafletMap;
@@ -107,6 +114,7 @@ export class MapMarkerController {
       const record = this.layers.get(item.key) ?? this.add(item);
       if (record) this.update(record, item);
     }
+    this.syncCollisionOffsets(items);
 
     const preservedFocus = focusIntent
       && this.layers.get(focusIntent.renderKey)?.element === focusIntent.element;
@@ -226,7 +234,12 @@ export class MapMarkerController {
       'aria-label',
       `${item.count} map markers${item.containsSelection ? ', including the selected marker' : ''}`,
     );
+    record.element.setAttribute(
+      'part',
+      `cluster ${clusterGroupPartName(item.clusterGroup)}`,
+    );
     record.element.setAttribute('data-cluster-id', item.clusterId);
+    record.element.setAttribute('data-cluster-group', item.clusterGroup);
     record.element.setAttribute('title', `${item.count} map markers`);
     record.element.removeAttribute('aria-pressed');
   }
@@ -235,6 +248,71 @@ export class MapMarkerController {
     return item.kind === 'marker' && item.marker.clusterable === false
       ? STANDALONE_MARKER_Z_INDEX_OFFSET
       : 0;
+  }
+
+  private syncCollisionOffsets(items: MapMarkerViewportItem[]): void {
+    const collisionItems: MapMarkerCollisionItem[] = [];
+    for (const item of items) {
+      const record = this.layers.get(item.key);
+      if (!record || record.kind !== item.kind) continue;
+      const point = this.options.map.latLngToContainerPoint([
+        this.getLatitude(item),
+        this.getLongitude(item),
+      ]);
+      const position = record.layer.getElement();
+      const bounds = position?.getBoundingClientRect();
+      const diameter = Math.max(bounds?.width ?? 0, bounds?.height ?? 0)
+        || (item.kind === 'cluster'
+          ? DEFAULT_CLUSTER_DIAMETER
+          : DEFAULT_MARKER_DIAMETER);
+      collisionItems.push({
+        key: item.key,
+        x: point.x,
+        y: point.y,
+        diameter,
+      });
+    }
+
+    const offsets = resolveMapMarkerCollisionOffsets(collisionItems);
+    for (const item of collisionItems) {
+      const record = this.layers.get(item.key);
+      if (!record) continue;
+      const offset = offsets.get(item.key);
+      if (!offset || (Math.abs(offset.x) < 0.01 && Math.abs(offset.y) < 0.01)) {
+        record.element.style.removeProperty('translate');
+        this.syncCalloutCollisionOffset(record, 0, 0);
+        continue;
+      }
+      record.element.style.setProperty(
+        'translate',
+        `${formatCollisionOffset(offset.x)}px ${formatCollisionOffset(offset.y)}px`,
+      );
+      this.syncCalloutCollisionOffset(record, offset.x, offset.y);
+    }
+  }
+
+  private syncCalloutCollisionOffset(
+    record: RenderedLayer,
+    x: number,
+    y: number,
+  ): void {
+    const tooltip = record.layer.getTooltip();
+    if (!tooltip) return;
+    const normalizedX = formatCollisionOffset(x);
+    const normalizedY = formatCollisionOffset(y);
+    const collisionOffset = `${normalizedX}:${normalizedY}`;
+    if (
+      record.calloutCollisionOffset === collisionOffset
+      || (
+        record.calloutCollisionOffset === undefined
+        && normalizedX === 0
+        && normalizedY === 0
+      )
+    ) return;
+
+    record.calloutCollisionOffset = collisionOffset;
+    tooltip.options.offset = this.options.leaflet.point(normalizedX, normalizedY);
+    tooltip.update();
   }
 
   private syncCallout(record: RenderedLayer, marker: QMapMarker, selected: boolean): void {
@@ -261,6 +339,7 @@ export class MapMarkerController {
       });
       record.calloutBound = true;
     }
+    record.layer.setTooltipContent(record.calloutContent);
     record.layer.openTooltip();
     const tooltip = record.layer.getTooltip()?.getElement();
     tooltip?.setAttribute('part', 'marker-callout');
@@ -271,6 +350,7 @@ export class MapMarkerController {
     if (!record.calloutBound) return;
     record.layer.unbindTooltip();
     record.calloutBound = false;
+    record.calloutCollisionOffset = undefined;
   }
 
   private activate(key: string, originalEvent: MouseEvent | KeyboardEvent): void {
@@ -290,6 +370,7 @@ export class MapMarkerController {
     );
     const prevented = this.options.onClusterSelect({
       clusterId: item.clusterId,
+      clusterGroup: item.clusterGroup,
       markerIds: item.markerIds,
       latitude: item.latitude,
       longitude: item.longitude,
@@ -364,4 +445,18 @@ export class MapMarkerController {
     record.layer.remove();
     this.layers.delete(key);
   }
+}
+
+function clusterGroupPartName(clusterGroup: string): string {
+  const normalizedGroup = clusterGroup
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+
+  return `cluster-group-${normalizedGroup || 'default'}`;
+}
+
+function formatCollisionOffset(value: number): number {
+  return Math.round(value * 100) / 100;
 }

@@ -81,7 +81,7 @@
 /* Primary */
 .variant-primary {
   background: var(--q-color-primary, #60a5fa);
-  color: var(--q-bg-base, #111827);
+  color: var(--q-fg-base, #f9fafb);
 }
 .variant-primary:hover:not(.is-disabled) {
   background: var(--q-color-primary-hover, #93c5fd);

@@ -528,7 +528,8 @@ a.map-attribution:focus-visible {
 }
 
 .q-map-callout {
-  max-width: var(--q-map-marker-callout-max-width, 220px);
+  width: var(--q-map-marker-callout-width, var(--q-map-marker-callout-max-width, 220px));
+  max-width: calc(100vw - 24px);
   padding: 7px 9px;
   border: var(--q-border, 1px solid var(--q-border-color, #374151));
   border-radius: var(--q-radius-md, 8px);
@@ -538,15 +539,22 @@ a.map-attribution:focus-visible {
   font-family: var(--q-font-family, sans-serif);
 }
 
-.q-map-callout.leaflet-tooltip-top { margin-top: -10px; }
-.q-map-callout.leaflet-tooltip-bottom { margin-top: 10px; }
-.q-map-callout.leaflet-tooltip-left { margin-left: -10px; }
-.q-map-callout.leaflet-tooltip-right { margin-left: 10px; }
+.q-map-callout.leaflet-tooltip-top { margin-top: -20px; }
+.q-map-callout.leaflet-tooltip-bottom { margin-top: 20px; }
+.q-map-callout.leaflet-tooltip-left { margin-left: -20px; }
+.q-map-callout.leaflet-tooltip-right { margin-left: 20px; }
 
 .q-map-callout__content {
   display: grid;
   min-width: 0;
   gap: 2px;
+}
+
+.q-map-callout__heading {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
 }
 
 .q-map-callout__title,
@@ -557,6 +565,8 @@ a.map-attribution:focus-visible {
 }
 
 .q-map-callout__title {
+  flex: 1 1 auto;
+  min-width: 0;
   color: inherit;
   font-size: var(--q-font-size-sm, 0.8rem);
   font-weight: 700;
@@ -568,12 +578,105 @@ a.map-attribution:focus-visible {
   font-size: var(--q-font-size-xs, 0.7rem);
 }
 
+.q-map-callout__subtitle {
+  min-width: 0;
+}
+
+.q-map-callout__status {
+  --q-map-marker-callout-status-accent: var(--q-color-primary, #60a5fa);
+
+  display: inline-flex;
+  flex: none;
+  max-width: var(--q-map-marker-callout-status-max-width, 45%);
+  margin-inline-start: auto;
+  min-height: 18px;
+  padding: 2px 6px;
+  align-items: center;
+  overflow: hidden;
+  box-sizing: border-box;
+  border: 1px solid color-mix(in srgb, var(--q-map-marker-callout-status-accent) 34%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--q-map-marker-callout-status-accent) 16%, transparent);
+  color: var(--q-map-marker-callout-status-accent);
+  font-size: var(--q-font-size-xs, 0.7rem);
+  font-weight: 600;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.q-map-callout__status.variant-success {
+  --q-map-marker-callout-status-accent: var(--q-color-success, #34d399);
+}
+
+.q-map-callout__status.variant-warning {
+  --q-map-marker-callout-status-accent: var(--q-color-warning, #fbbf24);
+}
+
+.q-map-callout__status.variant-danger {
+  --q-map-marker-callout-status-accent: var(--q-color-danger, #f87171);
+}
+
+.q-map-callout__status.variant-muted {
+  --q-map-marker-callout-status-accent: var(--q-fg-muted, #9ca3af);
+}
+
 .q-map-callout__meta {
   color: var(--q-map-marker-callout-meta-color, var(--q-color-primary, #60a5fa));
 }
 
+.q-map-callout__stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 8px;
+  margin: 4px 0 0;
+  padding: 5px 0 0;
+  border-top: 1px solid color-mix(in srgb, var(--q-border-color, #374151) 70%, transparent);
+}
+
+.q-map-callout__stat {
+  min-width: 0;
+}
+
+.q-map-callout__stat.layout-wide {
+  grid-column: 1 / -1;
+}
+
+.q-map-callout__stat-label,
+.q-map-callout__stat-value {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.q-map-callout__stat-label {
+  color: var(--q-fg-muted, #9ca3af);
+  font-size: var(--q-font-size-2xs, 0.625rem);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.q-map-callout__stat-value {
+  margin-top: 1px;
+  color: inherit;
+  font-size: var(--q-font-size-xs, 0.7rem);
+  font-weight: 600;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.q-map-callout__stat.layout-wide .q-map-callout__stat-value {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  white-space: normal;
+}
+
 .q-map-callout__subtitle[hidden],
-.q-map-callout__meta[hidden] {
+.q-map-callout__status[hidden],
+.q-map-callout__meta[hidden],
+.q-map-callout__stats[hidden] {
   display: none;
 }
 

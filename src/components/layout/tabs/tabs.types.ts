@@ -5,6 +5,8 @@ export type QTabsVariant = 'underline' | 'enclosed' | 'pills' | 'button';
 export interface TabItem {
   label: string;
   value: string;
+  icon?: string;
+  iconOnly?: boolean;
   disabled?: boolean;
   tabId?: string;
   panelId?: string;

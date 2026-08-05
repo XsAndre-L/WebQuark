@@ -1,5 +1,7 @@
 import {
+  Q_MAP_DEFAULT_CLUSTER_GROUP,
   Q_MAP_MARKER_CALLOUT_PLACEMENTS,
+  Q_MAP_MARKER_CALLOUT_STAT_LAYOUTS,
   Q_MAP_MARKER_CALLOUT_VISIBILITIES,
   Q_MAP_MARKER_KINDS,
   Q_MAP_MARKER_RINGS,
@@ -9,6 +11,9 @@ import type {
   QMapMarker,
   QMapMarkerBadge,
   QMapMarkerCallout,
+  QMapMarkerCalloutStat,
+  QMapMarkerCalloutStatLayout,
+  QMapMarkerCalloutStatus,
   QMapMarkerCalloutPlacement,
   QMapMarkerCalloutVisibility,
   QMapMarkerId,
@@ -22,7 +27,9 @@ const MARKER_VARIANTS = new Set<string>(Q_MAP_MARKER_VARIANTS);
 const MARKER_KINDS = new Set<string>(Q_MAP_MARKER_KINDS);
 const MARKER_RINGS = new Set<string>(Q_MAP_MARKER_RINGS);
 const CALLOUT_PLACEMENTS = new Set<string>(Q_MAP_MARKER_CALLOUT_PLACEMENTS);
+const CALLOUT_STAT_LAYOUTS = new Set<string>(Q_MAP_MARKER_CALLOUT_STAT_LAYOUTS);
 const CALLOUT_VISIBILITIES = new Set<string>(Q_MAP_MARKER_CALLOUT_VISIBILITIES);
+const MAX_CALLOUT_STATS = 6;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
@@ -72,6 +79,59 @@ function normalizeBadge(value: unknown): QMapMarkerBadge | undefined {
   };
 }
 
+function normalizeClusterGroup(value: unknown): string {
+  return getOptionalText(value) ?? Q_MAP_DEFAULT_CLUSTER_GROUP;
+}
+
+export function getMapMarkerClusterGroup(marker: Pick<QMapMarker, 'clusterGroup'>): string {
+  return normalizeClusterGroup(marker.clusterGroup);
+}
+
+function normalizeCalloutStatus(
+  value: unknown,
+): QMapMarkerCalloutStatus | undefined {
+  if (!isRecord(value)) return undefined;
+  const label = getOptionalText(value.label);
+  if (!label) return undefined;
+
+  return {
+    label,
+    variant: getMarkerVariant(value.variant),
+  };
+}
+
+function normalizeCalloutStat(value: unknown): QMapMarkerCalloutStat | undefined {
+  if (!isRecord(value)) return undefined;
+  const label = getOptionalText(value.label);
+  const statValue =
+    typeof value.value === 'number' && Number.isFinite(value.value)
+      ? value.value
+      : getOptionalText(value.value);
+  if (!label || statValue === undefined) return undefined;
+
+  return {
+    label,
+    value: statValue,
+    layout:
+      getOptionalEnum<QMapMarkerCalloutStatLayout>(
+        value.layout,
+        CALLOUT_STAT_LAYOUTS,
+      ) ?? 'compact',
+  };
+}
+
+function normalizeCalloutStats(
+  value: unknown,
+): QMapMarkerCalloutStat[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  const stats = value
+    .map(normalizeCalloutStat)
+    .filter((stat): stat is QMapMarkerCalloutStat => stat !== undefined)
+    .slice(0, MAX_CALLOUT_STATS);
+
+  return stats.length > 0 ? stats : undefined;
+}
+
 function normalizeCallout(value: unknown): QMapMarkerCallout | undefined {
   if (!isRecord(value)) return undefined;
   const title = getOptionalText(value.title);
@@ -79,6 +139,8 @@ function normalizeCallout(value: unknown): QMapMarkerCallout | undefined {
 
   const subtitle = getOptionalText(value.subtitle);
   const meta = getOptionalText(value.meta);
+  const stats = normalizeCalloutStats(value.stats);
+  const status = normalizeCalloutStatus(value.status);
   const placement = getOptionalEnum<QMapMarkerCalloutPlacement>(value.placement, CALLOUT_PLACEMENTS) ?? 'auto';
   const visibility = getOptionalEnum<QMapMarkerCalloutVisibility>(value.visibility, CALLOUT_VISIBILITIES) ?? 'always';
 
@@ -89,6 +151,8 @@ function normalizeCallout(value: unknown): QMapMarkerCallout | undefined {
     visibility,
     ...(subtitle ? { subtitle } : {}),
     ...(meta ? { meta } : {}),
+    ...(stats ? { stats } : {}),
+    ...(status ? { status } : {}),
   };
 }
 
@@ -113,6 +177,7 @@ function normalizeMarker(value: unknown): QMapMarker | undefined {
     longitude: value.longitude,
     label,
     clusterable: value.clusterable !== false,
+    clusterGroup: normalizeClusterGroup(value.clusterGroup),
     variant: getMarkerVariant(value.variant),
     ...(imageUrl ? { imageUrl } : {}),
     ...(fallbackText ? { fallbackText } : {}),
