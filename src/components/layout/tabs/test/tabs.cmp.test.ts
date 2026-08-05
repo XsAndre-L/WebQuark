@@ -76,6 +76,43 @@ describe('q-tabs keyboard navigation in Chromium', () => {
     expect(getComputedStyle(tab!).maxWidth).toBe('94px');
   });
 
+  it('renders an accessible icon-only tab without stretching it', async () => {
+    const element = document.createElement('q-tabs');
+    element.stretch = true;
+    element.items = [
+      { label: 'Progress', value: 'progress' },
+      {
+        label: 'Actions',
+        value: 'actions',
+        icon: 'ellipsis-vertical',
+        iconOnly: true,
+      },
+    ];
+    document.body.append(element);
+    await customElements.whenDefined('q-tabs');
+    await nextFrame();
+
+    const [progressTab, actionsTab] = Array.from(
+      element.shadowRoot!.querySelectorAll<HTMLButtonElement>('[role="tab"]'),
+    );
+    const stylesheet = new CSSStyleSheet();
+    await stylesheet.replace(tabsCss);
+    element.shadowRoot!.adoptedStyleSheets = [
+      ...element.shadowRoot!.adoptedStyleSheets,
+      stylesheet,
+    ];
+
+    expect(actionsTab.getAttribute('aria-label')).toBe('Actions');
+    expect(actionsTab.title).toBe('Actions');
+    expect(actionsTab.textContent?.trim()).toBe('');
+    expect(actionsTab.classList.contains('is-icon-only')).toBe(true);
+    expect(
+      actionsTab.querySelector('q-icon')?.getAttribute('name'),
+    ).toBe('ellipsis-vertical');
+    expect(getComputedStyle(progressTab).flexGrow).toBe('1');
+    expect(getComputedStyle(actionsTab).flexGrow).toBe('0');
+  });
+
   it('preserves tab DOM nodes and generated IDs for new arrays and reorder', async () => {
     const element = document.createElement('q-tabs');
     element.value = 'alpha';

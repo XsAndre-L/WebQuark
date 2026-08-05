@@ -36,7 +36,11 @@
 
 .tab {
   position: relative;
+  display: inline-flex;
   flex: 0 0 auto;
+  gap: var(--q-tabs-icon-gap, 6px);
+  align-items: center;
+  justify-content: center;
   box-sizing: border-box;
   min-width: 0;
   max-width: var(--q-tabs-tab-max-width, 94px);
@@ -50,6 +54,17 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   cursor: pointer;
+}
+
+.tab__icon {
+  flex: 0 0 auto;
+}
+
+.tab__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .tab-list.size-sm .tab {
@@ -68,6 +83,26 @@
   min-height: var(--q-tabs-height-lg, var(--q-tabs-height, 50px));
   padding: var(--q-tabs-padding-lg, var(--q-tabs-padding, 14px 18px));
   font-size: var(--q-tabs-font-size-lg, var(--q-tabs-font-size, var(--q-font-size-lg, 1rem)));
+}
+
+.tab-list.size-sm .tab.is-icon-only {
+  width: var(--q-tabs-icon-only-width-sm, var(--q-tabs-height-sm, var(--q-tabs-height, 34px)));
+  padding-inline: 0;
+}
+
+.tab-list.size-md .tab.is-icon-only {
+  width: var(--q-tabs-icon-only-width-md, var(--q-tabs-height-md, var(--q-tabs-height, 42px)));
+  padding-inline: 0;
+}
+
+.tab-list.size-lg .tab.is-icon-only {
+  width: var(--q-tabs-icon-only-width-lg, var(--q-tabs-height-lg, var(--q-tabs-height, 50px)));
+  padding-inline: 0;
+}
+
+.tab.is-icon-only {
+  flex: 0 0 auto;
+  max-width: none;
 }
 
 .tab::after {
@@ -162,8 +197,12 @@
   cursor: not-allowed;
 }
 
-:host([stretch]) .tab {
+:host([stretch]) .tab:not(.is-icon-only) {
   flex: 1 1 0;
+}
+
+:host([stretch]) .tab.is-icon-only {
+  flex: 0 0 auto;
 }
 
 :host([orientation='vertical']) .tab-list {
