@@ -71,6 +71,7 @@ describe('q-map selective marker clustering', () => {
     expect(cluster).toEqual(
       expect.objectContaining({
         kind: 'cluster',
+        clusterGroup: 'default',
         count: 2,
         markerIds: ['store:1', 'store:2'],
         containsSelection: true,
@@ -82,6 +83,78 @@ describe('q-map selective marker clustering', () => {
         key: 'string:merchandiser:1',
       }),
     );
+  });
+
+  it('clusters markers from different source layers when their group matches', () => {
+    const index = new MapMarkerClusterIndex();
+    index.load(
+      [
+        marker('store:1', true, 'field-activity'),
+        marker('merchandiser:1', true, 'field-activity'),
+      ],
+      OPTIONS,
+    );
+
+    expect(index.getViewportItems(WORLD_BOUNDS, 7, undefined)).toEqual([
+      expect.objectContaining({
+        kind: 'cluster',
+        clusterGroup: 'field-activity',
+        count: 2,
+        markerIds: ['merchandiser:1', 'store:1'],
+      }),
+    ]);
+  });
+
+  it('keeps different groups in separate clusters with unique render keys', () => {
+    const index = new MapMarkerClusterIndex();
+    index.load(
+      [
+        marker('store:1', true, 'stores'),
+        marker('store:2', true, 'stores'),
+        marker('merchandiser:1', true, 'merchandisers'),
+        marker('merchandiser:2', true, 'merchandisers'),
+      ],
+      OPTIONS,
+    );
+
+    const clusters = index
+      .getViewportItems(WORLD_BOUNDS, 7, undefined)
+      .filter(item => item.kind === 'cluster');
+
+    expect(clusters).toHaveLength(2);
+    expect(clusters.map(cluster => cluster.clusterGroup)).toEqual([
+      'merchandisers',
+      'stores',
+    ]);
+    expect(clusters.map(cluster => cluster.markerIds)).toEqual([
+      ['merchandiser:1', 'merchandiser:2'],
+      ['store:1', 'store:2'],
+    ]);
+    expect(new Set(clusters.map(cluster => cluster.key)).size).toBe(2);
+  });
+
+  it('removes stale clusters when markers move between groups', () => {
+    const index = new MapMarkerClusterIndex();
+    index.load(
+      [
+        marker('store:1', true, 'stores'),
+        marker('store:2', true, 'stores'),
+      ],
+      OPTIONS,
+    );
+    expect(index.getViewportItems(WORLD_BOUNDS, 7, undefined)).toHaveLength(1);
+
+    index.load(
+      [
+        marker('store:1', true, 'stores'),
+        marker('store:2', true, 'active-visits'),
+      ],
+      OPTIONS,
+    );
+    const separated = index.getViewportItems(WORLD_BOUNDS, 7, undefined);
+
+    expect(separated).toHaveLength(2);
+    expect(separated.every(item => item.kind === 'marker')).toBe(true);
   });
 
   it('reconciles clusterable transitions, selection, refresh, and removal', () => {
@@ -136,12 +209,13 @@ describe('q-map selective marker clustering', () => {
   });
 });
 
-function marker(id: string, clusterable: boolean): QMapMarker {
+function marker(id: string, clusterable: boolean, clusterGroup?: string): QMapMarker {
   return {
     id,
     latitude: -33.9249,
     longitude: 18.4241,
     label: id,
     clusterable,
+    ...(clusterGroup ? { clusterGroup } : {}),
   };
 }

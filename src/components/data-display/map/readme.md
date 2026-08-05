@@ -5,8 +5,9 @@
 - `kind`: `dot`, `avatar`, or `icon`
 - `ring` and `pulse`: independent status emphasis
 - `badge`: compact icon/text status with a required accessible label
-- `callout`: plain-text, non-interactive context shown always or only while selected
+- `callout`: plain-text, non-interactive context with an optional status pill and structured stats
 - `clusterMarkers`: deterministic, keyboard-accessible clustering
+- `clusterGroup`: clusters nearby markers only when their normalized group matches; markers from different source layers may share a group
 
 ```ts
 map.markers = [{
@@ -14,6 +15,7 @@ map.markers = [{
   latitude: -26.1459,
   longitude: 28.0416,
   label: 'Rosebank location, live',
+  clusterGroup: 'field-activity',
   kind: 'avatar',
   fallbackText: 'RL',
   variant: 'success',
@@ -26,14 +28,33 @@ map.markers = [{
   },
   callout: {
     title: 'Rosebank location',
-    subtitle: 'Live now',
+    subtitle: 'CUST-001 | Rosebank',
+    status: {
+      label: 'In Progress',
+      variant: 'success',
+    },
     meta: 'Updated eight minutes ago',
+    stats: [
+      { label: 'Visits', value: '2 of 4' },
+      { label: 'Last update', value: '8m' },
+      {
+        label: 'Current activity',
+        value: 'Shelf audit at Rosebank',
+        layout: 'wide',
+      },
+    ],
     placement: 'right',
   },
 }];
 ```
 
-Cancel `qClusterSelect` to replace the default centre-and-zoom behaviour. Callout and badge strings are inserted as text, never interpreted as HTML.
+Markers without a `clusterGroup` use the `default` group. Layer membership does not limit clustering: any visible markers supplied to the same `q-map` may cluster when their normalized group matches. Every visible marker and cluster uses a collision footprint equal to 75% of its rendered diameter, so overlapping items push apart regardless of type or group. Each cluster exposes a normalized `cluster-group-<group>` CSS part, so consumers can style groups independently. Cancel `qClusterSelect` to replace the default centre-and-zoom behaviour; its detail includes the activated `clusterGroup`. Callout, status, badge, and stat strings are inserted as text, never interpreted as HTML. A callout status is rendered as a pill beside the title, while the optional subtitle remains on its own line. Callout stats render in two compact columns; a stat with `layout: 'wide'` spans both columns.
+
+```css
+q-map::part(cluster-group-field-activity) {
+  background: var(--field-activity-cluster-background);
+}
+```
 
 
 <!-- Auto Generated Below -->

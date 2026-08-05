@@ -42,6 +42,7 @@ Remote, local, or binary icon renderer with SVG sanitization.
  - [q-navbar](../../layout/navbar)
  - [q-sidepanel](../../layout/sidepanel)
  - [q-syntax-box](../../data-display/syntax-box)
+ - [q-tabs](../../layout/tabs)
 
 ### Graph
 ```mermaid
@@ -52,6 +53,7 @@ graph TD;
   q-navbar --> q-icon
   q-sidepanel --> q-icon
   q-syntax-box --> q-icon
+  q-tabs --> q-icon
   style q-icon fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

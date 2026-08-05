@@ -1,5 +1,9 @@
 import { Q_MAP_MARKER_VARIANTS } from '../map.types';
-import type { QMapMarker, QMapMarkerCallout } from '../map.types';
+import type {
+  QMapMarker,
+  QMapMarkerCallout,
+  QMapMarkerCalloutStat,
+} from '../map.types';
 
 type QIconElement = HTMLElement & { name?: string; size?: string | number };
 
@@ -156,25 +160,75 @@ export function createCalloutContent(document: Document): HTMLElement {
   const content = document.createElement('div');
   content.className = 'q-map-callout__content';
   content.setAttribute('aria-hidden', 'true');
-  for (const className of ['title', 'subtitle', 'meta']) {
-    const line = document.createElement('span');
-    line.className = `q-map-callout__${className}`;
-    if (className !== 'title') line.hidden = true;
-    content.append(line);
-  }
+
+  const heading = document.createElement('span');
+  heading.className = 'q-map-callout__heading';
+
+  const title = document.createElement('span');
+  title.className = 'q-map-callout__title';
+
+  const status = document.createElement('span');
+  status.className = 'q-map-callout__status';
+  status.hidden = true;
+
+  const subtitle = document.createElement('span');
+  subtitle.className = 'q-map-callout__subtitle';
+  subtitle.hidden = true;
+
+  const meta = document.createElement('span');
+  meta.className = 'q-map-callout__meta';
+  meta.hidden = true;
+
+  const stats = document.createElement('dl');
+  stats.className = 'q-map-callout__stats';
+  stats.hidden = true;
+
+  heading.append(title, status);
+  content.append(heading, subtitle, meta, stats);
   return content;
 }
 
 export function updateCalloutContent(element: HTMLElement, callout: QMapMarkerCallout): void {
   const title = element.querySelector<HTMLElement>('.q-map-callout__title');
   const subtitle = element.querySelector<HTMLElement>('.q-map-callout__subtitle');
+  const status = element.querySelector<HTMLElement>('.q-map-callout__status');
   const meta = element.querySelector<HTMLElement>('.q-map-callout__meta');
-  if (!title || !subtitle || !meta) return;
+  const stats = element.querySelector<HTMLDListElement>('.q-map-callout__stats');
+  if (!title || !subtitle || !status || !meta || !stats) return;
   for (const variant of Q_MAP_MARKER_VARIANTS) element.classList.remove(`variant-${variant}`);
   element.classList.add(`variant-${callout.variant ?? 'default'}`);
   title.textContent = callout.title;
   subtitle.textContent = callout.subtitle ?? '';
   subtitle.hidden = !callout.subtitle;
+  for (const variant of Q_MAP_MARKER_VARIANTS) status.classList.remove(`variant-${variant}`);
+  status.classList.add(`variant-${callout.status?.variant ?? 'default'}`);
+  status.textContent = callout.status?.label ?? '';
+  status.hidden = !callout.status;
   meta.textContent = callout.meta ?? '';
   meta.hidden = !callout.meta;
+  updateCalloutStats(stats, callout.stats ?? []);
+}
+
+function updateCalloutStats(
+  element: HTMLDListElement,
+  stats: readonly QMapMarkerCalloutStat[],
+): void {
+  const items = stats.map((stat) => {
+    const item = element.ownerDocument.createElement('div');
+    item.className = `q-map-callout__stat layout-${stat.layout ?? 'compact'}`;
+
+    const label = element.ownerDocument.createElement('dt');
+    label.className = 'q-map-callout__stat-label';
+    label.textContent = stat.label;
+
+    const value = element.ownerDocument.createElement('dd');
+    value.className = 'q-map-callout__stat-value';
+    value.textContent = String(stat.value);
+
+    item.append(label, value);
+    return item;
+  });
+
+  element.replaceChildren(...items);
+  element.hidden = items.length === 0;
 }

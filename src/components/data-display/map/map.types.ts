@@ -2,6 +2,8 @@ import type { QIconName } from '../../media/icon/icon.types';
 
 export type QMapMarkerId = string | number;
 
+export const Q_MAP_DEFAULT_CLUSTER_GROUP = 'default';
+
 export type QMapProvider = 'tiles' | 'vector' | 'google';
 
 export type QMapGoogleMapType = 'roadmap' | 'satellite' | 'terrain' | 'hybrid';
@@ -10,12 +12,14 @@ export const Q_MAP_MARKER_VARIANTS = ['default', 'success', 'warning', 'danger',
 export const Q_MAP_MARKER_KINDS = ['dot', 'avatar', 'icon'] as const;
 export const Q_MAP_MARKER_RINGS = ['none', 'solid', 'dashed'] as const;
 export const Q_MAP_MARKER_CALLOUT_PLACEMENTS = ['auto', 'left', 'right', 'top', 'bottom'] as const;
+export const Q_MAP_MARKER_CALLOUT_STAT_LAYOUTS = ['compact', 'wide'] as const;
 export const Q_MAP_MARKER_CALLOUT_VISIBILITIES = ['always', 'selected'] as const;
 
 export type QMapMarkerVariant = (typeof Q_MAP_MARKER_VARIANTS)[number];
 export type QMapMarkerKind = (typeof Q_MAP_MARKER_KINDS)[number];
 export type QMapMarkerRing = (typeof Q_MAP_MARKER_RINGS)[number];
 export type QMapMarkerCalloutPlacement = (typeof Q_MAP_MARKER_CALLOUT_PLACEMENTS)[number];
+export type QMapMarkerCalloutStatLayout = (typeof Q_MAP_MARKER_CALLOUT_STAT_LAYOUTS)[number];
 export type QMapMarkerCalloutVisibility = (typeof Q_MAP_MARKER_CALLOUT_VISIBILITIES)[number];
 
 export interface QMapBounds {
@@ -34,10 +38,23 @@ export interface QMapMarkerBadge {
   ariaLabel: string;
 }
 
+export interface QMapMarkerCalloutStatus {
+  label: string;
+  variant?: QMapMarkerVariant;
+}
+
+export interface QMapMarkerCalloutStat {
+  label: string;
+  value: string | number;
+  layout?: QMapMarkerCalloutStatLayout;
+}
+
 export interface QMapMarkerCallout {
   title: string;
   subtitle?: string;
   meta?: string;
+  stats?: readonly QMapMarkerCalloutStat[];
+  status?: QMapMarkerCalloutStatus;
   variant?: QMapMarkerVariant;
   placement?: QMapMarkerCalloutPlacement;
   visibility?: QMapMarkerCalloutVisibility;
@@ -50,6 +67,8 @@ export interface QMapMarker {
   label: string;
   /** Excludes this marker from clusters when explicitly false. Defaults to true. */
   clusterable?: boolean;
+  /** Clusters only with markers using the same normalized group. Defaults to "default". */
+  clusterGroup?: string;
   variant?: QMapMarkerVariant;
   imageUrl?: string;
   fallbackText?: string;
@@ -76,6 +95,7 @@ export interface QMapMarkerSelectDetail {
 
 export interface QMapClusterSelectDetail {
   clusterId: string;
+  clusterGroup: string;
   markerIds: QMapMarkerId[];
   latitude: number;
   longitude: number;

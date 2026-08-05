@@ -82,8 +82,14 @@ export class QTextarea {
 
   @Watch('value')
   watchValue(newValue: string) {
+    const value = newValue ?? "";
+
+    if (this.textareaEl && this.textareaEl.value !== value) {
+      this.textareaEl.value = value;
+    }
+
     if (this.internals && typeof this.internals.setFormValue === 'function') {
-      this.internals.setFormValue(newValue);
+      this.internals.setFormValue(value);
     }
     requestAnimationFrame(() => this.adjustHeightInternal());
   }

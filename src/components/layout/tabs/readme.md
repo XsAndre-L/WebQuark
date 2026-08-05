@@ -61,6 +61,19 @@ Accessible tab selector for switching between consumer-owned tab panels.
 | `"tablist"`      | Scrollable tab-list container. |
 
 
+## Dependencies
+
+### Depends on
+
+- [q-icon](../../media/icon)
+
+### Graph
+```mermaid
+graph TD;
+  q-tabs --> q-icon
+  style q-tabs fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*
