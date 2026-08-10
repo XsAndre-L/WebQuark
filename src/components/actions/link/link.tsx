@@ -1,5 +1,6 @@
-import { Component, Event, EventEmitter, Prop, h } from '@stencil/core';
+import { Component, Event, EventEmitter, Mixin, Prop, h } from '@stencil/core';
 
+import { withActionLabel, withActionProps } from '../action.props';
 import type { QLinkTarget, QLinkUnderline, QLinkVariant } from './link.types';
 
 /**
@@ -16,39 +17,25 @@ import type { QLinkTarget, QLinkUnderline, QLinkVariant } from './link.types';
   styleUrl: 'link.css',
   shadow: true,
 })
-export class QLink {
+export class QLink extends Mixin(withActionProps, withActionLabel) {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
 
-  /** Primary destination URL. Takes precedence over url, mailto, and tel. */
-  @Prop() href?: string;
-  /** Alias destination URL kept for compatibility. `href` wins when both are set. */
-  @Prop() url?: string;
-  /** Email address used to generate a mailto: URL when href/url are not set. */
-  @Prop() mailto?: string;
-  /** Phone number used to generate a tel: URL when href/url/mailto are not set. */
-  @Prop() tel?: string;
-  /** Native anchor target. */
-  @Prop() target?: QLinkTarget;
-  /** Native anchor rel value. Defaults to noopener noreferrer for target="_blank" or external links. */
-  @Prop() rel?: string;
-  /** Download filename or boolean download hint. */
-  @Prop() download?: string;
-  /** Fallback text when no default slot content is provided. */
-  @Prop() label?: string;
-  /** Visual style of the link. */
   @Prop({ reflect: true }) variant: QLinkVariant = 'default';
-  /** Underline behavior. */
   @Prop({ reflect: true }) underline: QLinkUnderline = 'hover';
-  /** Shows the external-link cue and applies safe default rel when rel is not supplied. */
+
+  /** Compatibility alias used when `href` is unset. */
+  @Prop() url?: string;
+  /** Generates a `mailto:` URL when `href` and `url` are unset. */
+  @Prop() mailto?: string;
+  /** Generates a `tel:` URL when higher-priority destinations are unset. */
+  @Prop() tel?: string;
+  @Prop() target?: QLinkTarget;
+  /** Shows an external-link cue and supplies a safe default `rel`. */
   @Prop({ reflect: true }) external: boolean = false;
-  /** Disables navigation, focus, and click emission. */
-  @Prop({ reflect: true }) disabled: boolean = false;
 
   /** Emitted when the link is clicked and not disabled. */
   @Event() qClick!: EventEmitter<MouseEvent>;
-  /** Emitted when the inner anchor receives focus. */
   @Event() qFocus!: EventEmitter<FocusEvent>;
-  /** Emitted when the inner anchor loses focus. */
   @Event() qBlur!: EventEmitter<FocusEvent>;
 
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================

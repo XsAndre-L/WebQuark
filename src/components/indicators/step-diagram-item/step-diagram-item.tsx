@@ -21,14 +21,11 @@ import { isStepDiagramItemActivationKey } from './step-diagram-item.utils';
 })
 export class QStepDiagramItem {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
-  /** Visual and semantic state of the step. */
-  @Prop({ reflect: true }) status: QStepDiagramItemStatus = 'completed';
-
-  /** Connector line style shown after the step. */
   @Prop({ reflect: true }) lineStyle: QStepDiagramItemLineStyle = 'solid';
-
-  /** Layout inherited from q-step-diagram and reflected for host styling. */
+  /** Inherited from `q-step-diagram`. */
   @Prop({ reflect: true, mutable: true }) layout: QStepDiagramItemLayout = 'vertical';
+
+  @Prop({ reflect: true }) status: QStepDiagramItemStatus = 'completed';
 
   /** Emitted when the focusable step content is clicked or activated with Enter/Space. */
   @Event() qItemClick: EventEmitter<void>;

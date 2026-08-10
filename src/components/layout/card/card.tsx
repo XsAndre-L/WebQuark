@@ -19,17 +19,15 @@ export class QCard {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Element() el!: HTMLElement;
 
-  /** Visual elevation level; numeric values are accepted as legacy aliases for low, medium, and high. */
+  /** Numeric values remain supported as legacy elevation aliases. */
   @Prop({ reflect: true }) elevation: QCardElevation = 'medium';
+  /** Applies translucent glass styling without backdrop-filter. */
+  @Prop({ reflect: true }) glass: boolean = false;
+  /** Applies a visual hover/focus lift without adding interactive semantics. */
+  @Prop({ reflect: true }) lift: boolean = false;
 
   /** Adds button semantics and keyboard activation to the card container. */
   @Prop({ reflect: true }) interactive: boolean = false;
-
-  /** Applies translucent glass styling without backdrop-filter. */
-  @Prop({ reflect: true }) glass: boolean = false;
-
-  /** Applies a visual hover/focus lift without adding interactive semantics. */
-  @Prop({ reflect: true }) lift: boolean = false;
 
   // ========================= [2] INTERNAL STATE & REFS =========================
 

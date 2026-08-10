@@ -14,28 +14,28 @@ Form-associated textarea with optional auto-grow behavior and validation messagi
 | Property       | Attribute       | Description                                                                                  | Type                            | Default     |
 | -------------- | --------------- | -------------------------------------------------------------------------------------------- | ------------------------------- | ----------- |
 | `ariaLabel`    | `aria-label`    | Accessible name for the native textarea when a visible label is not used.                    | `string`                        | `null`      |
-| `autoGrow`     | `auto-grow`     | Enables automatic height growth when resizeMode is auto.                                     | `boolean`                       | `true`      |
-| `disabled`     | `disabled`      | Disables textarea interaction.                                                               | `boolean`                       | `false`     |
+| `autoGrow`     | `auto-grow`     | Grows with content when `resizeMode` is `auto`.                                              | `boolean`                       | `true`      |
+| `disabled`     | `disabled`      |                                                                                              | `boolean`                       | `false`     |
 | `error`        | `error`         | Validation error text or error-state flag.                                                   | `string`                        | `undefined` |
 | `errorMessage` | `error-message` | Validation helper text displayed when the field is in an error state.                        | `string`                        | `undefined` |
-| `label`        | `label`         | Optional label rendered above the textarea.                                                  | `string`                        | `undefined` |
-| `name`         | `name`          | Native form field name.                                                                      | `string`                        | `undefined` |
-| `placeholder`  | `placeholder`   | Placeholder text shown when the field is empty.                                              | `string`                        | `""`        |
-| `required`     | `required`      | Marks the field as required for native forms.                                                | `boolean`                       | `false`     |
+| `label`        | `label`         |                                                                                              | `string`                        | `undefined` |
+| `name`         | `name`          |                                                                                              | `string`                        | `undefined` |
+| `placeholder`  | `placeholder`   |                                                                                              | `string`                        | `""`        |
+| `required`     | `required`      |                                                                                              | `boolean`                       | `false`     |
 | `resizeMode`   | `resize-mode`   | Resize behavior: auto grows to content, manual allows vertical drag, fixed locks the height. | `"auto" \| "fixed" \| "manual"` | `'auto'`    |
-| `rows`         | `rows`          | Visible row count used by the native textarea.                                               | `number`                        | `3`         |
-| `value`        | `value`         | Current textarea value.                                                                      | `string`                        | `""`        |
+| `rows`         | `rows`          |                                                                                              | `number`                        | `3`         |
+| `value`        | `value`         |                                                                                              | `string`                        | `""`        |
 
 
 ## Events
 
-| Event     | Description                                      | Type                      |
-| --------- | ------------------------------------------------ | ------------------------- |
-| `qBlur`   | Emitted when the native textarea loses focus.    | `CustomEvent<FocusEvent>` |
-| `qChange` | Emitted when the committed value changes.        | `CustomEvent<string>`     |
-| `qClick`  | Emitted when the native textarea is clicked.     | `CustomEvent<MouseEvent>` |
-| `qFocus`  | Emitted when the native textarea receives focus. | `CustomEvent<FocusEvent>` |
-| `qInput`  | Emitted as the user types.                       | `CustomEvent<string>`     |
+| Event     | Description                               | Type                      |
+| --------- | ----------------------------------------- | ------------------------- |
+| `qBlur`   |                                           | `CustomEvent<FocusEvent>` |
+| `qChange` | Emitted when the committed value changes. | `CustomEvent<string>`     |
+| `qClick`  |                                           | `CustomEvent<MouseEvent>` |
+| `qFocus`  |                                           | `CustomEvent<FocusEvent>` |
+| `qInput`  |                                           | `CustomEvent<string>`     |
 
 
 ## Methods

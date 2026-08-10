@@ -33,22 +33,18 @@ export class QAlert {
 
   @Element() el!: HTMLElement;
 
-  /** Visual status of the message. */
+  @Prop() heading?: string;
+
   @Prop({ reflect: true }) variant: QAlertVariant = 'info';
 
-  /** Optional heading rendered before the message content. */
-  @Prop() heading?: string;
+  @Prop() dismissible: boolean = false;
+  /** Accessible label for the dismiss button. */
+  @Prop({ attribute: 'dismiss-label' }) dismissLabel: string = 'Dismiss alert';
 
   /** Live-region behavior. Announcements are off by default to avoid noisy updates. */
   @Prop() announcement: QAlertAnnouncement = 'off';
 
-  /** Shows a dismiss button. Consumers remove or hide the alert after `qDismiss`. */
-  @Prop() dismissible: boolean = false;
-
-  /** Accessible label for the dismiss button. */
-  @Prop({ attribute: 'dismiss-label' }) dismissLabel: string = 'Dismiss alert';
-
-  /** Emitted when the dismiss button is activated. The component remains rendered. */
+  /** The component remains rendered after dismissal. */
   @Event() qDismiss!: EventEmitter<void>;
 
   // ========================= [2] INTERNAL STATE & REFS =========================

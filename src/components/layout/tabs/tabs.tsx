@@ -24,26 +24,18 @@ export class QTabs {
 
   /** Tab records; strings use the same text for label and value. */
   @Prop() items: TabItemInput[] | string = [];
-
-  /** Value of the currently selected tab. The first enabled tab is used when it does not match an item. */
+  /** Falls back to the first enabled tab when unmatched. */
   @Prop() value: string = '';
+
+  /** Direction of the tab list and its corresponding arrow-key navigation. */
+  @Prop({ reflect: true }) orientation: QTabsOrientation = 'horizontal';
+  @Prop() size: QTabsSize = 'md';
+  @Prop() variant: QTabsVariant = 'underline';
+  @Prop({ reflect: true }) stretch: boolean = false;
 
   /** Accessible name for the tab list. */
   @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = 'Sections';
 
-  /** Direction of the tab list and its corresponding arrow-key navigation. */
-  @Prop({ reflect: true }) orientation: QTabsOrientation = 'horizontal';
-
-  /** Visual size preset. */
-  @Prop() size: QTabsSize = 'md';
-
-  /** Visual presentation of the tabs. */
-  @Prop() variant: QTabsVariant = 'underline';
-
-  /** Makes enabled tabs share the available width evenly. */
-  @Prop({ reflect: true }) stretch: boolean = false;
-
-  /** Emitted with the selected tab value after pointer or keyboard activation. */
   @Event() qChange!: EventEmitter<string>;
 
   // ========================= [2] INTERNAL STATE & REFS =========================

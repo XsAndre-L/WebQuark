@@ -39,28 +39,28 @@ Edge-aware site navigation with optional brand content, actions, and mobile menu
 
 | Property      | Attribute      | Description                                                                                                    | Type                                     | Default     |
 | ------------- | -------------- | -------------------------------------------------------------------------------------------------------------- | ---------------------------------------- | ----------- |
-| `activeValue` | `active-value` | Value or href of the currently active navigation item.                                                         | `string`                                 | `''`        |
+| `activeValue` | `active-value` | Matches either an item's value or `href`.                                                                      | `string`                                 | `''`        |
 | `ariaLabel`   | `aria-label`   | Accessible name for the desktop and mobile navigation regions.                                                 | `string`                                 | `null`      |
-| `bordered`    | `bordered`     | Renders a border along the inward-facing edge.                                                                 | `boolean`                                | `true`      |
-| `brand`       | `brand`        | Brand text rendered inside the brand link.                                                                     | `string`                                 | `undefined` |
-| `brandHref`   | `brand-href`   | URL used by the brand link.                                                                                    | `string`                                 | `'/'`       |
-| `compact`     | `compact`      | Uses the compact navbar height and padding.                                                                    | `boolean`                                | `false`     |
-| `edge`        | `edge`         | Edge the navbar is arranged against.                                                                           | `"bottom" \| "left" \| "right" \| "top"` | `'top'`     |
+| `bordered`    | `bordered`     |                                                                                                                | `boolean`                                | `true`      |
+| `brand`       | `brand`        |                                                                                                                | `string`                                 | `undefined` |
+| `brandHref`   | `brand-href`   |                                                                                                                | `string`                                 | `'/'`       |
+| `compact`     | `compact`      |                                                                                                                | `boolean`                                | `false`     |
+| `edge`        | `edge`         |                                                                                                                | `"bottom" \| "left" \| "right" \| "top"` | `'top'`     |
 | `items`       | `items`        | Navigation items; strings use the same text for label and value, while objects enable links, icons, and state. | `NavbarItemInput[] \| string`            | `[]`        |
 | `logoAlt`     | `logo-alt`     | Accessible text for a logo-only brand image.                                                                   | `string`                                 | `''`        |
-| `logoSrc`     | `logo-src`     | Brand logo image URL.                                                                                          | `string`                                 | `undefined` |
+| `logoSrc`     | `logo-src`     |                                                                                                                | `string`                                 | `undefined` |
 | `mobileLabel` | `mobile-label` | Accessible label for the mobile menu toggle button.                                                            | `string`                                 | `'Menu'`    |
 | `mobileMode`  | `mobile-mode`  | Controls whether mobile widths collapse items into a menu or keep them inline.                                 | `"inline" \| "menu"`                     | `'menu'`    |
-| `sticky`      | `sticky`       | Keeps the navbar pinned to its configured edge.                                                                | `boolean`                                | `false`     |
-| `transparent` | `transparent`  | Removes the navbar background when true.                                                                       | `boolean`                                | `false`     |
+| `sticky`      | `sticky`       |                                                                                                                | `boolean`                                | `false`     |
+| `transparent` | `transparent`  |                                                                                                                | `boolean`                                | `false`     |
 
 
 ## Events
 
-| Event         | Description                                   | Type                              |
-| ------------- | --------------------------------------------- | --------------------------------- |
-| `qMenuToggle` | Emitted when the mobile menu opens or closes. | `CustomEvent<boolean>`            |
-| `qSelect`     | Emitted when a navigation item is selected.   | `CustomEvent<NavbarSelectDetail>` |
+| Event         | Description | Type                              |
+| ------------- | ----------- | --------------------------------- |
+| `qMenuToggle` |             | `CustomEvent<boolean>`            |
+| `qSelect`     |             | `CustomEvent<NavbarSelectDetail>` |
 
 
 ## Slots

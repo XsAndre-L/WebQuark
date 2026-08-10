@@ -19,19 +19,10 @@ import type { QToolbarEdge } from './toolbar.types';
   shadow: true,
 })
 export class QToolbar {
-  /** Edge the toolbar is arranged against. */
   @Prop({ reflect: true }) edge: QToolbarEdge = 'top';
-
-  /** Keeps the toolbar pinned to its configured edge. */
   @Prop({ reflect: true }) sticky: boolean = false;
-
-  /** Uses a reduced toolbar size and padding. */
   @Prop({ reflect: true }) compact: boolean = false;
-
-  /** Removes the toolbar background. */
   @Prop({ reflect: true }) transparent: boolean = false;
-
-  /** Renders a border along the inward-facing edge. */
   @Prop({ reflect: true }) bordered: boolean = false;
 
   /** Accessible label for the toolbar content group. */

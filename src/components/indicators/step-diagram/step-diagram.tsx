@@ -14,7 +14,6 @@ import type { QStepDiagramLayout } from './step-diagram.types';
 })
 export class QStepDiagram {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
-  /** Controls whether step items are stacked vertically or arranged horizontally. */
   @Prop({ reflect: true }) layout: QStepDiagramLayout = 'vertical';
 
   /** Accessible label for the step sequence. */

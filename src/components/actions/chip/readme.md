@@ -11,30 +11,30 @@ Compact label, link, filter, or removable token.
 
 ## Properties
 
-| Property    | Attribute   | Description                                                                                          | Type                                                                       | Default     |
-| ----------- | ----------- | ---------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ----------- |
-| `clickable` | `clickable` | Renders the whole chip as a button when no href is set. Ignored when removable.                      | `boolean`                                                                  | `false`     |
-| `disabled`  | `disabled`  | Disables interaction and removal.                                                                    | `boolean`                                                                  | `false`     |
-| `download`  | `download`  | Download filename or boolean download hint for link chips.                                           | `string`                                                                   | `undefined` |
-| `href`      | `href`      | URL to render the chip as a link. Ignored when removable to avoid nested interactive controls.       | `string`                                                                   | `undefined` |
-| `label`     | `label`     | Visible label text. Also used in qRemove detail and the remove button accessible name.               | `string`                                                                   | `undefined` |
-| `rel`       | `rel`       | Link rel value. Defaults to noopener noreferrer for target="_blank".                                 | `string`                                                                   | `undefined` |
-| `removable` | `removable` | Adds a remove button. Removable chips render as non-interactive containers to avoid nested controls. | `boolean`                                                                  | `false`     |
-| `selected`  | `selected`  | Marks the chip as selected.                                                                          | `boolean`                                                                  | `false`     |
-| `size`      | `size`      | Chip size.                                                                                           | `"lg" \| "md" \| "sm"`                                                     | `'md'`      |
-| `target`    | `target`    | Link target used when `href` is set.                                                                 | `"_blank" \| "_parent" \| "_self" \| "_top"`                               | `undefined` |
-| `value`     | `value`     | Consumer-provided identifier included in qRemove detail.                                             | `string`                                                                   | `undefined` |
-| `variant`   | `variant`   | Visual style of the chip.                                                                            | `"danger" \| "filter" \| "neutral" \| "primary" \| "success" \| "warning"` | `'neutral'` |
+| Property    | Attribute   | Description                                                                    | Type                                                                       | Default     |
+| ----------- | ----------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------- | ----------- |
+| `clickable` | `clickable` | Renders a native button when `href` is empty and `removable` is false.         | `boolean`                                                                  | `false`     |
+| `disabled`  | `disabled`  | Prevents activation, navigation, and secondary actions such as removal.        | `boolean`                                                                  | `false`     |
+| `download`  | `download`  | Enables native download behavior when the component operates as a link.        | `string`                                                                   | `undefined` |
+| `href`      | `href`      | Destination used when the component operates as a link.                        | `string`                                                                   | `undefined` |
+| `label`     | `label`     | Text used when slotted content cannot supply the component's required label.   | `string`                                                                   | `undefined` |
+| `rel`       | `rel`       | Defaults to `noopener noreferrer` when `target="_blank"`.                      | `string`                                                                   | `undefined` |
+| `removable` | `removable` | Adds a remove button and prevents the rest of the chip from being interactive. | `boolean`                                                                  | `false`     |
+| `selected`  | `selected`  | Maps to `aria-current="page"` for links and `aria-pressed` for buttons.        | `boolean`                                                                  | `false`     |
+| `size`      | `size`      |                                                                                | `"lg" \| "md" \| "sm"`                                                     | `'md'`      |
+| `target`    | `target`    |                                                                                | `"_blank" \| "_parent" \| "_self" \| "_top"`                               | `undefined` |
+| `value`     | `value`     | Included in `qRemove` detail.                                                  | `string`                                                                   | `undefined` |
+| `variant`   | `variant`   |                                                                                | `"danger" \| "filter" \| "neutral" \| "primary" \| "success" \| "warning"` | `'neutral'` |
 
 
 ## Events
 
-| Event     | Description                                                        | Type                             |
-| --------- | ------------------------------------------------------------------ | -------------------------------- |
-| `qBlur`   | Emitted when the interactive chip or remove button loses focus.    | `CustomEvent<FocusEvent>`        |
-| `qClick`  | Emitted when an interactive chip is clicked.                       | `CustomEvent<MouseEvent>`        |
-| `qFocus`  | Emitted when the interactive chip or remove button receives focus. | `CustomEvent<FocusEvent>`        |
-| `qRemove` | Emitted when the remove button is clicked.                         | `CustomEvent<QChipRemoveDetail>` |
+| Event     | Description                                                   | Type                             |
+| --------- | ------------------------------------------------------------- | -------------------------------- |
+| `qBlur`   | Emitted when the chip action or remove button loses focus.    | `CustomEvent<FocusEvent>`        |
+| `qClick`  |                                                               | `CustomEvent<MouseEvent>`        |
+| `qFocus`  | Emitted when the chip action or remove button receives focus. | `CustomEvent<FocusEvent>`        |
+| `qRemove` |                                                               | `CustomEvent<QChipRemoveDetail>` |
 
 
 ## Slots

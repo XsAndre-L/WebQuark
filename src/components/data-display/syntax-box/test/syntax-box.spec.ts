@@ -53,6 +53,22 @@ describe('q-syntax-box', () => {
     el.remove();
   });
 
+  it('provides an accessible name for the editable code field', async () => {
+    const el = await createComponent({ code: 'const a = 1;', editable: true, ariaLabel: 'Template source' });
+    const textarea = el.shadowRoot.querySelector('textarea') as HTMLTextAreaElement;
+
+    expect(textarea.getAttribute('aria-label')).toBe('Template source');
+    el.remove();
+  });
+
+  it('falls back to the heading for the editable code field name', async () => {
+    const el = await createComponent({ code: 'const a = 1;', editable: true, heading: 'Example code' });
+    const textarea = el.shadowRoot.querySelector('textarea') as HTMLTextAreaElement;
+
+    expect(textarea.getAttribute('aria-label')).toBe('Example code');
+    el.remove();
+  });
+
   it('emits input events and updates value when typing', async () => {
     const el = await createComponent({ code: 'const a = 1;', editable: true });
     const textarea = el.shadowRoot.querySelector('textarea') as HTMLTextAreaElement;

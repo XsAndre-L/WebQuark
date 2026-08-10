@@ -49,76 +49,48 @@ import { getAllItemKeys, getSelectedItems, toggleSelectedKey } from './internals
   shadow: true,
 })
 export class QDataTable {
-  /** Column definitions, or a JSON string of column definitions. */
+  /** Column definitions or a JSON-encoded array. */
   @Prop() columns: TableColumn[] | string = [];
-
-  /** Row data, or a JSON string of row data. */
+  /** Row data or a JSON-encoded array. */
   @Prop() items: DataTableItem[] | string = [];
+  /** Row field used as the stable selection and render key. Falls back to the row index. */
+  @Prop() keyField: string = 'id';
 
-  /** Optional row-level actions rendered as trailing icon buttons. */
+  /** Inserts a divider whenever the returned group key changes. */
+  @Prop() rowGroup?: DataTableRowGrouper;
+  /** Row actions rendered as trailing icon buttons. */
   @Prop() rowActions: DataTableRowAction[] | string = [];
-
   /** Enables full-row click and keyboard activation. */
   @Prop() rowClickable: boolean = true;
-
-  /**
-   * Optional property-only callback that groups consecutive rendered rows.
-   * A divider is inserted whenever the returned group key changes.
-   */
-  @Prop() rowGroup?: DataTableRowGrouper;
+  /** Enables row selection checkboxes and selection state. */
+  @Prop() selectable: boolean = false;
+  @Prop({ mutable: true }) selectedKeys: DataTableKey[] = [];
+  /** Enables sortable column headers. Columns can override this with their own sortable setting. */
+  @Prop() sortable: boolean = false;
+  /** `table` sorts locally; `external` only emits sort changes. */
+  @Prop() sortMode: DataTableSortMode = 'table';
+  @Prop({ mutable: true }) sortColumn?: string;
+  @Prop({ mutable: true }) sortDirection?: DataTableSortDirection;
+  @Prop() showToolbar: boolean = false;
+  @Prop() toolbarTitle?: string;
+  /** Accessible name for the grid; falls back to `toolbarTitle`, then "Data table". */
+  @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
+  @Prop() showSearch: boolean = false;
+  @Prop() searchPlaceholder: string = 'Search...';
+  @Prop({ mutable: true }) searchValue: string = '';
 
   /** Shows a loading state and suppresses row rendering while true. */
   @Prop() loading: boolean = false;
 
-  /** Enables row selection checkboxes and selection state. */
-  @Prop() selectable: boolean = false;
-
-  /** Keys for currently selected rows. */
-  @Prop({ mutable: true }) selectedKeys: DataTableKey[] = [];
-
-  /** Row field used as the stable selection and render key. Falls back to the row index. */
-  @Prop() keyField: string = 'id';
-
-  /** Enables sortable column headers. Columns can override this with their own sortable setting. */
-  @Prop() sortable: boolean = false;
-
-  /** Sorting behavior: 'table' sorts provided items locally, while 'external' only emits sort changes. */
-  @Prop() sortMode: DataTableSortMode = 'table';
-
-  /** Currently sorted column key. */
-  @Prop({ mutable: true }) sortColumn?: string;
-
-  /** Current sort direction for the sorted column. */
-  @Prop({ mutable: true }) sortDirection?: DataTableSortDirection;
-
-  /** Shows the optional toolbar above the table. */
-  @Prop() showToolbar: boolean = false;
-
-  /** Title text rendered in the toolbar. */
-  @Prop() toolbarTitle?: string;
-
-  /** Shows the built-in toolbar search input. */
-  @Prop() showSearch: boolean = false;
-
-  /** Placeholder text for the built-in search input. */
-  @Prop() searchPlaceholder: string = 'Search...';
-
-  /** Current search input value. */
-  @Prop({ mutable: true }) searchValue: string = '';
-
   /** Emitted when a non-interactive row area is clicked or activated with the keyboard. */
   @Event() qRowClick!: EventEmitter<QDataTableRowClickDetail>;
 
-  /** Emitted when a row action button is clicked. */
   @Event() qRowAction!: EventEmitter<QDataTableRowActionDetail>;
 
-  /** Emitted when selected rows change. */
   @Event() qSelectionChange!: EventEmitter<QDataTableSelectionChangeDetail>;
 
-  /** Emitted when the built-in search input value changes. */
   @Event() qSearch!: EventEmitter<string>;
 
-  /** Emitted when a sortable column header changes sort state. */
   @Event() qSortChange!: EventEmitter<QDataTableSortChangeDetail>;
 
   private getParsedItems(): DataTableItem[] {
@@ -249,7 +221,11 @@ export class QDataTable {
     });
 
     return (
-      <div class="table-container" role="grid">
+      <div
+        class="table-container"
+        role="grid"
+        aria-label={this.ariaLabel?.trim() || this.toolbarTitle?.trim() || 'Data table'}
+      >
         {renderDataTableToolbar({
           showToolbar: this.showToolbar,
           toolbarTitle: this.toolbarTitle,

@@ -40,37 +40,25 @@ export class QForm {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Element() el!: HTMLElement;
 
-  /** Visible form title used as the native form accessible name when no custom header is slotted. */
+  /** Names the native form when no custom header is slotted. */
   @Prop() label?: string;
 
-  /** Native form action URL. */
-  @Prop() action?: string;
-
-  /** Native form submission method. */
-  @Prop() method: QFormMethod = 'post';
-
-  /** Native form autocomplete behavior. */
-  @Prop() autocomplete: QFormAutocomplete = 'on';
-
-  /** Native form encoding type used during submission. */
-  @Prop() enctype: QFormEnctype = 'application/x-www-form-urlencoded';
-
-  /** Native browsing context target for form submission. */
-  @Prop() target?: QFormTarget;
-
-  /** Disables native constraint validation when true. */
-  @Prop({ attribute: 'no-validate' }) noValidate: boolean = false;
-
-  /** Prevents the native submit event's default navigation by default. */
+  /** Prevents the native submit event's default navigation. */
   @Prop() preventDefault: boolean = true;
-
   /** Controls how Enter behaves inside text-like controls. */
   @Prop({ attribute: 'enter-behavior' }) enterBehavior: QFormEnterBehavior = 'submit';
+
+  @Prop({ attribute: 'no-validate' }) noValidate: boolean = false;
+
+  @Prop() action?: string;
+  @Prop() method: QFormMethod = 'post';
+  @Prop() autocomplete: QFormAutocomplete = 'on';
+  @Prop() enctype: QFormEnctype = 'application/x-www-form-urlencoded';
+  @Prop() target?: QFormTarget;
 
   /** Emitted after a valid submit with collected values and FormData. */
   @Event() qSubmit!: EventEmitter<QFormSubmitDetail>;
 
-  /** Emitted when the native form resets. */
   @Event() qReset!: EventEmitter<QFormResetDetail>;
 
   // ========================= [2] INTERNAL STATE & REFS =========================

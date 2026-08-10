@@ -99,91 +99,71 @@ const VECTOR_SYMBOL_FADE_DURATION_MS = 750;
 export class QMap {
   @Element() el!: HTMLElement;
 
-  /** Selects raster tiles, styled vector data, or Google imagery; non-tile failures may use tileUrl as a fallback. */
-  @Prop() provider: QMapProvider = 'tiles';
-
-  /** Supplies the tile URL template for the tiles provider and optional vector/Google fallback. */
-  @Prop() tileUrl: string = '';
-
-  /** Preloads zero to four whole raster-tile rows and columns beyond the visible viewport. */
-  @Prop() tilePreloadBuffer: number = DEFAULT_TILE_PRELOAD_BUFFER;
-
-  /** Supplies a MapLibre Style Specification URL for the vector provider. */
-  @Prop() vectorStyleUrl: string = '';
-
-  /** Extends vector rendering beyond the visible viewport and is clamped from zero to one-half. */
-  @Prop() vectorPadding: number = DEFAULT_VECTOR_PADDING;
-
-  /** Supplies the browser-restricted key used only when WebQuark must load Google Maps. */
-  @Prop() googleApiKey: string = '';
-
-  /** Chooses the Google base-map style, normalizing unsupported values to roadmap. */
-  @Prop() googleMapType: QMapGoogleMapType = 'roadmap';
-
-  /** Renders plain-text attribution whenever raster tiles or styled vectors are active. */
+  /** Rendered for raster tiles and styled vectors. */
   @Prop() attribution: string = '';
-
-  /** Links map attribution only when the value resolves to an HTTP(S) URL. */
+  /** Links attribution only for HTTP(S) URLs. */
   @Prop() attributionUrl: string = '';
-
-  /** Controls viewport latitude; finite values are clamped to the geographic range. */
-  @Prop() centerLatitude: number = 0;
-
-  /** Controls viewport longitude; finite values are clamped to the geographic range. */
-  @Prop() centerLongitude: number = 0;
-
-  /** Controls the viewport zoom and is clamped between the normalized zoom limits. */
-  @Prop() zoom: number = 2;
-
-  /** Controls whether the built-in plus/minus zoom control is rendered. */
-  @Prop() zoomControls: boolean = true;
-
-  /** Sets the lowest permitted zoom; non-finite values normalize to zero. */
-  @Prop() minZoom: number = 0;
-
-  /** Sets the highest permitted zoom and never resolves below minZoom. */
-  @Prop() maxZoom: number = 19;
-
-  /** Constrains panning from a bounds object or JSON string; malformed updates preserve the last valid boundary. */
-  @Prop() maxBounds?: QMapBoundsInput;
-
-  /** Controls drag resistance at maxBounds and is clamped from zero to one. */
-  @Prop() maxBoundsViscosity: number = 1;
-
-  /** Reconciles marker records from an array or JSON string using type-stable IDs. */
+  /** Accepts an array or JSON and reconciles markers using type-stable IDs. */
   @Prop() markers: QMapMarkerInput = [];
 
-  /** Groups nearby markers while preserving their stable source IDs. */
+  /** Preserves stable source IDs while grouping nearby markers. */
   @Prop() clusterMarkers: boolean = false;
-
-  /** Sets the clustering radius in screen pixels and is clamped from 1 to 200. */
+  /** Screen-pixel radius clamped from 1 to 200. */
   @Prop() clusterRadius: number = 48;
-
-  /** Sets the minimum number of nearby markers needed to form a cluster. */
   @Prop() clusterMinPoints: number = 2;
-
-  /** Sets the last zoom level where clusters may remain; defaults to one below maxZoom. */
+  /** Defaults to one below `maxZoom`. */
   @Prop() clusterMaxZoom?: number;
 
-  /** Controls which marker exposes its selected visual and aria-pressed state. */
+  /** Finite values are clamped to the geographic range. */
+  @Prop() centerLatitude: number = 0;
+  /** Finite values are clamped to the geographic range. */
+  @Prop() centerLongitude: number = 0;
+  /** Clamped between the normalized zoom limits. */
+  @Prop() zoom: number = 2;
+  @Prop() zoomControls: boolean = true;
+  /** Non-finite values normalize to zero. */
+  @Prop() minZoom: number = 0;
+  /** Never resolves below `minZoom`. */
+  @Prop() maxZoom: number = 19;
+  /** Accepts an object or JSON; malformed updates preserve the last valid bounds. */
+  @Prop() maxBounds?: QMapBoundsInput;
+  /** Clamped from zero to one. */
+  @Prop() maxBoundsViscosity: number = 1;
+
+  /** Controls the selected visual and `aria-pressed` state. */
   @Prop() selectedMarkerId?: QMapMarkerId;
 
-  /** Provides the accessible name announced for the interactive map region. */
+  /** Non-tile provider failures may fall back to `tileUrl`. */
+  @Prop() provider: QMapProvider = 'tiles';
+  /** Tile template used by the tiles provider and optional provider fallback. */
+  @Prop() tileUrl: string = '';
+  /** Preloads zero to four raster-tile rows and columns beyond the viewport. */
+  @Prop() tilePreloadBuffer: number = DEFAULT_TILE_PRELOAD_BUFFER;
+  /** MapLibre Style Specification URL for the vector provider. */
+  @Prop() vectorStyleUrl: string = '';
+  /** Extends rendering beyond the viewport; clamped from zero to one-half. */
+  @Prop() vectorPadding: number = DEFAULT_VECTOR_PADDING;
+  /** Browser-restricted key used only when WebQuark loads Google Maps. */
+  @Prop() googleApiKey: string = '';
+  /** Unsupported values normalize to `roadmap`. */
+  @Prop() googleMapType: QMapGoogleMapType = 'roadmap';
+
+  /** Accessible name for the interactive map region. */
   @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = 'Interactive map';
 
-  /** Fires after Leaflet setup and the initial provider attempt complete. */
+  /** Emitted after Leaflet setup and the initial provider attempt complete. */
   @Event() qReady!: EventEmitter<void>;
 
-  /** Reports genuine map-background clicks after Leaflet excludes drags and interactive layers. */
+  /** Excludes drags and interactive-layer clicks. */
   @Event() qMapClick!: EventEmitter<QMapClickDetail>;
 
-  /** Reports marker activation without mutating selectedMarkerId. */
+  /** Does not mutate `selectedMarkerId`. */
   @Event() qMarkerSelect!: EventEmitter<QMapMarkerSelectDetail>;
 
-  /** Reports cluster activation before the default centre-and-zoom action. */
+  /** Emitted before the default center-and-zoom action; cancel to prevent it. */
   @Event({ cancelable: true }) qClusterSelect!: EventEmitter<QMapClusterSelectDetail>;
 
-  /** Reports provider lifecycle transitions, including the active fallback provider. */
+  /** Includes the active fallback provider. */
   @Event() qStatusChange!: EventEmitter<QMapStatusChangeDetail>;
 
   /** Reports serializable configuration and initialization failures. */

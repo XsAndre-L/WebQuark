@@ -11,29 +11,29 @@ Inline link with disabled handling, external-link affordances, and optional icon
 
 ## Properties
 
-| Property    | Attribute   | Description                                                                                     | Type                                           | Default     |
-| ----------- | ----------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------------- | ----------- |
-| `disabled`  | `disabled`  | Disables navigation, focus, and click emission.                                                 | `boolean`                                      | `false`     |
-| `download`  | `download`  | Download filename or boolean download hint.                                                     | `string`                                       | `undefined` |
-| `external`  | `external`  | Shows the external-link cue and applies safe default rel when rel is not supplied.              | `boolean`                                      | `false`     |
-| `href`      | `href`      | Primary destination URL. Takes precedence over url, mailto, and tel.                            | `string`                                       | `undefined` |
-| `label`     | `label`     | Fallback text when no default slot content is provided.                                         | `string`                                       | `undefined` |
-| `mailto`    | `mailto`    | Email address used to generate a mailto: URL when href/url are not set.                         | `string`                                       | `undefined` |
-| `rel`       | `rel`       | Native anchor rel value. Defaults to noopener noreferrer for target="_blank" or external links. | `string`                                       | `undefined` |
-| `target`    | `target`    | Native anchor target.                                                                           | `"_blank" \| "_parent" \| "_self" \| "_top"`   | `undefined` |
-| `tel`       | `tel`       | Phone number used to generate a tel: URL when href/url/mailto are not set.                      | `string`                                       | `undefined` |
-| `underline` | `underline` | Underline behavior.                                                                             | `"always" \| "hover" \| "none"`                | `'hover'`   |
-| `url`       | `url`       | Alias destination URL kept for compatibility. `href` wins when both are set.                    | `string`                                       | `undefined` |
-| `variant`   | `variant`   | Visual style of the link.                                                                       | `"accent" \| "danger" \| "default" \| "muted"` | `'default'` |
+| Property    | Attribute   | Description                                                                  | Type                                           | Default     |
+| ----------- | ----------- | ---------------------------------------------------------------------------- | ---------------------------------------------- | ----------- |
+| `disabled`  | `disabled`  | Prevents activation, navigation, and secondary actions such as removal.      | `boolean`                                      | `false`     |
+| `download`  | `download`  | Enables native download behavior when the component operates as a link.      | `string`                                       | `undefined` |
+| `external`  | `external`  | Shows an external-link cue and supplies a safe default `rel`.                | `boolean`                                      | `false`     |
+| `href`      | `href`      | Destination used when the component operates as a link.                      | `string`                                       | `undefined` |
+| `label`     | `label`     | Text used when slotted content cannot supply the component's required label. | `string`                                       | `undefined` |
+| `mailto`    | `mailto`    | Generates a `mailto:` URL when `href` and `url` are unset.                   | `string`                                       | `undefined` |
+| `rel`       | `rel`       | Defaults to `noopener noreferrer` when `target="_blank"`.                    | `string`                                       | `undefined` |
+| `target`    | `target`    |                                                                              | `"_blank" \| "_parent" \| "_self" \| "_top"`   | `undefined` |
+| `tel`       | `tel`       | Generates a `tel:` URL when higher-priority destinations are unset.          | `string`                                       | `undefined` |
+| `underline` | `underline` |                                                                              | `"always" \| "hover" \| "none"`                | `'hover'`   |
+| `url`       | `url`       | Compatibility alias used when `href` is unset.                               | `string`                                       | `undefined` |
+| `variant`   | `variant`   |                                                                              | `"accent" \| "danger" \| "default" \| "muted"` | `'default'` |
 
 
 ## Events
 
 | Event    | Description                                        | Type                      |
 | -------- | -------------------------------------------------- | ------------------------- |
-| `qBlur`  | Emitted when the inner anchor loses focus.         | `CustomEvent<FocusEvent>` |
+| `qBlur`  |                                                    | `CustomEvent<FocusEvent>` |
 | `qClick` | Emitted when the link is clicked and not disabled. | `CustomEvent<MouseEvent>` |
-| `qFocus` | Emitted when the inner anchor receives focus.      | `CustomEvent<FocusEvent>` |
+| `qFocus` |                                                    | `CustomEvent<FocusEvent>` |
 
 
 ## Slots
