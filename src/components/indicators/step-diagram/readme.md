@@ -11,10 +11,10 @@ Groups step diagram items into a vertical or horizontal sequence.
 
 ## Properties
 
-| Property    | Attribute    | Description                                                                  | Type                         | Default      |
-| ----------- | ------------ | ---------------------------------------------------------------------------- | ---------------------------- | ------------ |
-| `ariaLabel` | `aria-label` | Accessible label for the step sequence.                                      | `string`                     | `'Steps'`    |
-| `layout`    | `layout`     | Controls whether step items are stacked vertically or arranged horizontally. | `"horizontal" \| "vertical"` | `'vertical'` |
+| Property    | Attribute    | Description                             | Type                         | Default      |
+| ----------- | ------------ | --------------------------------------- | ---------------------------- | ------------ |
+| `ariaLabel` | `aria-label` | Accessible label for the step sequence. | `string`                     | `'Steps'`    |
+| `layout`    | `layout`     |                                         | `"horizontal" \| "vertical"` | `'vertical'` |
 
 
 ## Slots

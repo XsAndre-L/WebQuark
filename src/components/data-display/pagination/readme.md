@@ -12,15 +12,15 @@ Consumers own the current page and update `page` after `qPageChange`.
 
 ## Properties
 
-| Property      | Attribute      | Description                                                                                 | Type      | Default        |
-| ------------- | -------------- | ------------------------------------------------------------------------------------------- | --------- | -------------- |
-| `ariaLabel`   | `aria-label`   | Accessible name for the pagination navigation landmark.                                     | `string`  | `'Pagination'` |
-| `disabled`    | `disabled`     | Disables both navigation buttons.                                                           | `boolean` | `false`        |
-| `itemLabel`   | `item-label`   | Noun used in the visible range summary, for example "users" or "templates".                 | `string`  | `'items'`      |
-| `page`        | `page`         | One-based current page. Out-of-range values are clamped for display and emitted navigation. | `number`  | `1`            |
-| `pageSize`    | `page-size`    | Number of items per page. Non-positive or non-finite values fall back to 1.                 | `number`  | `10`           |
-| `showSummary` | `show-summary` | Hides the item-range summary while retaining the page controls.                             | `boolean` | `true`         |
-| `totalItems`  | `total-items`  | Total number of items in the collection. Negative or non-finite values are treated as zero. | `number`  | `0`            |
+| Property      | Attribute      | Description                                                                 | Type      | Default        |
+| ------------- | -------------- | --------------------------------------------------------------------------- | --------- | -------------- |
+| `ariaLabel`   | `aria-label`   | Accessible name for the pagination navigation landmark.                     | `string`  | `'Pagination'` |
+| `disabled`    | `disabled`     |                                                                             | `boolean` | `false`        |
+| `itemLabel`   | `item-label`   | Noun used in the visible range summary, for example "users" or "templates". | `string`  | `'items'`      |
+| `page`        | `page`         | One-based; out-of-range values are clamped for display and navigation.      | `number`  | `1`            |
+| `pageSize`    | `page-size`    | Non-positive or non-finite values fall back to 1.                           | `number`  | `10`           |
+| `showSummary` | `show-summary` |                                                                             | `boolean` | `true`         |
+| `totalItems`  | `total-items`  | Negative or non-finite values are treated as zero.                          | `number`  | `0`            |
 
 
 ## Events

@@ -13,24 +13,24 @@ Form-associated switch or checkbox toggle control.
 
 | Property   | Attribute  | Description                                                            | Type                     | Default     |
 | ---------- | ---------- | ---------------------------------------------------------------------- | ------------------------ | ----------- |
-| `checked`  | `checked`  | Current checked state.                                                 | `boolean`                | `false`     |
-| `disabled` | `disabled` | Disables toggle interaction.                                           | `boolean`                | `false`     |
+| `checked`  | `checked`  |                                                                        | `boolean`                | `false`     |
+| `disabled` | `disabled` |                                                                        | `boolean`                | `false`     |
 | `error`    | `error`    | Validation helper text displayed when the toggle is in an error state. | `string`                 | `undefined` |
-| `label`    | `label`    | Optional label rendered next to the toggle.                            | `string`                 | `undefined` |
-| `name`     | `name`     | Native form field name.                                                | `string`                 | `undefined` |
-| `required` | `required` | Marks the toggle as required for native forms.                         | `boolean`                | `false`     |
-| `size`     | `size`     | Visual size preset.                                                    | `"lg" \| "md" \| "sm"`   | `'md'`      |
-| `type`     | `type`     | Visual and semantic control type: switch or checkbox.                  | `"checkbox" \| "switch"` | `'switch'`  |
+| `label`    | `label`    |                                                                        | `string`                 | `undefined` |
+| `name`     | `name`     |                                                                        | `string`                 | `undefined` |
+| `required` | `required` |                                                                        | `boolean`                | `false`     |
+| `size`     | `size`     |                                                                        | `"lg" \| "md" \| "sm"`   | `'md'`      |
+| `type`     | `type`     | Controls switch/checkbox visuals and semantics.                        | `"checkbox" \| "switch"` | `'switch'`  |
 
 
 ## Events
 
 | Event     | Description                                                              | Type                      |
 | --------- | ------------------------------------------------------------------------ | ------------------------- |
-| `qBlur`   | Emitted when the toggle loses focus.                                     | `CustomEvent<FocusEvent>` |
-| `qChange` | Emitted when the checked state changes.                                  | `CustomEvent<boolean>`    |
+| `qBlur`   |                                                                          | `CustomEvent<FocusEvent>` |
+| `qChange` |                                                                          | `CustomEvent<boolean>`    |
 | `qClick`  | Emitted before the toggle changes due to pointer or keyboard activation. | `CustomEvent<MouseEvent>` |
-| `qFocus`  | Emitted when the toggle receives focus.                                  | `CustomEvent<FocusEvent>` |
+| `qFocus`  |                                                                          | `CustomEvent<FocusEvent>` |
 
 
 ## Methods

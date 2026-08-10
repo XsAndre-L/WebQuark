@@ -20,20 +20,11 @@ export class QTooltip {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Element() el!: HTMLElement;
 
-  /**
-   * The text content to display inside the tooltip.
-   */
   @Prop() content?: string;
 
-  /**
-   * The placement position of the tooltip relative to its trigger parent.
-   * Options: 'top', 'bottom', 'left', 'right'
-   */
   @Prop({ reflect: true }) position: QTooltipPosition = 'top';
 
-  /**
-   * The delay in milliseconds before the tooltip shows up.
-   */
+  /** Delay in milliseconds before showing. */
   @Prop() delay: number = 200;
 
   @State() visible: boolean = false;

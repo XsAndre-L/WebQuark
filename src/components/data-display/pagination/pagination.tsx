@@ -18,26 +18,20 @@ import { Component, Event, EventEmitter, Prop, h } from '@stencil/core';
 export class QPagination {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
 
-  /** One-based current page. Out-of-range values are clamped for display and emitted navigation. */
-  @Prop() page: number = 1;
-
-  /** Number of items per page. Non-positive or non-finite values fall back to 1. */
-  @Prop({ attribute: 'page-size' }) pageSize: number = 10;
-
-  /** Total number of items in the collection. Negative or non-finite values are treated as zero. */
-  @Prop({ attribute: 'total-items' }) totalItems: number = 0;
-
+  @Prop({ attribute: 'show-summary' }) showSummary: boolean = true;
   /** Noun used in the visible range summary, for example "users" or "templates". */
   @Prop({ attribute: 'item-label' }) itemLabel: string = 'items';
 
+  /** One-based; out-of-range values are clamped for display and navigation. */
+  @Prop() page: number = 1;
+  /** Non-positive or non-finite values fall back to 1. */
+  @Prop({ attribute: 'page-size' }) pageSize: number = 10;
+  /** Negative or non-finite values are treated as zero. */
+  @Prop({ attribute: 'total-items' }) totalItems: number = 0;
+  @Prop({ reflect: true }) disabled: boolean = false;
+
   /** Accessible name for the pagination navigation landmark. */
   @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = 'Pagination';
-
-  /** Hides the item-range summary while retaining the page controls. */
-  @Prop({ attribute: 'show-summary' }) showSummary: boolean = true;
-
-  /** Disables both navigation buttons. */
-  @Prop({ reflect: true }) disabled: boolean = false;
 
   /** Emitted with a requested one-based page. The component does not mutate `page`. */
   @Event() qPageChange!: EventEmitter<number>;

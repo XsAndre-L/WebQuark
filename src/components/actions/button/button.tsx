@@ -1,5 +1,6 @@
-import { Build, Component, Prop, Element, State, Event, EventEmitter, Watch, h } from '@stencil/core';
+import { Build, Component, Prop, Element, State, Event, EventEmitter, Mixin, Watch, h } from '@stencil/core';
 import type { QIconName } from '../../media/icon/icon.types';
+import { withActionProps } from '../action.props';
 import type { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant } from './button.types';
 import { shouldWarnForMissingButtonAccessibleName } from './button.utils';
 
@@ -19,46 +20,34 @@ import { shouldWarnForMissingButtonAccessibleName } from './button.utils';
     delegatesFocus: true,
   },
 })
-export class QButton {
+export class QButton extends Mixin(withActionProps) {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Element() el!: HTMLElement;
 
-  /** Visual style of the button. */
-  @Prop() variant: QButtonVariant = 'primary';
-  /** Button size. */
-  @Prop() size: QButtonSize = 'md';
-  /** Lucide icon name rendered before the label. Use the icon slots for other libraries or custom markup. */
+  /** Lucide icon rendered before the label. Use icon slots for custom content. */
   @Prop() icon?: QIconName;
-  /** Controls the button outline and fixed circular presentation. */
-  @Prop({ reflect: true }) shape: QButtonShape = 'default';
-  /** Controls whether icon and label content flow inline or stack vertically. */
-  @Prop({ reflect: true }) layout: QButtonLayout = 'inline';
-  /** Disables interaction and marks the control as unavailable. */
-  @Prop({ reflect: true }) disabled: boolean = false;
-  /** Shows a spinner and suppresses interaction while work is in progress. */
-  @Prop({ reflect: true }) loading: boolean = false;
-  /** Native button type used when rendering a `<button>`. */
-  @Prop() type: QButtonType = 'button';
-  /** Expands the button to fill its container width. */
-  @Prop({ reflect: true }) expand: boolean = false;
-  /** URL to render the component as a link. */
-  @Prop() href?: string;
-  /** Link target used when `href` is set. */
-  @Prop() target?: string;
-  /** Link rel value. Defaults to noopener noreferrer for target="_blank". */
-  @Prop() rel?: string;
-  /** Download filename or boolean download hint for link buttons. */
-  @Prop() download?: string;
-  /** Renders compact icon-only spacing. When unset, this is auto-detected from slotted icon content. */
+  /** Auto-detected from slotted icon content when omitted. */
   @Prop({ reflect: true }) iconOnly?: boolean;
-  /** Accessible label forwarded to the inner button or anchor. Required for icon-only buttons. */
+  /** Required when an icon-only button has no accessible text. */
   @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
 
-  /** Emitted on click, unless disabled or loading. */
+  @Prop() variant: QButtonVariant = 'primary';
+  @Prop() size: QButtonSize = 'md';
+  /** The `circle` shape uses a fixed-size circular presentation. */
+  @Prop({ reflect: true }) shape: QButtonShape = 'default';
+  @Prop({ reflect: true }) layout: QButtonLayout = 'inline';
+  @Prop({ reflect: true }) expand: boolean = false;
+
+  /** Shows a spinner and prevents interaction while loading. */
+  @Prop({ reflect: true }) loading: boolean = false;
+
+  @Prop() target?: string;
+  /** Applied to the native `<button>` when `href` is unset. */
+  @Prop() type: QButtonType = 'button';
+
+  /** Emitted on activation unless disabled or loading. */
   @Event() qClick!: EventEmitter<MouseEvent>;
-  /** Emitted when the inner control receives focus. */
   @Event() qFocus!: EventEmitter<FocusEvent>;
-  /** Emitted when the inner control loses focus. */
   @Event() qBlur!: EventEmitter<FocusEvent>;
 
   // ========================= [2] INTERNAL STATE & REFS =========================

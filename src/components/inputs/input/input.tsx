@@ -25,49 +25,30 @@ import { hasAssignedSlotContent } from './input.utils';
 })
 export class QInput {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
-  /** Current input value. */
   @Prop({ mutable: true }) value: string = "";
-
-  /** Native form field name. */
-  @Prop({ reflect: true }) name?: string;
-
-  /** Native input type; password adds a visibility toggle and number adds spinner controls. */
-  @Prop() type: QInputType = 'text';
-
-  /** Placeholder text shown when the field is empty. */
   @Prop() placeholder: string = "";
-
-  /** Optional label rendered above the input. */
   @Prop() label?: string;
-
   /** Accessible name for the native input when a visible label is not used. */
   @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
 
-  /** Disables input interaction. */
-  @Prop({ reflect: true }) disabled: boolean = false;
-
-  /** Marks the field as required for native forms. */
-  @Prop({ reflect: true }) required: boolean = false;
-
-  /** Validation error text or error-state flag. */
-  @Prop({ reflect: true }) error?: string;
-
-  /** Validation helper text displayed when the field is in an error state. */
-  @Prop() errorMessage?: string;
-
-  /** Visual size preset. */
   @Prop() size: QInputSize = 'md';
 
   /** Shows a clear button when the field has a value. */
   @Prop() clearable: boolean = false;
 
-  /** Minimum numeric value for number inputs. */
+  @Prop({ reflect: true }) disabled: boolean = false;
+
+  @Prop({ reflect: true }) required: boolean = false;
+  /** Validation error text or error-state flag. */
+  @Prop({ reflect: true }) error?: string;
+  /** Validation helper text displayed when the field is in an error state. */
+  @Prop() errorMessage?: string;
+
+  @Prop({ reflect: true }) name?: string;
+  /** `password` adds a visibility toggle; `number` adds spinner controls. */
+  @Prop() type: QInputType = 'text';
   @Prop() min?: number;
-
-  /** Maximum numeric value for number inputs. */
   @Prop() max?: number;
-
-  /** Numeric increment/decrement step. */
   @Prop() step?: number = 1;
 
   @AttachInternals() internals!: ElementInternals;
@@ -82,13 +63,10 @@ export class QInput {
   /** Emitted as the user types or spinner controls update the value. */
   @Event() qInput!: EventEmitter<string>;
 
-  /** Emitted when the native input loses focus. */
   @Event() qBlur!: EventEmitter<FocusEvent>;
 
-  /** Emitted when the native input receives focus. */
   @Event() qFocus!: EventEmitter<FocusEvent>;
 
-  /** Emitted when the native input is clicked. */
   @Event() qClick!: EventEmitter<MouseEvent>;
 
   private inputEl?: HTMLInputElement;

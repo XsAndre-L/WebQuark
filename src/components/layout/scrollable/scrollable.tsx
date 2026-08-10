@@ -24,25 +24,18 @@ export class QScrollable {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Element() el!: HTMLElement;
 
-  /** CSS height applied to the scrollable host. */
   @Prop({ reflect: true }) height: string = '100%';
-
-  /** Optional max-height applied to the scrollable host. */
   @Prop({ reflect: true }) maxHeight: string = '';
 
+  /** `custom` renders a WebQuark thumb; `native` styles browser scrollbars. */
+  @Prop({ reflect: true }) mode: QScrollableMode = 'custom';
+  /** CSS selector for an external native-scroll target resolved from this component's root node. */
+  @Prop({ reflect: true }) target: string = '';
+  /** Uses native scrollbars on coarse-pointer devices. */
+  @Prop({ reflect: true }) nativeOnMobile: boolean = true;
   /** Hides the custom scrollbar until hover, scroll, or drag activity. */
   @Prop({ reflect: true }) autoHide: boolean = true;
 
-  /** Uses native scrollbars on coarse pointer devices when true. */
-  @Prop({ reflect: true }) nativeOnMobile: boolean = true;
-
-  /** Scrollbar rendering mode. Custom renders WebQuark's own thumb; native styles browser scrollbars. */
-  @Prop({ reflect: true }) mode: QScrollableMode = 'custom';
-
-  /** CSS selector for an external native-scroll target resolved from this component's root node. */
-  @Prop({ reflect: true }) target: string = '';
-
-  /** Emitted when the viewport scrolls. */
   @Event() qScroll!: EventEmitter<QScrollableEventDetail>;
 
   @State() isScrolling: boolean = false;
@@ -116,7 +109,6 @@ export class QScrollable {
 
   // ============================ [4] EXPOSED METHODS ============================
 
-  /** Moves the viewport to its maximum vertical scroll position. */
   @Method()
   async scrollToBottom() {
     if (this.viewportEl) {
@@ -124,7 +116,6 @@ export class QScrollable {
     }
   }
 
-  /** Moves the viewport to a specific vertical scroll position. */
   @Method()
   async scrollToPosition(top: number) {
     if (this.viewportEl) {

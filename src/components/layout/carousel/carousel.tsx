@@ -15,20 +15,15 @@ import { getCarouselEdgeState, getCarouselMetrics, getClosestCarouselIndex, reso
 })
 export class QCarousel {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
-  /** Controls the CSS scroll-snap alignment applied to each slide. */
   @Prop({ reflect: true }) snapAlignment: QCarouselSnapAlignment = 'start';
+  /** `auto` preserves each slotted item's natural width. */
+  @Prop({ reflect: true }) itemWidth: string = 'auto';
 
-  /** Shows previous and next arrow buttons over the carousel viewport. */
   @Prop({ reflect: true }) showArrows: boolean = false;
-
   /** Shows clickable slide indicator dots when the carousel can scroll. */
   @Prop({ reflect: true }) showIndicators: boolean = false;
-
-  /** Wraps arrow and programmatic navigation from the first slide to the last, and back again. */
+  /** Wraps arrow and programmatic navigation at either end. */
   @Prop({ reflect: true }) repeat: boolean = false;
-
-  /** Sets the flex-basis/width for each slotted carousel item. Use "auto" to preserve natural item sizing. */
-  @Prop({ reflect: true }) itemWidth: string = 'auto';
 
   @State() activeIndex: number = 0;
   @State() maxIndex: number = 0;
@@ -36,7 +31,6 @@ export class QCarousel {
   @State() isAtStart: boolean = true;
   @State() isAtEnd: boolean = true;
 
-  /** Fires when the active slide index changes. */
   @Event() qSlideChange!: EventEmitter<QCarouselSlideChangeDetail>;
 
   @Element() el!: HTMLElement;

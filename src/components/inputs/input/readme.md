@@ -11,33 +11,33 @@ Form-associated input field with optional prefix/suffix slots, clear button, pas
 
 ## Properties
 
-| Property       | Attribute       | Description                                                                            | Type                                                                          | Default     |
-| -------------- | --------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ----------- |
-| `ariaLabel`    | `aria-label`    | Accessible name for the native input when a visible label is not used.                 | `string`                                                                      | `null`      |
-| `clearable`    | `clearable`     | Shows a clear button when the field has a value.                                       | `boolean`                                                                     | `false`     |
-| `disabled`     | `disabled`      | Disables input interaction.                                                            | `boolean`                                                                     | `false`     |
-| `error`        | `error`         | Validation error text or error-state flag.                                             | `string`                                                                      | `undefined` |
-| `errorMessage` | `error-message` | Validation helper text displayed when the field is in an error state.                  | `string`                                                                      | `undefined` |
-| `label`        | `label`         | Optional label rendered above the input.                                               | `string`                                                                      | `undefined` |
-| `max`          | `max`           | Maximum numeric value for number inputs.                                               | `number`                                                                      | `undefined` |
-| `min`          | `min`           | Minimum numeric value for number inputs.                                               | `number`                                                                      | `undefined` |
-| `name`         | `name`          | Native form field name.                                                                | `string`                                                                      | `undefined` |
-| `placeholder`  | `placeholder`   | Placeholder text shown when the field is empty.                                        | `string`                                                                      | `""`        |
-| `required`     | `required`      | Marks the field as required for native forms.                                          | `boolean`                                                                     | `false`     |
-| `size`         | `size`          | Visual size preset.                                                                    | `"lg" \| "md" \| "sm"`                                                        | `'md'`      |
-| `step`         | `step`          | Numeric increment/decrement step.                                                      | `number`                                                                      | `1`         |
-| `type`         | `type`          | Native input type; password adds a visibility toggle and number adds spinner controls. | `"color" \| "email" \| "number" \| "password" \| "search" \| "text" \| "url"` | `'text'`    |
-| `value`        | `value`         | Current input value.                                                                   | `string`                                                                      | `""`        |
+| Property       | Attribute       | Description                                                            | Type                                                                          | Default     |
+| -------------- | --------------- | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ----------- |
+| `ariaLabel`    | `aria-label`    | Accessible name for the native input when a visible label is not used. | `string`                                                                      | `null`      |
+| `clearable`    | `clearable`     | Shows a clear button when the field has a value.                       | `boolean`                                                                     | `false`     |
+| `disabled`     | `disabled`      |                                                                        | `boolean`                                                                     | `false`     |
+| `error`        | `error`         | Validation error text or error-state flag.                             | `string`                                                                      | `undefined` |
+| `errorMessage` | `error-message` | Validation helper text displayed when the field is in an error state.  | `string`                                                                      | `undefined` |
+| `label`        | `label`         |                                                                        | `string`                                                                      | `undefined` |
+| `max`          | `max`           |                                                                        | `number`                                                                      | `undefined` |
+| `min`          | `min`           |                                                                        | `number`                                                                      | `undefined` |
+| `name`         | `name`          |                                                                        | `string`                                                                      | `undefined` |
+| `placeholder`  | `placeholder`   |                                                                        | `string`                                                                      | `""`        |
+| `required`     | `required`      |                                                                        | `boolean`                                                                     | `false`     |
+| `size`         | `size`          |                                                                        | `"lg" \| "md" \| "sm"`                                                        | `'md'`      |
+| `step`         | `step`          |                                                                        | `number`                                                                      | `1`         |
+| `type`         | `type`          | `password` adds a visibility toggle; `number` adds spinner controls.   | `"color" \| "email" \| "number" \| "password" \| "search" \| "text" \| "url"` | `'text'`    |
+| `value`        | `value`         |                                                                        | `string`                                                                      | `""`        |
 
 
 ## Events
 
 | Event     | Description                                                     | Type                      |
 | --------- | --------------------------------------------------------------- | ------------------------- |
-| `qBlur`   | Emitted when the native input loses focus.                      | `CustomEvent<FocusEvent>` |
+| `qBlur`   |                                                                 | `CustomEvent<FocusEvent>` |
 | `qChange` | Emitted when the committed value changes.                       | `CustomEvent<string>`     |
-| `qClick`  | Emitted when the native input is clicked.                       | `CustomEvent<MouseEvent>` |
-| `qFocus`  | Emitted when the native input receives focus.                   | `CustomEvent<FocusEvent>` |
+| `qClick`  |                                                                 | `CustomEvent<MouseEvent>` |
+| `qFocus`  |                                                                 | `CustomEvent<FocusEvent>` |
 | `qInput`  | Emitted as the user types or spinner controls update the value. | `CustomEvent<string>`     |
 
 
