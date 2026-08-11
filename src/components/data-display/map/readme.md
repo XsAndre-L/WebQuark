@@ -106,6 +106,26 @@ Framework-neutral interactive map powered by Leaflet.
 | `qStatusChange`  | Includes the active fallback provider.                                   | `CustomEvent<QMapStatusChangeDetail>`  |
 
 
+## Methods
+
+### `ensureMarkerVisible(markerId: QMapMarkerId, occlusions: readonly QMapViewportRect[]) => Promise<QMapMarkerVisibilityResult>`
+
+Minimally pans to fully expose a marker or its current cluster without changing zoom.
+
+#### Parameters
+
+| Name         | Type                          | Description |
+| ------------ | ----------------------------- | ----------- |
+| `markerId`   | `string \| number`            |             |
+| `occlusions` | `readonly QMapViewportRect[]` |             |
+
+#### Returns
+
+Type: `Promise<QMapMarkerVisibilityResult>`
+
+
+
+
 ## Slots
 
 | Slot      | Description                                                                  |
