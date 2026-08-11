@@ -62,6 +62,15 @@ export interface MapMarkerControllerOptions {
   onClusterSelect: (detail: QMapClusterSelectDetail) => boolean;
 }
 
+export interface MapMarkerVisibilityTarget {
+  latitude: number;
+  longitude: number;
+  rendered?: {
+    kind: 'marker' | 'cluster';
+    element: HTMLElement;
+  };
+}
+
 /** Owns marker normalization, clustering, stable reconciliation, accessibility, and cleanup. */
 export class MapMarkerController {
   private readonly layers = new Map<string, RenderedLayer>();
@@ -89,6 +98,32 @@ export class MapMarkerController {
 
   syncSelection(): void {
     this.reconcile();
+  }
+
+  getVisibilityTarget(markerId: QMapMarkerId): MapMarkerVisibilityTarget | undefined {
+    const markerKey = getMapMarkerKey(markerId);
+    const marker = this.markers.get(markerKey);
+    if (!marker) return undefined;
+
+    const directLayer = this.layers.get(markerKey);
+    if (directLayer?.kind === 'marker') {
+      return {
+        latitude: marker.latitude,
+        longitude: marker.longitude,
+        rendered: { kind: directLayer.kind, element: directLayer.element },
+      };
+    }
+
+    for (const layer of this.layers.values()) {
+      if (!layer.markerKeys.includes(markerKey)) continue;
+      return {
+        latitude: marker.latitude,
+        longitude: marker.longitude,
+        rendered: { kind: layer.kind, element: layer.element },
+      };
+    }
+
+    return { latitude: marker.latitude, longitude: marker.longitude };
   }
 
   destroy(): void {

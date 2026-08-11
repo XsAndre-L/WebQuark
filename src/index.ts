@@ -79,9 +79,11 @@ export type {
   QMapMarkerRing,
   QMapMarkerSelectDetail,
   QMapMarkerVariant,
+  QMapMarkerVisibilityResult,
   QMapProvider,
   QMapStatus,
   QMapStatusChangeDetail,
+  QMapViewportRect,
 } from './components/data-display/map/map.types';
 export type {
   NavbarItem,

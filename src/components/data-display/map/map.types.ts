@@ -2,6 +2,20 @@ import type { QIconName } from '../../media/icon/icon.types';
 
 export type QMapMarkerId = string | number;
 
+/** A rectangle expressed in browser viewport (client) coordinates. */
+export interface QMapViewportRect {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+}
+
+export type QMapMarkerVisibilityResult =
+  | 'visible'
+  | 'panned'
+  | 'unavailable'
+  | 'constrained';
+
 export const Q_MAP_DEFAULT_CLUSTER_GROUP = 'default';
 
 export type QMapProvider = 'tiles' | 'vector' | 'google';

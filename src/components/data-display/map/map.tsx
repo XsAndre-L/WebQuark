@@ -1,4 +1,4 @@
-import { Component, Element, Event, EventEmitter, h, Prop, State, Watch } from '@stencil/core';
+import { Component, Element, Event, EventEmitter, h, Method, Prop, State, Watch } from '@stencil/core';
 import type { Layer as LeafletLayer, LeafletMouseEvent, Map as LeafletMap } from 'leaflet';
 
 import {
@@ -22,6 +22,11 @@ import { loadMapLibreLayerFactory, waitForMapLibreLayerReady } from './internals
 import { normalizeMapMarkerClusteringOptions } from './internals/marker-cluster-index';
 import { MapMarkerController } from './internals/marker-controller';
 import {
+  getMinimalVisibleTranslation,
+  getRenderedMapItemRect,
+  isRectFullyVisible,
+} from './internals/marker-visibility';
+import {
   DEFAULT_TILE_PRELOAD_BUFFER,
   normalizeTilePreloadBuffer,
 } from './internals/tile-preload-buffer';
@@ -39,10 +44,12 @@ import type {
   QMapGoogleMapType,
   QMapMarkerId,
   QMapMarkerInput,
+  QMapMarkerVisibilityResult,
   QMapMarkerSelectDetail,
   QMapProvider,
   QMapStatus,
   QMapStatusChangeDetail,
+  QMapViewportRect,
 } from './map.types';
 
 type LeafletModule = typeof import('leaflet');
@@ -53,6 +60,9 @@ const SMOOTH_ZOOM_SNAP = 0.25;
 const SMOOTH_WHEEL_DEBOUNCE_MS = 16;
 const SMOOTH_WHEEL_PIXELS_PER_LEVEL = 120;
 const VECTOR_SYMBOL_FADE_DURATION_MS = 750;
+const MARKER_VISIBILITY_ATTEMPTS = 3;
+const MARKER_VISIBILITY_MIN_ANIMATION_MS = 275;
+const MARKER_VISIBILITY_SETTLE_TIMEOUT_MS = 500;
 
 /**
  * Framework-neutral interactive map powered by Leaflet.
@@ -180,6 +190,8 @@ export class QMap {
   private resizeObserver?: ResizeObserver;
   private resizeFrame?: number;
   private initializationToken = 0;
+  private markerVisibilityToken = 0;
+  private cancelMarkerVisibilityPan?: () => void;
   private layerController?: MapBaseLayerController<LeafletLayer>;
   private markerController?: MapMarkerController;
   private lastInvalidBoundsInput?: QMapBoundsInput;
@@ -202,6 +214,70 @@ export class QMap {
     this.connected = false;
     this.initializationToken += 1;
     this.destroyMap();
+  }
+
+  /** Minimally pans to fully expose a marker or its current cluster without changing zoom. */
+  @Method()
+  async ensureMarkerVisible(
+    markerId: QMapMarkerId,
+    occlusions: readonly QMapViewportRect[],
+  ): Promise<QMapMarkerVisibilityResult> {
+    const operationToken = ++this.markerVisibilityToken;
+    this.cancelMarkerVisibilityPan?.();
+    if (!this.isMarkerVisibilityCurrent(operationToken)) return 'unavailable';
+    let panned = false;
+
+    for (let attempt = 0; attempt < MARKER_VISIBILITY_ATTEMPTS; attempt += 1) {
+      if (!this.isMarkerVisibilityCurrent(operationToken)) return 'unavailable';
+      const map = this.map;
+      const canvas = this.canvas;
+      const controller = this.markerController;
+      if (!map || !canvas || !controller) return 'unavailable';
+      const target = controller.getVisibilityTarget(markerId);
+      if (!target) return 'unavailable';
+
+      const viewport = this.toViewportRect(canvas.getBoundingClientRect());
+      const obstacles = this.getMarkerVisibilityOcclusions(occlusions);
+      const targetRect = target.rendered
+        ? getRenderedMapItemRect(target.rendered.element, target.rendered.kind)
+        : this.getCoordinateRect(target.latitude, target.longitude, viewport);
+
+      if (target.rendered && isRectFullyVisible(targetRect, viewport, obstacles)) {
+        return panned ? 'panned' : 'visible';
+      }
+
+      const translation = getMinimalVisibleTranslation(targetRect, viewport, obstacles);
+      if (!translation) return 'constrained';
+      if (Math.abs(translation.x) < 0.01 && Math.abs(translation.y) < 0.01) {
+        controller.syncSelection();
+        if (!this.isMarkerVisibilityCurrent(operationToken)) return 'unavailable';
+        await this.waitForMarkerLayout();
+        if (!this.isMarkerVisibilityCurrent(operationToken)) return 'unavailable';
+        continue;
+      }
+
+      if (!this.isMarkerVisibilityCurrent(operationToken)) return 'unavailable';
+      await this.panByMarkerTranslation(map, translation.x, translation.y, operationToken);
+      if (!this.isMarkerVisibilityCurrent(operationToken)) return 'unavailable';
+      panned = true;
+      if (!this.isMarkerVisibilityCurrent(operationToken)) return 'unavailable';
+      await this.waitForMarkerLayout();
+      if (!this.isMarkerVisibilityCurrent(operationToken)) return 'unavailable';
+    }
+
+    if (!this.isMarkerVisibilityCurrent(operationToken)) return 'unavailable';
+    const map = this.map;
+    const canvas = this.canvas;
+    const target = this.markerController?.getVisibilityTarget(markerId);
+    if (!map || !canvas || !target) return 'unavailable';
+    if (!target.rendered) return 'constrained';
+    const viewport = this.toViewportRect(canvas.getBoundingClientRect());
+    const targetRect = getRenderedMapItemRect(target.rendered.element, target.rendered.kind);
+    return isRectFullyVisible(
+      targetRect,
+      viewport,
+      this.getMarkerVisibilityOcclusions(occlusions),
+    ) ? (panned ? 'panned' : 'visible') : 'constrained';
   }
 
   @Watch('provider')
@@ -506,6 +582,118 @@ export class QMap {
     });
   }
 
+  private getMarkerVisibilityOcclusions(
+    occlusions: readonly QMapViewportRect[],
+  ): QMapViewportRect[] {
+    const obstacles = [...occlusions];
+    const root = this.el.shadowRoot;
+    if (!root) return obstacles;
+    for (const element of Array.from(
+      root.querySelectorAll<HTMLElement>('.leaflet-control, .map-attribution'),
+    )) {
+      const style = element.ownerDocument.defaultView?.getComputedStyle(element);
+      if (style?.display === 'none' || style?.visibility === 'hidden') continue;
+      const rect = element.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) continue;
+      obstacles.push(this.toViewportRect(rect));
+    }
+    return obstacles;
+  }
+
+  private getCoordinateRect(
+    latitude: number,
+    longitude: number,
+    viewport: QMapViewportRect,
+  ): QMapViewportRect {
+    const point = this.map?.latLngToContainerPoint([latitude, longitude]);
+    const x = viewport.left + (point?.x ?? 0);
+    const y = viewport.top + (point?.y ?? 0);
+    return {
+      top: y - 0.5,
+      right: x + 0.5,
+      bottom: y + 0.5,
+      left: x - 0.5,
+    };
+  }
+
+  private toViewportRect(rect: DOMRect): QMapViewportRect {
+    return {
+      top: rect.top,
+      right: rect.right,
+      bottom: rect.bottom,
+      left: rect.left,
+    };
+  }
+
+  private async panByMarkerTranslation(
+    map: LeafletMap,
+    x: number,
+    y: number,
+    operationToken: number,
+  ): Promise<void> {
+    const animate = !this.prefersReducedMotion();
+    await new Promise<void>(resolve => {
+      const view = this.el.ownerDocument.defaultView;
+      const startedAt = Date.now();
+      let settled = false;
+      let settleTimeout: number | undefined;
+      let animationTimeout: number | undefined;
+      const complete = () => {
+        if (settled) return;
+        settled = true;
+        map.off('moveend', finish);
+        if (settleTimeout !== undefined) view?.clearTimeout(settleTimeout);
+        if (animationTimeout !== undefined) view?.clearTimeout(animationTimeout);
+        if (this.cancelMarkerVisibilityPan === cancel) {
+          this.cancelMarkerVisibilityPan = undefined;
+        }
+        resolve();
+      };
+      const finish = () => {
+        if (settled) return;
+        map.off('moveend', finish);
+        if (settleTimeout !== undefined) view?.clearTimeout(settleTimeout);
+        const remainingAnimation = animate
+          ? Math.max(0, MARKER_VISIBILITY_MIN_ANIMATION_MS - (Date.now() - startedAt))
+          : 0;
+        if (remainingAnimation > 0 && view) {
+          animationTimeout = view.setTimeout(complete, remainingAnimation);
+        } else complete();
+      };
+      const cancel = () => {
+        if (settled) return;
+        map.stop();
+        complete();
+      };
+      if (!this.isMarkerVisibilityCurrent(operationToken)) {
+        complete();
+        return;
+      }
+      this.cancelMarkerVisibilityPan = cancel;
+      map.once('moveend', finish);
+      settleTimeout = view?.setTimeout(finish, MARKER_VISIBILITY_SETTLE_TIMEOUT_MS);
+      map.panBy([
+        -roundPanOffset(x),
+        -roundPanOffset(y),
+      ], { animate });
+    });
+  }
+
+  private async waitForMarkerLayout(): Promise<void> {
+    await new Promise<void>(resolve => {
+      const view = this.el.ownerDocument.defaultView;
+      if (!view || typeof view.requestAnimationFrame !== 'function') {
+        queueMicrotask(resolve);
+        return;
+      }
+      view.requestAnimationFrame(() => resolve());
+    });
+  }
+
+  private isMarkerVisibilityCurrent(operationToken: number): boolean {
+    return operationToken === this.markerVisibilityToken && this.connected;
+  }
+
   private prefersReducedMotion(): boolean {
     return typeof window !== 'undefined'
       && typeof window.matchMedia === 'function'
@@ -579,6 +767,9 @@ export class QMap {
   }
 
   private destroyMap(): void {
+    this.markerVisibilityToken += 1;
+    this.cancelMarkerVisibilityPan?.();
+    this.cancelMarkerVisibilityPan = undefined;
     this.resizeObserver?.disconnect();
     this.resizeObserver = undefined;
     if (this.resizeFrame !== undefined) {
@@ -650,4 +841,8 @@ export class QMap {
       </div>
     );
   }
+}
+
+function roundPanOffset(value: number): number {
+  return Math.sign(value) * Math.ceil(Math.abs(value));
 }
