@@ -1,0 +1,58 @@
+{
+  "name": "Radio Group",
+  "tag": "q-radio-group",
+  "props": {
+    "label": {
+      "type": "string",
+      "default": "Sign-in fields",
+      "desc": "Visible group legend"
+    },
+    "value": {
+      "type": "string",
+      "default": "both",
+      "desc": "Selected option value"
+    },
+    "size": {
+      "type": "select",
+      "options": ["sm", "md", "lg"],
+      "default": "md",
+      "desc": "Control sizing"
+    },
+    "orientation": {
+      "type": "select",
+      "options": ["horizontal", "responsive", "vertical"],
+      "default": "responsive",
+      "desc": "Option arrangement"
+    },
+    "required": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Requires one selected value"
+    },
+    "disabled": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Locks all options"
+    }
+  },
+  "slots": {},
+  "options": [
+    { "label": "Email", "value": "email" },
+    { "label": "Username", "value": "username" },
+    { "label": "Email and Username", "value": "both" }
+  ],
+  "variants": [
+    {
+      "name": "Responsive",
+      "props": { "orientation": "responsive", "value": "both" }
+    },
+    {
+      "name": "Vertical",
+      "props": { "orientation": "vertical", "value": "email" }
+    },
+    {
+      "name": "Disabled",
+      "props": { "disabled": true, "value": "username" }
+    }
+  ]
+}
