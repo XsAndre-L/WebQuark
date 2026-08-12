@@ -3,6 +3,7 @@
 `q-map` keeps the original dot/avatar marker API unchanged and adds optional rich presentation:
 
 - `kind`: `dot`, `avatar`, or `icon`
+- `size`: `small`, `medium`, or `large`; each semantic size has an overridable CSS diameter token
 - `ring` and `pulse`: independent status emphasis
 - `badge`: compact icon/text status with a required accessible label
 - `callout`: plain-text, non-interactive context with an optional status pill and structured stats
@@ -17,6 +18,7 @@ map.markers = [{
   label: 'Rosebank location, live',
   clusterGroup: 'field-activity',
   kind: 'avatar',
+  size: 'medium',
   fallbackText: 'RL',
   variant: 'success',
   ring: 'solid',
@@ -53,6 +55,12 @@ Markers without a `clusterGroup` use the `default` group. Layer membership does 
 ```css
 q-map::part(cluster-group-field-activity) {
   background: var(--field-activity-cluster-background);
+}
+
+q-map {
+  --q-map-marker-size-small: 36px;
+  --q-map-marker-size-medium: 44px;
+  --q-map-marker-size-large: 52px;
 }
 ```
 

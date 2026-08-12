@@ -5,7 +5,9 @@ import type {
   QMapMarker,
   QMapMarkerId,
   QMapMarkerInput,
+  QMapMarkerSize,
 } from '../map.types';
+import { Q_MAP_MARKER_SIZES } from '../map.types';
 import {
   resolveMapMarkerCollisionOffsets,
   type MapMarkerCollisionItem,
@@ -51,6 +53,7 @@ interface FocusIntent {
 const STANDALONE_MARKER_Z_INDEX_OFFSET = 2_000;
 const DEFAULT_MARKER_DIAMETER = 20;
 const DEFAULT_CLUSTER_DIAMETER = 32;
+const MARKER_SIZE_CLASSES = Q_MAP_MARKER_SIZES.map(size => markerSizeClassName(size));
 
 export interface MapMarkerControllerOptions {
   map: LeafletMap;
@@ -250,6 +253,7 @@ export class MapMarkerController {
 
     if (item.kind === 'marker') {
       const selected = this.isSelected(item.marker.id);
+      this.syncMarkerSize(record, item.marker.size);
       updateMarkerPresentation(record.element, item.marker, selected);
       record.element.setAttribute('role', 'button');
       record.element.setAttribute('tabindex', '0');
@@ -283,6 +287,13 @@ export class MapMarkerController {
     return item.kind === 'marker' && item.marker.clusterable === false
       ? STANDALONE_MARKER_Z_INDEX_OFFSET
       : 0;
+  }
+
+  private syncMarkerSize(record: RenderedLayer, size: QMapMarkerSize | undefined): void {
+    const position = record.layer.getElement();
+    if (!position) return;
+    position.classList.remove(...MARKER_SIZE_CLASSES);
+    if (size) position.classList.add(markerSizeClassName(size));
   }
 
   private syncCollisionOffsets(items: MapMarkerViewportItem[]): void {
@@ -480,6 +491,10 @@ export class MapMarkerController {
     record.layer.remove();
     this.layers.delete(key);
   }
+}
+
+function markerSizeClassName(size: QMapMarkerSize): string {
+  return `size-${size}`;
 }
 
 function clusterGroupPartName(clusterGroup: string): string {

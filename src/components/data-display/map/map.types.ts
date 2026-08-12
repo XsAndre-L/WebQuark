@@ -24,6 +24,7 @@ export type QMapGoogleMapType = 'roadmap' | 'satellite' | 'terrain' | 'hybrid';
 
 export const Q_MAP_MARKER_VARIANTS = ['default', 'success', 'warning', 'danger', 'muted'] as const;
 export const Q_MAP_MARKER_KINDS = ['dot', 'avatar', 'icon'] as const;
+export const Q_MAP_MARKER_SIZES = ['small', 'medium', 'large'] as const;
 export const Q_MAP_MARKER_RINGS = ['none', 'solid', 'dashed'] as const;
 export const Q_MAP_MARKER_CALLOUT_PLACEMENTS = ['auto', 'left', 'right', 'top', 'bottom'] as const;
 export const Q_MAP_MARKER_CALLOUT_STAT_LAYOUTS = ['compact', 'wide'] as const;
@@ -31,6 +32,7 @@ export const Q_MAP_MARKER_CALLOUT_VISIBILITIES = ['always', 'selected'] as const
 
 export type QMapMarkerVariant = (typeof Q_MAP_MARKER_VARIANTS)[number];
 export type QMapMarkerKind = (typeof Q_MAP_MARKER_KINDS)[number];
+export type QMapMarkerSize = (typeof Q_MAP_MARKER_SIZES)[number];
 export type QMapMarkerRing = (typeof Q_MAP_MARKER_RINGS)[number];
 export type QMapMarkerCalloutPlacement = (typeof Q_MAP_MARKER_CALLOUT_PLACEMENTS)[number];
 export type QMapMarkerCalloutStatLayout = (typeof Q_MAP_MARKER_CALLOUT_STAT_LAYOUTS)[number];
@@ -88,6 +90,8 @@ export interface QMapMarker {
   fallbackText?: string;
   kind?: QMapMarkerKind;
   icon?: QIconName;
+  /** Selects a semantic marker diameter without coupling marker data to pixels. */
+  size?: QMapMarkerSize;
   ring?: QMapMarkerRing;
   pulse?: boolean;
   badge?: QMapMarkerBadge;

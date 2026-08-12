@@ -5,6 +5,7 @@ import {
   Q_MAP_MARKER_CALLOUT_VISIBILITIES,
   Q_MAP_MARKER_KINDS,
   Q_MAP_MARKER_RINGS,
+  Q_MAP_MARKER_SIZES,
   Q_MAP_MARKER_VARIANTS,
 } from '../map.types';
 import type {
@@ -20,12 +21,14 @@ import type {
   QMapMarkerInput,
   QMapMarkerKind,
   QMapMarkerRing,
+  QMapMarkerSize,
   QMapMarkerVariant,
 } from '../map.types';
 
 const MARKER_VARIANTS = new Set<string>(Q_MAP_MARKER_VARIANTS);
 const MARKER_KINDS = new Set<string>(Q_MAP_MARKER_KINDS);
 const MARKER_RINGS = new Set<string>(Q_MAP_MARKER_RINGS);
+const MARKER_SIZES = new Set<string>(Q_MAP_MARKER_SIZES);
 const CALLOUT_PLACEMENTS = new Set<string>(Q_MAP_MARKER_CALLOUT_PLACEMENTS);
 const CALLOUT_STAT_LAYOUTS = new Set<string>(Q_MAP_MARKER_CALLOUT_STAT_LAYOUTS);
 const CALLOUT_VISIBILITIES = new Set<string>(Q_MAP_MARKER_CALLOUT_VISIBILITIES);
@@ -167,6 +170,7 @@ function normalizeMarker(value: unknown): QMapMarker | undefined {
   const icon = getOptionalText(value.icon);
   const requestedKind = getOptionalEnum<QMapMarkerKind>(value.kind, MARKER_KINDS);
   const kind = requestedKind === 'icon' && !icon ? 'dot' : requestedKind;
+  const size = getOptionalEnum<QMapMarkerSize>(value.size, MARKER_SIZES);
   const ring = getOptionalEnum<QMapMarkerRing>(value.ring, MARKER_RINGS);
   const badge = normalizeBadge(value.badge);
   const callout = normalizeCallout(value.callout);
@@ -183,6 +187,7 @@ function normalizeMarker(value: unknown): QMapMarker | undefined {
     ...(fallbackText ? { fallbackText } : {}),
     ...(kind ? { kind } : {}),
     ...(icon ? { icon } : {}),
+    ...(size ? { size } : {}),
     ...(ring ? { ring } : {}),
     ...(value.pulse === true ? { pulse: true } : {}),
     ...(badge ? { badge } : {}),

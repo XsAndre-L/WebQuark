@@ -125,16 +125,23 @@ describe('q-textarea', () => {
     form.remove();
   });
 
-  it('auto-grows height when resize mode is auto', async () => {
+  it('includes border height when auto-growing a border-box textarea', async () => {
     const el = await createComponent({ resizeMode: 'auto', autoGrow: true });
     const textarea = el.shadowRoot.querySelector('textarea') as HTMLTextAreaElement;
+    const getComputedStyleMock = vi.spyOn(globalThis, 'getComputedStyle').mockReturnValue({
+      borderTopWidth: '2px',
+      borderBottomWidth: '3px'
+    } as CSSStyleDeclaration);
     setScrollHeight(textarea, 72);
 
-    await el.adjustHeight();
+    try {
+      await el.adjustHeight();
 
-    expect(textarea.style.height).toBe('72px');
-
-    el.remove();
+      expect(textarea.style.height).toBe('77px');
+    } finally {
+      getComputedStyleMock.mockRestore();
+      el.remove();
+    }
   });
 
   it('skips auto-grow height changes in manual resize mode', async () => {
@@ -168,6 +175,8 @@ describe('q-textarea', () => {
   it('recalculates height when resize mode changes to auto', async () => {
     const el = await createComponent({ resizeMode: 'manual' });
     const textarea = el.shadowRoot.querySelector('textarea') as HTMLTextAreaElement;
+    textarea.style.borderTopWidth = '0';
+    textarea.style.borderBottomWidth = '0';
     setScrollHeight(textarea, 84);
 
     el.resizeMode = 'auto';
