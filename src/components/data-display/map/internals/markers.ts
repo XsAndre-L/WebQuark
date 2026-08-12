@@ -67,6 +67,12 @@ function getOptionalText(value: unknown): string | undefined {
   return normalized.length > 0 ? normalized : undefined;
 }
 
+function getOptionalFiniteNumber(value: unknown): number | undefined {
+  return typeof value === 'number' && Number.isFinite(value)
+    ? value
+    : undefined;
+}
+
 function normalizeBadge(value: unknown): QMapMarkerBadge | undefined {
   if (!isRecord(value)) return undefined;
   const ariaLabel = getOptionalText(value.ariaLabel);
@@ -168,6 +174,9 @@ function normalizeMarker(value: unknown): QMapMarker | undefined {
   const imageUrl = getOptionalText(value.imageUrl);
   const fallbackText = getOptionalText(value.fallbackText);
   const icon = getOptionalText(value.icon);
+  const iconSize = getOptionalFiniteNumber(value.iconSize);
+  const iconOffsetX = getOptionalFiniteNumber(value.iconOffsetX);
+  const iconOffsetY = getOptionalFiniteNumber(value.iconOffsetY);
   const requestedKind = getOptionalEnum<QMapMarkerKind>(value.kind, MARKER_KINDS);
   const kind = requestedKind === 'icon' && !icon ? 'dot' : requestedKind;
   const size = getOptionalEnum<QMapMarkerSize>(value.size, MARKER_SIZES);
@@ -187,6 +196,9 @@ function normalizeMarker(value: unknown): QMapMarker | undefined {
     ...(fallbackText ? { fallbackText } : {}),
     ...(kind ? { kind } : {}),
     ...(icon ? { icon } : {}),
+    ...(iconSize !== undefined ? { iconSize } : {}),
+    ...(iconOffsetX !== undefined ? { iconOffsetX } : {}),
+    ...(iconOffsetY !== undefined ? { iconOffsetY } : {}),
     ...(size ? { size } : {}),
     ...(ring ? { ring } : {}),
     ...(value.pulse === true ? { pulse: true } : {}),

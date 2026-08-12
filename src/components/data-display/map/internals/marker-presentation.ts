@@ -9,6 +9,9 @@ type QIconElement = HTMLElement & { name?: string; size?: string | number };
 
 const KIND_CLASSES = ['kind-dot', 'kind-avatar', 'kind-icon'];
 const RING_CLASSES = ['ring-none', 'ring-solid', 'ring-dashed'];
+const ICON_SIZE_PROPERTY = '--q-map-marker-icon-size';
+const ICON_OFFSET_X_PROPERTY = '--q-map-marker-icon-offset-x';
+const ICON_OFFSET_Y_PROPERTY = '--q-map-marker-icon-offset-y';
 
 function createIcon(document: Document, className: string): QIconElement {
   const icon = document.createElement('q-icon') as QIconElement;
@@ -106,6 +109,9 @@ export function updateMarkerPresentation(element: HTMLElement, marker: QMapMarke
   if (kind) element.classList.add(`kind-${kind}`);
   element.classList.toggle('is-pulsing', marker.pulse === true);
   element.classList.toggle('is-selected', selected);
+  syncFinitePixelProperty(element, ICON_SIZE_PROPERTY, marker.iconSize);
+  syncFinitePixelProperty(element, ICON_OFFSET_X_PROPERTY, marker.iconOffsetX);
+  syncFinitePixelProperty(element, ICON_OFFSET_Y_PROPERTY, marker.iconOffsetY);
 
   const center = element.querySelector<HTMLElement>('.q-map-marker__center');
   const fallback = center?.querySelector<HTMLElement>('.q-map-marker__fallback');
@@ -133,6 +139,19 @@ export function updateMarkerPresentation(element: HTMLElement, marker: QMapMarke
   updateIcon(badgeIcon, marker.badge?.icon);
   badgeText.textContent = marker.badge?.text ?? '';
   badgeText.hidden = !marker.badge?.text;
+}
+
+function syncFinitePixelProperty(
+  element: HTMLElement,
+  property: string,
+  value: number | undefined,
+): void {
+  if (!Number.isFinite(value)) {
+    element.style.removeProperty(property);
+    return;
+  }
+
+  element.style.setProperty(property, `${Object.is(value, -0) ? 0 : value}px`);
 }
 
 export function createClusterContent(document: Document): HTMLElement {
