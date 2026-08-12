@@ -90,6 +90,12 @@ export interface QMapMarker {
   fallbackText?: string;
   kind?: QMapMarkerKind;
   icon?: QIconName;
+  /** Overrides the rendered icon width and height in pixels. */
+  iconSize?: number;
+  /** Applies a horizontal optical correction to the rendered icon in pixels. */
+  iconOffsetX?: number;
+  /** Applies a vertical optical correction to the rendered icon in pixels. */
+  iconOffsetY?: number;
   /** Selects a semantic marker diameter without coupling marker data to pixels. */
   size?: QMapMarkerSize;
   ring?: QMapMarkerRing;
