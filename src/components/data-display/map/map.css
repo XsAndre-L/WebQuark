@@ -275,10 +275,23 @@ a.map-attribution:focus-visible {
 }
 
 .q-map-marker-position {
-  width: var(--q-map-marker-size, 20px) !important;
-  height: var(--q-map-marker-size, 20px) !important;
-  margin-top: calc(var(--q-map-marker-size, 20px) * -0.5) !important;
-  margin-left: calc(var(--q-map-marker-size, 20px) * -0.5) !important;
+  --q-map-marker-rendered-size: var(--q-map-marker-size, 20px);
+  width: var(--q-map-marker-rendered-size) !important;
+  height: var(--q-map-marker-rendered-size) !important;
+  margin-top: calc(var(--q-map-marker-rendered-size) * -0.5) !important;
+  margin-left: calc(var(--q-map-marker-rendered-size) * -0.5) !important;
+}
+
+.q-map-marker-position.size-small {
+  --q-map-marker-rendered-size: var(--q-map-marker-size-small, 16px);
+}
+
+.q-map-marker-position.size-medium {
+  --q-map-marker-rendered-size: var(--q-map-marker-size-medium, var(--q-map-marker-size, 20px));
+}
+
+.q-map-marker-position.size-large {
+  --q-map-marker-rendered-size: var(--q-map-marker-size-large, 24px);
 }
 
 .q-map-marker {
@@ -335,7 +348,7 @@ a.map-attribution:focus-visible {
   height: 100%;
   background: var(--q-map-marker-content-bg, var(--q-bg-base, #111827));
   color: var(--q-map-marker-content-color, var(--q-fg-base, #f9fafb));
-  font: 700 clamp(0.5rem, calc(var(--q-map-marker-size, 20px) * 0.25), 0.75rem) / 1 var(--q-font-family, sans-serif);
+  font: 700 clamp(0.5rem, calc(var(--q-map-marker-rendered-size, var(--q-map-marker-size, 20px)) * 0.25), 0.75rem) / 1 var(--q-font-family, sans-serif);
 }
 
 .q-map-marker__fallback,

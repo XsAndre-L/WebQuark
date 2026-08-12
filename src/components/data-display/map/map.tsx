@@ -84,6 +84,9 @@ const MARKER_VISIBILITY_SETTLE_TIMEOUT_MS = 500;
  * @cssprop --q-map-border - Outer border.
  * @cssprop --q-map-radius - Outer corner radius.
  * @cssprop --q-map-marker-size - Marker diameter.
+ * @cssprop --q-map-marker-size-small - Diameter for markers with `size: 'small'`.
+ * @cssprop --q-map-marker-size-medium - Diameter for markers with `size: 'medium'`.
+ * @cssprop --q-map-marker-size-large - Diameter for markers with `size: 'large'`.
  * @cssprop --q-map-marker-color - Default marker color.
  * @cssprop --q-map-marker-success - Success marker color.
  * @cssprop --q-map-marker-warning - Warning marker color.

@@ -194,7 +194,12 @@ export class QTextarea {
 
     const scrollHeight = this.textareaEl.scrollHeight;
     if (scrollHeight > 0) {
-      this.textareaEl.style.height = `${scrollHeight}px`;
+      const styles = getComputedStyle(this.textareaEl);
+      const borderHeight =
+        (Number.parseFloat(styles.borderTopWidth) || 0) +
+        (Number.parseFloat(styles.borderBottomWidth) || 0);
+
+      this.textareaEl.style.height = `${scrollHeight + borderHeight}px`;
     } else {
       this.textareaEl.style.height = '';
     }

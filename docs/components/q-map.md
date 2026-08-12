@@ -85,7 +85,7 @@ map.addEventListener('qError', event => {
 
 ## Styling
 
-Component tokens include `--q-map-height`, `--q-map-min-height`, `--q-map-bg`, `--q-map-border`, `--q-map-radius`, `--q-map-marker-size`, `--q-map-marker-color`, `--q-map-marker-success`, `--q-map-marker-warning`, `--q-map-marker-danger`, `--q-map-marker-muted`, `--q-map-marker-selected-color`, `--q-map-attribution-bg`, `--q-map-attribution-color`, and `--q-map-tile-filter`. The tile filter is applied once to Leaflet's raster tile pane.
+Component tokens include `--q-map-height`, `--q-map-min-height`, `--q-map-bg`, `--q-map-border`, `--q-map-radius`, `--q-map-marker-size`, `--q-map-marker-size-small`, `--q-map-marker-size-medium`, `--q-map-marker-size-large`, `--q-map-marker-color`, `--q-map-marker-success`, `--q-map-marker-warning`, `--q-map-marker-danger`, `--q-map-marker-muted`, `--q-map-marker-selected-color`, `--q-map-attribution-bg`, `--q-map-attribution-color`, and `--q-map-tile-filter`. Marker data may select the `small`, `medium`, or `large` semantic size; applications can define all three diameters through these tokens. The tile filter is applied once to Leaflet's raster tile pane.
 
 The `surface`, `canvas`, `marker`, `attribution`, `empty`, and `error` shadow parts support focused overrides that cannot be expressed through tokens. Prefer tokens for theme-level changes and parts for one-off composition.
 

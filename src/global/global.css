@@ -197,6 +197,9 @@
   --q-map-border: var(--q-border);
   --q-map-radius: var(--q-radius-lg);
   --q-map-marker-size: 20px;
+  --q-map-marker-size-small: 16px;
+  --q-map-marker-size-medium: var(--q-map-marker-size);
+  --q-map-marker-size-large: 24px;
   --q-map-marker-color: var(--q-color-primary);
   --q-map-marker-success: var(--q-color-success);
   --q-map-marker-warning: var(--q-color-warning);
