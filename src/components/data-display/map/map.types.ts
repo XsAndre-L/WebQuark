@@ -2,6 +2,20 @@ import type { QIconName } from '../../media/icon/icon.types';
 
 export type QMapMarkerId = string | number;
 
+/** A rectangle expressed in browser viewport (client) coordinates. */
+export interface QMapViewportRect {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+}
+
+export type QMapMarkerVisibilityResult =
+  | 'visible'
+  | 'panned'
+  | 'unavailable'
+  | 'constrained';
+
 export const Q_MAP_DEFAULT_CLUSTER_GROUP = 'default';
 
 export type QMapProvider = 'tiles' | 'vector' | 'google';
@@ -10,6 +24,7 @@ export type QMapGoogleMapType = 'roadmap' | 'satellite' | 'terrain' | 'hybrid';
 
 export const Q_MAP_MARKER_VARIANTS = ['default', 'success', 'warning', 'danger', 'muted'] as const;
 export const Q_MAP_MARKER_KINDS = ['dot', 'avatar', 'icon'] as const;
+export const Q_MAP_MARKER_SIZES = ['small', 'medium', 'large'] as const;
 export const Q_MAP_MARKER_RINGS = ['none', 'solid', 'dashed'] as const;
 export const Q_MAP_MARKER_CALLOUT_PLACEMENTS = ['auto', 'left', 'right', 'top', 'bottom'] as const;
 export const Q_MAP_MARKER_CALLOUT_STAT_LAYOUTS = ['compact', 'wide'] as const;
@@ -17,6 +32,7 @@ export const Q_MAP_MARKER_CALLOUT_VISIBILITIES = ['always', 'selected'] as const
 
 export type QMapMarkerVariant = (typeof Q_MAP_MARKER_VARIANTS)[number];
 export type QMapMarkerKind = (typeof Q_MAP_MARKER_KINDS)[number];
+export type QMapMarkerSize = (typeof Q_MAP_MARKER_SIZES)[number];
 export type QMapMarkerRing = (typeof Q_MAP_MARKER_RINGS)[number];
 export type QMapMarkerCalloutPlacement = (typeof Q_MAP_MARKER_CALLOUT_PLACEMENTS)[number];
 export type QMapMarkerCalloutStatLayout = (typeof Q_MAP_MARKER_CALLOUT_STAT_LAYOUTS)[number];
@@ -74,6 +90,14 @@ export interface QMapMarker {
   fallbackText?: string;
   kind?: QMapMarkerKind;
   icon?: QIconName;
+  /** Overrides the rendered icon width and height in pixels. */
+  iconSize?: number;
+  /** Applies a horizontal optical correction to the rendered icon in pixels. */
+  iconOffsetX?: number;
+  /** Applies a vertical optical correction to the rendered icon in pixels. */
+  iconOffsetY?: number;
+  /** Selects a semantic marker diameter without coupling marker data to pixels. */
+  size?: QMapMarkerSize;
   ring?: QMapMarkerRing;
   pulse?: boolean;
   badge?: QMapMarkerBadge;

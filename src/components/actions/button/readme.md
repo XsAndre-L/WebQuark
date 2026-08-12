@@ -11,32 +11,32 @@ Action button that renders a native button or anchor according to `href`.
 
 ## Properties
 
-| Property    | Attribute    | Description                                                                                          | Type                                                                     | Default     |
-| ----------- | ------------ | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ | ----------- |
-| `ariaLabel` | `aria-label` | Accessible label forwarded to the inner button or anchor. Required for icon-only buttons.            | `string`                                                                 | `null`      |
-| `disabled`  | `disabled`   | Disables interaction and marks the control as unavailable.                                           | `boolean`                                                                | `false`     |
-| `download`  | `download`   | Download filename or boolean download hint for link buttons.                                         | `string`                                                                 | `undefined` |
-| `expand`    | `expand`     | Expands the button to fill its container width.                                                      | `boolean`                                                                | `false`     |
-| `href`      | `href`       | URL to render the component as a link.                                                               | `string`                                                                 | `undefined` |
-| `icon`      | `icon`       | Lucide icon name rendered before the label. Use the icon slots for other libraries or custom markup. | `string`                                                                 | `undefined` |
-| `iconOnly`  | `icon-only`  | Renders compact icon-only spacing. When unset, this is auto-detected from slotted icon content.      | `boolean`                                                                | `undefined` |
-| `layout`    | `layout`     | Controls whether icon and label content flow inline or stack vertically.                             | `"inline" \| "stacked"`                                                  | `'inline'`  |
-| `loading`   | `loading`    | Shows a spinner and suppresses interaction while work is in progress.                                | `boolean`                                                                | `false`     |
-| `rel`       | `rel`        | Link rel value. Defaults to noopener noreferrer for target="_blank".                                 | `string`                                                                 | `undefined` |
-| `shape`     | `shape`      | Controls the button outline and fixed circular presentation.                                         | `"circle" \| "default" \| "pill"`                                        | `'default'` |
-| `size`      | `size`       | Button size.                                                                                         | `"lg" \| "md" \| "sm"`                                                   | `'md'`      |
-| `target`    | `target`     | Link target used when `href` is set.                                                                 | `string`                                                                 | `undefined` |
-| `type`      | `type`       | Native button type used when rendering a `<button>`.                                                 | `"button" \| "reset" \| "submit"`                                        | `'button'`  |
-| `variant`   | `variant`    | Visual style of the button.                                                                          | `"danger" \| "ghost" \| "primary" \| "secondary" \| "success" \| "text"` | `'primary'` |
+| Property    | Attribute    | Description                                                               | Type                                                                     | Default     |
+| ----------- | ------------ | ------------------------------------------------------------------------- | ------------------------------------------------------------------------ | ----------- |
+| `ariaLabel` | `aria-label` | Required when an icon-only button has no accessible text.                 | `string`                                                                 | `null`      |
+| `disabled`  | `disabled`   | Prevents activation, navigation, and secondary actions such as removal.   | `boolean`                                                                | `false`     |
+| `download`  | `download`   | Enables native download behavior when the component operates as a link.   | `string`                                                                 | `undefined` |
+| `expand`    | `expand`     |                                                                           | `boolean`                                                                | `false`     |
+| `href`      | `href`       | Destination used when the component operates as a link.                   | `string`                                                                 | `undefined` |
+| `icon`      | `icon`       | Lucide icon rendered before the label. Use icon slots for custom content. | `string`                                                                 | `undefined` |
+| `iconOnly`  | `icon-only`  | Auto-detected from slotted icon content when omitted.                     | `boolean`                                                                | `undefined` |
+| `layout`    | `layout`     |                                                                           | `"inline" \| "stacked"`                                                  | `'inline'`  |
+| `loading`   | `loading`    | Shows a spinner and prevents interaction while loading.                   | `boolean`                                                                | `false`     |
+| `rel`       | `rel`        | Defaults to `noopener noreferrer` when `target="_blank"`.                 | `string`                                                                 | `undefined` |
+| `shape`     | `shape`      | The `circle` shape uses a fixed-size circular presentation.               | `"circle" \| "default" \| "pill"`                                        | `'default'` |
+| `size`      | `size`       |                                                                           | `"lg" \| "md" \| "sm"`                                                   | `'md'`      |
+| `target`    | `target`     |                                                                           | `string`                                                                 | `undefined` |
+| `type`      | `type`       | Applied to the native `<button>` when `href` is unset.                    | `"button" \| "reset" \| "submit"`                                        | `'button'`  |
+| `variant`   | `variant`    |                                                                           | `"danger" \| "ghost" \| "primary" \| "secondary" \| "success" \| "text"` | `'primary'` |
 
 
 ## Events
 
-| Event    | Description                                    | Type                      |
-| -------- | ---------------------------------------------- | ------------------------- |
-| `qBlur`  | Emitted when the inner control loses focus.    | `CustomEvent<FocusEvent>` |
-| `qClick` | Emitted on click, unless disabled or loading.  | `CustomEvent<MouseEvent>` |
-| `qFocus` | Emitted when the inner control receives focus. | `CustomEvent<FocusEvent>` |
+| Event    | Description                                       | Type                      |
+| -------- | ------------------------------------------------- | ------------------------- |
+| `qBlur`  |                                                   | `CustomEvent<FocusEvent>` |
+| `qClick` | Emitted on activation unless disabled or loading. | `CustomEvent<MouseEvent>` |
+| `qFocus` |                                                   | `CustomEvent<FocusEvent>` |
 
 
 ## Slots

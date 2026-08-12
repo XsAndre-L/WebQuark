@@ -25,47 +25,31 @@ const MENU_OFFSET = 4;
 })
 export class QDropdown {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
-  /** Selected option value. */
-  @Prop({ mutable: true }) value: string = '';
-
-  /** Form field name. */
-  @Prop({ reflect: true }) name?: string;
-
-  /** Optional label rendered above the trigger. */
   @Prop() label?: string;
-
   /** Accessible name for the trigger and option list when no visible label is available. */
   @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
-
-  /** Placeholder text shown when no option is selected. */
   @Prop() placeholder: string = 'Select an option...';
-
   /** Options to render; strings use the same text for label and value, while objects allow separate values. */
   @Prop() options: DropdownOptionInput[] | string = [];
+  @Prop({ mutable: true }) value: string = '';
 
-  /** Disables the trigger and prevents selection changes. */
-  @Prop({ reflect: true }) disabled: boolean = false;
-
-  /** Visual size preset. */
   @Prop({ reflect: true }) size: QDropdownSize = 'md';
 
-  /** Preferred menu direction. Auto uses the side with enough viewport space. */
-  @Prop() placement: QDropdownPlacement = 'auto';
+  @Prop() searchable: boolean = false;
+  /** Delegates filtering and pagination to the consumer. */
+  @Prop() externalSearch: boolean = false;
+  /** Indicates another externally loaded option page is available. */
+  @Prop() hasMore: boolean = false;
+  @Prop() loading: boolean = false;
 
+  /** `auto` uses a side with sufficient viewport space. */
+  @Prop() placement: QDropdownPlacement = 'auto';
   /** Minimum distance maintained between the open menu and viewport edges. */
   @Prop() collisionPadding: number = 8;
 
-  /** Shows a search input inside the menu. */
-  @Prop() searchable: boolean = false;
+  @Prop({ reflect: true }) disabled: boolean = false;
 
-  /** Leaves filtering and pagination to the consumer instead of filtering options locally. */
-  @Prop() externalSearch: boolean = false;
-
-  /** Indicates that another externally loaded option page is available. */
-  @Prop() hasMore: boolean = false;
-
-  /** Displays the menu loading state while options are being fetched. */
-  @Prop() loading: boolean = false;
+  @Prop({ reflect: true }) name?: string;
 
   @State() isOpen: boolean = false;
   @State() focusedIndex: number = -1;
@@ -89,10 +73,8 @@ export class QDropdown {
   /** Emitted when an externally loaded option list reaches its scroll boundary. */
   @Event() qLoadMore!: EventEmitter<void>;
 
-  /** Emitted when the trigger receives focus. */
   @Event() qFocus!: EventEmitter<FocusEvent>;
 
-  /** Emitted when the trigger loses focus. */
   @Event() qBlur!: EventEmitter<FocusEvent>;
 
   /** Emitted before the trigger toggles the menu. */

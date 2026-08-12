@@ -27,38 +27,30 @@ export class QSyntaxBox {
 
   @AttachInternals() internals!: ElementInternals;
 
-  /** Visual presentation for the code box. */
-  @Prop() variant: QSyntaxBoxVariant = 'panel';
-
-  /** Form field name used when the component is editable. */
-  @Prop({ reflect: true }) name?: string;
-
-  /** Syntax language used for highlighting and formatting. */
-  @Prop() language: QSyntaxBoxLanguage = 'html';
-
-  /** Code content to display or edit. Kept in sync with `value`; prefer `code` for domain usage. */
+  /** Mirrored with `value`; prefer `code` for domain usage. */
   @Prop({ mutable: true }) code?: string;
-
-  /** Form value alias for `code`. Set either `code` or `value`; the component mirrors them for compatibility. */
+  /** Form-value alias mirrored with `code` for compatibility. */
   @Prop({ mutable: true }) value?: string;
-
-  /** Optional header text shown in the panel variant. */
+  /** Shown only in the panel variant. */
   @Prop() heading?: string;
+  /** Accessible name for the editor; falls back to `heading`, then the language. */
+  @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
 
-  /** Shows a copy action in the panel header. */
-  @Prop() copyable: boolean = false;
-
+  @Prop() variant: QSyntaxBoxVariant = 'panel';
   /** Explicit content height. Panel mode defaults to 110px; plain mode defaults to auto. */
   @Prop() height?: string;
 
-  /** Enables the editable textarea overlay. */
+  @Prop() copyable: boolean = false;
   @Prop({ reflect: true }) editable: boolean = false;
+  /** Form field name used when the component is editable. */
+  @Prop({ reflect: true }) name?: string;
+  /** Marks the editable textarea as required for form validation. */
+  @Prop({ reflect: true }) required: boolean = false;
+
+  @Prop() language: QSyntaxBoxLanguage = 'html';
 
   /** Disables editing and panel actions. */
   @Prop({ reflect: true }) disabled: boolean = false;
-
-  /** Marks the editable textarea as required for form validation. */
-  @Prop({ reflect: true }) required: boolean = false;
 
   /** Emitted when editable content is committed by the native change event or by formatting. */
   @Event() qChange!: EventEmitter<string>;
@@ -316,6 +308,7 @@ export class QSyntaxBox {
               name={this.name}
               disabled={this.disabled}
               required={this.required}
+              aria-label={this.ariaLabel?.trim() || this.heading?.trim() || `${this.language.toUpperCase()} code editor`}
               aria-describedby="syntax-box-keyboard-help"
               onInput={this.handleInput}
               onChange={this.handleChange}

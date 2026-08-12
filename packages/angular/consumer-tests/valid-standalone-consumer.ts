@@ -5,6 +5,7 @@ import {
   QButton,
   QDropdown,
   QInput,
+  QRadioGroup,
   QToggle,
   SelectValueAccessor,
   TextValueAccessor,
@@ -17,6 +18,7 @@ import {
     QButton,
     QDropdown,
     QInput,
+    QRadioGroup,
     QToggle,
     BooleanValueAccessor,
     SelectValueAccessor,
@@ -29,6 +31,11 @@ import {
       [options]="statusOptions"
       [formControl]="status"
     />
+    <q-radio-group
+      label="Access"
+      [options]="accessOptions"
+      [formControl]="access"
+    />
     <q-toggle label="Enabled" [formControl]="enabled" />
     <q-button type="submit" [disabled]="name.invalid">Save</q-button>
   `,
@@ -36,9 +43,14 @@ import {
 export class ValidStandaloneConsumer {
   readonly name = new FormControl('', { nonNullable: true });
   readonly status = new FormControl('', { nonNullable: true });
+  readonly access = new FormControl('user', { nonNullable: true });
   readonly enabled = new FormControl(false, { nonNullable: true });
   readonly statusOptions = [
     { label: 'Active', value: 'active' },
     { label: 'Inactive', value: 'inactive' },
+  ];
+  readonly accessOptions = [
+    { label: 'User', value: 'user' },
+    { label: 'Administrator', value: 'administrator' },
   ];
 }

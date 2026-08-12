@@ -11,19 +11,20 @@ Displays and optionally edits syntax-highlighted code, with form association in 
 
 ## Properties
 
-| Property   | Attribute  | Description                                                                                              | Type                                        | Default     |
-| ---------- | ---------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------- | ----------- |
-| `code`     | `code`     | Code content to display or edit. Kept in sync with `value`; prefer `code` for domain usage.              | `string`                                    | `undefined` |
-| `copyable` | `copyable` | Shows a copy action in the panel header.                                                                 | `boolean`                                   | `false`     |
-| `disabled` | `disabled` | Disables editing and panel actions.                                                                      | `boolean`                                   | `false`     |
-| `editable` | `editable` | Enables the editable textarea overlay.                                                                   | `boolean`                                   | `false`     |
-| `heading`  | `heading`  | Optional header text shown in the panel variant.                                                         | `string`                                    | `undefined` |
-| `height`   | `height`   | Explicit content height. Panel mode defaults to 110px; plain mode defaults to auto.                      | `string`                                    | `undefined` |
-| `language` | `language` | Syntax language used for highlighting and formatting.                                                    | `"css" \| "html" \| "javascript" \| "json"` | `'html'`    |
-| `name`     | `name`     | Form field name used when the component is editable.                                                     | `string`                                    | `undefined` |
-| `required` | `required` | Marks the editable textarea as required for form validation.                                             | `boolean`                                   | `false`     |
-| `value`    | `value`    | Form value alias for `code`. Set either `code` or `value`; the component mirrors them for compatibility. | `string`                                    | `undefined` |
-| `variant`  | `variant`  | Visual presentation for the code box.                                                                    | `"panel" \| "plain"`                        | `'panel'`   |
+| Property    | Attribute    | Description                                                                         | Type                                        | Default     |
+| ----------- | ------------ | ----------------------------------------------------------------------------------- | ------------------------------------------- | ----------- |
+| `ariaLabel` | `aria-label` | Accessible name for the editor; falls back to `heading`, then the language.         | `string`                                    | `null`      |
+| `code`      | `code`       | Mirrored with `value`; prefer `code` for domain usage.                              | `string`                                    | `undefined` |
+| `copyable`  | `copyable`   |                                                                                     | `boolean`                                   | `false`     |
+| `disabled`  | `disabled`   | Disables editing and panel actions.                                                 | `boolean`                                   | `false`     |
+| `editable`  | `editable`   |                                                                                     | `boolean`                                   | `false`     |
+| `heading`   | `heading`    | Shown only in the panel variant.                                                    | `string`                                    | `undefined` |
+| `height`    | `height`     | Explicit content height. Panel mode defaults to 110px; plain mode defaults to auto. | `string`                                    | `undefined` |
+| `language`  | `language`   |                                                                                     | `"css" \| "html" \| "javascript" \| "json"` | `'html'`    |
+| `name`      | `name`       | Form field name used when the component is editable.                                | `string`                                    | `undefined` |
+| `required`  | `required`   | Marks the editable textarea as required for form validation.                        | `boolean`                                   | `false`     |
+| `value`     | `value`      | Form-value alias mirrored with `code` for compatibility.                            | `string`                                    | `undefined` |
+| `variant`   | `variant`    |                                                                                     | `"panel" \| "plain"`                        | `'panel'`   |
 
 
 ## Events

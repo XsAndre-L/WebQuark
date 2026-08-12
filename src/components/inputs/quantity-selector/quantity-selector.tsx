@@ -24,31 +24,20 @@ import {
 })
 export class QQuantitySelector {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
-  /** The current quantity value. */
   @Prop({ mutable: true }) value: number = 0;
-
-  /** The increment/decrement step amount. */
+  @Prop() min?: number;
+  @Prop() max?: number;
   @Prop() step: number = 1;
 
-  /** Minimum allowed value limit (optional). */
-  @Prop() min?: number;
-
-  /** Maximum allowed value limit (optional). */
-  @Prop() max?: number;
-
-  /** Layout alignment variants: 'horizontal' or 'vertical'. */
   @Prop({ reflect: true }) variant: QQuantitySelectorVariant = 'horizontal';
 
-  /** Emitted when the quantity value changes. */
   @Event() qChange!: EventEmitter<number>;
 
-  /** Emitted when the input receives focus. */
   @Event() qFocus!: EventEmitter<FocusEvent>;
 
   /** Emitted when the input loses focus, after the value is reconciled. */
   @Event() qBlur!: EventEmitter<FocusEvent>;
 
-  /** Emitted when the quantity selector is clicked. */
   @Event() qClick!: EventEmitter<MouseEvent>;
 
   // ========================= [2] INTERNAL STATE & REFS =========================

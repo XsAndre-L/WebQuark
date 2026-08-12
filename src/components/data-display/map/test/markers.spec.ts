@@ -30,6 +30,38 @@ describe('q-map marker normalization', () => {
     expect(markers.map(marker => marker.variant)).toEqual(['success', 'default']);
   });
 
+  it('retains finite custom icon presentation and omits invalid values', () => {
+    const markers = getMapMarkers([
+      {
+        id: 'person',
+        latitude: 0,
+        longitude: 0,
+        label: 'Person',
+        iconSize: 18,
+        iconOffsetX: 0.5,
+        iconOffsetY: 0,
+      },
+      {
+        id: 'store',
+        latitude: 1,
+        longitude: 1,
+        label: 'Store',
+        iconSize: Number.NaN,
+        iconOffsetX: Number.POSITIVE_INFINITY,
+        iconOffsetY: '0' as unknown as number,
+      },
+    ]);
+
+    expect(markers[0]).toMatchObject({
+      iconSize: 18,
+      iconOffsetX: 0.5,
+      iconOffsetY: 0,
+    });
+    expect(markers[1]).not.toHaveProperty('iconSize');
+    expect(markers[1]).not.toHaveProperty('iconOffsetX');
+    expect(markers[1]).not.toHaveProperty('iconOffsetY');
+  });
+
   it('defaults omitted and invalid clusterable values to true for array input', () => {
     const markers = getMapMarkers([
       { id: 'omitted', latitude: 0, longitude: 0, label: 'Omitted' },

@@ -14,24 +14,24 @@ consumer-owned nested shadow root are outside this explicit boundary.
 
 ## Properties
 
-| Property         | Attribute         | Description                                                                                  | Type                                                                           | Default                               |
-| ---------------- | ----------------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------- |
-| `action`         | `action`          | Native form action URL.                                                                      | `string`                                                                       | `undefined`                           |
-| `autocomplete`   | `autocomplete`    | Native form autocomplete behavior.                                                           | `"off" \| "on"`                                                                | `'on'`                                |
-| `enctype`        | `enctype`         | Native form encoding type used during submission.                                            | `"application/x-www-form-urlencoded" \| "multipart/form-data" \| "text/plain"` | `'application/x-www-form-urlencoded'` |
-| `enterBehavior`  | `enter-behavior`  | Controls how Enter behaves inside text-like controls.                                        | `"focus-next" \| "none" \| "submit"`                                           | `'submit'`                            |
-| `label`          | `label`           | Visible form title used as the native form accessible name when no custom header is slotted. | `string`                                                                       | `undefined`                           |
-| `method`         | `method`          | Native form submission method.                                                               | `"dialog" \| "get" \| "post"`                                                  | `'post'`                              |
-| `noValidate`     | `no-validate`     | Disables native constraint validation when true.                                             | `boolean`                                                                      | `false`                               |
-| `preventDefault` | `prevent-default` | Prevents the native submit event's default navigation by default.                            | `boolean`                                                                      | `true`                                |
-| `target`         | `target`          | Native browsing context target for form submission.                                          | `"_blank" \| "_parent" \| "_self" \| "_top"`                                   | `undefined`                           |
+| Property         | Attribute         | Description                                             | Type                                                                           | Default                               |
+| ---------------- | ----------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------- |
+| `action`         | `action`          |                                                         | `string`                                                                       | `undefined`                           |
+| `autocomplete`   | `autocomplete`    |                                                         | `"off" \| "on"`                                                                | `'on'`                                |
+| `enctype`        | `enctype`         |                                                         | `"application/x-www-form-urlencoded" \| "multipart/form-data" \| "text/plain"` | `'application/x-www-form-urlencoded'` |
+| `enterBehavior`  | `enter-behavior`  | Controls how Enter behaves inside text-like controls.   | `"focus-next" \| "none" \| "submit"`                                           | `'submit'`                            |
+| `label`          | `label`           | Names the native form when no custom header is slotted. | `string`                                                                       | `undefined`                           |
+| `method`         | `method`          |                                                         | `"dialog" \| "get" \| "post"`                                                  | `'post'`                              |
+| `noValidate`     | `no-validate`     |                                                         | `boolean`                                                                      | `false`                               |
+| `preventDefault` | `prevent-default` | Prevents the native submit event's default navigation.  | `boolean`                                                                      | `true`                                |
+| `target`         | `target`          |                                                         | `"_blank" \| "_parent" \| "_self" \| "_top"`                                   | `undefined`                           |
 
 
 ## Events
 
 | Event     | Description                                                      | Type                             |
 | --------- | ---------------------------------------------------------------- | -------------------------------- |
-| `qReset`  | Emitted when the native form resets.                             | `CustomEvent<QFormResetDetail>`  |
+| `qReset`  |                                                                  | `CustomEvent<QFormResetDetail>`  |
 | `qSubmit` | Emitted after a valid submit with collected values and FormData. | `CustomEvent<QFormSubmitDetail>` |
 
 

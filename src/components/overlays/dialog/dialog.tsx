@@ -33,51 +33,32 @@ let dialogId = 0;
 })
 export class QDialog {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
-  /** Controls the dialog's visibility. */
-  @Prop({ reflect: true, mutable: true }) open: boolean = false;
-
-  /** Optional title text rendered in the default dialog header. */
+  /** Rendered by the default dialog header. */
   @Prop() dialogTitle?: string;
-
   /** Accessible name for the dialog, especially when using a custom header without dialogTitle. */
   @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
-
-  /** Optional message text rendered in the default dialog body. */
+  /** Rendered by the default dialog body. */
   @Prop() message?: string;
 
-  /** Allows the Escape key to cancel and close the dialog. */
+  /** `solid` is CEF-safe; `none` keeps only a transparent click layer. */
+  @Prop({ attribute: 'backdrop-effect', reflect: true }) backdropEffect: QDialogBackdropEffect = 'solid';
+
   @Prop() closeOnEsc: boolean = true;
-
-  /** Allows backdrop clicks to cancel and close the dialog. */
   @Prop() closeOnOverlayClick: boolean = true;
-
+  @Prop() showCancel: boolean = true;
+  @Prop() cancelLabel: string = 'Cancel';
+  @Prop() showConfirm: boolean = true;
+  @Prop() confirmLabel: string = 'Confirm';
   /** Disables dialog actions and marks the confirm button busy. */
   @Prop() loading: boolean = false;
 
-  /** Text shown on the confirm action button. */
-  @Prop() confirmLabel: string = 'Confirm';
-
-  /** Text shown on the cancel action button. */
-  @Prop() cancelLabel: string = 'Cancel';
+  @Prop({ reflect: true, mutable: true }) open: boolean = false;
 
   /** Accessible label for the header close button. */
   @Prop() closeLabel: string = 'Close dialog';
 
-  /** Shows the cancel action button. */
-  @Prop() showCancel: boolean = true;
-
-  /** Shows the confirm action button. */
-  @Prop() showConfirm: boolean = true;
-
-  /**
-   * Backdrop rendering style. Solid is the default CEF/Unreal-safe dimmer; none keeps the click layer transparent.
-   */
-  @Prop({ attribute: 'backdrop-effect', reflect: true }) backdropEffect: QDialogBackdropEffect = 'solid';
-
-  /** Emitted when the confirm action is activated. */
   @Event() qConfirm!: EventEmitter<void>;
 
-  /** Emitted when the cancel action is activated. */
   @Event() qCancel!: EventEmitter<void>;
 
   /** Emitted whenever the dialog is closed through a public action. */
@@ -141,7 +122,6 @@ export class QDialog {
 
   // ============================ [4] EXPOSED METHODS ============================
 
-  /** Opens the dialog. */
   @Method()
   async show() {
     this.open = true;

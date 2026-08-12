@@ -23,24 +23,15 @@ export class QPanel {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Element() el!: HTMLElement;
 
-  /** Visual treatment for the panel container. */
   @Prop({ reflect: true }) variant: QPanelVariant = 'bordered';
-
   /** Removes the panel border while preserving the selected variant's other styling. */
   @Prop({ reflect: true }) noBorders: boolean = false;
-
-  /** Padding density applied to the body region. */
   @Prop({ reflect: true }) padding: QPanelPadding = 'md';
-
-  /** Enables internal scrolling for overflowing panel content. */
-  @Prop({ reflect: true }) scrollable: boolean = false;
-
-  /** Stretches the panel to fill the available height. */
   @Prop({ reflect: true }) fullHeight: boolean = false;
 
+  @Prop({ reflect: true }) scrollable: boolean = false;
   /** Keeps the header pinned when the panel itself is the scroll container. */
   @Prop({ reflect: true }) stickyHeader: boolean = false;
-
   /** Keeps the footer pinned when the panel itself is the scroll container. */
   @Prop({ reflect: true }) stickyFooter: boolean = false;
 

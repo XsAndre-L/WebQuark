@@ -546,12 +546,69 @@ slot[name='footer'] {
 .collapse-control--edge-tab {
   --q-sidepanel-collapse-control-inline-size: var(--q-sidepanel-edge-tab-width, 24px);
   --q-sidepanel-collapse-control-block-size: var(--q-sidepanel-edge-tab-height, 52px);
+  --q-sidepanel-edge-tab-shoulder-size: max(0px, var(--q-sidepanel-edge-tab-shoulder-radius, 0px));
+  --q-sidepanel-edge-tab-current-bg: var(--q-sidepanel-edge-tab-bg, var(--q-bg-surface-1, #111827));
 
   width: var(--q-sidepanel-collapse-control-inline-size);
   height: var(--q-sidepanel-collapse-control-block-size);
   border: var(--q-sidepanel-edge-tab-border, var(--q-border, 1px solid var(--q-border-color, #374151)));
   border-radius: var(--q-sidepanel-edge-tab-radius, 6px);
-  background: var(--q-sidepanel-edge-tab-bg, var(--q-bg-surface-1, #111827));
+  background: var(--q-sidepanel-edge-tab-current-bg);
+}
+
+.collapse-control--edge-tab::before,
+.collapse-control--edge-tab::after {
+  position: absolute;
+  width: var(--q-sidepanel-edge-tab-shoulder-size);
+  height: var(--q-sidepanel-edge-tab-shoulder-size);
+  content: '';
+  pointer-events: none;
+}
+
+.collapse-control--edge-tab::before {
+  inset: var(--q-sidepanel-edge-tab-shoulder-before-inset, auto);
+  background: radial-gradient(
+    circle var(--q-sidepanel-edge-tab-shoulder-size) at var(--q-sidepanel-edge-tab-shoulder-before-origin),
+    transparent calc(100% - 0.5px),
+    var(--q-sidepanel-edge-tab-current-bg) 100%
+  );
+}
+
+.collapse-control--edge-tab::after {
+  inset: var(--q-sidepanel-edge-tab-shoulder-after-inset, auto);
+  background: radial-gradient(
+    circle var(--q-sidepanel-edge-tab-shoulder-size) at var(--q-sidepanel-edge-tab-shoulder-after-origin),
+    transparent calc(100% - 0.5px),
+    var(--q-sidepanel-edge-tab-current-bg) 100%
+  );
+}
+
+:host([side="left"]) .collapse-control--edge-tab {
+  --q-sidepanel-edge-tab-shoulder-before-inset: calc(0px - var(--q-sidepanel-edge-tab-shoulder-size)) auto auto 0;
+  --q-sidepanel-edge-tab-shoulder-after-inset: 100% auto auto 0;
+  --q-sidepanel-edge-tab-shoulder-before-origin: 100% 0;
+  --q-sidepanel-edge-tab-shoulder-after-origin: 100% 100%;
+}
+
+:host([side="right"]) .collapse-control--edge-tab {
+  --q-sidepanel-edge-tab-shoulder-before-inset: calc(0px - var(--q-sidepanel-edge-tab-shoulder-size)) 0 auto auto;
+  --q-sidepanel-edge-tab-shoulder-after-inset: 100% 0 auto auto;
+  --q-sidepanel-edge-tab-shoulder-before-origin: 0 0;
+  --q-sidepanel-edge-tab-shoulder-after-origin: 0 100%;
+}
+
+:host([side="top"]) .collapse-control--edge-tab {
+  --q-sidepanel-edge-tab-shoulder-before-inset: 0 auto auto calc(0px - var(--q-sidepanel-edge-tab-shoulder-size));
+  --q-sidepanel-edge-tab-shoulder-after-inset: 0 auto auto 100%;
+  --q-sidepanel-edge-tab-shoulder-before-origin: 0 100%;
+  --q-sidepanel-edge-tab-shoulder-after-origin: 100% 100%;
+}
+
+:host([side="bottom"]) .collapse-control--edge-tab {
+  --q-sidepanel-edge-tab-shoulder-before-inset: auto auto 0 calc(0px - var(--q-sidepanel-edge-tab-shoulder-size));
+  --q-sidepanel-edge-tab-shoulder-after-inset: auto auto 0 100%;
+  --q-sidepanel-edge-tab-shoulder-before-origin: 0 0;
+  --q-sidepanel-edge-tab-shoulder-after-origin: 100% 0;
 }
 
 .collapse-control q-icon {
@@ -576,7 +633,7 @@ slot[name='footer'] {
 
 .collapse-control--edge-tab:hover,
 .collapse-control--edge-tab:focus-visible {
-  background: var(--q-sidepanel-edge-tab-hover-bg, var(--q-bg-surface-2, rgba(255, 255, 255, 0.05)));
+  --q-sidepanel-edge-tab-current-bg: var(--q-sidepanel-edge-tab-hover-bg, var(--q-bg-surface-2, rgba(255, 255, 255, 0.05)));
 }
 
 .collapse-control--edge-tab q-icon {

@@ -23,6 +23,7 @@ See the [component documentation standard and index](./components/README.md), [c
 | `q-textarea` | Form control | Implemented | [Guide](./components/q-textarea.md) | Form-associated auto, manual, and fixed resize modes. |
 | `q-dropdown` | Form control | Implemented | [Guide](./components/q-dropdown.md) | Searchable listbox with incremental option rendering. |
 | `q-quantity-selector` | Form control | Implemented with known limitation | [Guide](./components/q-quantity-selector.md) | Bounded stepper; not yet form-associated. |
+| `q-radio-group` | Form control | Implemented | [Guide](./components/q-radio-group.md) | Form-associated single selection with connected segmented options. |
 | `q-toggle` | Form control | Implemented | [Guide](./components/q-toggle.md) | Form-associated switch/checkbox presentations. |
 | `q-data-table` | Data display | Implemented | [Guide](./components/q-data-table.md) | Search events, selection, sorting, and row actions. |
 | `q-map` | Data display | Implemented | [Guide](./components/q-map.md) | Leaflet-backed tile or Google imagery, typed markers, selection, and resize handling. |
@@ -38,4 +39,4 @@ See the [component documentation standard and index](./components/README.md), [c
 
 ## Inventory rule
 
-Any change that adds or removes a `q-*` component must update this matrix, `docs/components/README.md`, and the 27-component current-contract reference in the same change. The production build must regenerate and commit the source-adjacent API page and framework proxies where this repository tracks them.
+Any change that adds or removes a `q-*` component must update this matrix, `docs/components/README.md`, and the 28-component current-contract reference in the same change. The production build must regenerate and commit the source-adjacent API page and framework proxies where this repository tracks them.

@@ -13,7 +13,6 @@ import type { QThumbnailMaximizeDetail } from './thumbnail.types';
 })
 export class QThumbnail {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
-  /** Image or poster URL rendered by the thumbnail. */
   @Prop() src: string = '';
   /** Marks the media as video and renders a decorative play indicator. */
   @Prop({ reflect: true }) video: boolean = false;
@@ -21,12 +20,11 @@ export class QThumbnail {
   @Prop() label?: string;
   /** Alternative text for the thumbnail image. */
   @Prop() alt: string = '';
-  /** Applies the highlighted visual state. */
+
   @Prop({ reflect: true }) highlighted: boolean = false;
 
   @Element() el!: HTMLElement;
 
-  /** Emitted when the thumbnail is activated. */
   @Event() qMaximize!: EventEmitter<QThumbnailMaximizeDetail>;
 
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================

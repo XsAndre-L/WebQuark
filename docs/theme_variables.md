@@ -191,7 +191,16 @@ Exposes variables specialized for fine-tuning specific complex components.
 *   `--q-dropdown-border`: `var(--q-border)` — Menu border line.
 *   `--q-dropdown-radius`: `var(--q-radius-md)` — Border rounding.
 
-### H. Sidepanel (`q-sidepanel`)
+### H. Radio Group (`q-radio-group`)
+*   `--q-radio-group-bg`: `var(--q-field-bg)` — Option surface background.
+*   `--q-radio-group-border`: `var(--q-border)` — Group boundary and option dividers.
+*   `--q-radio-group-radius`: `var(--q-field-radius)` — Outer group rounding.
+*   `--q-radio-group-selected-bg`: primary-tinted field background — Selected option surface.
+*   `--q-radio-group-selected-color`: `var(--q-color-primary)` — Selected option text.
+*   `--q-radio-group-focus-ring`: `var(--q-focus-ring)` — Keyboard focus outline.
+*   `--q-radio-group-error-color`: `var(--q-color-danger)` — Invalid boundary and helper text.
+
+### I. Sidepanel (`q-sidepanel`)
 *   `--q-panel-bg`: `var(--q-bg-surface-1)` — Main side panel canvas background.
 *   `--q-panel-border`: `var(--q-border)` — Edge separating line.
 *   `--q-panel-shadow`: `var(--q-shadow-high)` — Floating shadow depth.
@@ -200,7 +209,7 @@ Exposes variables specialized for fine-tuning specific complex components.
 *   `--q-sidepanel-collapse-control-adornment-translate-x`: `-50%` — Horizontal translation from the adornment anchor.
 *   `--q-sidepanel-collapse-control-adornment-translate-y`: `-50%` — Vertical translation from the adornment anchor.
 
-### I. Map (`q-map`)
+### J. Map (`q-map`)
 *   `--q-map-height`: `100%` — Map host height within its containing layout.
 *   `--q-map-min-height`: `240px` — Minimum usable map height when the parent does not establish one.
 *   `--q-map-bg`: `var(--q-bg-surface-1)` — Surface behind tiles and the missing-configuration state.

@@ -5,7 +5,9 @@ import type {
   QMapMarker,
   QMapMarkerId,
   QMapMarkerInput,
+  QMapMarkerSize,
 } from '../map.types';
+import { Q_MAP_MARKER_SIZES } from '../map.types';
 import {
   resolveMapMarkerCollisionOffsets,
   type MapMarkerCollisionItem,
@@ -51,6 +53,7 @@ interface FocusIntent {
 const STANDALONE_MARKER_Z_INDEX_OFFSET = 2_000;
 const DEFAULT_MARKER_DIAMETER = 20;
 const DEFAULT_CLUSTER_DIAMETER = 32;
+const MARKER_SIZE_CLASSES = Q_MAP_MARKER_SIZES.map(size => markerSizeClassName(size));
 
 export interface MapMarkerControllerOptions {
   map: LeafletMap;
@@ -60,6 +63,15 @@ export interface MapMarkerControllerOptions {
   prefersReducedMotion: () => boolean;
   onMarkerSelect: (marker: QMapMarker, originalEvent: MouseEvent | KeyboardEvent) => void;
   onClusterSelect: (detail: QMapClusterSelectDetail) => boolean;
+}
+
+export interface MapMarkerVisibilityTarget {
+  latitude: number;
+  longitude: number;
+  rendered?: {
+    kind: 'marker' | 'cluster';
+    element: HTMLElement;
+  };
 }
 
 /** Owns marker normalization, clustering, stable reconciliation, accessibility, and cleanup. */
@@ -89,6 +101,32 @@ export class MapMarkerController {
 
   syncSelection(): void {
     this.reconcile();
+  }
+
+  getVisibilityTarget(markerId: QMapMarkerId): MapMarkerVisibilityTarget | undefined {
+    const markerKey = getMapMarkerKey(markerId);
+    const marker = this.markers.get(markerKey);
+    if (!marker) return undefined;
+
+    const directLayer = this.layers.get(markerKey);
+    if (directLayer?.kind === 'marker') {
+      return {
+        latitude: marker.latitude,
+        longitude: marker.longitude,
+        rendered: { kind: directLayer.kind, element: directLayer.element },
+      };
+    }
+
+    for (const layer of this.layers.values()) {
+      if (!layer.markerKeys.includes(markerKey)) continue;
+      return {
+        latitude: marker.latitude,
+        longitude: marker.longitude,
+        rendered: { kind: layer.kind, element: layer.element },
+      };
+    }
+
+    return { latitude: marker.latitude, longitude: marker.longitude };
   }
 
   destroy(): void {
@@ -215,6 +253,7 @@ export class MapMarkerController {
 
     if (item.kind === 'marker') {
       const selected = this.isSelected(item.marker.id);
+      this.syncMarkerSize(record, item.marker.size);
       updateMarkerPresentation(record.element, item.marker, selected);
       record.element.setAttribute('role', 'button');
       record.element.setAttribute('tabindex', '0');
@@ -248,6 +287,13 @@ export class MapMarkerController {
     return item.kind === 'marker' && item.marker.clusterable === false
       ? STANDALONE_MARKER_Z_INDEX_OFFSET
       : 0;
+  }
+
+  private syncMarkerSize(record: RenderedLayer, size: QMapMarkerSize | undefined): void {
+    const position = record.layer.getElement();
+    if (!position) return;
+    position.classList.remove(...MARKER_SIZE_CLASSES);
+    if (size) position.classList.add(markerSizeClassName(size));
   }
 
   private syncCollisionOffsets(items: MapMarkerViewportItem[]): void {
@@ -445,6 +491,10 @@ export class MapMarkerController {
     record.layer.remove();
     this.layers.delete(key);
   }
+}
+
+function markerSizeClassName(size: QMapMarkerSize): string {
+  return `size-${size}`;
 }
 
 function clusterGroupPartName(clusterGroup: string): string {

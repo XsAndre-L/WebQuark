@@ -9,6 +9,13 @@ export default defineVitestConfig({
     projects: [
       {
         test: {
+          name: 'tooling',
+          include: ['scripts/**/*.unit.test.ts'],
+          environment: 'node',
+        },
+      },
+      {
+        test: {
           name: 'unit',
           oxc: false,
           include: ['src/**/*.unit.test.{ts,tsx}', 'src/**/*.spec.{ts,tsx}'],

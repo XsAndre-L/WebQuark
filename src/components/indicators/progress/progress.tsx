@@ -26,29 +26,22 @@ const SIZE_PRESETS = new Set(['sm', 'md', 'lg']);
   shadow: true,
 })
 export class QProgress {
-  /** Visual presentation of the progress indicator. */
-  @Prop({ reflect: true }) variant: QProgressVariant = 'linear';
-
-  /** Progress percentage from 0 to 100; values outside that range are clamped. */
+  /** Percentage clamped from 0 to 100. */
   @Prop() value: number = 0;
-
-  /** Optional visible circular label. Defaults to the clamped percentage. */
+  /** Circular labels default to the clamped percentage. */
   @Prop() label?: string;
-
-  /** Accessible name for the progressbar. */
-  @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
-
+  /** Replaces the fixed value with an indeterminate animation. */
+  @Prop({ reflect: true }) indeterminate: boolean = false;
   /** Optional accessible value description, such as "2 of 6 tasks completed". */
   @Prop({ attribute: 'aria-valuetext' }) ariaValueText: string | null = null;
 
-  /** Shows an indeterminate animation instead of a fixed progress value. */
-  @Prop({ reflect: true }) indeterminate: boolean = false;
-
-  /** Visual size preset. Numeric values set a custom pixel size or height. */
+  @Prop({ reflect: true }) variant: QProgressVariant = 'linear';
+  /** Numeric values set a custom pixel size or height. */
   @Prop({ reflect: true }) size: QProgressSize = 'md';
-
-  /** Semantic color applied to the progress fill. */
   @Prop({ reflect: true }) tone: QProgressTone = 'primary';
+
+  /** Accessible name for the progressbar. */
+  @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
 
   render() {
     const finiteValue = Number.isFinite(this.value) ? this.value : 0;

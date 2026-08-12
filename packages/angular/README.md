@@ -22,7 +22,9 @@ import {
   BooleanValueAccessor,
   QButton,
   QInput,
+  QRadioGroup,
   QToggle,
+  SelectValueAccessor,
   TextValueAccessor,
 } from '@webquark/angular';
 
@@ -32,24 +34,36 @@ import {
     ReactiveFormsModule,
     QButton,
     QInput,
+    QRadioGroup,
     QToggle,
     TextValueAccessor,
+    SelectValueAccessor,
     BooleanValueAccessor,
   ],
   template: `
     <q-input label="Name" [formControl]="name" />
+    <q-radio-group
+      label="Access"
+      [options]="accessOptions"
+      [formControl]="access"
+    />
     <q-toggle label="Enabled" [formControl]="enabled" />
     <q-button type="submit">Save</q-button>
   `,
 })
 export class ExampleComponent {
   readonly name = new FormControl('', { nonNullable: true });
+  readonly access = new FormControl('user', { nonNullable: true });
   readonly enabled = new FormControl(false, { nonNullable: true });
+  readonly accessOptions = [
+    { label: 'User', value: 'user' },
+    { label: 'Administrator', value: 'administrator' },
+  ];
 }
 ```
 
 `TextValueAccessor` updates controls on `qInput`, `SelectValueAccessor` supports
-`q-dropdown`, and `BooleanValueAccessor` supports `q-toggle`.
+`q-dropdown` and `q-radio-group`, and `BooleanValueAccessor` supports `q-toggle`.
 
 ## Rich data-table cells
 
