@@ -1,5 +1,6 @@
-import { Component, Event, EventEmitter, Prop, h } from '@stencil/core';
+import { Component, Event, EventEmitter, Mixin, Prop, h } from '@stencil/core';
 
+import { withActionLabel, withActionProps } from '../action.props';
 import type { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from './chip.types';
 
 /**
@@ -19,41 +20,30 @@ import type { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from './
     delegatesFocus: true,
   },
 })
-export class QChip {
+export class QChip extends Mixin(withActionProps, withActionLabel) {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
 
-  /** Visible label text. Also used in qRemove detail and the remove button accessible name. */
-  @Prop() label?: string;
-  /** Consumer-provided identifier included in qRemove detail. */
+  /** Included in `qRemove` detail. */
   @Prop() value?: string;
-  /** URL to render the chip as a link. Ignored when removable to avoid nested interactive controls. */
-  @Prop() href?: string;
-  /** Link target used when `href` is set. */
-  @Prop() target?: QChipTarget;
-  /** Link rel value. Defaults to noopener noreferrer for target="_blank". */
-  @Prop() rel?: string;
-  /** Download filename or boolean download hint for link chips. */
-  @Prop() download?: string;
-  /** Visual style of the chip. */
+
   @Prop({ reflect: true }) variant: QChipVariant = 'neutral';
-  /** Chip size. */
   @Prop({ reflect: true }) size: QChipSize = 'md';
-  /** Marks the chip as selected. */
-  @Prop({ reflect: true }) selected: boolean = false;
-  /** Disables interaction and removal. */
-  @Prop({ reflect: true }) disabled: boolean = false;
-  /** Renders the whole chip as a button when no href is set. Ignored when removable. */
+
+  /** Renders a native button when `href` is empty and `removable` is false. */
   @Prop({ reflect: true }) clickable: boolean = false;
-  /** Adds a remove button. Removable chips render as non-interactive containers to avoid nested controls. */
+  /** Adds a remove button and prevents the rest of the chip from being interactive. */
   @Prop({ reflect: true }) removable: boolean = false;
 
-  /** Emitted when an interactive chip is clicked. */
+  /** Maps to `aria-current="page"` for links and `aria-pressed` for buttons. */
+  @Prop({ reflect: true }) selected: boolean = false;
+
+  @Prop() target?: QChipTarget;
+
   @Event() qClick!: EventEmitter<MouseEvent>;
-  /** Emitted when the remove button is clicked. */
   @Event() qRemove!: EventEmitter<QChipRemoveDetail>;
-  /** Emitted when the interactive chip or remove button receives focus. */
+  /** Emitted when the chip action or remove button receives focus. */
   @Event() qFocus!: EventEmitter<FocusEvent>;
-  /** Emitted when the interactive chip or remove button loses focus. */
+  /** Emitted when the chip action or remove button loses focus. */
   @Event() qBlur!: EventEmitter<FocusEvent>;
 
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================

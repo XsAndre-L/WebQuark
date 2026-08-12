@@ -11,11 +11,11 @@ Interactive step item for q-step-diagram sequences.
 
 ## Properties
 
-| Property    | Attribute    | Description                                                          | Type                                                                         | Default       |
-| ----------- | ------------ | -------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------- |
-| `layout`    | `layout`     | Layout inherited from q-step-diagram and reflected for host styling. | `"horizontal" \| "vertical"`                                                 | `'vertical'`  |
-| `lineStyle` | `line-style` | Connector line style shown after the step.                           | `"dashed" \| "dotted" \| "none" \| "solid"`                                  | `'solid'`     |
-| `status`    | `status`     | Visual and semantic state of the step.                               | `"active" \| "completed" \| "danger" \| "pending" \| "success" \| "warning"` | `'completed'` |
+| Property    | Attribute    | Description                      | Type                                                                         | Default       |
+| ----------- | ------------ | -------------------------------- | ---------------------------------------------------------------------------- | ------------- |
+| `layout`    | `layout`     | Inherited from `q-step-diagram`. | `"horizontal" \| "vertical"`                                                 | `'vertical'`  |
+| `lineStyle` | `line-style` |                                  | `"dashed" \| "dotted" \| "none" \| "solid"`                                  | `'solid'`     |
+| `status`    | `status`     |                                  | `"active" \| "completed" \| "danger" \| "pending" \| "success" \| "warning"` | `'completed'` |
 
 
 ## Events

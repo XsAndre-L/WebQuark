@@ -11,12 +11,12 @@ Flexible content card with optional header slot, elevation, glass, lift, and int
 
 ## Properties
 
-| Property      | Attribute     | Description                                                                                      | Type                                         | Default    |
-| ------------- | ------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------------- | ---------- |
-| `elevation`   | `elevation`   | Visual elevation level; numeric values are accepted as legacy aliases for low, medium, and high. | `"high" \| "low" \| "medium" \| 1 \| 2 \| 3` | `'medium'` |
-| `glass`       | `glass`       | Applies translucent glass styling without backdrop-filter.                                       | `boolean`                                    | `false`    |
-| `interactive` | `interactive` | Adds button semantics and keyboard activation to the card container.                             | `boolean`                                    | `false`    |
-| `lift`        | `lift`        | Applies a visual hover/focus lift without adding interactive semantics.                          | `boolean`                                    | `false`    |
+| Property      | Attribute     | Description                                                             | Type                                         | Default    |
+| ------------- | ------------- | ----------------------------------------------------------------------- | -------------------------------------------- | ---------- |
+| `elevation`   | `elevation`   | Numeric values remain supported as legacy elevation aliases.            | `"high" \| "low" \| "medium" \| 1 \| 2 \| 3` | `'medium'` |
+| `glass`       | `glass`       | Applies translucent glass styling without backdrop-filter.              | `boolean`                                    | `false`    |
+| `interactive` | `interactive` | Adds button semantics and keyboard activation to the card container.    | `boolean`                                    | `false`    |
+| `lift`        | `lift`        | Applies a visual hover/focus lift without adding interactive semantics. | `boolean`                                    | `false`    |
 
 
 ## Slots

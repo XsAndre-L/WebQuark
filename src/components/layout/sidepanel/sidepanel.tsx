@@ -44,50 +44,51 @@ const DEFAULT_COLLAPSE_LABEL = 'Toggle sidebar';
 export class QSidepanel {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   // ── Shared ────────────────────────────────────────────────────────────────
-  /** 'drawer' = slide-in overlay, 'nav' = fixed navigation sidebar, 'panel' = persistent slotted side panel */
+  /** Selects a drawer overlay, navigation sidebar, or persistent slotted panel. */
   @Prop({ reflect: true }) variant: QSidepanelVariant = 'nav';
 
   // ── Drawer-mode props ─────────────────────────────────────────────────────
   /** Controls drawer visibility when variant="drawer". */
   @Prop({ reflect: true, mutable: true }) open: boolean = false;
-  /** Edge the drawer opens from. */
   @Prop({ reflect: true }) side: QSidepanelSide = 'right';
-  /** Width or height depending on `side` (drawer mode only) */
+  /** Drawer width or height, depending on `side`. */
   @Prop() panelSize: string = '320px';
 
   // ── Nav-mode props ────────────────────────────────────────────────────────
   /** Navigation items rendered in nav mode. */
   @Prop() items: SidepanelItemInput[] = [];
-  /** Accessible name for the rendered navigation, panel, or drawer region. */
-  @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
   /** Active leaf item value. */
   @Prop({ reflect: true }) value: string = '';
-  /** Item display mode: flat list, one-level groups, or deep tree */
+  /** Displays items as a flat list, one-level groups, or a deep tree. */
   @Prop() mode: QSidepanelMode = 'flat';
   @Prop() expanded: boolean = true;
-  /** If true, opening one group collapses all sibling groups */
+  /** Opening one group collapses its siblings. */
   @Prop() accordion: boolean = false;
-  /** Enables the collapse feature for nav and panel variants. Reflected so host-level sizing CSS stays in sync with the rendered collapsed state. */
+
+  /** Enables collapse behavior for nav and panel variants. */
   @Prop({ reflect: true }) collapsible: boolean = false;
-  /** Current collapsed state. Reflected + mutable: the component's own built-in control can flip it directly (same pattern as q-toggle's `checked`), while consumers can also drive it externally via property binding. */
+  /** Updated by either the built-in control or external property binding. */
   @Prop({ reflect: true, mutable: true }) collapsed: boolean = false;
-  /** Where to render the built-in collapse toggle button. 'none' means the consumer supplies their own control and drives `collapsed` externally. */
+  /** `none` delegates the collapse control and `collapsed` state to the consumer. */
   @Prop() collapseControl: QSidepanelCollapseControl = 'none';
-  /** Visual style of the built-in collapse control. `edge-tab` is intended for `collapse-control="edge"`; other placements retain icon-button geometry. */
+  /** `edge-tab` is intended for `collapse-control="edge"`. */
   @Prop({ reflect: true }) collapseControlAppearance: QSidepanelCollapseControlAppearance = 'icon-button';
-  /** Start-edge position of an edge control. For left/right sidepanels this is measured from the top; for top/bottom sidepanels it is measured from the left. Accepts CSS lengths and percentages. */
+  /** Measured from the top on vertical sides and left on horizontal sides. */
   @Prop() collapseControlPosition: string = '';
-  /** Visual behavior while collapsed: 'rail' shrinks to an icon-only rail, 'hidden' collapses to near-zero width. Reflected so light-DOM consumers can style slotted header/footer content differently per mode (e.g. q-sidepanel[collapsed][collapse-mode="rail"]). */
+  /** `rail` keeps an icon rail; `hidden` collapses to near-zero size. */
   @Prop({ reflect: true }) collapseMode: QSidepanelCollapseMode = 'rail';
-  /** Accessible label override for the built-in collapse control (aria-label/title). */
+  /** Accessible label for the built-in collapse control. */
   @Prop() collapseLabel: string = DEFAULT_COLLAPSE_LABEL;
+
+  /** Accessible name for the rendered navigation, panel, or drawer region. */
+  @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
 
   // ── Events ────────────────────────────────────────────────────────────────
   /** Emitted when the drawer is requested to close. */
   @Event() qClose!: EventEmitter<void>;
-  /** Fires only for leaf items; clicking a parent group toggles it instead */
+  /** Emitted only for leaf items; parent activation toggles the group. */
   @Event() qSelect!: EventEmitter<QSidepanelSelectDetail>;
-  /** Fires whenever the BUILT-IN collapse control toggles collapsed. Does not fire when a consumer sets [collapsed] externally themselves. */
+  /** Emitted only when the built-in control changes `collapsed`. */
   @Event() qCollapsedChange!: EventEmitter<QSidepanelCollapsedChangeDetail>;
 
   // ── Internal state ────────────────────────────────────────────────────────

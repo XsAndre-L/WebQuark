@@ -11,18 +11,18 @@ Gallery layout for q-thumbnail children with an optional modal lightbox.
 
 ## Properties
 
-| Property   | Attribute  | Description                                                              | Type                   | Default  |
-| ---------- | ---------- | ------------------------------------------------------------------------ | ---------------------- | -------- |
-| `layout`   | `layout`   | Layout used for slotted q-thumbnail items.                               | `"carousel" \| "grid"` | `'grid'` |
-| `lightbox` | `lightbox` | Enables the built-in fullscreen lightbox when thumbnails emit qMaximize. | `boolean`              | `true`   |
+| Property   | Attribute  | Description                                                   | Type                   | Default  |
+| ---------- | ---------- | ------------------------------------------------------------- | ---------------------- | -------- |
+| `layout`   | `layout`   |                                                               | `"carousel" \| "grid"` | `'grid'` |
+| `lightbox` | `lightbox` | Opens the built-in lightbox when thumbnails emit `qMaximize`. | `boolean`              | `true`   |
 
 
 ## Events
 
-| Event            | Description                       | Type                |
-| ---------------- | --------------------------------- | ------------------- |
-| `qLightboxClose` | Emitted when the lightbox closes. | `CustomEvent<void>` |
-| `qLightboxOpen`  | Emitted when the lightbox opens.  | `CustomEvent<void>` |
+| Event            | Description | Type                |
+| ---------------- | ----------- | ------------------- |
+| `qLightboxClose` |             | `CustomEvent<void>` |
+| `qLightboxOpen`  |             | `CustomEvent<void>` |
 
 
 ## Slots

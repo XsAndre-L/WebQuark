@@ -30,37 +30,26 @@ export class QToggle {
 
   @AttachInternals() internals!: ElementInternals;
 
-  /** Current checked state. */
-  @Prop({ mutable: true, reflect: true }) checked: boolean = false;
-
-  /** Native form field name. */
-  @Prop({ reflect: true }) name?: string;
-
-  /** Visual size preset. */
-  @Prop() size: QToggleSize = 'md';
-
-  /** Visual and semantic control type: switch or checkbox. */
-  @Prop() type: QToggleType = 'switch';
-
-  /** Optional label rendered next to the toggle. */
   @Prop() label?: string;
 
-  /** Disables toggle interaction. */
+  @Prop() size: QToggleSize = 'md';
+
+  /** Controls switch/checkbox visuals and semantics. */
+  @Prop() type: QToggleType = 'switch';
+
+  @Prop({ mutable: true, reflect: true }) checked: boolean = false;
   @Prop({ reflect: true }) disabled: boolean = false;
 
-  /** Marks the toggle as required for native forms. */
   @Prop({ reflect: true }) required: boolean = false;
-
   /** Validation helper text displayed when the toggle is in an error state. */
   @Prop() error?: string;
 
-  /** Emitted when the checked state changes. */
+  @Prop({ reflect: true }) name?: string;
+
   @Event() qChange!: EventEmitter<boolean>;
 
-  /** Emitted when the toggle receives focus. */
   @Event() qFocus!: EventEmitter<FocusEvent>;
 
-  /** Emitted when the toggle loses focus. */
   @Event() qBlur!: EventEmitter<FocusEvent>;
 
   /** Emitted before the toggle changes due to pointer or keyboard activation. */

@@ -34,22 +34,22 @@ Accessible tab selector for switching between consumer-owned tab panels.
 
 ## Properties
 
-| Property      | Attribute     | Description                                                                                        | Type                                               | Default        |
-| ------------- | ------------- | -------------------------------------------------------------------------------------------------- | -------------------------------------------------- | -------------- |
-| `ariaLabel`   | `aria-label`  | Accessible name for the tab list.                                                                  | `string`                                           | `'Sections'`   |
-| `items`       | `items`       | Tab records; strings use the same text for label and value.                                        | `TabItemInput[] \| string`                         | `[]`           |
-| `orientation` | `orientation` | Direction of the tab list and its corresponding arrow-key navigation.                              | `"horizontal" \| "vertical"`                       | `'horizontal'` |
-| `size`        | `size`        | Visual size preset.                                                                                | `"lg" \| "md" \| "sm"`                             | `'md'`         |
-| `stretch`     | `stretch`     | Makes enabled tabs share the available width evenly.                                               | `boolean`                                          | `false`        |
-| `value`       | `value`       | Value of the currently selected tab. The first enabled tab is used when it does not match an item. | `string`                                           | `''`           |
-| `variant`     | `variant`     | Visual presentation of the tabs.                                                                   | `"button" \| "enclosed" \| "pills" \| "underline"` | `'underline'`  |
+| Property      | Attribute     | Description                                                           | Type                                               | Default        |
+| ------------- | ------------- | --------------------------------------------------------------------- | -------------------------------------------------- | -------------- |
+| `ariaLabel`   | `aria-label`  | Accessible name for the tab list.                                     | `string`                                           | `'Sections'`   |
+| `items`       | `items`       | Tab records; strings use the same text for label and value.           | `TabItemInput[] \| string`                         | `[]`           |
+| `orientation` | `orientation` | Direction of the tab list and its corresponding arrow-key navigation. | `"horizontal" \| "vertical"`                       | `'horizontal'` |
+| `size`        | `size`        |                                                                       | `"lg" \| "md" \| "sm"`                             | `'md'`         |
+| `stretch`     | `stretch`     |                                                                       | `boolean`                                          | `false`        |
+| `value`       | `value`       | Falls back to the first enabled tab when unmatched.                   | `string`                                           | `''`           |
+| `variant`     | `variant`     |                                                                       | `"button" \| "enclosed" \| "pills" \| "underline"` | `'underline'`  |
 
 
 ## Events
 
-| Event     | Description                                                               | Type                  |
-| --------- | ------------------------------------------------------------------------- | --------------------- |
-| `qChange` | Emitted with the selected tab value after pointer or keyboard activation. | `CustomEvent<string>` |
+| Event     | Description | Type                  |
+| --------- | ----------- | --------------------- |
+| `qChange` |             | `CustomEvent<string>` |
 
 
 ## Shadow Parts

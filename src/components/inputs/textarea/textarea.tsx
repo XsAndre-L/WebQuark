@@ -19,57 +19,39 @@ import type { QTextareaResizeMode } from './textarea.types';
 })
 export class QTextarea {
   // ======== [1] STENCIL API (Props, Events, AttachInternals) =========
-  /** Current textarea value. */
   @Prop({ mutable: true }) value: string = "";
-
-  /** Native form field name. */
-  @Prop({ reflect: true }) name?: string;
-
-  /** Placeholder text shown when the field is empty. */
   @Prop() placeholder: string = "";
-
-  /** Optional label rendered above the textarea. */
   @Prop() label?: string;
-
   /** Accessible name for the native textarea when a visible label is not used. */
   @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
 
-  /** Visible row count used by the native textarea. */
   @Prop() rows: number = 3;
-
-  /** Enables automatic height growth when resizeMode is auto. */
+  /** Grows with content when `resizeMode` is `auto`. */
   @Prop() autoGrow: boolean = true;
-
   /** Resize behavior: auto grows to content, manual allows vertical drag, fixed locks the height. */
   @Prop() resizeMode: QTextareaResizeMode = 'auto';
 
-  /** Disables textarea interaction. */
   @Prop({ reflect: true }) disabled: boolean = false;
 
-  /** Marks the field as required for native forms. */
   @Prop({ reflect: true }) required: boolean = false;
-
   /** Validation error text or error-state flag. */
   @Prop({ reflect: true }) error?: string;
-
   /** Validation helper text displayed when the field is in an error state. */
   @Prop() errorMessage?: string;
+
+  @Prop({ reflect: true }) name?: string;
 
   @AttachInternals() internals!: ElementInternals;
 
   /** Emitted when the committed value changes. */
   @Event() qChange!: EventEmitter<string>;
 
-  /** Emitted as the user types. */
   @Event() qInput!: EventEmitter<string>;
 
-  /** Emitted when the native textarea loses focus. */
   @Event() qBlur!: EventEmitter<FocusEvent>;
 
-  /** Emitted when the native textarea receives focus. */
   @Event() qFocus!: EventEmitter<FocusEvent>;
 
-  /** Emitted when the native textarea is clicked. */
   @Event() qClick!: EventEmitter<MouseEvent>;
 
   private textareaEl?: HTMLTextAreaElement;
@@ -212,7 +194,12 @@ export class QTextarea {
 
     const scrollHeight = this.textareaEl.scrollHeight;
     if (scrollHeight > 0) {
-      this.textareaEl.style.height = `${scrollHeight}px`;
+      const styles = getComputedStyle(this.textareaEl);
+      const borderHeight =
+        (Number.parseFloat(styles.borderTopWidth) || 0) +
+        (Number.parseFloat(styles.borderBottomWidth) || 0);
+
+      this.textareaEl.style.height = `${scrollHeight + borderHeight}px`;
     } else {
       this.textareaEl.style.height = '';
     }

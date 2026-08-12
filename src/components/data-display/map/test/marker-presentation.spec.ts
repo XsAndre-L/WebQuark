@@ -2,8 +2,47 @@ import { describe, expect, it } from 'vitest';
 
 import {
   createCalloutContent,
+  createMarkerContent,
   updateCalloutContent,
+  updateMarkerPresentation,
 } from '../internals/marker-presentation';
+
+describe('q-map marker icon presentation', () => {
+  it('applies finite pixel corrections and clears them on marker reuse', () => {
+    const content = createMarkerContent(document);
+
+    updateMarkerPresentation(content, {
+      id: 'field-manager:1',
+      latitude: -26.2041,
+      longitude: 28.0473,
+      label: 'Field Manager',
+      kind: 'icon',
+      icon: 'user-cog',
+      iconSize: 18,
+      iconOffsetX: 0.5,
+      iconOffsetY: -0,
+    }, false);
+
+    expect(content.style.getPropertyValue('--q-map-marker-icon-size')).toBe('18px');
+    expect(content.style.getPropertyValue('--q-map-marker-icon-offset-x')).toBe('0.5px');
+    expect(content.style.getPropertyValue('--q-map-marker-icon-offset-y')).toBe('0px');
+
+    updateMarkerPresentation(content, {
+      id: 'store:1',
+      latitude: -26.2041,
+      longitude: 28.0473,
+      label: 'Store',
+      kind: 'icon',
+      icon: 'store',
+      iconSize: Number.NaN,
+      iconOffsetX: Number.POSITIVE_INFINITY,
+    }, false);
+
+    expect(content.style.getPropertyValue('--q-map-marker-icon-size')).toBe('');
+    expect(content.style.getPropertyValue('--q-map-marker-icon-offset-x')).toBe('');
+    expect(content.style.getPropertyValue('--q-map-marker-icon-offset-y')).toBe('');
+  });
+});
 
 describe('q-map marker callout presentation', () => {
   it('renders structured callout text without interpreting HTML', () => {

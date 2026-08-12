@@ -4,8 +4,11 @@ import type {
   QMapClusterSelectDetail,
   QMapErrorDetail,
   QMapMarker,
+  QMapMarkerId,
   QMapMarkerSelectDetail,
+  QMapMarkerVisibilityResult,
   QMapStatusChangeDetail,
+  QMapViewportRect,
 } from '../map.types';
 import mapStyles from '../map.css?inline';
 import '../map';
@@ -16,6 +19,19 @@ let restoreHeadAppend: (() => void) | undefined;
 async function waitForReady(element: HTMLQMapElement): Promise<void> {
   await new Promise<void>(resolve => element.addEventListener('qReady', () => resolve(), { once: true }));
   await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+}
+
+function ensureMarkerVisible(
+  element: HTMLQMapElement,
+  markerId: QMapMarkerId,
+  occlusions: readonly QMapViewportRect[],
+): Promise<QMapMarkerVisibilityResult> {
+  return (element as HTMLQMapElement & {
+    ensureMarkerVisible(
+      markerId: QMapMarkerId,
+      occlusions: readonly QMapViewportRect[],
+    ): Promise<QMapMarkerVisibilityResult>;
+  }).ensureMarkerVisible(markerId, occlusions);
 }
 
 async function waitForReadyOrError(
@@ -122,6 +138,235 @@ describe('q-map in Chromium', () => {
     expect(selections[0].originalEvent).toBeInstanceOf(MouseEvent);
   });
 
+  it('reports marker visibility as unavailable before the map is ready', async () => {
+    const element = document.createElement('q-map');
+
+    await expect(ensureMarkerVisible(element, 'missing', [])).resolves.toBe('unavailable');
+  });
+
+  it('leaves a fully visible marker untouched and minimally clears an occlusion without zooming', async () => {
+    const element = document.createElement('q-map');
+    element.style.width = '480px';
+    element.style.height = '320px';
+    element.centerLatitude = -26.2041;
+    element.centerLongitude = 28.0473;
+    element.zoom = 15;
+    const markers: QMapMarker[] = [
+      {
+        id: 'store:visible',
+        latitude: -26.2041,
+        longitude: 28.0473,
+        label: 'Visible store',
+        ring: 'solid',
+        pulse: true,
+        badge: { text: '12', ariaLabel: '12 alerts' },
+      },
+    ];
+    const ready = waitForReadyOrError(element);
+    document.body.append(element);
+    await ready;
+    const style = document.createElement('style');
+    style.textContent = mapStyles;
+    element.shadowRoot?.prepend(style);
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+    element.centerLatitude = -26.2041001;
+    element.markers = markers;
+    element.selectedMarkerId = 'store:visible';
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+
+    const marker = element.shadowRoot?.querySelector<HTMLElement>('[part~="marker"]');
+    expect(marker).not.toBeNull();
+    expect(['visible', 'panned']).toContain(
+      await ensureMarkerVisible(element, 'store:visible', []),
+    );
+    const initialBounds = marker?.getBoundingClientRect();
+    await expect(ensureMarkerVisible(element, 'store:visible', [])).resolves.toBe('visible');
+    const untouchedBounds = marker?.getBoundingClientRect();
+    expect(untouchedBounds?.left).toBeCloseTo(initialBounds?.left ?? 0, 2);
+    expect(untouchedBounds?.top).toBeCloseTo(initialBounds?.top ?? 0, 2);
+
+    const canvasBounds = element.shadowRoot
+      ?.querySelector<HTMLElement>('[part="canvas"]')
+      ?.getBoundingClientRect();
+    expect(canvasBounds).toBeTruthy();
+    const occlusion = {
+      top: (initialBounds?.top ?? 0) - 10,
+      right: (initialBounds?.right ?? 0) + 10,
+      bottom: (initialBounds?.bottom ?? 0) + 10,
+      left: (initialBounds?.left ?? 0) - 10,
+    };
+    const initialZoom = element.zoom;
+
+    const visibilityResult = await ensureMarkerVisible(element, 'store:visible', [occlusion]);
+    expect(visibilityResult).toBe('panned');
+
+    const movedBounds = marker?.getBoundingClientRect();
+    const badgeBounds = marker
+      ?.querySelector<HTMLElement>('.q-map-marker__badge')
+      ?.getBoundingClientRect();
+    const visibleBounds = {
+      top: Math.min((movedBounds?.top ?? 0) - 7, badgeBounds?.top ?? Number.POSITIVE_INFINITY),
+      right: Math.max((movedBounds?.right ?? 0) + 7, badgeBounds?.right ?? Number.NEGATIVE_INFINITY),
+      bottom: Math.max((movedBounds?.bottom ?? 0) + 7, badgeBounds?.bottom ?? Number.NEGATIVE_INFINITY),
+      left: Math.min((movedBounds?.left ?? 0) - 7, badgeBounds?.left ?? Number.POSITIVE_INFINITY),
+    };
+    expect(
+      visibleBounds.left < occlusion.right
+      && visibleBounds.right > occlusion.left
+      && visibleBounds.top < occlusion.bottom
+      && visibleBounds.bottom > occlusion.top,
+    ).toBe(false);
+    expect(element.zoom).toBe(initialZoom);
+  });
+
+  it('uses coordinates to find an off-screen marker with reduced motion', async () => {
+    const originalMatchMedia = window.matchMedia;
+    window.matchMedia = ((query: string) => ({
+      matches: query === '(prefers-reduced-motion: reduce)',
+      media: query,
+      onchange: null,
+      addListener: () => undefined,
+      removeListener: () => undefined,
+      addEventListener: () => undefined,
+      removeEventListener: () => undefined,
+      dispatchEvent: () => false,
+    })) as typeof window.matchMedia;
+    try {
+      const element = document.createElement('q-map');
+      element.style.width = '480px';
+      element.style.height = '320px';
+      element.centerLatitude = -26.2041;
+      element.centerLongitude = 28.0473;
+      element.zoom = 15;
+      element.clusterMarkers = true;
+      element.markers = [
+        {
+          id: 'store:off-screen',
+          latitude: -25.7479,
+          longitude: 28.2293,
+          label: 'Pretoria store',
+        },
+      ];
+      const ready = waitForReadyOrError(element);
+      document.body.append(element);
+      await ready;
+      const style = document.createElement('style');
+      style.textContent = mapStyles;
+      element.shadowRoot?.prepend(style);
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+
+      expect(element.shadowRoot?.querySelector('[part~="marker"]')).toBeNull();
+      const zoom = element.zoom;
+      await expect(ensureMarkerVisible(element, 'store:off-screen', [])).resolves.toBe('panned');
+      expect(element.shadowRoot?.querySelector('[part~="marker"]')).not.toBeNull();
+      expect(element.zoom).toBe(zoom);
+    } finally {
+      window.matchMedia = originalMatchMedia;
+    }
+  });
+
+  it('supersedes an in-flight visibility pan with the newest marker request', async () => {
+    const element = document.createElement('q-map');
+    element.style.width = '480px';
+    element.style.height = '320px';
+    element.centerLatitude = -26.2041;
+    element.centerLongitude = 28.0473;
+    element.zoom = 15;
+    element.clusterMarkers = true;
+    const ready = waitForReadyOrError(element);
+    document.body.append(element);
+    await ready;
+    const style = document.createElement('style');
+    style.textContent = mapStyles;
+    element.shadowRoot?.prepend(style);
+    element.centerLatitude = -26.2041001;
+    element.markers = [
+      {
+        id: 'store:first',
+        latitude: -25.7479,
+        longitude: 28.2293,
+        label: 'First target',
+      },
+      {
+        id: 'store:newest',
+        latitude: -33.9249,
+        longitude: 18.4241,
+        label: 'Newest target',
+      },
+    ];
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+    const zoom = element.zoom;
+
+    const firstRequest = ensureMarkerVisible(element, 'store:first', []);
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+    const newestRequest = ensureMarkerVisible(element, 'store:newest', []);
+    const [firstResult, newestResult] = await Promise.all([firstRequest, newestRequest]);
+
+    expect(firstResult).toBe('unavailable');
+    expect(newestResult).toBe('panned');
+    expect(
+      element.shadowRoot?.querySelector('[data-marker-id="string:store:newest"]'),
+    ).not.toBeNull();
+    expect(
+      element.shadowRoot?.querySelector('[data-marker-id="string:store:first"]'),
+    ).toBeNull();
+    expect(element.zoom).toBe(zoom);
+  });
+
+  it('returns constrained without zooming when max bounds prevent full visibility', async () => {
+    const originalMatchMedia = window.matchMedia;
+    window.matchMedia = ((query: string) => ({
+      matches: query === '(prefers-reduced-motion: reduce)',
+      media: query,
+      onchange: null,
+      addListener: () => undefined,
+      removeListener: () => undefined,
+      addEventListener: () => undefined,
+      removeEventListener: () => undefined,
+      dispatchEvent: () => false,
+    })) as typeof window.matchMedia;
+    try {
+      const element = document.createElement('q-map');
+      element.style.width = '480px';
+      element.style.height = '320px';
+      element.centerLatitude = -26.2041;
+      element.centerLongitude = 28.0473;
+      element.zoom = 18;
+      element.maxBounds = {
+        southLatitude: -26.2046,
+        westLongitude: 28.0468,
+        northLatitude: -26.2036,
+        eastLongitude: 28.0478,
+      };
+      const ready = waitForReadyOrError(element);
+      document.body.append(element);
+      await ready;
+      const style = document.createElement('style');
+      style.textContent = mapStyles;
+      element.shadowRoot?.prepend(style);
+      element.centerLatitude = -26.2041001;
+      element.clusterMarkers = true;
+      element.markers = [
+        {
+          id: 'store:bounded',
+          latitude: -33.9249,
+          longitude: 18.4241,
+          label: 'Bounded store',
+        },
+      ];
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+
+      expect(element.shadowRoot?.querySelector('[part~="marker"]')).toBeNull();
+      const zoom = element.zoom;
+
+      await expect(ensureMarkerVisible(element, 'store:bounded', []))
+        .resolves.toBe('constrained');
+      expect(element.zoom).toBe(zoom);
+    } finally {
+      window.matchMedia = originalMatchMedia;
+    }
+  });
+
   it('renders and updates a selected marker callout with measurable text', async () => {
     const element = document.createElement('q-map');
     element.markers = [
@@ -218,7 +463,9 @@ describe('q-map in Chromium', () => {
     element.centerLongitude = 18.4241;
     element.zoom = 7;
     element.clusterMarkers = true;
-    element.markers = [
+    element.style.width = '480px';
+    element.style.height = '320px';
+    const markers: QMapMarker[] = [
       {
         id: 'store:1',
         latitude: -33.9249,
@@ -229,7 +476,7 @@ describe('q-map in Chromium', () => {
       {
         id: 'merchandiser:1',
         latitude: -33.9249,
-        longitude: 18.4241,
+        longitude: 18.4341,
         label: 'Merchandiser one',
         clusterGroup: 'field-activity',
       },
@@ -241,18 +488,53 @@ describe('q-map in Chromium', () => {
     const ready = waitForReadyOrError(element);
     document.body.append(element);
     await ready;
+    const style = document.createElement('style');
+    style.textContent = mapStyles;
+    element.shadowRoot?.prepend(style);
+    element.centerLatitude = -33.9249001;
+    element.markers = markers;
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
 
     const cluster = element.shadowRoot?.querySelector<HTMLElement>('[part~="cluster"]');
     expect(cluster?.dataset.clusterGroup).toBe('field-activity');
     expect(cluster?.getAttribute('part')?.split(/\s+/)).toContain(
       'cluster-group-field-activity',
     );
+    const canvasBounds = element.shadowRoot
+      ?.querySelector<HTMLElement>('[part="canvas"]')
+      ?.getBoundingClientRect();
+    const zoom = element.zoom;
+    expect(['visible', 'panned']).toContain(
+      await ensureMarkerVisible(element, 'store:1', []),
+    );
+    const visibleClusterBounds = cluster?.getBoundingClientRect();
+    expect((visibleClusterBounds?.left ?? 0) - 4).toBeGreaterThanOrEqual(
+      (canvasBounds?.left ?? 0) - 0.5,
+    );
+    expect((visibleClusterBounds?.right ?? 0) + 4).toBeLessThanOrEqual(
+      (canvasBounds?.right ?? 0) + 0.5,
+    );
+    expect(element.zoom).toBe(zoom);
     cluster?.click();
     expect(clusters).toHaveLength(1);
     expect(clusters[0]).toEqual(expect.objectContaining({
       clusterGroup: 'field-activity',
       markerIds: ['merchandiser:1', 'store:1'],
     }));
+    expect(clusters[0].expansionZoom).toBeGreaterThan(zoom);
+    await expect.poll(
+      () => element.shadowRoot?.querySelectorAll('[part~="marker"]').length,
+    ).toBe(2);
+    const expandedMarkers = Array.from(
+      element.shadowRoot?.querySelectorAll<HTMLElement>('[part~="marker"]') ?? [],
+    );
+    const expandedCenters = expandedMarkers.map(marker => {
+      const bounds = marker.getBoundingClientRect();
+      return bounds.left + bounds.width / 2;
+    });
+    const expectedFirstSplitDistance = (0.01 / 360) * 256 * 2 ** clusters[0].expansionZoom;
+    expect(Math.abs(expandedCenters[1] - expandedCenters[0]))
+      .toBeCloseTo(expectedFirstSplitDistance, 0);
   });
 
   it('separates overlapping cluster groups by 75% of the visible diameter', async () => {

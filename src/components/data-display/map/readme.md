@@ -3,6 +3,7 @@
 `q-map` keeps the original dot/avatar marker API unchanged and adds optional rich presentation:
 
 - `kind`: `dot`, `avatar`, or `icon`
+- `size`: `small`, `medium`, or `large`; each semantic size has an overridable CSS diameter token
 - `ring` and `pulse`: independent status emphasis
 - `badge`: compact icon/text status with a required accessible label
 - `callout`: plain-text, non-interactive context with an optional status pill and structured stats
@@ -17,6 +18,7 @@ map.markers = [{
   label: 'Rosebank location, live',
   clusterGroup: 'field-activity',
   kind: 'avatar',
+  size: 'medium',
   fallbackText: 'RL',
   variant: 'success',
   ring: 'solid',
@@ -54,6 +56,12 @@ Markers without a `clusterGroup` use the `default` group. Layer membership does 
 q-map::part(cluster-group-field-activity) {
   background: var(--field-activity-cluster-background);
 }
+
+q-map {
+  --q-map-marker-size-small: 36px;
+  --q-map-marker-size-medium: 44px;
+  --q-map-marker-size-large: 52px;
+}
 ```
 
 
@@ -66,44 +74,64 @@ Framework-neutral interactive map powered by Leaflet.
 
 ## Properties
 
-| Property             | Attribute              | Description                                                                                                   | Type                                                | Default             |
-| -------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- | ------------------- |
-| `ariaLabel`          | `aria-label`           | Provides the accessible name announced for the interactive map region.                                        | `string`                                            | `'Interactive map'` |
-| `attribution`        | `attribution`          | Renders plain-text attribution whenever raster tiles or styled vectors are active.                            | `string`                                            | `''`                |
-| `attributionUrl`     | `attribution-url`      | Links map attribution only when the value resolves to an HTTP(S) URL.                                         | `string`                                            | `''`                |
-| `centerLatitude`     | `center-latitude`      | Controls viewport latitude; finite values are clamped to the geographic range.                                | `number`                                            | `0`                 |
-| `centerLongitude`    | `center-longitude`     | Controls viewport longitude; finite values are clamped to the geographic range.                               | `number`                                            | `0`                 |
-| `clusterMarkers`     | `cluster-markers`      | Groups nearby markers while preserving their stable source IDs.                                               | `boolean`                                           | `false`             |
-| `clusterMaxZoom`     | `cluster-max-zoom`     | Sets the last zoom level where clusters may remain; defaults to one below maxZoom.                            | `number`                                            | `undefined`         |
-| `clusterMinPoints`   | `cluster-min-points`   | Sets the minimum number of nearby markers needed to form a cluster.                                           | `number`                                            | `2`                 |
-| `clusterRadius`      | `cluster-radius`       | Sets the clustering radius in screen pixels and is clamped from 1 to 200.                                     | `number`                                            | `48`                |
-| `googleApiKey`       | `google-api-key`       | Supplies the browser-restricted key used only when WebQuark must load Google Maps.                            | `string`                                            | `''`                |
-| `googleMapType`      | `google-map-type`      | Chooses the Google base-map style, normalizing unsupported values to roadmap.                                 | `"hybrid" \| "roadmap" \| "satellite" \| "terrain"` | `'roadmap'`         |
-| `markers`            | `markers`              | Reconciles marker records from an array or JSON string using type-stable IDs.                                 | `QMapMarker[] \| string`                            | `[]`                |
-| `maxBounds`          | `max-bounds`           | Constrains panning from a bounds object or JSON string; malformed updates preserve the last valid boundary.   | `QMapBounds \| string`                              | `undefined`         |
-| `maxBoundsViscosity` | `max-bounds-viscosity` | Controls drag resistance at maxBounds and is clamped from zero to one.                                        | `number`                                            | `1`                 |
-| `maxZoom`            | `max-zoom`             | Sets the highest permitted zoom and never resolves below minZoom.                                             | `number`                                            | `19`                |
-| `minZoom`            | `min-zoom`             | Sets the lowest permitted zoom; non-finite values normalize to zero.                                          | `number`                                            | `0`                 |
-| `provider`           | `provider`             | Selects raster tiles, styled vector data, or Google imagery; non-tile failures may use tileUrl as a fallback. | `"google" \| "tiles" \| "vector"`                   | `'tiles'`           |
-| `selectedMarkerId`   | `selected-marker-id`   | Controls which marker exposes its selected visual and aria-pressed state.                                     | `number \| string`                                  | `undefined`         |
-| `tilePreloadBuffer`  | `tile-preload-buffer`  | Preloads zero to four whole raster-tile rows and columns beyond the visible viewport.                         | `number`                                            | `0`                 |
-| `tileUrl`            | `tile-url`             | Supplies the tile URL template for the tiles provider and optional vector/Google fallback.                    | `string`                                            | `''`                |
-| `vectorPadding`      | `vector-padding`       | Extends vector rendering beyond the visible viewport and is clamped from zero to one-half.                    | `number`                                            | `0.2`               |
-| `vectorStyleUrl`     | `vector-style-url`     | Supplies a MapLibre Style Specification URL for the vector provider.                                          | `string`                                            | `''`                |
-| `zoom`               | `zoom`                 | Controls the viewport zoom and is clamped between the normalized zoom limits.                                 | `number`                                            | `2`                 |
-| `zoomControls`       | `zoom-controls`        | Controls whether the built-in plus/minus zoom control is rendered.                                            | `boolean`                                           | `true`              |
+| Property             | Attribute              | Description                                                                  | Type                                                | Default             |
+| -------------------- | ---------------------- | ---------------------------------------------------------------------------- | --------------------------------------------------- | ------------------- |
+| `ariaLabel`          | `aria-label`           | Accessible name for the interactive map region.                              | `string`                                            | `'Interactive map'` |
+| `attribution`        | `attribution`          | Rendered for raster tiles and styled vectors.                                | `string`                                            | `''`                |
+| `attributionUrl`     | `attribution-url`      | Links attribution only for HTTP(S) URLs.                                     | `string`                                            | `''`                |
+| `centerLatitude`     | `center-latitude`      | Finite values are clamped to the geographic range.                           | `number`                                            | `0`                 |
+| `centerLongitude`    | `center-longitude`     | Finite values are clamped to the geographic range.                           | `number`                                            | `0`                 |
+| `clusterMarkers`     | `cluster-markers`      | Preserves stable source IDs while grouping nearby markers.                   | `boolean`                                           | `false`             |
+| `clusterMaxZoom`     | `cluster-max-zoom`     | Defaults to one below `maxZoom`.                                             | `number`                                            | `undefined`         |
+| `clusterMinPoints`   | `cluster-min-points`   |                                                                              | `number`                                            | `2`                 |
+| `clusterRadius`      | `cluster-radius`       | Screen-pixel radius clamped from 1 to 200.                                   | `number`                                            | `48`                |
+| `googleApiKey`       | `google-api-key`       | Browser-restricted key used only when WebQuark loads Google Maps.            | `string`                                            | `''`                |
+| `googleMapType`      | `google-map-type`      | Unsupported values normalize to `roadmap`.                                   | `"hybrid" \| "roadmap" \| "satellite" \| "terrain"` | `'roadmap'`         |
+| `markers`            | `markers`              | Accepts an array or JSON and reconciles markers using type-stable IDs.       | `QMapMarker[] \| string`                            | `[]`                |
+| `maxBounds`          | `max-bounds`           | Accepts an object or JSON; malformed updates preserve the last valid bounds. | `QMapBounds \| string`                              | `undefined`         |
+| `maxBoundsViscosity` | `max-bounds-viscosity` | Clamped from zero to one.                                                    | `number`                                            | `1`                 |
+| `maxZoom`            | `max-zoom`             | Never resolves below `minZoom`.                                              | `number`                                            | `19`                |
+| `minZoom`            | `min-zoom`             | Non-finite values normalize to zero.                                         | `number`                                            | `0`                 |
+| `provider`           | `provider`             | Non-tile provider failures may fall back to `tileUrl`.                       | `"google" \| "tiles" \| "vector"`                   | `'tiles'`           |
+| `selectedMarkerId`   | `selected-marker-id`   | Controls the selected visual and `aria-pressed` state.                       | `number \| string`                                  | `undefined`         |
+| `tilePreloadBuffer`  | `tile-preload-buffer`  | Preloads zero to four raster-tile rows and columns beyond the viewport.      | `number`                                            | `0`                 |
+| `tileUrl`            | `tile-url`             | Tile template used by the tiles provider and optional provider fallback.     | `string`                                            | `''`                |
+| `vectorPadding`      | `vector-padding`       | Extends rendering beyond the viewport; clamped from zero to one-half.        | `number`                                            | `0.2`               |
+| `vectorStyleUrl`     | `vector-style-url`     | MapLibre Style Specification URL for the vector provider.                    | `string`                                            | `''`                |
+| `zoom`               | `zoom`                 | Clamped between the normalized zoom limits.                                  | `number`                                            | `2`                 |
+| `zoomControls`       | `zoom-controls`        |                                                                              | `boolean`                                           | `true`              |
 
 
 ## Events
 
-| Event            | Description                                                                                | Type                                   |
-| ---------------- | ------------------------------------------------------------------------------------------ | -------------------------------------- |
-| `qClusterSelect` | Reports cluster activation before the default centre-and-zoom action.                      | `CustomEvent<QMapClusterSelectDetail>` |
-| `qError`         | Reports serializable configuration and initialization failures.                            | `CustomEvent<QMapErrorDetail>`         |
-| `qMapClick`      | Reports genuine map-background clicks after Leaflet excludes drags and interactive layers. | `CustomEvent<QMapClickDetail>`         |
-| `qMarkerSelect`  | Reports marker activation without mutating selectedMarkerId.                               | `CustomEvent<QMapMarkerSelectDetail>`  |
-| `qReady`         | Fires after Leaflet setup and the initial provider attempt complete.                       | `CustomEvent<void>`                    |
-| `qStatusChange`  | Reports provider lifecycle transitions, including the active fallback provider.            | `CustomEvent<QMapStatusChangeDetail>`  |
+| Event            | Description                                                              | Type                                   |
+| ---------------- | ------------------------------------------------------------------------ | -------------------------------------- |
+| `qClusterSelect` | Emitted before the default center-and-zoom action; cancel to prevent it. | `CustomEvent<QMapClusterSelectDetail>` |
+| `qError`         | Reports serializable configuration and initialization failures.          | `CustomEvent<QMapErrorDetail>`         |
+| `qMapClick`      | Excludes drags and interactive-layer clicks.                             | `CustomEvent<QMapClickDetail>`         |
+| `qMarkerSelect`  | Does not mutate `selectedMarkerId`.                                      | `CustomEvent<QMapMarkerSelectDetail>`  |
+| `qReady`         | Emitted after Leaflet setup and the initial provider attempt complete.   | `CustomEvent<void>`                    |
+| `qStatusChange`  | Includes the active fallback provider.                                   | `CustomEvent<QMapStatusChangeDetail>`  |
+
+
+## Methods
+
+### `ensureMarkerVisible(markerId: QMapMarkerId, occlusions: readonly QMapViewportRect[]) => Promise<QMapMarkerVisibilityResult>`
+
+Minimally pans to fully expose a marker or its current cluster without changing zoom.
+
+#### Parameters
+
+| Name         | Type                          | Description |
+| ------------ | ----------------------------- | ----------- |
+| `markerId`   | `string \| number`            |             |
+| `occlusions` | `readonly QMapViewportRect[]` |             |
+
+#### Returns
+
+Type: `Promise<QMapMarkerVisibilityResult>`
+
+
 
 
 ## Slots

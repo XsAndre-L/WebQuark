@@ -13,6 +13,7 @@
   { "tag": "q-dropdown",          "name": "Dropdown",          "category": "inputs" },
   { "tag": "q-input",             "name": "Input",             "category": "inputs" },
   { "tag": "q-quantity-selector", "name": "Quantity Selector", "category": "inputs" },
+  { "tag": "q-radio-group",       "name": "Radio Group",       "category": "inputs" },
   { "tag": "q-textarea",          "name": "Textarea",          "category": "inputs" },
   { "tag": "q-toggle",            "name": "Toggle",            "category": "inputs" },
 

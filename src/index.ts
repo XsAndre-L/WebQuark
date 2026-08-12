@@ -33,6 +33,7 @@ export {
   Q_MAP_MARKER_CALLOUT_VISIBILITIES,
   Q_MAP_MARKER_KINDS,
   Q_MAP_MARKER_RINGS,
+  Q_MAP_MARKER_SIZES,
   Q_MAP_MARKER_VARIANTS,
 } from './components/data-display/map/map.types';
 export {
@@ -78,10 +79,13 @@ export type {
   QMapMarkerKind,
   QMapMarkerRing,
   QMapMarkerSelectDetail,
+  QMapMarkerSize,
   QMapMarkerVariant,
+  QMapMarkerVisibilityResult,
   QMapProvider,
   QMapStatus,
   QMapStatusChangeDetail,
+  QMapViewportRect,
 } from './components/data-display/map/map.types';
 export type {
   NavbarItem,

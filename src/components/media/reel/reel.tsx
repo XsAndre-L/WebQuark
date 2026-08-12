@@ -18,14 +18,12 @@ type QReelThumbnailElement = HTMLElement & Pick<QThumbnailMaximizeDetail, 'src' 
 })
 export class QReel {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
-  /** Layout used for slotted q-thumbnail items. */
   @Prop() layout: QReelLayout = 'grid';
-  /** Enables the built-in fullscreen lightbox when thumbnails emit qMaximize. */
+
+  /** Opens the built-in lightbox when thumbnails emit `qMaximize`. */
   @Prop() lightbox: boolean = true;
 
-  /** Emitted when the lightbox opens. */
   @Event() qLightboxOpen!: EventEmitter<void>;
-  /** Emitted when the lightbox closes. */
   @Event() qLightboxClose!: EventEmitter<void>;
   @Element() el!: HTMLElement;
 

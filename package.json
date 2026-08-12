@@ -73,7 +73,8 @@
     "release:prepare": "bun .github/scripts/publishing/prepare-release.ts",
     "release:verify": "bun .github/scripts/publishing/verify-packages.ts",
     "publish-all": "bun .github/scripts/publishing/publish-packages.ts",
-    "align-headers": "bun run scripts/align-headers.ts"
+    "align-headers": "bun run scripts/align-headers.ts",
+    "check:prop-order": "bun run scripts/component-prop-order/check.ts"
   },
   "dependencies": {
     "@maplibre/maplibre-gl-leaflet": "0.1.3",
@@ -94,6 +95,7 @@
     "@types/supercluster": "^7.1.3",
     "@vitest/browser-playwright": "^4.0.0",
     "playwright": "^1.52.0",
+    "typescript": "~5.9.3",
     "vitest": "^4.0.0"
   },
   "license": "MIT"

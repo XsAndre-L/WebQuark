@@ -1,4 +1,4 @@
-import { Component, Element, Event, EventEmitter, h, Prop, State, Watch } from '@stencil/core';
+import { Component, Element, Event, EventEmitter, h, Method, Prop, State, Watch } from '@stencil/core';
 import type { Layer as LeafletLayer, LeafletMouseEvent, Map as LeafletMap } from 'leaflet';
 
 import {
@@ -22,6 +22,11 @@ import { loadMapLibreLayerFactory, waitForMapLibreLayerReady } from './internals
 import { normalizeMapMarkerClusteringOptions } from './internals/marker-cluster-index';
 import { MapMarkerController } from './internals/marker-controller';
 import {
+  getMinimalVisibleTranslation,
+  getRenderedMapItemRect,
+  isRectFullyVisible,
+} from './internals/marker-visibility';
+import {
   DEFAULT_TILE_PRELOAD_BUFFER,
   normalizeTilePreloadBuffer,
 } from './internals/tile-preload-buffer';
@@ -39,10 +44,12 @@ import type {
   QMapGoogleMapType,
   QMapMarkerId,
   QMapMarkerInput,
+  QMapMarkerVisibilityResult,
   QMapMarkerSelectDetail,
   QMapProvider,
   QMapStatus,
   QMapStatusChangeDetail,
+  QMapViewportRect,
 } from './map.types';
 
 type LeafletModule = typeof import('leaflet');
@@ -53,6 +60,9 @@ const SMOOTH_ZOOM_SNAP = 0.25;
 const SMOOTH_WHEEL_DEBOUNCE_MS = 16;
 const SMOOTH_WHEEL_PIXELS_PER_LEVEL = 120;
 const VECTOR_SYMBOL_FADE_DURATION_MS = 750;
+const MARKER_VISIBILITY_ATTEMPTS = 3;
+const MARKER_VISIBILITY_MIN_ANIMATION_MS = 275;
+const MARKER_VISIBILITY_SETTLE_TIMEOUT_MS = 500;
 
 /**
  * Framework-neutral interactive map powered by Leaflet.
@@ -74,6 +84,9 @@ const VECTOR_SYMBOL_FADE_DURATION_MS = 750;
  * @cssprop --q-map-border - Outer border.
  * @cssprop --q-map-radius - Outer corner radius.
  * @cssprop --q-map-marker-size - Marker diameter.
+ * @cssprop --q-map-marker-size-small - Diameter for markers with `size: 'small'`.
+ * @cssprop --q-map-marker-size-medium - Diameter for markers with `size: 'medium'`.
+ * @cssprop --q-map-marker-size-large - Diameter for markers with `size: 'large'`.
  * @cssprop --q-map-marker-color - Default marker color.
  * @cssprop --q-map-marker-success - Success marker color.
  * @cssprop --q-map-marker-warning - Warning marker color.
@@ -99,91 +112,71 @@ const VECTOR_SYMBOL_FADE_DURATION_MS = 750;
 export class QMap {
   @Element() el!: HTMLElement;
 
-  /** Selects raster tiles, styled vector data, or Google imagery; non-tile failures may use tileUrl as a fallback. */
-  @Prop() provider: QMapProvider = 'tiles';
-
-  /** Supplies the tile URL template for the tiles provider and optional vector/Google fallback. */
-  @Prop() tileUrl: string = '';
-
-  /** Preloads zero to four whole raster-tile rows and columns beyond the visible viewport. */
-  @Prop() tilePreloadBuffer: number = DEFAULT_TILE_PRELOAD_BUFFER;
-
-  /** Supplies a MapLibre Style Specification URL for the vector provider. */
-  @Prop() vectorStyleUrl: string = '';
-
-  /** Extends vector rendering beyond the visible viewport and is clamped from zero to one-half. */
-  @Prop() vectorPadding: number = DEFAULT_VECTOR_PADDING;
-
-  /** Supplies the browser-restricted key used only when WebQuark must load Google Maps. */
-  @Prop() googleApiKey: string = '';
-
-  /** Chooses the Google base-map style, normalizing unsupported values to roadmap. */
-  @Prop() googleMapType: QMapGoogleMapType = 'roadmap';
-
-  /** Renders plain-text attribution whenever raster tiles or styled vectors are active. */
+  /** Rendered for raster tiles and styled vectors. */
   @Prop() attribution: string = '';
-
-  /** Links map attribution only when the value resolves to an HTTP(S) URL. */
+  /** Links attribution only for HTTP(S) URLs. */
   @Prop() attributionUrl: string = '';
-
-  /** Controls viewport latitude; finite values are clamped to the geographic range. */
-  @Prop() centerLatitude: number = 0;
-
-  /** Controls viewport longitude; finite values are clamped to the geographic range. */
-  @Prop() centerLongitude: number = 0;
-
-  /** Controls the viewport zoom and is clamped between the normalized zoom limits. */
-  @Prop() zoom: number = 2;
-
-  /** Controls whether the built-in plus/minus zoom control is rendered. */
-  @Prop() zoomControls: boolean = true;
-
-  /** Sets the lowest permitted zoom; non-finite values normalize to zero. */
-  @Prop() minZoom: number = 0;
-
-  /** Sets the highest permitted zoom and never resolves below minZoom. */
-  @Prop() maxZoom: number = 19;
-
-  /** Constrains panning from a bounds object or JSON string; malformed updates preserve the last valid boundary. */
-  @Prop() maxBounds?: QMapBoundsInput;
-
-  /** Controls drag resistance at maxBounds and is clamped from zero to one. */
-  @Prop() maxBoundsViscosity: number = 1;
-
-  /** Reconciles marker records from an array or JSON string using type-stable IDs. */
+  /** Accepts an array or JSON and reconciles markers using type-stable IDs. */
   @Prop() markers: QMapMarkerInput = [];
 
-  /** Groups nearby markers while preserving their stable source IDs. */
+  /** Preserves stable source IDs while grouping nearby markers. */
   @Prop() clusterMarkers: boolean = false;
-
-  /** Sets the clustering radius in screen pixels and is clamped from 1 to 200. */
+  /** Screen-pixel radius clamped from 1 to 200. */
   @Prop() clusterRadius: number = 48;
-
-  /** Sets the minimum number of nearby markers needed to form a cluster. */
   @Prop() clusterMinPoints: number = 2;
-
-  /** Sets the last zoom level where clusters may remain; defaults to one below maxZoom. */
+  /** Defaults to one below `maxZoom`. */
   @Prop() clusterMaxZoom?: number;
 
-  /** Controls which marker exposes its selected visual and aria-pressed state. */
+  /** Finite values are clamped to the geographic range. */
+  @Prop() centerLatitude: number = 0;
+  /** Finite values are clamped to the geographic range. */
+  @Prop() centerLongitude: number = 0;
+  /** Clamped between the normalized zoom limits. */
+  @Prop() zoom: number = 2;
+  @Prop() zoomControls: boolean = true;
+  /** Non-finite values normalize to zero. */
+  @Prop() minZoom: number = 0;
+  /** Never resolves below `minZoom`. */
+  @Prop() maxZoom: number = 19;
+  /** Accepts an object or JSON; malformed updates preserve the last valid bounds. */
+  @Prop() maxBounds?: QMapBoundsInput;
+  /** Clamped from zero to one. */
+  @Prop() maxBoundsViscosity: number = 1;
+
+  /** Controls the selected visual and `aria-pressed` state. */
   @Prop() selectedMarkerId?: QMapMarkerId;
 
-  /** Provides the accessible name announced for the interactive map region. */
+  /** Non-tile provider failures may fall back to `tileUrl`. */
+  @Prop() provider: QMapProvider = 'tiles';
+  /** Tile template used by the tiles provider and optional provider fallback. */
+  @Prop() tileUrl: string = '';
+  /** Preloads zero to four raster-tile rows and columns beyond the viewport. */
+  @Prop() tilePreloadBuffer: number = DEFAULT_TILE_PRELOAD_BUFFER;
+  /** MapLibre Style Specification URL for the vector provider. */
+  @Prop() vectorStyleUrl: string = '';
+  /** Extends rendering beyond the viewport; clamped from zero to one-half. */
+  @Prop() vectorPadding: number = DEFAULT_VECTOR_PADDING;
+  /** Browser-restricted key used only when WebQuark loads Google Maps. */
+  @Prop() googleApiKey: string = '';
+  /** Unsupported values normalize to `roadmap`. */
+  @Prop() googleMapType: QMapGoogleMapType = 'roadmap';
+
+  /** Accessible name for the interactive map region. */
   @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = 'Interactive map';
 
-  /** Fires after Leaflet setup and the initial provider attempt complete. */
+  /** Emitted after Leaflet setup and the initial provider attempt complete. */
   @Event() qReady!: EventEmitter<void>;
 
-  /** Reports genuine map-background clicks after Leaflet excludes drags and interactive layers. */
+  /** Excludes drags and interactive-layer clicks. */
   @Event() qMapClick!: EventEmitter<QMapClickDetail>;
 
-  /** Reports marker activation without mutating selectedMarkerId. */
+  /** Does not mutate `selectedMarkerId`. */
   @Event() qMarkerSelect!: EventEmitter<QMapMarkerSelectDetail>;
 
-  /** Reports cluster activation before the default centre-and-zoom action. */
+  /** Emitted before the default center-and-zoom action; cancel to prevent it. */
   @Event({ cancelable: true }) qClusterSelect!: EventEmitter<QMapClusterSelectDetail>;
 
-  /** Reports provider lifecycle transitions, including the active fallback provider. */
+  /** Includes the active fallback provider. */
   @Event() qStatusChange!: EventEmitter<QMapStatusChangeDetail>;
 
   /** Reports serializable configuration and initialization failures. */
@@ -200,6 +193,8 @@ export class QMap {
   private resizeObserver?: ResizeObserver;
   private resizeFrame?: number;
   private initializationToken = 0;
+  private markerVisibilityToken = 0;
+  private cancelMarkerVisibilityPan?: () => void;
   private layerController?: MapBaseLayerController<LeafletLayer>;
   private markerController?: MapMarkerController;
   private lastInvalidBoundsInput?: QMapBoundsInput;
@@ -222,6 +217,70 @@ export class QMap {
     this.connected = false;
     this.initializationToken += 1;
     this.destroyMap();
+  }
+
+  /** Minimally pans to fully expose a marker or its current cluster without changing zoom. */
+  @Method()
+  async ensureMarkerVisible(
+    markerId: QMapMarkerId,
+    occlusions: readonly QMapViewportRect[],
+  ): Promise<QMapMarkerVisibilityResult> {
+    const operationToken = ++this.markerVisibilityToken;
+    this.cancelMarkerVisibilityPan?.();
+    if (!this.isMarkerVisibilityCurrent(operationToken)) return 'unavailable';
+    let panned = false;
+
+    for (let attempt = 0; attempt < MARKER_VISIBILITY_ATTEMPTS; attempt += 1) {
+      if (!this.isMarkerVisibilityCurrent(operationToken)) return 'unavailable';
+      const map = this.map;
+      const canvas = this.canvas;
+      const controller = this.markerController;
+      if (!map || !canvas || !controller) return 'unavailable';
+      const target = controller.getVisibilityTarget(markerId);
+      if (!target) return 'unavailable';
+
+      const viewport = this.toViewportRect(canvas.getBoundingClientRect());
+      const obstacles = this.getMarkerVisibilityOcclusions(occlusions);
+      const targetRect = target.rendered
+        ? getRenderedMapItemRect(target.rendered.element, target.rendered.kind)
+        : this.getCoordinateRect(target.latitude, target.longitude, viewport);
+
+      if (target.rendered && isRectFullyVisible(targetRect, viewport, obstacles)) {
+        return panned ? 'panned' : 'visible';
+      }
+
+      const translation = getMinimalVisibleTranslation(targetRect, viewport, obstacles);
+      if (!translation) return 'constrained';
+      if (Math.abs(translation.x) < 0.01 && Math.abs(translation.y) < 0.01) {
+        controller.syncSelection();
+        if (!this.isMarkerVisibilityCurrent(operationToken)) return 'unavailable';
+        await this.waitForMarkerLayout();
+        if (!this.isMarkerVisibilityCurrent(operationToken)) return 'unavailable';
+        continue;
+      }
+
+      if (!this.isMarkerVisibilityCurrent(operationToken)) return 'unavailable';
+      await this.panByMarkerTranslation(map, translation.x, translation.y, operationToken);
+      if (!this.isMarkerVisibilityCurrent(operationToken)) return 'unavailable';
+      panned = true;
+      if (!this.isMarkerVisibilityCurrent(operationToken)) return 'unavailable';
+      await this.waitForMarkerLayout();
+      if (!this.isMarkerVisibilityCurrent(operationToken)) return 'unavailable';
+    }
+
+    if (!this.isMarkerVisibilityCurrent(operationToken)) return 'unavailable';
+    const map = this.map;
+    const canvas = this.canvas;
+    const target = this.markerController?.getVisibilityTarget(markerId);
+    if (!map || !canvas || !target) return 'unavailable';
+    if (!target.rendered) return 'constrained';
+    const viewport = this.toViewportRect(canvas.getBoundingClientRect());
+    const targetRect = getRenderedMapItemRect(target.rendered.element, target.rendered.kind);
+    return isRectFullyVisible(
+      targetRect,
+      viewport,
+      this.getMarkerVisibilityOcclusions(occlusions),
+    ) ? (panned ? 'panned' : 'visible') : 'constrained';
   }
 
   @Watch('provider')
@@ -526,6 +585,118 @@ export class QMap {
     });
   }
 
+  private getMarkerVisibilityOcclusions(
+    occlusions: readonly QMapViewportRect[],
+  ): QMapViewportRect[] {
+    const obstacles = [...occlusions];
+    const root = this.el.shadowRoot;
+    if (!root) return obstacles;
+    for (const element of Array.from(
+      root.querySelectorAll<HTMLElement>('.leaflet-control, .map-attribution'),
+    )) {
+      const style = element.ownerDocument.defaultView?.getComputedStyle(element);
+      if (style?.display === 'none' || style?.visibility === 'hidden') continue;
+      const rect = element.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) continue;
+      obstacles.push(this.toViewportRect(rect));
+    }
+    return obstacles;
+  }
+
+  private getCoordinateRect(
+    latitude: number,
+    longitude: number,
+    viewport: QMapViewportRect,
+  ): QMapViewportRect {
+    const point = this.map?.latLngToContainerPoint([latitude, longitude]);
+    const x = viewport.left + (point?.x ?? 0);
+    const y = viewport.top + (point?.y ?? 0);
+    return {
+      top: y - 0.5,
+      right: x + 0.5,
+      bottom: y + 0.5,
+      left: x - 0.5,
+    };
+  }
+
+  private toViewportRect(rect: DOMRect): QMapViewportRect {
+    return {
+      top: rect.top,
+      right: rect.right,
+      bottom: rect.bottom,
+      left: rect.left,
+    };
+  }
+
+  private async panByMarkerTranslation(
+    map: LeafletMap,
+    x: number,
+    y: number,
+    operationToken: number,
+  ): Promise<void> {
+    const animate = !this.prefersReducedMotion();
+    await new Promise<void>(resolve => {
+      const view = this.el.ownerDocument.defaultView;
+      const startedAt = Date.now();
+      let settled = false;
+      let settleTimeout: number | undefined;
+      let animationTimeout: number | undefined;
+      const complete = () => {
+        if (settled) return;
+        settled = true;
+        map.off('moveend', finish);
+        if (settleTimeout !== undefined) view?.clearTimeout(settleTimeout);
+        if (animationTimeout !== undefined) view?.clearTimeout(animationTimeout);
+        if (this.cancelMarkerVisibilityPan === cancel) {
+          this.cancelMarkerVisibilityPan = undefined;
+        }
+        resolve();
+      };
+      const finish = () => {
+        if (settled) return;
+        map.off('moveend', finish);
+        if (settleTimeout !== undefined) view?.clearTimeout(settleTimeout);
+        const remainingAnimation = animate
+          ? Math.max(0, MARKER_VISIBILITY_MIN_ANIMATION_MS - (Date.now() - startedAt))
+          : 0;
+        if (remainingAnimation > 0 && view) {
+          animationTimeout = view.setTimeout(complete, remainingAnimation);
+        } else complete();
+      };
+      const cancel = () => {
+        if (settled) return;
+        map.stop();
+        complete();
+      };
+      if (!this.isMarkerVisibilityCurrent(operationToken)) {
+        complete();
+        return;
+      }
+      this.cancelMarkerVisibilityPan = cancel;
+      map.once('moveend', finish);
+      settleTimeout = view?.setTimeout(finish, MARKER_VISIBILITY_SETTLE_TIMEOUT_MS);
+      map.panBy([
+        -roundPanOffset(x),
+        -roundPanOffset(y),
+      ], { animate });
+    });
+  }
+
+  private async waitForMarkerLayout(): Promise<void> {
+    await new Promise<void>(resolve => {
+      const view = this.el.ownerDocument.defaultView;
+      if (!view || typeof view.requestAnimationFrame !== 'function') {
+        queueMicrotask(resolve);
+        return;
+      }
+      view.requestAnimationFrame(() => resolve());
+    });
+  }
+
+  private isMarkerVisibilityCurrent(operationToken: number): boolean {
+    return operationToken === this.markerVisibilityToken && this.connected;
+  }
+
   private prefersReducedMotion(): boolean {
     return typeof window !== 'undefined'
       && typeof window.matchMedia === 'function'
@@ -599,6 +770,9 @@ export class QMap {
   }
 
   private destroyMap(): void {
+    this.markerVisibilityToken += 1;
+    this.cancelMarkerVisibilityPan?.();
+    this.cancelMarkerVisibilityPan = undefined;
     this.resizeObserver?.disconnect();
     this.resizeObserver = undefined;
     if (this.resizeFrame !== undefined) {
@@ -670,4 +844,8 @@ export class QMap {
       </div>
     );
   }
+}
+
+function roundPanOffset(value: number): number {
+  return Math.sign(value) * Math.ceil(Math.abs(value));
 }

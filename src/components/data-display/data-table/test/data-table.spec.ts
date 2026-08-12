@@ -45,6 +45,20 @@ describe('q-data-table', () => {
     { id: 2, name: 'Beta' },
   ];
 
+  it('provides an accessible name for the grid', async () => {
+    const el = await createComponent({ columns, items, ariaLabel: 'Inventory' });
+
+    expect(el.shadowRoot.querySelector('[role="grid"]').getAttribute('aria-label')).toBe('Inventory');
+    el.remove();
+  });
+
+  it('falls back to the toolbar title for the grid name', async () => {
+    const el = await createComponent({ columns, items, toolbarTitle: 'Products' });
+
+    expect(el.shadowRoot.querySelector('[role="grid"]').getAttribute('aria-label')).toBe('Products');
+    el.remove();
+  });
+
   function createIdentityModel(overrides: Partial<GetDataTableModelOptions> = {}) {
     return getDataTableModel({
       columns,

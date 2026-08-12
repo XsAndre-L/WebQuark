@@ -37,52 +37,32 @@ export class QNavbar {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Element() el!: HTMLElement;
 
-  /** Brand text rendered inside the brand link. */
   @Prop() brand?: string;
-
-  /** Brand logo image URL. */
   @Prop() logoSrc?: string;
-
   /** Accessible text for a logo-only brand image. */
   @Prop() logoAlt: string = '';
-
-  /** URL used by the brand link. */
   @Prop() brandHref: string = '/';
-
   /** Navigation items; strings use the same text for label and value, while objects enable links, icons, and state. */
   @Prop() items: NavbarItemInput[] | string = [];
+  /** Matches either an item's value or `href`. */
+  @Prop() activeValue: string = '';
+
+  @Prop({ reflect: true }) edge: QNavbarEdge = 'top';
+  @Prop({ reflect: true }) sticky: boolean = false;
+  @Prop({ reflect: true }) compact: boolean = false;
+  @Prop({ reflect: true }) transparent: boolean = false;
+  @Prop({ reflect: true }) bordered: boolean = true;
+
+  /** Controls whether mobile widths collapse items into a menu or keep them inline. */
+  @Prop({ reflect: true }) mobileMode: QNavbarMobileMode = 'menu';
+  /** Accessible label for the mobile menu toggle button. */
+  @Prop() mobileLabel: string = 'Menu';
 
   /** Accessible name for the desktop and mobile navigation regions. */
   @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
 
-  /** Value or href of the currently active navigation item. */
-  @Prop() activeValue: string = '';
-
-  /** Accessible label for the mobile menu toggle button. */
-  @Prop() mobileLabel: string = 'Menu';
-
-  /** Edge the navbar is arranged against. */
-  @Prop({ reflect: true }) edge: QNavbarEdge = 'top';
-
-  /** Controls whether mobile widths collapse items into a menu or keep them inline. */
-  @Prop({ reflect: true }) mobileMode: QNavbarMobileMode = 'menu';
-
-  /** Keeps the navbar pinned to its configured edge. */
-  @Prop({ reflect: true }) sticky: boolean = false;
-
-  /** Uses the compact navbar height and padding. */
-  @Prop({ reflect: true }) compact: boolean = false;
-
-  /** Removes the navbar background when true. */
-  @Prop({ reflect: true }) transparent: boolean = false;
-
-  /** Renders a border along the inward-facing edge. */
-  @Prop({ reflect: true }) bordered: boolean = true;
-
-  /** Emitted when a navigation item is selected. */
   @Event() qSelect!: EventEmitter<NavbarSelectDetail>;
 
-  /** Emitted when the mobile menu opens or closes. */
   @Event() qMenuToggle!: EventEmitter<boolean>;
 
   // ========================= [2] INTERNAL STATE & REFS =========================

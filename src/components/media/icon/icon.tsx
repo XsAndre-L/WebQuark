@@ -21,45 +21,22 @@ export class QIcon {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Element() el!: HTMLElement;
 
-  /**
-   * The name of the icon (e.g., 'settings', 'heart', or a filename like 'logo.png').
-   */
+  /** Icon name or local asset filename. */
   @Prop() name?: QIconName;
-
-  /**
-   * The library to load the icon from.
-   * Options: 'lucide', 'font-awesome', 'local', or a custom base URL / template URL.
-   */
+  /** Supports built-in libraries, local assets, and custom URL templates. */
   @Prop() lib: QIconLibrary = 'lucide';
-
-  /**
-   * The size of the icon. Can be a preset alias ('sm', 'md', 'lg'), a number (pixels), or any valid CSS size string (e.g., '1.5rem').
-   */
-  @Prop() size: QIconSize = 'md';
-
-  /**
-   * The color of the icon. Defaults to 'currentColor'.
-   */
-  @Prop() color: QIconColor = 'currentColor';
-
-  /**
-   * The default path for local assets when `lib` is set to 'local'.
-   */
+  /** Base path used when `lib="local"`. */
   @Prop() localPath: QIconLocalPath = '/assets/icons/';
-
-  /**
-   * Optional version override for built-in remote icon libraries.
-   */
+  /** Overrides the version of built-in remote libraries. */
   @Prop() libVersion?: string;
-
-  /**
-   * Fetch timeout in milliseconds for SVG icon requests.
-   */
+  /** SVG fetch timeout in milliseconds. */
   @Prop() fetchTimeout: number = DEFAULT_FETCH_TIMEOUT_MS;
 
-  /**
-   * Accessible name for meaningful icons. Icons without a label are hidden from assistive technology.
-   */
+  /** Accepts a preset, pixel number, or CSS size. */
+  @Prop() size: QIconSize = 'md';
+  @Prop() color: QIconColor = 'currentColor';
+
+  /** Meaningful icons require a label; unlabeled icons are hidden from assistive technology. */
   @Prop() label?: string;
 
   @State() svgContent: string = '';

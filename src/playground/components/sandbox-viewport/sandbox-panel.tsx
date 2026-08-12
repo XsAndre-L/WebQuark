@@ -8,6 +8,7 @@ const SYNCBACK_MAP: Record<string, Record<string, (cfg: ComponentSpec, det: any)
   'q-dialog':    { qClose:  (cfg, _det) => { if (cfg.props) cfg.props.open.currentValue = false; } },
   'q-dropdown':  { qChange: (cfg, det)  => { if (cfg.props) cfg.props.value.currentValue = det; } },
   'q-input':     { qChange: (cfg, det)  => { if (cfg.props) cfg.props.value.currentValue = det; } },
+  'q-radio-group': { qChange: (cfg, det) => { if (cfg.props) cfg.props.value.currentValue = det; } },
   'q-textarea':  { qChange: (cfg, det)  => { if (cfg.props) cfg.props.value.currentValue = det; } },
   'q-toggle':    { qChange: (cfg, det)  => { if (cfg.props) cfg.props.checked.currentValue = det; } },
 };

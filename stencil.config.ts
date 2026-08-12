@@ -61,7 +61,7 @@ export const config: Config = {
           type: 'text',
         },
         {
-          elementSelectors: ['q-dropdown'],
+          elementSelectors: ['q-dropdown', 'q-radio-group'],
           event: 'qChange',
           targetAttr: 'value',
           type: 'select',
