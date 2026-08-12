@@ -147,6 +147,15 @@ For array and object inputs, assign the JavaScript property unless the contract 
 - Behavior: supports direct editing, step buttons, Arrow Up/Down, and bounded Home/End shortcuts. Invalid or incomplete text is reconciled on change/blur.
 - Forms: this component is not currently form-associated and has no `name`, `disabled`, `required`, or error contract.
 
+### `q-radio-group`
+
+- API: [generated reference](../../src/components/inputs/radio-group/readme.md)
+- Properties: `value`, `name`, `label`, `ariaLabel`, `options`, `size`, `orientation`, `disabled`, `required`, `error`, `errorMessage`.
+- Events: `qChange`, `qFocus`, `qBlur`.
+- Methods: `focusElement()`, `checkValidity()`, `reportValidity()`.
+- Forms: form-associated and reset-aware. A selected enabled option contributes its string value; required groups report `valueMissing` until one is selected.
+- Accessibility: native same-name radio inputs preserve Tab, Arrow-key, Space, fieldset, and legend semantics.
+
 ### `q-toggle`
 
 - API: [generated reference](../../src/components/inputs/toggle/readme.md)

@@ -22,6 +22,7 @@ import { NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode } f
 import { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
 import { QProgressSize, QProgressTone, QProgressVariant } from "./components/indicators/progress/progress.types";
 import { QQuantitySelectorVariant } from "./components/inputs/quantity-selector/quantity-selector.types";
+import { QRadioGroupOrientation, QRadioGroupSize, RadioGroupOptionInput } from "./components/inputs/radio-group/radio-group.types";
 import { QReelLayout } from "./components/media/reel/reel.types";
 import { QScrollableEventDetail, QScrollableMode } from "./components/layout/scrollable/scrollable.types";
 import { QSidepanelCollapseControl, QSidepanelCollapseControlAppearance, QSidepanelCollapsedChangeDetail, QSidepanelCollapseMode, QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItemInput } from "./components/layout/sidepanel/sidepanel.types";
@@ -51,6 +52,7 @@ export { NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode } f
 export { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
 export { QProgressSize, QProgressTone, QProgressVariant } from "./components/indicators/progress/progress.types";
 export { QQuantitySelectorVariant } from "./components/inputs/quantity-selector/quantity-selector.types";
+export { QRadioGroupOrientation, QRadioGroupSize, RadioGroupOptionInput } from "./components/inputs/radio-group/radio-group.types";
 export { QReelLayout } from "./components/media/reel/reel.types";
 export { QScrollableEventDetail, QScrollableMode } from "./components/layout/scrollable/scrollable.types";
 export { QSidepanelCollapseControl, QSidepanelCollapseControlAppearance, QSidepanelCollapsedChangeDetail, QSidepanelCollapseMode, QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItemInput } from "./components/layout/sidepanel/sidepanel.types";
@@ -1072,6 +1074,64 @@ export namespace Components {
         "variant": QQuantitySelectorVariant;
     }
     /**
+     * Form-associated single-selection radio group with a connected segmented presentation.
+     */
+    interface QRadioGroup {
+        /**
+          * Accessible group name used when no visible label is supplied.
+          * @default null
+         */
+        "ariaLabel": string | null;
+        /**
+          * Returns whether the group satisfies its required and custom-error constraints.
+         */
+        "checkValidity": () => Promise<boolean>;
+        /**
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Validation error text or error-state flag.
+         */
+        "error"?: string;
+        /**
+          * Validation helper text displayed when the group is in an error state.
+         */
+        "errorMessage"?: string;
+        /**
+          * Focuses the selected option, or the first enabled option when nothing is selected.
+         */
+        "focusElement": () => Promise<void>;
+        "label"?: string;
+        "name"?: string;
+        /**
+          * Options to render; strings use the same text for label and value.
+          * @default []
+         */
+        "options": RadioGroupOptionInput[] | string;
+        /**
+          * `responsive` stacks the connected options below 680px.
+          * @default 'responsive'
+         */
+        "orientation": QRadioGroupOrientation;
+        /**
+          * Reports group validity and returns whether the current selection is valid.
+         */
+        "reportValidity": () => Promise<boolean>;
+        /**
+          * @default false
+         */
+        "required": boolean;
+        /**
+          * @default 'md'
+         */
+        "size": QRadioGroupSize;
+        /**
+          * @default ''
+         */
+        "value": string;
+    }
+    /**
      * Gallery layout for q-thumbnail children with an optional modal lightbox.
      */
     interface QReel {
@@ -1584,6 +1644,10 @@ export interface QQuantitySelectorCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLQQuantitySelectorElement;
 }
+export interface QRadioGroupCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQRadioGroupElement;
+}
 export interface QReelCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLQReelElement;
@@ -2011,6 +2075,28 @@ declare global {
         prototype: HTMLQQuantitySelectorElement;
         new (): HTMLQQuantitySelectorElement;
     };
+    interface HTMLQRadioGroupElementEventMap {
+        "qChange": string;
+        "qFocus": FocusEvent;
+        "qBlur": FocusEvent;
+    }
+    /**
+     * Form-associated single-selection radio group with a connected segmented presentation.
+     */
+    interface HTMLQRadioGroupElement extends Components.QRadioGroup, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQRadioGroupElementEventMap>(type: K, listener: (this: HTMLQRadioGroupElement, ev: QRadioGroupCustomEvent<HTMLQRadioGroupElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQRadioGroupElementEventMap>(type: K, listener: (this: HTMLQRadioGroupElement, ev: QRadioGroupCustomEvent<HTMLQRadioGroupElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLQRadioGroupElement: {
+        prototype: HTMLQRadioGroupElement;
+        new (): HTMLQRadioGroupElement;
+    };
     interface HTMLQReelElementEventMap {
         "qLightboxOpen": void;
         "qLightboxClose": void;
@@ -2248,6 +2334,7 @@ declare global {
         "q-panel": HTMLQPanelElement;
         "q-progress": HTMLQProgressElement;
         "q-quantity-selector": HTMLQQuantitySelectorElement;
+        "q-radio-group": HTMLQRadioGroupElement;
         "q-reel": HTMLQReelElement;
         "q-scrollable": HTMLQScrollableElement;
         "q-sidepanel": HTMLQSidepanelElement;
@@ -3338,6 +3425,62 @@ declare namespace LocalJSX {
         "variant"?: QQuantitySelectorVariant;
     }
     /**
+     * Form-associated single-selection radio group with a connected segmented presentation.
+     */
+    interface QRadioGroup {
+        /**
+          * Accessible group name used when no visible label is supplied.
+          * @default null
+         */
+        "ariaLabel"?: string | null;
+        /**
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Validation error text or error-state flag.
+         */
+        "error"?: string;
+        /**
+          * Validation helper text displayed when the group is in an error state.
+         */
+        "errorMessage"?: string;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        "label"?: string;
+        "name"?: string;
+        "onQBlur"?: (event: QRadioGroupCustomEvent<FocusEvent>) => void;
+        /**
+          * Emitted with the selected option value when selection changes.
+         */
+        "onQChange"?: (event: QRadioGroupCustomEvent<string>) => void;
+        "onQFocus"?: (event: QRadioGroupCustomEvent<FocusEvent>) => void;
+        /**
+          * Options to render; strings use the same text for label and value.
+          * @default []
+         */
+        "options"?: RadioGroupOptionInput[] | string;
+        /**
+          * `responsive` stacks the connected options below 680px.
+          * @default 'responsive'
+         */
+        "orientation"?: QRadioGroupOrientation;
+        /**
+          * @default false
+         */
+        "required"?: boolean;
+        /**
+          * @default 'md'
+         */
+        "size"?: QRadioGroupSize;
+        /**
+          * @default ''
+         */
+        "value"?: string;
+    }
+    /**
      * Gallery layout for q-thumbnail children with an optional modal lightbox.
      */
     interface QReel {
@@ -4039,6 +4182,19 @@ declare namespace LocalJSX {
         "step": number;
         "variant": QQuantitySelectorVariant;
     }
+    interface QRadioGroupAttributes {
+        "label": string;
+        "options": RadioGroupOptionInput[] | string;
+        "value": string;
+        "size": QRadioGroupSize;
+        "orientation": QRadioGroupOrientation;
+        "disabled": boolean;
+        "required": boolean;
+        "error": string;
+        "errorMessage": string;
+        "name": string;
+        "ariaLabel": string | null;
+    }
     interface QReelAttributes {
         "layout": QReelLayout;
         "lightbox": boolean;
@@ -4165,6 +4321,7 @@ declare namespace LocalJSX {
         "q-panel": Omit<QPanel, keyof QPanelAttributes> & { [K in keyof QPanel & keyof QPanelAttributes]?: QPanel[K] } & { [K in keyof QPanel & keyof QPanelAttributes as `attr:${K}`]?: QPanelAttributes[K] } & { [K in keyof QPanel & keyof QPanelAttributes as `prop:${K}`]?: QPanel[K] };
         "q-progress": Omit<QProgress, keyof QProgressAttributes> & { [K in keyof QProgress & keyof QProgressAttributes]?: QProgress[K] } & { [K in keyof QProgress & keyof QProgressAttributes as `attr:${K}`]?: QProgressAttributes[K] } & { [K in keyof QProgress & keyof QProgressAttributes as `prop:${K}`]?: QProgress[K] };
         "q-quantity-selector": Omit<QQuantitySelector, keyof QQuantitySelectorAttributes> & { [K in keyof QQuantitySelector & keyof QQuantitySelectorAttributes]?: QQuantitySelector[K] } & { [K in keyof QQuantitySelector & keyof QQuantitySelectorAttributes as `attr:${K}`]?: QQuantitySelectorAttributes[K] } & { [K in keyof QQuantitySelector & keyof QQuantitySelectorAttributes as `prop:${K}`]?: QQuantitySelector[K] };
+        "q-radio-group": Omit<QRadioGroup, keyof QRadioGroupAttributes> & { [K in keyof QRadioGroup & keyof QRadioGroupAttributes]?: QRadioGroup[K] } & { [K in keyof QRadioGroup & keyof QRadioGroupAttributes as `attr:${K}`]?: QRadioGroupAttributes[K] } & { [K in keyof QRadioGroup & keyof QRadioGroupAttributes as `prop:${K}`]?: QRadioGroup[K] };
         "q-reel": Omit<QReel, keyof QReelAttributes> & { [K in keyof QReel & keyof QReelAttributes]?: QReel[K] } & { [K in keyof QReel & keyof QReelAttributes as `attr:${K}`]?: QReelAttributes[K] } & { [K in keyof QReel & keyof QReelAttributes as `prop:${K}`]?: QReel[K] };
         "q-scrollable": Omit<QScrollable, keyof QScrollableAttributes> & { [K in keyof QScrollable & keyof QScrollableAttributes]?: QScrollable[K] } & { [K in keyof QScrollable & keyof QScrollableAttributes as `attr:${K}`]?: QScrollableAttributes[K] } & { [K in keyof QScrollable & keyof QScrollableAttributes as `prop:${K}`]?: QScrollable[K] };
         "q-sidepanel": Omit<QSidepanel, keyof QSidepanelAttributes> & { [K in keyof QSidepanel & keyof QSidepanelAttributes]?: QSidepanel[K] } & { [K in keyof QSidepanel & keyof QSidepanelAttributes as `attr:${K}`]?: QSidepanelAttributes[K] } & { [K in keyof QSidepanel & keyof QSidepanelAttributes as `prop:${K}`]?: QSidepanel[K] };
@@ -4296,6 +4453,10 @@ declare module "@stencil/core" {
              * Numeric quantity control with increment/decrement buttons and a bounded editable value.
              */
             "q-quantity-selector": LocalJSX.IntrinsicElements["q-quantity-selector"] & JSXBase.HTMLAttributes<HTMLQQuantitySelectorElement>;
+            /**
+             * Form-associated single-selection radio group with a connected segmented presentation.
+             */
+            "q-radio-group": LocalJSX.IntrinsicElements["q-radio-group"] & JSXBase.HTMLAttributes<HTMLQRadioGroupElement>;
             /**
              * Gallery layout for q-thumbnail children with an optional modal lightbox.
              */
