@@ -1,0 +1,24 @@
+{
+  "name": "Avatar",
+  "tag": "q-avatar",
+  "props": {
+    "name": { "type": "string", "default": "Maya Dlamini", "desc": "Identity name and initials source" },
+    "src": { "type": "string", "default": "", "desc": "Optional image source" },
+    "initials": { "type": "string", "default": "", "desc": "Explicit fallback initials" },
+    "alt": { "type": "string", "default": "", "desc": "Explicit accessible image text" },
+    "size": { "type": "select", "options": ["sm", "md", "lg"], "default": "md", "desc": "Avatar size" },
+    "shape": { "type": "select", "options": ["circle", "rounded", "square"], "default": "circle", "desc": "Avatar shape" }
+  },
+  "slots": {
+    "fallback": { "type": "html", "default": "", "desc": "Custom visual fallback" }
+  },
+  "variants": [
+    { "name": "Initials", "props": { "name": "Maya Dlamini", "size": "md" } },
+    { "name": "Large Rounded", "props": { "name": "Theo Jacobs", "size": "lg", "shape": "rounded" } },
+    { "name": "Custom Fallback", "props": { "name": "Assistant" }, "slots": { "fallback": "✦" } }
+  ],
+  "edgeCases": [
+    { "name": "Missing Identity", "props": { "name": "", "src": "" } }
+  ]
+}
+

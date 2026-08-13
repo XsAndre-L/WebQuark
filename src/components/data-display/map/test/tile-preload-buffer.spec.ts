@@ -56,6 +56,7 @@ describe('createBufferedTileLayer', () => {
     const layer = {
       _getTiledPixelBounds: () =>
         new TestBounds(new TestPoint(0, 0), new TestPoint(512, 256)),
+      _initTile: () => undefined,
       getTileSize: () => new TestPoint(256, 256),
     };
     const leaflet = {

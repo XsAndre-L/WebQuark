@@ -168,6 +168,14 @@ For array and object inputs, assign the JavaScript property unless the contract 
 
 ## Data display and indicators
 
+### `q-conversation-bubble`
+
+- API: [generated reference](../../src/components/data-display/conversation-bubble/readme.md)
+- Properties: `variant`, `sender`, `timestamp`, `ariaLabel`, `compact`.
+- Slots: `avatar`, default message body, `meta`, `actions`.
+- Behavior: `incoming`, `outgoing`, and `system` control alignment and appearance without owning message state. Message body text wraps and preserves line breaks.
+- Accessibility: renders a named message group without an automatic live region. Consumers own restrained announcement behavior for newly arriving messages.
+
 ### `q-data-table`
 
 - API: [generated reference](../../src/components/data-display/data-table/readme.md)
@@ -225,6 +233,15 @@ For array and object inputs, assign the JavaScript property unless the contract 
 - Known limitation: `pending` is exposed as `aria-disabled` but currently still activates; consumers must ignore the event until that implementation is corrected.
 
 ## Media
+
+### `q-avatar`
+
+- API: [generated reference](../../src/components/media/avatar/readme.md)
+- Properties: `src`, `name`, `initials`, `alt`, `size`, `shape`, `loading`.
+- Events: `qLoad`, `qError`.
+- Slot: `fallback`.
+- Behavior: reserves its dimensions and replaces a missing or failed image with explicit initials, initials derived from `name`, or slotted fallback content.
+- Accessibility: `alt` takes precedence over `name`; an explicit empty `alt` makes the avatar decorative. Fallback content is visual and does not duplicate the accessible name.
 
 ### `q-icon`
 

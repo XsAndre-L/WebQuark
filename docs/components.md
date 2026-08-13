@@ -11,6 +11,7 @@ See the [component documentation standard and index](./components/README.md), [c
 | `q-button` | Action | Implemented | [Guide](./components/q-button.md) | Native button/anchor rendering, loading and icon layouts. |
 | `q-chip` | Action / data display | Implemented | [Guide](./components/q-chip.md) | Link, button, selected, and removable contracts. |
 | `q-link` | Action | Implemented | [Guide](./components/q-link.md) | URL, mail, telephone, external, and disabled links. |
+| `q-conversation-bubble` | Data display | Implemented | [Guide](./components/q-conversation-bubble.md) | Semantic incoming, outgoing, and system conversation messages. |
 | `q-card` | Layout | Implemented | [Guide](./components/q-card.md) | Surface, elevation, glass, lift, and optional interaction. |
 | `q-carousel` | Layout | Implemented | [Guide](./components/q-carousel.md) | Scroll snap, arrows, indicators, repeat, and methods. |
 | `q-form` | Layout / forms | Implemented | [Guide](./components/q-form.md) | Native form bridge, typed values, reset, and Enter policy. |
@@ -31,6 +32,7 @@ See the [component documentation standard and index](./components/README.md), [c
 | `q-circular-progress` | Indicator | Implemented | [Guide](./components/q-circular-progress.md) | Determinate and indeterminate progress. |
 | `q-step-diagram` | Indicator | Implemented | [Guide](./components/q-step-diagram.md) | Vertical/horizontal step sequence parent. |
 | `q-step-diagram-item` | Indicator | Implemented with known limitation | [Guide](./components/q-step-diagram-item.md) | Pending items still emit activation events. |
+| `q-avatar` | Media | Implemented | [Guide](./components/q-avatar.md) | Identity image with initials or slotted fallback. |
 | `q-icon` | Media | Implemented | [Guide](./components/q-icon.md) | Remote/local SVG and binary icon rendering. |
 | `q-reel` | Media | Implemented | [Guide](./components/q-reel.md) | Thumbnail gallery with optional lightbox. |
 | `q-thumbnail` | Media | Implemented | [Guide](./components/q-thumbnail.md) | Lazy media poster and activation metadata. |
@@ -39,4 +41,4 @@ See the [component documentation standard and index](./components/README.md), [c
 
 ## Inventory rule
 
-Any change that adds or removes a `q-*` component must update this matrix, `docs/components/README.md`, and the 28-component current-contract reference in the same change. The production build must regenerate and commit the source-adjacent API page and framework proxies where this repository tracks them.
+Any change that adds or removes a `q-*` component must update this matrix, `docs/components/README.md`, and the current-contract reference in the same change. The production build must regenerate and commit the source-adjacent API page and framework proxies where this repository tracks them.

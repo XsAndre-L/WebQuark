@@ -6,11 +6,13 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { QAlertAnnouncement, QAlertVariant } from "./components/data-display/alert/alert.types";
+import { QAvatarShape, QAvatarSize } from "./components/media/avatar/avatar.types";
 import { QIconColor, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
 import { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
 import { QCardElevation } from "./components/layout/card/card.types";
 import { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/layout/carousel/carousel.types";
 import { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/actions/chip/chip.types";
+import { QConversationBubbleVariant } from "./components/data-display/conversation-bubble/conversation-bubble.types";
 import { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
 import { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
 import { DropdownOptionInput, Option, QDropdownPlacement, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
@@ -36,11 +38,13 @@ import { QToggleSize, QToggleType } from "./components/inputs/toggle/toggle.type
 import { QToolbarEdge } from "./components/layout/toolbar/toolbar.types";
 import { QTooltipPosition } from "./components/overlays/tooltip/tooltip.types";
 export { QAlertAnnouncement, QAlertVariant } from "./components/data-display/alert/alert.types";
+export { QAvatarShape, QAvatarSize } from "./components/media/avatar/avatar.types";
 export { QIconColor, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
 export { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
 export { QCardElevation } from "./components/layout/card/card.types";
 export { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/layout/carousel/carousel.types";
 export { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/actions/chip/chip.types";
+export { QConversationBubbleVariant } from "./components/data-display/conversation-bubble/conversation-bubble.types";
 export { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
 export { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
 export { DropdownOptionInput, Option, QDropdownPlacement, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
@@ -89,6 +93,41 @@ export namespace Components {
           * @default 'info'
          */
         "variant": QAlertVariant;
+    }
+    /**
+     * Compact identity image with an initials or consumer-supplied fallback.
+     */
+    interface QAvatar {
+        /**
+          * Accessible image text. Set an explicit empty string when the avatar is decorative.
+         */
+        "alt"?: string;
+        /**
+          * Explicit fallback text. Values are normalized to at most two visible characters.
+         */
+        "initials"?: string;
+        /**
+          * Native image loading policy.
+          * @default 'lazy'
+         */
+        "loading": 'eager' | 'lazy';
+        /**
+          * Name used to derive fallback initials and, unless `alt` is supplied, the accessible name.
+         */
+        "name"?: string;
+        /**
+          * @default 'circle'
+         */
+        "shape": QAvatarShape;
+        /**
+          * Preset, pixel number, or CSS size.
+          * @default 'md'
+         */
+        "size": QAvatarSize;
+        /**
+          * Image source. An empty value renders the fallback immediately.
+         */
+        "src"?: string;
     }
     /**
      * Action button that renders a native button or anchor according to `href`.
@@ -271,6 +310,33 @@ export namespace Components {
           * @default 'neutral'
          */
         "variant": QChipVariant;
+    }
+    /**
+     * Semantic conversation message with optional identity, metadata, and actions.
+     */
+    interface QConversationBubble {
+        /**
+          * Overrides the generated accessible message label.
+          * @default null
+         */
+        "ariaLabel": string | null;
+        /**
+          * Reduces spacing for dense conversations.
+          * @default false
+         */
+        "compact": boolean;
+        /**
+          * Visible sender name.
+         */
+        "sender"?: string;
+        /**
+          * Visible timestamp or short temporal description.
+         */
+        "timestamp"?: string;
+        /**
+          * @default 'incoming'
+         */
+        "variant": QConversationBubbleVariant;
     }
     /**
      * Data grid with optional toolbar, search, row activation, and multi-row selection.
@@ -1595,6 +1661,10 @@ export interface QAlertCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLQAlertElement;
 }
+export interface QAvatarCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQAvatarElement;
+}
 export interface QButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLQButtonElement;
@@ -1708,6 +1778,27 @@ declare global {
         prototype: HTMLQAlertElement;
         new (): HTMLQAlertElement;
     };
+    interface HTMLQAvatarElementEventMap {
+        "qLoad": void;
+        "qError": void;
+    }
+    /**
+     * Compact identity image with an initials or consumer-supplied fallback.
+     */
+    interface HTMLQAvatarElement extends Components.QAvatar, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQAvatarElementEventMap>(type: K, listener: (this: HTMLQAvatarElement, ev: QAvatarCustomEvent<HTMLQAvatarElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQAvatarElementEventMap>(type: K, listener: (this: HTMLQAvatarElement, ev: QAvatarCustomEvent<HTMLQAvatarElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLQAvatarElement: {
+        prototype: HTMLQAvatarElement;
+        new (): HTMLQAvatarElement;
+    };
     interface HTMLQButtonElementEventMap {
         "qClick": MouseEvent;
         "qFocus": FocusEvent;
@@ -1781,6 +1872,15 @@ declare global {
     var HTMLQChipElement: {
         prototype: HTMLQChipElement;
         new (): HTMLQChipElement;
+    };
+    /**
+     * Semantic conversation message with optional identity, metadata, and actions.
+     */
+    interface HTMLQConversationBubbleElement extends Components.QConversationBubble, HTMLStencilElement {
+    }
+    var HTMLQConversationBubbleElement: {
+        prototype: HTMLQConversationBubbleElement;
+        new (): HTMLQConversationBubbleElement;
     };
     interface HTMLQDataTableElementEventMap {
         "qRowClick": QDataTableRowClickDetail;
@@ -2323,10 +2423,12 @@ declare global {
     };
     interface HTMLElementTagNameMap {
         "q-alert": HTMLQAlertElement;
+        "q-avatar": HTMLQAvatarElement;
         "q-button": HTMLQButtonElement;
         "q-card": HTMLQCardElement;
         "q-carousel": HTMLQCarouselElement;
         "q-chip": HTMLQChipElement;
+        "q-conversation-bubble": HTMLQConversationBubbleElement;
         "q-data-table": HTMLQDataTableElement;
         "q-dialog": HTMLQDialogElement;
         "q-dropdown": HTMLQDropdownElement;
@@ -2383,6 +2485,43 @@ declare namespace LocalJSX {
           * @default 'info'
          */
         "variant"?: QAlertVariant;
+    }
+    /**
+     * Compact identity image with an initials or consumer-supplied fallback.
+     */
+    interface QAvatar {
+        /**
+          * Accessible image text. Set an explicit empty string when the avatar is decorative.
+         */
+        "alt"?: string;
+        /**
+          * Explicit fallback text. Values are normalized to at most two visible characters.
+         */
+        "initials"?: string;
+        /**
+          * Native image loading policy.
+          * @default 'lazy'
+         */
+        "loading"?: 'eager' | 'lazy';
+        /**
+          * Name used to derive fallback initials and, unless `alt` is supplied, the accessible name.
+         */
+        "name"?: string;
+        "onQError"?: (event: QAvatarCustomEvent<void>) => void;
+        "onQLoad"?: (event: QAvatarCustomEvent<void>) => void;
+        /**
+          * @default 'circle'
+         */
+        "shape"?: QAvatarShape;
+        /**
+          * Preset, pixel number, or CSS size.
+          * @default 'md'
+         */
+        "size"?: QAvatarSize;
+        /**
+          * Image source. An empty value renders the fallback immediately.
+         */
+        "src"?: string;
     }
     /**
      * Action button that renders a native button or anchor according to `href`.
@@ -2574,6 +2713,33 @@ declare namespace LocalJSX {
           * @default 'neutral'
          */
         "variant"?: QChipVariant;
+    }
+    /**
+     * Semantic conversation message with optional identity, metadata, and actions.
+     */
+    interface QConversationBubble {
+        /**
+          * Overrides the generated accessible message label.
+          * @default null
+         */
+        "ariaLabel"?: string | null;
+        /**
+          * Reduces spacing for dense conversations.
+          * @default false
+         */
+        "compact"?: boolean;
+        /**
+          * Visible sender name.
+         */
+        "sender"?: string;
+        /**
+          * Visible timestamp or short temporal description.
+         */
+        "timestamp"?: string;
+        /**
+          * @default 'incoming'
+         */
+        "variant"?: QConversationBubbleVariant;
     }
     /**
      * Data grid with optional toolbar, search, row activation, and multi-row selection.
@@ -3967,6 +4133,15 @@ declare namespace LocalJSX {
         "dismissLabel": string;
         "announcement": QAlertAnnouncement;
     }
+    interface QAvatarAttributes {
+        "src": string;
+        "name": string;
+        "initials": string;
+        "alt": string;
+        "size": string;
+        "shape": QAvatarShape;
+        "loading": 'eager' | 'lazy';
+    }
     interface QButtonAttributes {
         "disabled": boolean;
         "href": string;
@@ -4010,6 +4185,13 @@ declare namespace LocalJSX {
         "removable": boolean;
         "selected": boolean;
         "target": QChipTarget;
+    }
+    interface QConversationBubbleAttributes {
+        "variant": QConversationBubbleVariant;
+        "sender": string;
+        "timestamp": string;
+        "ariaLabel": string | null;
+        "compact": boolean;
     }
     interface QDataTableAttributes {
         "columns": TableColumn[] | string;
@@ -4313,10 +4495,12 @@ declare namespace LocalJSX {
 
     interface IntrinsicElements {
         "q-alert": Omit<QAlert, keyof QAlertAttributes> & { [K in keyof QAlert & keyof QAlertAttributes]?: QAlert[K] } & { [K in keyof QAlert & keyof QAlertAttributes as `attr:${K}`]?: QAlertAttributes[K] } & { [K in keyof QAlert & keyof QAlertAttributes as `prop:${K}`]?: QAlert[K] };
+        "q-avatar": Omit<QAvatar, keyof QAvatarAttributes> & { [K in keyof QAvatar & keyof QAvatarAttributes]?: QAvatar[K] } & { [K in keyof QAvatar & keyof QAvatarAttributes as `attr:${K}`]?: QAvatarAttributes[K] } & { [K in keyof QAvatar & keyof QAvatarAttributes as `prop:${K}`]?: QAvatar[K] };
         "q-button": Omit<QButton, keyof QButtonAttributes> & { [K in keyof QButton & keyof QButtonAttributes]?: QButton[K] } & { [K in keyof QButton & keyof QButtonAttributes as `attr:${K}`]?: QButtonAttributes[K] } & { [K in keyof QButton & keyof QButtonAttributes as `prop:${K}`]?: QButton[K] };
         "q-card": Omit<QCard, keyof QCardAttributes> & { [K in keyof QCard & keyof QCardAttributes]?: QCard[K] } & { [K in keyof QCard & keyof QCardAttributes as `attr:${K}`]?: QCardAttributes[K] } & { [K in keyof QCard & keyof QCardAttributes as `prop:${K}`]?: QCard[K] };
         "q-carousel": Omit<QCarousel, keyof QCarouselAttributes> & { [K in keyof QCarousel & keyof QCarouselAttributes]?: QCarousel[K] } & { [K in keyof QCarousel & keyof QCarouselAttributes as `attr:${K}`]?: QCarouselAttributes[K] } & { [K in keyof QCarousel & keyof QCarouselAttributes as `prop:${K}`]?: QCarousel[K] };
         "q-chip": Omit<QChip, keyof QChipAttributes> & { [K in keyof QChip & keyof QChipAttributes]?: QChip[K] } & { [K in keyof QChip & keyof QChipAttributes as `attr:${K}`]?: QChipAttributes[K] } & { [K in keyof QChip & keyof QChipAttributes as `prop:${K}`]?: QChip[K] };
+        "q-conversation-bubble": Omit<QConversationBubble, keyof QConversationBubbleAttributes> & { [K in keyof QConversationBubble & keyof QConversationBubbleAttributes]?: QConversationBubble[K] } & { [K in keyof QConversationBubble & keyof QConversationBubbleAttributes as `attr:${K}`]?: QConversationBubbleAttributes[K] } & { [K in keyof QConversationBubble & keyof QConversationBubbleAttributes as `prop:${K}`]?: QConversationBubble[K] };
         "q-data-table": Omit<QDataTable, keyof QDataTableAttributes> & { [K in keyof QDataTable & keyof QDataTableAttributes]?: QDataTable[K] } & { [K in keyof QDataTable & keyof QDataTableAttributes as `attr:${K}`]?: QDataTableAttributes[K] } & { [K in keyof QDataTable & keyof QDataTableAttributes as `prop:${K}`]?: QDataTable[K] };
         "q-dialog": Omit<QDialog, keyof QDialogAttributes> & { [K in keyof QDialog & keyof QDialogAttributes]?: QDialog[K] } & { [K in keyof QDialog & keyof QDialogAttributes as `attr:${K}`]?: QDialogAttributes[K] } & { [K in keyof QDialog & keyof QDialogAttributes as `prop:${K}`]?: QDialog[K] };
         "q-dropdown": Omit<QDropdown, keyof QDropdownAttributes> & { [K in keyof QDropdown & keyof QDropdownAttributes]?: QDropdown[K] } & { [K in keyof QDropdown & keyof QDropdownAttributes as `attr:${K}`]?: QDropdownAttributes[K] } & { [K in keyof QDropdown & keyof QDropdownAttributes as `prop:${K}`]?: QDropdown[K] };
@@ -4354,6 +4538,10 @@ declare module "@stencil/core" {
              */
             "q-alert": LocalJSX.IntrinsicElements["q-alert"] & JSXBase.HTMLAttributes<HTMLQAlertElement>;
             /**
+             * Compact identity image with an initials or consumer-supplied fallback.
+             */
+            "q-avatar": LocalJSX.IntrinsicElements["q-avatar"] & JSXBase.HTMLAttributes<HTMLQAvatarElement>;
+            /**
              * Action button that renders a native button or anchor according to `href`.
              */
             "q-button": LocalJSX.IntrinsicElements["q-button"] & JSXBase.HTMLAttributes<HTMLQButtonElement>;
@@ -4369,6 +4557,10 @@ declare module "@stencil/core" {
              * Compact label, link, filter, or removable token.
              */
             "q-chip": LocalJSX.IntrinsicElements["q-chip"] & JSXBase.HTMLAttributes<HTMLQChipElement>;
+            /**
+             * Semantic conversation message with optional identity, metadata, and actions.
+             */
+            "q-conversation-bubble": LocalJSX.IntrinsicElements["q-conversation-bubble"] & JSXBase.HTMLAttributes<HTMLQConversationBubbleElement>;
             /**
              * Data grid with optional toolbar, search, row activation, and multi-row selection.
              * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
