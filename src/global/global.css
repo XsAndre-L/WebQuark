@@ -103,6 +103,21 @@
   --q-reel-lightbox-btn-color: #ffffff;
   --q-reel-lightbox-btn-hover-bg: rgba(255, 255, 255, 0.2);
 
+  /* Avatar (q-avatar) */
+  --q-avatar-size-sm: 28px;
+  --q-avatar-size-md: 40px;
+  --q-avatar-size-lg: 56px;
+  --q-avatar-bg: var(--q-bg-surface-3);
+  --q-avatar-fg: var(--q-fg-base);
+  --q-avatar-border: var(--q-border);
+
+  /* Conversation bubble (q-conversation-bubble) */
+  --q-conversation-incoming-bg: var(--q-bg-surface-2);
+  --q-conversation-outgoing-bg: var(--q-color-primary);
+  --q-conversation-outgoing-fg: #ffffff;
+  --q-conversation-system-bg: transparent;
+  --q-conversation-system-fg: var(--q-fg-muted);
+
   /* Carousel (q-carousel) */
   --q-carousel-gap: 16px;
   --q-carousel-padding: 24px 20px;

@@ -1,6 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import '../../../actions/button/button';
 import '../../../inputs/input/input';
 import '../../../inputs/textarea/textarea';
 import '../../../inputs/toggle/toggle';
@@ -20,7 +19,6 @@ async function createForm(
   document.body.append(element);
   await Promise.all([
     customElements.whenDefined('q-form'),
-    customElements.whenDefined('q-button'),
     customElements.whenDefined('q-input'),
     customElements.whenDefined('q-textarea'),
     customElements.whenDefined('q-toggle'),
@@ -60,7 +58,7 @@ describe('q-form form association in Chromium', () => {
   it('blocks submit while a required q-input is empty', async () => {
     const element = await createForm(`
       <q-input name="email" label="Email" required></q-input>
-      <q-button slot="actions" type="submit">Continue</q-button>
+      <button slot="actions" type="submit">Continue</button>
     `);
     const handler = vi.fn();
     element.addEventListener('qSubmit', handler);

@@ -3,6 +3,7 @@
   { "tag": "q-chip",              "name": "Chip",              "category": "actions" },
   { "tag": "q-link",              "name": "Link",              "category": "actions" },
 
+  { "tag": "q-conversation-bubble", "name": "Conversation Bubble", "category": "data-display" },
   { "tag": "q-data-table",        "name": "Data Table",        "category": "data-display" },
   { "tag": "q-map",               "name": "Map",               "category": "data-display" },
   { "tag": "q-syntax-box",        "name": "Syntax Box",        "category": "data-display" },
@@ -26,6 +27,7 @@
   { "tag": "q-sidepanel",         "name": "Sidepanel",         "category": "layout" },
   { "tag": "q-toolbar",           "name": "Toolbar",           "category": "layout" },
 
+  { "tag": "q-avatar",            "name": "Avatar",            "category": "media" },
   { "tag": "q-icon",              "name": "Icon",              "category": "media" },
   { "tag": "q-reel",              "name": "Reel",              "category": "media" },
 
