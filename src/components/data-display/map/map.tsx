@@ -47,6 +47,7 @@ import type {
   QMapMarkerVisibilityResult,
   QMapMarkerSelectDetail,
   QMapProvider,
+  QMapRasterTileLoadingPolicy,
   QMapStatus,
   QMapStatusChangeDetail,
   QMapViewportRect,
@@ -152,6 +153,8 @@ export class QMap {
   @Prop() tileUrl: string = '';
   /** Preloads zero to four raster-tile rows and columns beyond the viewport. */
   @Prop() tilePreloadBuffer: number = DEFAULT_TILE_PRELOAD_BUFFER;
+  /** Selects full-batch or progressive raster replacement and zoom loading. */
+  @Prop() rasterTileLoadingPolicy: QMapRasterTileLoadingPolicy = 'full-batch';
   /** MapLibre Style Specification URL for the vector provider. */
   @Prop() vectorStyleUrl: string = '';
   /** Extends rendering beyond the viewport; clamped from zero to one-half. */
@@ -285,6 +288,7 @@ export class QMap {
 
   @Watch('provider')
   @Watch('tileUrl')
+  @Watch('rasterTileLoadingPolicy')
   @Watch('vectorStyleUrl')
   @Watch('googleApiKey')
   @Watch('googleMapType')
@@ -450,14 +454,19 @@ export class QMap {
   private createControllers(map: LeafletMap, leaflet: LeafletModule): void {
     this.layerController = new MapBaseLayerController<LeafletLayer>({
       attach: async (layer, provider, context) => {
-        layer.addTo(map);
         if (provider === 'tiles') {
           const tileLayer = layer as import('leaflet').TileLayer;
-          if (context.replacing && tileLayer.isLoading()) {
+          if (context.replacing) {
             await waitForInitialTileLayerReady(tileLayer, {
+              loadingPolicy: this.getRasterTileLoadingPolicy(),
               signal: context.signal,
+              startLoading: () => layer.addTo(map),
             });
+          } else {
+            layer.addTo(map);
           }
+        } else {
+          layer.addTo(map);
         }
         if (provider === 'vector') await waitForMapLibreLayerReady(layer);
       },
@@ -470,16 +479,21 @@ export class QMap {
           maxZoom: config.maxZoom,
         });
       },
-      createTiles: config => createBufferedTileLayer(
-        leaflet,
-        config.tileUrl,
-        createRasterTileLayerOptions(
-          config.minZoom,
-          config.maxZoom,
+      createTiles: config => {
+        const loadingPolicy = this.getRasterTileLoadingPolicy();
+        return createBufferedTileLayer(
+          leaflet,
+          config.tileUrl,
+          createRasterTileLayerOptions(
+            config.minZoom,
+            config.maxZoom,
+            config.tilePreloadBuffer,
+            loadingPolicy,
+          ),
           config.tilePreloadBuffer,
-        ),
-        config.tilePreloadBuffer,
-      ),
+          loadingPolicy,
+        );
+      },
       createVector: async config => {
         const createMapLibreLayer = await loadMapLibreLayerFactory(leaflet);
         return createMapLibreLayer({
@@ -573,6 +587,12 @@ export class QMap {
 
   private getProvider(): QMapProvider {
     return this.provider === 'google' || this.provider === 'vector' ? this.provider : 'tiles';
+  }
+
+  private getRasterTileLoadingPolicy(): QMapRasterTileLoadingPolicy {
+    return this.rasterTileLoadingPolicy === 'progressive'
+      ? 'progressive'
+      : 'full-batch';
   }
 
   private getGoogleMapType(): QMapGoogleMapType {

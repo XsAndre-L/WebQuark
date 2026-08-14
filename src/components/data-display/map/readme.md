@@ -74,32 +74,33 @@ Framework-neutral interactive map powered by Leaflet.
 
 ## Properties
 
-| Property             | Attribute              | Description                                                                  | Type                                                | Default             |
-| -------------------- | ---------------------- | ---------------------------------------------------------------------------- | --------------------------------------------------- | ------------------- |
-| `ariaLabel`          | `aria-label`           | Accessible name for the interactive map region.                              | `string`                                            | `'Interactive map'` |
-| `attribution`        | `attribution`          | Rendered for raster tiles and styled vectors.                                | `string`                                            | `''`                |
-| `attributionUrl`     | `attribution-url`      | Links attribution only for HTTP(S) URLs.                                     | `string`                                            | `''`                |
-| `centerLatitude`     | `center-latitude`      | Finite values are clamped to the geographic range.                           | `number`                                            | `0`                 |
-| `centerLongitude`    | `center-longitude`     | Finite values are clamped to the geographic range.                           | `number`                                            | `0`                 |
-| `clusterMarkers`     | `cluster-markers`      | Preserves stable source IDs while grouping nearby markers.                   | `boolean`                                           | `false`             |
-| `clusterMaxZoom`     | `cluster-max-zoom`     | Defaults to one below `maxZoom`.                                             | `number`                                            | `undefined`         |
-| `clusterMinPoints`   | `cluster-min-points`   |                                                                              | `number`                                            | `2`                 |
-| `clusterRadius`      | `cluster-radius`       | Screen-pixel radius clamped from 1 to 200.                                   | `number`                                            | `48`                |
-| `googleApiKey`       | `google-api-key`       | Browser-restricted key used only when WebQuark loads Google Maps.            | `string`                                            | `''`                |
-| `googleMapType`      | `google-map-type`      | Unsupported values normalize to `roadmap`.                                   | `"hybrid" \| "roadmap" \| "satellite" \| "terrain"` | `'roadmap'`         |
-| `markers`            | `markers`              | Accepts an array or JSON and reconciles markers using type-stable IDs.       | `QMapMarker[] \| string`                            | `[]`                |
-| `maxBounds`          | `max-bounds`           | Accepts an object or JSON; malformed updates preserve the last valid bounds. | `QMapBounds \| string`                              | `undefined`         |
-| `maxBoundsViscosity` | `max-bounds-viscosity` | Clamped from zero to one.                                                    | `number`                                            | `1`                 |
-| `maxZoom`            | `max-zoom`             | Never resolves below `minZoom`.                                              | `number`                                            | `19`                |
-| `minZoom`            | `min-zoom`             | Non-finite values normalize to zero.                                         | `number`                                            | `0`                 |
-| `provider`           | `provider`             | Non-tile provider failures may fall back to `tileUrl`.                       | `"google" \| "tiles" \| "vector"`                   | `'tiles'`           |
-| `selectedMarkerId`   | `selected-marker-id`   | Controls the selected visual and `aria-pressed` state.                       | `number \| string`                                  | `undefined`         |
-| `tilePreloadBuffer`  | `tile-preload-buffer`  | Preloads zero to four raster-tile rows and columns beyond the viewport.      | `number`                                            | `0`                 |
-| `tileUrl`            | `tile-url`             | Tile template used by the tiles provider and optional provider fallback.     | `string`                                            | `''`                |
-| `vectorPadding`      | `vector-padding`       | Extends rendering beyond the viewport; clamped from zero to one-half.        | `number`                                            | `0.2`               |
-| `vectorStyleUrl`     | `vector-style-url`     | MapLibre Style Specification URL for the vector provider.                    | `string`                                            | `''`                |
-| `zoom`               | `zoom`                 | Clamped between the normalized zoom limits.                                  | `number`                                            | `2`                 |
-| `zoomControls`       | `zoom-controls`        |                                                                              | `boolean`                                           | `true`              |
+| Property                  | Attribute                    | Description                                                                  | Type                                                | Default             |
+| ------------------------- | ---------------------------- | ---------------------------------------------------------------------------- | --------------------------------------------------- | ------------------- |
+| `ariaLabel`               | `aria-label`                 | Accessible name for the interactive map region.                              | `string`                                            | `'Interactive map'` |
+| `attribution`             | `attribution`                | Rendered for raster tiles and styled vectors.                                | `string`                                            | `''`                |
+| `attributionUrl`          | `attribution-url`            | Links attribution only for HTTP(S) URLs.                                     | `string`                                            | `''`                |
+| `centerLatitude`          | `center-latitude`            | Finite values are clamped to the geographic range.                           | `number`                                            | `0`                 |
+| `centerLongitude`         | `center-longitude`           | Finite values are clamped to the geographic range.                           | `number`                                            | `0`                 |
+| `clusterMarkers`          | `cluster-markers`            | Preserves stable source IDs while grouping nearby markers.                   | `boolean`                                           | `false`             |
+| `clusterMaxZoom`          | `cluster-max-zoom`           | Defaults to one below `maxZoom`.                                             | `number`                                            | `undefined`         |
+| `clusterMinPoints`        | `cluster-min-points`         |                                                                              | `number`                                            | `2`                 |
+| `clusterRadius`           | `cluster-radius`             | Screen-pixel radius clamped from 1 to 200.                                   | `number`                                            | `48`                |
+| `googleApiKey`            | `google-api-key`             | Browser-restricted key used only when WebQuark loads Google Maps.            | `string`                                            | `''`                |
+| `googleMapType`           | `google-map-type`            | Unsupported values normalize to `roadmap`.                                   | `"hybrid" \| "roadmap" \| "satellite" \| "terrain"` | `'roadmap'`         |
+| `markers`                 | `markers`                    | Accepts an array or JSON and reconciles markers using type-stable IDs.       | `QMapMarker[] \| string`                            | `[]`                |
+| `maxBounds`               | `max-bounds`                 | Accepts an object or JSON; malformed updates preserve the last valid bounds. | `QMapBounds \| string`                              | `undefined`         |
+| `maxBoundsViscosity`      | `max-bounds-viscosity`       | Clamped from zero to one.                                                    | `number`                                            | `1`                 |
+| `maxZoom`                 | `max-zoom`                   | Never resolves below `minZoom`.                                              | `number`                                            | `19`                |
+| `minZoom`                 | `min-zoom`                   | Non-finite values normalize to zero.                                         | `number`                                            | `0`                 |
+| `provider`                | `provider`                   | Non-tile provider failures may fall back to `tileUrl`.                       | `"google" \| "tiles" \| "vector"`                   | `'tiles'`           |
+| `rasterTileLoadingPolicy` | `raster-tile-loading-policy` | Selects full-batch or progressive raster replacement and zoom loading.       | `"full-batch" \| "progressive"`                     | `'full-batch'`      |
+| `selectedMarkerId`        | `selected-marker-id`         | Controls the selected visual and `aria-pressed` state.                       | `number \| string`                                  | `undefined`         |
+| `tilePreloadBuffer`       | `tile-preload-buffer`        | Preloads zero to four raster-tile rows and columns beyond the viewport.      | `number`                                            | `0`                 |
+| `tileUrl`                 | `tile-url`                   | Tile template used by the tiles provider and optional provider fallback.     | `string`                                            | `''`                |
+| `vectorPadding`           | `vector-padding`             | Extends rendering beyond the viewport; clamped from zero to one-half.        | `number`                                            | `0.2`               |
+| `vectorStyleUrl`          | `vector-style-url`           | MapLibre Style Specification URL for the vector provider.                    | `string`                                            | `''`                |
+| `zoom`                    | `zoom`                       | Clamped between the normalized zoom limits.                                  | `number`                                            | `2`                 |
+| `zoomControls`            | `zoom-controls`              |                                                                              | `boolean`                                           | `true`              |
 
 
 ## Events
