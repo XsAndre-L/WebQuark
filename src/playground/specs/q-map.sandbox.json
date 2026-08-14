@@ -13,6 +13,12 @@
       "default": "",
       "desc": "Leaflet tile URL template used by the tiles provider"
     },
+    "rasterTileLoadingPolicy": {
+      "type": "select",
+      "options": ["full-batch", "progressive"],
+      "default": "full-batch",
+      "desc": "Full-batch or first-success progressive raster replacement"
+    },
     "googleApiKey": {
       "type": "string",
       "default": "",

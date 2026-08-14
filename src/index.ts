@@ -35,6 +35,7 @@ export {
   Q_MAP_MARKER_RINGS,
   Q_MAP_MARKER_SIZES,
   Q_MAP_MARKER_VARIANTS,
+  Q_MAP_RASTER_TILE_LOADING_POLICIES,
 } from './components/data-display/map/map.types';
 export {
   getDataTableCellSlotName,
@@ -83,6 +84,7 @@ export type {
   QMapMarkerVariant,
   QMapMarkerVisibilityResult,
   QMapProvider,
+  QMapRasterTileLoadingPolicy,
   QMapStatus,
   QMapStatusChangeDetail,
   QMapViewportRect,

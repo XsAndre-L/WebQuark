@@ -78,6 +78,12 @@ describe('createBufferedTileLayer', () => {
   it('keeps Leaflet mobile defaults in low mode and opts into eager quality updates', () => {
     const low = createRasterTileLayerOptions(0, 19, 0);
     const quality = createRasterTileLayerOptions(0, 19, 2);
+    const progressive = createRasterTileLayerOptions(
+      0,
+      19,
+      0,
+      'progressive',
+    );
 
     expect(low).not.toHaveProperty('updateWhenIdle');
     expect(low).not.toHaveProperty('updateWhenZooming');
@@ -87,5 +93,100 @@ describe('createBufferedTileLayer', () => {
       updateWhenIdle: false,
       updateWhenZooming: true,
     });
+    expect(progressive).toMatchObject({ updateWhenZooming: true });
+    expect(progressive).not.toHaveProperty('updateWhenIdle');
+    expect(progressive).not.toHaveProperty('updateInterval');
+  });
+
+  it('keeps a loaded parent visible when a progressive child tile fails', () => {
+    const tiles: Record<string, { active: boolean; current: boolean }> = {
+      parent: { active: true, current: false },
+      child: { active: false, current: true },
+    };
+    const layer = {
+      _getTiledPixelBounds: () => undefined,
+      _initTile: () => undefined,
+      _pruneTiles: () => {
+        if (tiles.child?.active) delete tiles.parent;
+      },
+      _tileCoordsToKey: () => 'child',
+      _tileReady: (_coords: unknown, _error: unknown, _tile: unknown) => {
+        tiles.child.active = true;
+        layer._pruneTiles();
+      },
+      _tiles: tiles,
+      _updateOpacity: () => {
+        tiles.child.active = true;
+        layer._pruneTiles();
+      },
+      getTileSize: () => ({ x: 256, y: 256 }),
+      onAdd: () => layer,
+    };
+    const leaflet = {
+      tileLayer: () => layer,
+    };
+    const progressiveLayer = createBufferedTileLayer(
+      leaflet as never,
+      'https://tiles.example/{z}/{x}/{y}.png',
+      {},
+      0,
+      'progressive',
+    ) as unknown as typeof layer;
+    progressiveLayer.onAdd();
+
+    progressiveLayer._tileReady(
+      { x: 0, y: 0, z: 2 } as never,
+      new Error('child failed'),
+      {} as never,
+    );
+
+    expect(tiles.parent).toBeDefined();
+    expect(tiles.child.active).toBe(false);
+
+    progressiveLayer._updateOpacity();
+
+    expect(tiles.parent).toBeDefined();
+    expect(tiles.child.active).toBe(false);
+
+    progressiveLayer._tileReady(
+      { x: 0, y: 0, z: 2 } as never,
+      null,
+      {} as never,
+    );
+
+    expect(tiles.parent).toBeUndefined();
+    expect(tiles.child.active).toBe(true);
+
+    progressiveLayer._updateOpacity();
+
+    expect(tiles.child.active).toBe(true);
+  });
+
+  it('fails closed when Leaflet does not initialize progressive tile records', () => {
+    const layer = {
+      _getTiledPixelBounds: () => undefined,
+      _initTile: () => undefined,
+      _pruneTiles: () => undefined,
+      _tileCoordsToKey: () => 'child',
+      _tileReady: () => undefined,
+      _updateOpacity: () => undefined,
+      getTileSize: () => ({ x: 256, y: 256 }),
+      onAdd: () => layer,
+    };
+    const leaflet = {
+      tileLayer: () => layer,
+    };
+
+    const progressiveLayer = createBufferedTileLayer(
+      leaflet as never,
+      'https://tiles.example/{z}/{x}/{y}.png',
+      {},
+      0,
+      'progressive',
+    ) as unknown as typeof layer;
+
+    expect(() => progressiveLayer.onAdd()).toThrow(
+      'Progressive raster loading is not supported by this Leaflet tile layer.',
+    );
   });
 });

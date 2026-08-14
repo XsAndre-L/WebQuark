@@ -4,6 +4,7 @@ import { waitForInitialTileLayerReady } from '../internals/tile-layer-readiness'
 
 class TestTileLayer {
   private readonly listeners = new Map<string, Set<() => void>>();
+  loading = false;
 
   on(type: string, listener: () => void): this {
     const listeners = this.listeners.get(type) ?? new Set<() => void>();
@@ -27,6 +28,10 @@ class TestTileLayer {
       0,
     );
   }
+
+  isLoading(): boolean {
+    return this.loading;
+  }
 }
 
 afterEach(() => {
@@ -46,6 +51,25 @@ describe('raster tile-layer readiness', () => {
     expect(layer.listenerCount()).toBe(0);
   });
 
+  it('keeps the default full-batch policy waiting after one tile succeeds', async () => {
+    const layer = new TestTileLayer();
+    let resolved = false;
+    const readiness = waitForInitialTileLayerReady(layer as never, {
+      timeoutMs: 100,
+    }).then(() => {
+      resolved = true;
+    });
+
+    layer.emit('tileload');
+    await Promise.resolve();
+
+    expect(resolved).toBe(false);
+
+    layer.emit('load');
+    await readiness;
+    expect(layer.listenerCount()).toBe(0);
+  });
+
   it('rejects tile errors without waiting for the timeout', async () => {
     const layer = new TestTileLayer();
     const readiness = waitForInitialTileLayerReady(layer as never, {
@@ -53,6 +77,51 @@ describe('raster tile-layer readiness', () => {
     });
 
     layer.emit('tileerror');
+
+    await expect(readiness).rejects.toThrow('Raster tiles failed to load.');
+    expect(layer.listenerCount()).toBe(0);
+  });
+
+  it('lets a progressive replacement commit on its first successful tile', async () => {
+    const layer = new TestTileLayer();
+    const readiness = waitForInitialTileLayerReady(layer as never, {
+      loadingPolicy: 'progressive',
+      timeoutMs: 100,
+    });
+
+    layer.emit('tileerror');
+    layer.emit('tileload');
+
+    await expect(readiness).resolves.toBeUndefined();
+    expect(layer.listenerCount()).toBe(0);
+  });
+
+  it('observes a cached progressive tile that loads during layer activation', async () => {
+    const layer = new TestTileLayer();
+    const readiness = waitForInitialTileLayerReady(layer as never, {
+      loadingPolicy: 'progressive',
+      startLoading: () => {
+        layer.loading = true;
+        layer.emit('tileload');
+        layer.emit('load');
+        layer.loading = false;
+      },
+      timeoutMs: 100,
+    });
+
+    await expect(readiness).resolves.toBeUndefined();
+    expect(layer.listenerCount()).toBe(0);
+  });
+
+  it('rejects a progressive batch that completes without a successful tile', async () => {
+    const layer = new TestTileLayer();
+    const readiness = waitForInitialTileLayerReady(layer as never, {
+      loadingPolicy: 'progressive',
+      timeoutMs: 100,
+    });
+
+    layer.emit('tileerror');
+    layer.emit('load');
 
     await expect(readiness).rejects.toThrow('Raster tiles failed to load.');
     expect(layer.listenerCount()).toBe(0);
