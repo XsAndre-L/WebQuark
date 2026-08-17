@@ -40,6 +40,7 @@ Remote, local, or binary icon renderer with SVG sanitization.
  - [q-data-table](../../data-display/data-table)
  - [q-map](../../data-display/map)
  - [q-navbar](../../layout/navbar)
+ - [q-radio-group](../../inputs/radio-group)
  - [q-sidepanel](../../layout/sidepanel)
  - [q-syntax-box](../../data-display/syntax-box)
  - [q-tabs](../../layout/tabs)
@@ -51,6 +52,7 @@ graph TD;
   q-data-table --> q-icon
   q-map --> q-icon
   q-navbar --> q-icon
+  q-radio-group --> q-icon
   q-sidepanel --> q-icon
   q-syntax-box --> q-icon
   q-tabs --> q-icon

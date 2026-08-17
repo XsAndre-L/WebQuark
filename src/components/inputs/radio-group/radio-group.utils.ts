@@ -17,6 +17,7 @@ export function getRadioGroupOptions(options: RadioGroupOptionInput[] | string):
       label: typeof option.label === 'string' ? option.label : option.value,
       value: option.value,
       disabled: option.disabled === true,
+      icon: typeof option.icon === 'string' ? option.icon : undefined,
     }];
   });
 }
