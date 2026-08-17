@@ -267,6 +267,14 @@ export class QRadioGroup {
                   onFocus={this.handleFocus}
                   onBlur={this.handleBlur}
                 />
+                {option.icon && (
+                  <q-icon
+                    name={option.icon}
+                    size={this.size === 'sm' ? '14' : this.size === 'lg' ? '18' : '16'}
+                    part="option-icon"
+                    class="option-icon"
+                  />
+                )}
                 <span part="option-label">{option.label}</span>
               </label>
             ))}

@@ -47,22 +47,37 @@ legend {
 
 .option {
   position: relative;
-  display: grid;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   box-sizing: border-box;
   min-width: 0;
   min-height: var(--q-radio-group-option-min-height);
-  place-items: center;
   padding: var(--q-radio-group-option-padding);
   color: var(--q-fg-muted, #9ca3af);
   background: var(--q-radio-group-bg);
   cursor: pointer;
   text-align: center;
-  font-size: var(--q-font-size-sm, 0.7rem);
+  font-size: var(--q-font-size-base, 0.875rem);
   font-weight: var(--q-font-weight-bold, 600);
   line-height: 1.2;
   transition:
     color var(--q-transition-fast, 150ms ease),
     background-color var(--q-transition-fast, 150ms ease);
+}
+
+.option-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.85;
+}
+
+.option.is-selected .option-icon {
+  opacity: 1;
 }
 
 .option + .option {
@@ -110,8 +125,19 @@ input {
 }
 
 .size-sm {
-  --q-radio-group-option-min-height: 32px;
-  --q-radio-group-option-padding: 4px 6px;
+  --q-radio-group-option-min-height: 30px;
+  --q-radio-group-option-padding: 0 6px;
+}
+
+.size-sm .options {
+  min-height: 32px;
+  height: 32px;
+}
+
+.size-sm .option {
+  height: 100%;
+  min-height: 30px;
+  font-size: var(--q-font-size-sm, 0.75rem);
 }
 
 .size-lg {
@@ -120,7 +146,7 @@ input {
 }
 
 .size-lg .option {
-  font-size: var(--q-font-size-base, 0.9rem);
+  font-size: var(--q-font-size-lg, 1rem);
 }
 
 .orientation-vertical .options {
