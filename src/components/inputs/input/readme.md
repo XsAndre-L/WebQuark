@@ -11,23 +11,23 @@ Form-associated input field with optional prefix/suffix slots, clear button, pas
 
 ## Properties
 
-| Property       | Attribute       | Description                                                            | Type                                                                          | Default     |
-| -------------- | --------------- | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ----------- |
-| `ariaLabel`    | `aria-label`    | Accessible name for the native input when a visible label is not used. | `string`                                                                      | `null`      |
-| `clearable`    | `clearable`     | Shows a clear button when the field has a value.                       | `boolean`                                                                     | `false`     |
-| `disabled`     | `disabled`      |                                                                        | `boolean`                                                                     | `false`     |
-| `error`        | `error`         | Validation error text or error-state flag.                             | `string`                                                                      | `undefined` |
-| `errorMessage` | `error-message` | Validation helper text displayed when the field is in an error state.  | `string`                                                                      | `undefined` |
-| `label`        | `label`         |                                                                        | `string`                                                                      | `undefined` |
-| `max`          | `max`           |                                                                        | `number`                                                                      | `undefined` |
-| `min`          | `min`           |                                                                        | `number`                                                                      | `undefined` |
-| `name`         | `name`          |                                                                        | `string`                                                                      | `undefined` |
-| `placeholder`  | `placeholder`   |                                                                        | `string`                                                                      | `""`        |
-| `required`     | `required`      |                                                                        | `boolean`                                                                     | `false`     |
-| `size`         | `size`          |                                                                        | `"lg" \| "md" \| "sm"`                                                        | `'md'`      |
-| `step`         | `step`          |                                                                        | `number`                                                                      | `1`         |
-| `type`         | `type`          | `password` adds a visibility toggle; `number` adds spinner controls.   | `"color" \| "email" \| "number" \| "password" \| "search" \| "text" \| "url"` | `'text'`    |
-| `value`        | `value`         |                                                                        | `string`                                                                      | `""`        |
+| Property       | Attribute       | Description                                                            | Type                                                                                                                                       | Default     |
+| -------------- | --------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ----------- |
+| `ariaLabel`    | `aria-label`    | Accessible name for the native input when a visible label is not used. | `string`                                                                                                                                   | `null`      |
+| `clearable`    | `clearable`     | Shows a clear button when the field has a value.                       | `boolean`                                                                                                                                  | `false`     |
+| `disabled`     | `disabled`      |                                                                        | `boolean`                                                                                                                                  | `false`     |
+| `error`        | `error`         | Validation error text or error-state flag.                             | `string`                                                                                                                                   | `undefined` |
+| `errorMessage` | `error-message` | Validation helper text displayed when the field is in an error state.  | `string`                                                                                                                                   | `undefined` |
+| `label`        | `label`         |                                                                        | `string`                                                                                                                                   | `undefined` |
+| `max`          | `max`           |                                                                        | `number`                                                                                                                                   | `undefined` |
+| `min`          | `min`           |                                                                        | `number`                                                                                                                                   | `undefined` |
+| `name`         | `name`          |                                                                        | `string`                                                                                                                                   | `undefined` |
+| `placeholder`  | `placeholder`   |                                                                        | `string`                                                                                                                                   | `""`        |
+| `required`     | `required`      |                                                                        | `boolean`                                                                                                                                  | `false`     |
+| `size`         | `size`          |                                                                        | `"lg" \| "md" \| "sm"`                                                                                                                     | `'md'`      |
+| `step`         | `step`          |                                                                        | `number`                                                                                                                                   | `1`         |
+| `type`         | `type`          | `password` adds a visibility toggle; `number` adds spinner controls.   | `"color" \| "date" \| "datetime-local" \| "email" \| "month" \| "number" \| "password" \| "search" \| "text" \| "time" \| "url" \| "week"` | `'text'`    |
+| `value`        | `value`         |                                                                        | `string`                                                                                                                                   | `""`        |
 
 
 ## Events

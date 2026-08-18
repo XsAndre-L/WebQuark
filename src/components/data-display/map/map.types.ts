@@ -20,6 +20,15 @@ export const Q_MAP_DEFAULT_CLUSTER_GROUP = 'default';
 
 export type QMapProvider = 'tiles' | 'vector' | 'google';
 
+export const Q_MAP_RASTER_TILE_LOADING_POLICIES = [
+  'full-batch',
+  'progressive',
+] as const;
+
+/** Controls how a replacement raster layer becomes visible. */
+export type QMapRasterTileLoadingPolicy =
+  (typeof Q_MAP_RASTER_TILE_LOADING_POLICIES)[number];
+
 export type QMapGoogleMapType = 'roadmap' | 'satellite' | 'terrain' | 'hybrid';
 
 export const Q_MAP_MARKER_VARIANTS = ['default', 'success', 'warning', 'danger', 'muted'] as const;

@@ -77,9 +77,23 @@ Type: `Promise<boolean>`
 | `"input"`        | Native radio input retained for keyboard and screen-reader behavior. |
 | `"label"`        | Visible group legend.                                                |
 | `"option"`       | Individual option label.                                             |
+| `"option-icon"`  |                                                                      |
 | `"option-label"` | Visible option text.                                                 |
 | `"options"`      | Segmented option container.                                          |
 
+
+## Dependencies
+
+### Depends on
+
+- [q-icon](../../media/icon)
+
+### Graph
+```mermaid
+graph TD;
+  q-radio-group --> q-icon
+  style q-radio-group fill:#f9f,stroke:#333,stroke-width:4px
+```
 
 ----------------------------------------------
 

@@ -248,6 +248,7 @@ function updateCalloutStats(
     return item;
   });
 
-  element.replaceChildren(...items);
+  element.textContent = '';
+  element.append(...items);
   element.hidden = items.length === 0;
 }

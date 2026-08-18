@@ -1,7 +1,10 @@
+import type { QIconName } from '../../media/icon/icon.types';
+
 export interface RadioGroupOption {
   label: string;
   value: string;
   disabled?: boolean;
+  icon?: QIconName;
 }
 
 /** A concise option label/value or a fully configured radio option. */

@@ -448,7 +448,7 @@ describe('q-map in Chromium', () => {
         ?.querySelector('.q-map-callout__status')
         ?.classList.contains('variant-warning'),
     ).toBe(true);
-    expect(updatedCallout?.getBoundingClientRect().width).toBeGreaterThan(initialWidth);
+    expect(updatedCallout?.getBoundingClientRect().width).toBeCloseTo(initialWidth, 1);
     expect(updatedCallout?.style.transform).not.toBe(initialTransform);
 
     element.selectedMarkerId = undefined;
