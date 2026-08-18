@@ -1,0 +1,26 @@
+{
+  "name": "Conversation Bubble",
+  "tag": "q-conversation-bubble",
+  "props": {
+    "variant": { "type": "select", "options": ["incoming", "outgoing", "system"], "default": "incoming", "desc": "Message alignment and surface" },
+    "sender": { "type": "string", "default": "Assistant", "desc": "Visible sender name" },
+    "timestamp": { "type": "string", "default": "Just now", "desc": "Visible temporal description" },
+    "ariaLabel": { "type": "string", "default": "", "desc": "Optional accessible-name override" },
+    "compact": { "type": "boolean", "default": false, "desc": "Dense message spacing" }
+  },
+  "slots": {
+    "default": { "type": "textarea", "default": "What makes a conversation feel genuinely meaningful to you?", "desc": "Message body" },
+    "avatar": { "type": "html", "default": "<q-avatar name=\"Assistant\" initials=\"AI\" size=\"sm\"></q-avatar>", "desc": "Optional identity mark" },
+    "meta": { "type": "html", "default": "", "desc": "Optional delivery or status metadata" },
+    "actions": { "type": "html", "default": "", "desc": "Optional message actions" }
+  },
+  "variants": [
+    { "name": "Incoming", "props": { "variant": "incoming", "sender": "Assistant" } },
+    { "name": "Outgoing", "props": { "variant": "outgoing", "sender": "You" }, "slots": { "default": "Curiosity, kindness, and room to change my mind.", "avatar": "" } },
+    { "name": "System", "props": { "variant": "system", "sender": "" }, "slots": { "default": "Matching is paused.", "avatar": "" } }
+  ],
+  "edgeCases": [
+    { "name": "Long Unbroken Content", "slots": { "default": "averylongunbrokenmessagethatmustwrapwithoutoverflowingtheconversationlayoutorviewport" } }
+  ]
+}
+

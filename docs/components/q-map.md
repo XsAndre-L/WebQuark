@@ -13,6 +13,7 @@ Canonical API: [generated Stencil reference](../../src/components/data-display/m
 | `provider` | `provider` | `'tiles' \| 'vector' \| 'google'` | `'tiles'` | Map imagery provider. |
 | `tileUrl` | `tile-url` | `string` | `''` | Tile URL template used when `provider` is `tiles`, and as an optional fallback if vector or Google initialization fails. An empty value shows the tiles-provider empty state. |
 | `tilePreloadBuffer` | `tile-preload-buffer` | `number` | `0` | Whole raster-tile rings preloaded beyond each viewport edge, rounded and clamped to `0`–`4`. Higher values use more network, decode memory, and rendering work. |
+| `rasterTileLoadingPolicy` | `raster-tile-loading-policy` | `'full-batch' \| 'progressive'` | `'full-batch'` | Controls replacement readiness. Progressive mode commits after the first successful tile and preserves loaded parent tiles while finer children remain pending or fail. |
 | `vectorStyleUrl` | `vector-style-url` | `string` | `''` | MapLibre Style Specification URL required by the vector provider. |
 | `vectorPadding` | `vector-padding` | `number` | `0.2` | Relative offscreen vector-rendering padding clamped to `0`–`0.5`. |
 | `googleApiKey` | `google-api-key` | `string` | `''` | Browser-restricted key used when WebQuark must load Google Maps. It may remain empty when the application already exposes `google.maps.Map` or `google.maps.importLibrary`. |
@@ -60,6 +61,8 @@ Shadow parts:
 ## Provider status and failures
 
 Provider changes are transactional. `q-map` keeps the current layer mounted while a replacement loads, attaches the replacement before removing the old layer, and discards stale asynchronous results when configuration changes again. A missing required URL or key is an intentional `empty` state and removes the active layer.
+
+Raster replacements use `rasterTileLoadingPolicy="full-batch"` by default: every initially requested tile must finish without an error before the working layer is removed. Opt into `progressive` only for slow, application-owned raster services. It commits the replacement after the first successful requested tile, tolerates other tile failures, and lets Leaflet keep already-loaded coarser parents visible while finer children are pending. With a non-zero `tilePreloadBuffer`, that first success may be outside the visible viewport. The replacement still fails if no initial tile succeeds before the batch completes or the readiness timeout expires.
 
 If vector or Google initialization fails and `tileUrl` is configured, the component emits `qError` for the requested-provider failure and then reports `ready` with `activeProvider: 'tiles'` and `usingFallback: true`. If no fallback succeeds, the component reports `error`, exposes a visible alert, and preserves the last working layer when one exists. Applications should log or surface `qError` as appropriate and use `qStatusChange` to drive surrounding loading/status UI.
 

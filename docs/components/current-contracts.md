@@ -168,6 +168,14 @@ For array and object inputs, assign the JavaScript property unless the contract 
 
 ## Data display and indicators
 
+### `q-conversation-bubble`
+
+- API: [generated reference](../../src/components/data-display/conversation-bubble/readme.md)
+- Properties: `variant`, `sender`, `timestamp`, `ariaLabel`, `compact`.
+- Slots: `avatar`, default message body, `meta`, `actions`.
+- Behavior: `incoming`, `outgoing`, and `system` control alignment and appearance without owning message state. Message body text wraps and preserves line breaks.
+- Accessibility: renders a named message group without an automatic live region. Consumers own restrained announcement behavior for newly arriving messages.
+
 ### `q-data-table`
 
 - API: [generated reference](../../src/components/data-display/data-table/readme.md)
@@ -181,11 +189,11 @@ For array and object inputs, assign the JavaScript property unless the contract 
 ### `q-map`
 
 - API: [generated reference](../../src/components/data-display/map/readme.md)
-- Properties: `provider`, `tileUrl`, `googleApiKey`, `googleMapType`, `attribution`, `attributionUrl`, `centerLatitude`, `centerLongitude`, `zoom`, `minZoom`, `maxZoom`, `maxBounds`, `maxBoundsViscosity`, `markers`, `selectedMarkerId`, `ariaLabel`.
+- Properties: `provider`, `tileUrl`, `tilePreloadBuffer`, `rasterTileLoadingPolicy`, `vectorStyleUrl`, `vectorPadding`, `googleApiKey`, `googleMapType`, `attribution`, `attributionUrl`, `centerLatitude`, `centerLongitude`, `zoom`, `minZoom`, `maxZoom`, `maxBounds`, `maxBoundsViscosity`, `markers`, `selectedMarkerId`, `ariaLabel`.
 - Events: `qReady`, `qMarkerSelect`, `qStatusChange`, `qError`.
 - Slots: `empty` replaces missing provider configuration; `error` replaces the visible failure message when no requested or fallback provider can be activated.
 - Shadow parts: `surface`, `canvas`, `marker`, `attribution`, `empty`, `error`.
-- Behavior: wraps Leaflet behind a framework-neutral Web Component contract. Provider swaps are transactional, preserve the previous working layer until replacement succeeds, discard stale async results, and report serializable status/errors. The `tiles` provider uses a consumer-supplied URL and attribution; the optional `google` provider loads the official Maps JavaScript API through GoogleMutant, preserves Google's legal controls, and falls back to `tileUrl` when configured. `maxBounds` accepts an object or JSON string; malformed non-empty updates emit `qError` and preserve the last valid boundary. Assign `markers` as a JavaScript array of records containing a stable type-sensitive `id`, finite coordinates, a `label`, and an optional visual `variant`. Marker selection is controlled through `selectedMarkerId`; activation emits `qMarkerSelect` without mutating application data.
+- Behavior: wraps Leaflet behind a framework-neutral Web Component contract. Provider swaps are transactional, preserve the previous working layer until replacement succeeds, discard stale async results, and report serializable status/errors. Raster replacements wait for the full initial batch by default; the opt-in `progressive` loading policy commits after the first successful tile and preserves loaded parent tiles while finer children remain pending or fail. The `tiles` provider uses a consumer-supplied URL and attribution; the optional `google` provider loads the official Maps JavaScript API through GoogleMutant, preserves Google's legal controls, and falls back to `tileUrl` when configured. `maxBounds` accepts an object or JSON string; malformed non-empty updates emit `qError` and preserve the last valid boundary. Assign `markers` as a JavaScript array of records containing a stable type-sensitive `id`, finite coordinates, a `label`, and an optional visual `variant`. Marker selection is controlled through `selectedMarkerId`; activation emits `qMarkerSelect` without mutating application data.
 - Accessibility: `ariaLabel` names the map region and markers are keyboard operable. Important locations and actions must also be available outside the map because a spatial canvas is not an accessible replacement for structured content.
 - Performance: marker layers are reconciled by stable ID and map sizing follows its host container. Paginate, cluster, or otherwise limit very large marker collections in the consuming application.
 - Limitations: consumers provide and license the imagery service, API key and CSP where applicable, attribution, location data, real-time transport, geocoding, routing, clustering, and domain-specific popups. `q-map` does not call an application backend. Google imagery is network-only and GoogleMutant's legal controls require visual validation in each supported runtime.
@@ -225,6 +233,15 @@ For array and object inputs, assign the JavaScript property unless the contract 
 - Known limitation: `pending` is exposed as `aria-disabled` but currently still activates; consumers must ignore the event until that implementation is corrected.
 
 ## Media
+
+### `q-avatar`
+
+- API: [generated reference](../../src/components/media/avatar/readme.md)
+- Properties: `src`, `name`, `initials`, `alt`, `size`, `shape`, `loading`.
+- Events: `qLoad`, `qError`.
+- Slot: `fallback`.
+- Behavior: reserves its dimensions and replaces a missing or failed image with explicit initials, initials derived from `name`, or slotted fallback content.
+- Accessibility: `alt` takes precedence over `name`; an explicit empty `alt` makes the avatar decorative. Fallback content is visual and does not duplicate the accessible name.
 
 ### `q-icon`
 

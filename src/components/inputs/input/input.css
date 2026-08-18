@@ -18,24 +18,20 @@
   font-weight: var(--q-font-weight-bold, 600);
   color: var(--q-fg-muted, #9ca3af);
   margin-bottom: 6px;
-  
   transition: color var(--q-transition-fast, 150ms ease);
 }
 
 /* Input Control Flex Box */
 .input-control {
   display: flex;
-  /* stretch so children (spinners) can fill full height; prefix/suffix self-align via align-items:center */
   align-items: stretch;
   position: relative;
   width: 100%;
   background: var(--q-input-bg, var(--q-bg-surface-2, #374151));
-  /* Standard static border limits size shifts on focus overlays */
   border: var(--q-input-border, var(--q-border, 1px solid var(--q-border-color, #4b5563)));
   border-radius: var(--q-input-radius, var(--q-radius-md, 8px));
   box-sizing: border-box;
   overflow: hidden;
-  
   transition: border-color var(--q-transition-fast, 150ms ease), 
               box-shadow var(--q-transition-fast, 150ms ease);
 }
@@ -47,13 +43,11 @@
   border: none;
   padding: var(--q-input-padding, 10px 14px);
   line-height: 1.2;
-  align-self: center;    /* centre vertically inside the stretch container */
-  
+  align-self: center;
   font-family: var(--q-font-family, inherit);
   font-size: var(--q-font-size-base, 0.9rem);
   font-weight: var(--q-font-weight-normal, 400);
   color: var(--q-fg-base, #f9fafb);
-  
   outline: none;
   box-sizing: border-box;
 }
@@ -62,7 +56,7 @@
 .prefix-container,
 .suffix-container {
   display: flex;
-  align-items: center;   /* self-centre inside the stretch container */
+  align-items: center;
   padding: 0 12px;
   color: var(--q-fg-muted, #9ca3af);
   flex-shrink: 0;
@@ -76,7 +70,7 @@
   padding-left: 0;
 }
 
-/* Focused State triggers color update, keeping width constant */
+/* Focused State */
 .input-control:focus-within {
   border-color: var(--q-color-primary, #60a5fa);
   box-shadow: 0 0 0 1px var(--q-color-primary, #60a5fa);
@@ -86,7 +80,7 @@
   color: var(--q-color-primary, #60a5fa);
 }
 
-/* Validation Error State Specificity Overrides */
+/* Validation Error State */
 .has-error .input-control {
   border-color: var(--q-color-danger, #ef4444) !important;
   box-shadow: none;
@@ -124,7 +118,6 @@
 
 .clear-btn:hover,
 .password-toggle-btn:hover {
-  background: rgba(249, 250, 251, 0.08); /* Static background color fallback before color-mix */
   background: var(--q-btn-hover-overlay, color-mix(in srgb, var(--q-fg-base, #f9fafb) 8%, transparent));
   color: var(--q-fg-base, #f9fafb);
 }
@@ -135,7 +128,7 @@
   height: 14px;
 }
 
-/* Disabled State Visual Styling */
+/* Disabled State */
 .is-disabled {
   opacity: 0.6;
 }
@@ -167,12 +160,16 @@ input.input-box[type="color"]::-moz-color-swatch {
 }
 
 /* Sizing Layouts */
+.input-wrapper.size-sm .input-control {
+  min-height: 32px;
+  height: 32px;
+}
 .input-wrapper.size-sm .input-label {
   font-size: var(--q-font-size-sm, 0.7rem);
 }
 .input-wrapper.size-sm .input-box {
-  padding: 6px 10px;
-  font-size: var(--q-font-size-sm, 0.7rem);
+  padding: 4px 8px;
+  font-size: var(--q-font-size-sm, 0.75rem);
 }
 .input-wrapper.size-sm .prefix-container,
 .input-wrapper.size-sm .suffix-container {
@@ -198,16 +195,11 @@ input.input-box[type="color"]::-moz-color-swatch {
 .input-wrapper.size-md .prefix-container,
 .input-wrapper.size-md .suffix-container {
   padding: 0 12px;
-
 }
 .input-wrapper.size-md .clear-btn svg,
 .input-wrapper.size-md .password-toggle-btn svg {
   width: 14px;
   height: 14px;
-}
-.input-wrapper.size-md input.input-box[type="color"] {
-  height: 40px;
-  padding: 6px;
 }
 
 .input-wrapper.size-lg .input-label {
@@ -215,72 +207,51 @@ input.input-box[type="color"]::-moz-color-swatch {
 }
 .input-wrapper.size-lg .input-box {
   padding: 14px 18px;
-  font-size: var(--q-font-size-lg, 1rem);
+  font-size: var(--q-font-size-lg, 1.1rem);
 }
 .input-wrapper.size-lg .prefix-container,
 .input-wrapper.size-lg .suffix-container {
-  padding: 0 16px;
+  padding: 0 14px;
 }
 .input-wrapper.size-lg .clear-btn svg,
 .input-wrapper.size-lg .password-toggle-btn svg {
-  width: 18px;
-  height: 18px;
-}
-.input-wrapper.size-lg input.input-box[type="color"] {
-  height: 48px;
-  padding: 8px;
+  width: 16px;
+  height: 16px;
 }
 
-/* Hide Native WebKit and Firefox Spinners */
-.input-box::-webkit-inner-spin-button,
-.input-box::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-.input-box[type="number"] {
-  -moz-appearance: textfield;
-}
-
-/* Custom Stacked Spinners */
+/* Number Spinners */
 .input-spinners {
   display: flex;
   flex-direction: column;
-  align-self: stretch;   /* fill the full height of .input-control */
-  width: 36px;
-  flex-shrink: 0;
   border-left: 1px solid var(--q-border-color, #4b5563);
+  width: 24px;
+  margin-left: auto;
+  box-sizing: border-box;
 }
 
 .spinner-btn {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 1;               /* each button takes exactly half the available height */
-  width: 100%;
-  padding: 0;
-  margin: 0;
-  border: none;
   background: transparent;
+  border: none;
   color: var(--q-fg-muted, #9ca3af);
   cursor: pointer;
-  box-sizing: border-box;
-  transition: background-color var(--q-transition-fast, 150ms ease),
-              color var(--q-transition-fast, 150ms ease);
+  padding: 0;
+  margin: 0;
+  outline: none;
+  transition: background var(--q-transition-fast, 150ms ease), color var(--q-transition-fast, 150ms ease);
 }
 
-.spinner-btn:hover {
-  background: var(--q-bg-surface-3, #4b5563);
+.spinner-btn:hover:not(:disabled) {
+  background: rgba(249, 250, 251, 0.08);
   color: var(--q-fg-base, #f9fafb);
 }
 
 .spinner-btn:disabled {
-  opacity: 0.45;
+  opacity: 0.3;
   cursor: not-allowed;
-}
-
-.spinner-btn:disabled:hover {
-  background: transparent;
-  color: var(--q-fg-muted, #9ca3af);
 }
 
 .spinner-up {
@@ -288,7 +259,6 @@ input.input-box[type="color"]::-moz-color-swatch {
 }
 
 .spinner-btn svg {
-  width: 14px;
-  height: 14px;
-  pointer-events: none;
+  width: 10px;
+  height: 10px;
 }

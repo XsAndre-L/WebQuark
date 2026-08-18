@@ -4,8 +4,8 @@ import { stencilVitestPlugin } from '@stencil/vitest/plugin';
 
 export default defineVitestConfig({
   stencilConfig: './stencil.config.ts',
+  oxc: false,
   test: {
-    oxc: false,
     projects: [
       {
         test: {
@@ -17,7 +17,6 @@ export default defineVitestConfig({
       {
         test: {
           name: 'unit',
-          oxc: false,
           include: ['src/**/*.unit.test.{ts,tsx}', 'src/**/*.spec.{ts,tsx}'],
           environment: 'stencil',
         },
