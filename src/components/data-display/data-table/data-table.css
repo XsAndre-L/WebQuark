@@ -167,8 +167,9 @@ td.is-sticky-start {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 12px 16px;
-  padding-inline-end: var(--q-table-toolbar-padding-inline-end, 16px);
+  min-height: var(--q-table-toolbar-min-height, auto);
+  padding: var(--q-table-toolbar-padding-block, 12px) var(--q-table-toolbar-padding-inline, 16px);
+  padding-inline-end: var(--q-table-toolbar-padding-inline-end, var(--q-table-toolbar-padding-inline, 16px));
   border-bottom: var(--q-border, 1px solid var(--q-border-color, #374151));
   background: var(--q-bg-surface-1, #1f2937);
   box-sizing: border-box;

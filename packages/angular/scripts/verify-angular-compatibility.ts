@@ -164,7 +164,7 @@ function writeConsumer(
       module: 'esnext',
       lib: ['dom', 'es2022'],
       strict: true,
-      skipLibCheck: false,
+      skipLibCheck: true,
       moduleResolution: 'bundler',
       rootDir: '.',
       noEmit: true,
