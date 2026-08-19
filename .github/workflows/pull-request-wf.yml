@@ -1,6 +1,7 @@
 # ============================================================================
 # PULL REQUEST WORKFLOW
-# Validates core, React, and Angular packages on pull requests.
+# Dormant unless WEBQUARK_PIPELINE_ENABLED is exactly "true".
+# Keep this workflow disabled in GitHub until the pipeline is ready.
 # ============================================================================
 
 name: Pull Request
@@ -21,6 +22,7 @@ permissions:
 jobs:
   validate:
     name: Build, test, and package
+    if: ${{ vars.WEBQUARK_PIPELINE_ENABLED == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout WebQuark
