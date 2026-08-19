@@ -1,7 +1,6 @@
 import { Component, Prop, State, Event, EventEmitter, Element, AttachInternals, Watch, Listen, h } from '@stencil/core';
 import { identifyItems } from '../../../utils/collection-identity';
 import type { DropdownOptionInput, Option, QDropdownPlacement, QDropdownSize } from './dropdown.types';
-import { computeDropdownDynamicWidth } from './internals/width';
 import { getDropdownOptions, getFilteredOptions, getOptionLabel, getSelectedOption, getVisibleOptions } from './internals/options';
 import { computeDropdownPosition } from './internals/position';
 
@@ -306,16 +305,6 @@ export class QDropdown {
     }
   }
 
-  private computeDynamicWidth(allOptions: Option[], selectedOption?: Option): string | undefined {
-    return computeDropdownDynamicWidth({
-      size: this.size,
-      searchable: this.searchable,
-      allOptions,
-      selectedOption,
-      placeholder: this.placeholder,
-    });
-  }
-
   private openFloatingMenu() {
     if (!this.menuEl || !this.triggerEl) {
       return;
@@ -541,7 +530,6 @@ export class QDropdown {
     const selectedLabel = this.getOptionLabel(selectedOption);
     const displayLabel = selectedOption && selectedLabel ? selectedLabel : this.placeholder;
     const hasSelection = selectedOption !== undefined;
-    const dynamicWidth = this.computeDynamicWidth(allOptions, selectedOption);
     const ariaLabel = this.ariaLabel?.trim() || undefined;
 
     return (
@@ -552,7 +540,6 @@ export class QDropdown {
           'is-disabled': this.disabled,
           [`size-${this.size}`]: true
         }}
-        style={dynamicWidth ? { width: dynamicWidth, 'max-width': '100%' } : undefined}
         onKeyDown={this.handleKeyDown}
       >
         {/* Optional Header Label */}
