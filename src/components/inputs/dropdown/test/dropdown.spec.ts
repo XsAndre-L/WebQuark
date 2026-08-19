@@ -259,4 +259,15 @@ describe('q-dropdown', () => {
     expect(slot.assignedElements()).toContain(icon);
     el.remove();
   });
+
+  it('renders size="sm" without inline dynamic pixel width constraint on wrapper', async () => {
+    const el = await createComponent({ size: 'sm', searchable: true, options });
+    const wrapper = el.shadowRoot.querySelector('.dropdown-wrapper') as HTMLElement;
+
+    expect(wrapper).toBeTruthy();
+    expect(wrapper.classList.contains('size-sm')).toBe(true);
+    expect(wrapper.style.width).toBe('');
+    expect(wrapper.style.maxWidth).toBe('');
+    el.remove();
+  });
 });
