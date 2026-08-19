@@ -33,9 +33,11 @@
   },
   "scripts": {
     "prepare:generated": "bun run scripts/prepare-generated.ts",
+    "verify:drift": "bun run scripts/verify-angular-drift.ts",
     "verify:consumer": "bun run scripts/verify-consumer.ts",
     "verify:compatibility": "bun run scripts/verify-angular-compatibility.ts",
-    "build": "bun run prepare:generated && ngc -p tsconfig.json && bun run verify:consumer"
+    "verify": "bun run verify:drift && bun run verify:consumer && bun run verify:compatibility",
+    "build": "bun run prepare:generated && ngc -p tsconfig.json && bun run verify:consumer && bun run verify:drift"
   },
   "peerDependencies": {
     "@webquark/core": "^1.0.2",
