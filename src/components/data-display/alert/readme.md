@@ -49,6 +49,19 @@ Inline contextual message with opt-in announcements and controlled dismissal.
 | `"message"`        | Default message slot wrapper. |
 
 
+## Dependencies
+
+### Used by
+
+ - [q-toast](../../overlays/toast)
+
+### Graph
+```mermaid
+graph TD;
+  q-toast --> q-alert
+  style q-alert fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

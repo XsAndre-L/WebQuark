@@ -103,6 +103,13 @@ class SandboxViewport extends HTMLElement {
           }
         }
       }
+      if (target.id === 'stageShowToastBtn') {
+        const toastHost = this.querySelector('q-toast') as any;
+        toastHost?.error(
+          "Couldn't delete user",
+          'System-protected accounts cannot be deleted.',
+        );
+      }
 
       // B. Trigger overlay buttons inside Variant Cards
       if (target.classList.contains('var-open-panel-btn')) {

@@ -57,5 +57,6 @@ Do not paste a full implementation snapshot into an authored guide. Source snaps
 | 28 | `q-tooltip` | Overlay | [Guide](./q-tooltip.md) | [API](../../src/components/overlays/tooltip/readme.md) |
 | 29 | `q-avatar` | Media | [Guide](./q-avatar.md) | [API](../../src/components/media/avatar/readme.md) |
 | 30 | `q-conversation-bubble` | Data display | [Guide](./q-conversation-bubble.md) | [API](../../src/components/data-display/conversation-bubble/readme.md) |
+| 31 | `q-toast` | Overlay | [Guide](./q-toast.md) | [API](../../src/components/overlays/toast/readme.md) |
 
 See [Current public contracts](./current-contracts.md) for a compact API and behavior reference, and [Theme variables](../theme_variables.md) for global design tokens.

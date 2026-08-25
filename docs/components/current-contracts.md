@@ -271,6 +271,16 @@ For array and object inputs, assign the JavaScript property unless the contract 
 
 ## Overlays
 
+### `q-toast`
+
+- API: [generated reference](../../src/components/overlays/toast/readme.md)
+- Properties: `position`, `maxVisible`.
+- Methods: `info(title, description?, options?)`, `success(...)`, `warning(...)`, `danger(...)`, `error(...)`, `dismiss(id)`, `clear()`.
+- Controller: import `toast` from `@webquark/core` for the same methods without repeated component HTML. `error` is an alias for `danger`.
+- Behavior: exactly one explicit root host owns the global queue, timers, stacking, announcements, and animation. The first three items are visible by default; later items wait in FIFO order. Info/success dismiss after 5 seconds, warning after 8 seconds, and danger persists unless a duration is supplied. Hover, focus, and hidden documents pause active timers.
+- Accessibility: the host uses one polite atomic live region and does not move focus. Each visual composes `q-alert` with its own announcement disabled. Built-in semantic SVG icons render synchronously without network access.
+- Limitations: V1 has no actions, updates, deduplication, custom icons, scoped hosts, or assertive announcements.
+
 ### `q-dialog`
 
 - API: [generated reference](../../src/components/overlays/dialog/readme.md)

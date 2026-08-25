@@ -1,0 +1,32 @@
+{
+  "tag": "q-toast",
+  "name": "Toast",
+  "description": "Global mutation feedback driven by the framework-neutral toast controller.",
+  "stageHelper": {
+    "label": "Toast Component Control",
+    "buttonId": "stageShowToastBtn",
+    "buttonLabel": "Show Error Toast"
+  },
+  "props": {
+    "position": {
+      "type": "select",
+      "options": [
+        "top-start",
+        "top-center",
+        "top-end",
+        "bottom-start",
+        "bottom-center",
+        "bottom-end"
+      ],
+      "default": "top-end",
+      "desc": "Fixed viewport position for the toast stack"
+    },
+    "maxVisible": {
+      "type": "number",
+      "min": 1,
+      "max": 10,
+      "default": 3,
+      "desc": "Maximum number of visible toasts before queueing"
+    }
+  }
+}
