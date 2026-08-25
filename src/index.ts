@@ -99,3 +99,11 @@ export type {
   QNavbarTarget,
 } from './components/layout/navbar/navbar.types';
 export type { QTabsOrientation, QTabsSize, QTabsVariant, TabItem, TabItemInput } from './components/layout/tabs/tabs.types';
+export { toast } from './components/overlays/toast/toast-controller';
+export type {
+  QToastController,
+  QToastId,
+  QToastOptions,
+  QToastPosition,
+  QToastVariant,
+} from './components/overlays/toast/toast.types';

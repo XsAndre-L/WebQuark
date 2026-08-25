@@ -34,6 +34,7 @@ import { QSyntaxBoxLanguage, QSyntaxBoxVariant } from "./components/data-display
 import { QTabsOrientation, QTabsSize, QTabsVariant, TabItemInput } from "./components/layout/tabs/tabs.types";
 import { QTextareaResizeMode } from "./components/inputs/textarea/textarea.types";
 import { QThumbnailMaximizeDetail } from "./components/media/thumbnail/thumbnail.types";
+import { QToastId, QToastOptions, QToastPosition } from "./components/overlays/toast/toast.types";
 import { QToggleSize, QToggleType } from "./components/inputs/toggle/toggle.types";
 import { QToolbarEdge } from "./components/layout/toolbar/toolbar.types";
 import { QTooltipPosition } from "./components/overlays/tooltip/tooltip.types";
@@ -66,6 +67,7 @@ export { QSyntaxBoxLanguage, QSyntaxBoxVariant } from "./components/data-display
 export { QTabsOrientation, QTabsSize, QTabsVariant, TabItemInput } from "./components/layout/tabs/tabs.types";
 export { QTextareaResizeMode } from "./components/inputs/textarea/textarea.types";
 export { QThumbnailMaximizeDetail } from "./components/media/thumbnail/thumbnail.types";
+export { QToastId, QToastOptions, QToastPosition } from "./components/overlays/toast/toast.types";
 export { QToggleSize, QToggleType } from "./components/inputs/toggle/toggle.types";
 export { QToolbarEdge } from "./components/layout/toolbar/toolbar.types";
 export { QTooltipPosition } from "./components/overlays/tooltip/tooltip.types";
@@ -1573,6 +1575,27 @@ export namespace Components {
         "video": boolean;
     }
     /**
+     * Global viewport toast host. Add exactly one instance near the application root,
+     * then use the framework-neutral `toast` controller or the component methods.
+     */
+    interface QToast {
+        "clear": () => Promise<number>;
+        "danger": (title: string, description?: string, options?: QToastOptions) => Promise<QToastId>;
+        "dismiss": (id: QToastId) => Promise<boolean>;
+        "error": (title: string, description?: string, options?: QToastOptions) => Promise<QToastId>;
+        "info": (title: string, description?: string, options?: QToastOptions) => Promise<QToastId>;
+        /**
+          * @default 3
+         */
+        "maxVisible": number;
+        /**
+          * @default 'top-end'
+         */
+        "position": QToastPosition;
+        "success": (title: string, description?: string, options?: QToastOptions) => Promise<QToastId>;
+        "warning": (title: string, description?: string, options?: QToastOptions) => Promise<QToastId>;
+    }
+    /**
      * Form-associated switch or checkbox toggle control.
      */
     interface QToggle {
@@ -2385,6 +2408,16 @@ declare global {
         prototype: HTMLQThumbnailElement;
         new (): HTMLQThumbnailElement;
     };
+    /**
+     * Global viewport toast host. Add exactly one instance near the application root,
+     * then use the framework-neutral `toast` controller or the component methods.
+     */
+    interface HTMLQToastElement extends Components.QToast, HTMLStencilElement {
+    }
+    var HTMLQToastElement: {
+        prototype: HTMLQToastElement;
+        new (): HTMLQToastElement;
+    };
     interface HTMLQToggleElementEventMap {
         "qChange": boolean;
         "qFocus": FocusEvent;
@@ -2457,6 +2490,7 @@ declare global {
         "q-tabs": HTMLQTabsElement;
         "q-textarea": HTMLQTextareaElement;
         "q-thumbnail": HTMLQThumbnailElement;
+        "q-toast": HTMLQToastElement;
         "q-toggle": HTMLQToggleElement;
         "q-toolbar": HTMLQToolbarElement;
         "q-tooltip": HTMLQTooltipElement;
@@ -4048,6 +4082,20 @@ declare namespace LocalJSX {
         "video"?: boolean;
     }
     /**
+     * Global viewport toast host. Add exactly one instance near the application root,
+     * then use the framework-neutral `toast` controller or the component methods.
+     */
+    interface QToast {
+        /**
+          * @default 3
+         */
+        "maxVisible"?: number;
+        /**
+          * @default 'top-end'
+         */
+        "position"?: QToastPosition;
+    }
+    /**
      * Form-associated switch or checkbox toggle control.
      */
     interface QToggle {
@@ -4480,6 +4528,10 @@ declare namespace LocalJSX {
         "alt": string;
         "highlighted": boolean;
     }
+    interface QToastAttributes {
+        "position": QToastPosition;
+        "maxVisible": number;
+    }
     interface QToggleAttributes {
         "label": string;
         "size": QToggleSize;
@@ -4535,6 +4587,7 @@ declare namespace LocalJSX {
         "q-tabs": Omit<QTabs, keyof QTabsAttributes> & { [K in keyof QTabs & keyof QTabsAttributes]?: QTabs[K] } & { [K in keyof QTabs & keyof QTabsAttributes as `attr:${K}`]?: QTabsAttributes[K] } & { [K in keyof QTabs & keyof QTabsAttributes as `prop:${K}`]?: QTabs[K] };
         "q-textarea": Omit<QTextarea, keyof QTextareaAttributes> & { [K in keyof QTextarea & keyof QTextareaAttributes]?: QTextarea[K] } & { [K in keyof QTextarea & keyof QTextareaAttributes as `attr:${K}`]?: QTextareaAttributes[K] } & { [K in keyof QTextarea & keyof QTextareaAttributes as `prop:${K}`]?: QTextarea[K] };
         "q-thumbnail": Omit<QThumbnail, keyof QThumbnailAttributes> & { [K in keyof QThumbnail & keyof QThumbnailAttributes]?: QThumbnail[K] } & { [K in keyof QThumbnail & keyof QThumbnailAttributes as `attr:${K}`]?: QThumbnailAttributes[K] } & { [K in keyof QThumbnail & keyof QThumbnailAttributes as `prop:${K}`]?: QThumbnail[K] };
+        "q-toast": Omit<QToast, keyof QToastAttributes> & { [K in keyof QToast & keyof QToastAttributes]?: QToast[K] } & { [K in keyof QToast & keyof QToastAttributes as `attr:${K}`]?: QToastAttributes[K] } & { [K in keyof QToast & keyof QToastAttributes as `prop:${K}`]?: QToast[K] };
         "q-toggle": Omit<QToggle, keyof QToggleAttributes> & { [K in keyof QToggle & keyof QToggleAttributes]?: QToggle[K] } & { [K in keyof QToggle & keyof QToggleAttributes as `attr:${K}`]?: QToggleAttributes[K] } & { [K in keyof QToggle & keyof QToggleAttributes as `prop:${K}`]?: QToggle[K] };
         "q-toolbar": Omit<QToolbar, keyof QToolbarAttributes> & { [K in keyof QToolbar & keyof QToolbarAttributes]?: QToolbar[K] } & { [K in keyof QToolbar & keyof QToolbarAttributes as `attr:${K}`]?: QToolbarAttributes[K] } & { [K in keyof QToolbar & keyof QToolbarAttributes as `prop:${K}`]?: QToolbar[K] };
         "q-tooltip": Omit<QTooltip, keyof QTooltipAttributes> & { [K in keyof QTooltip & keyof QTooltipAttributes]?: QTooltip[K] } & { [K in keyof QTooltip & keyof QTooltipAttributes as `attr:${K}`]?: QTooltipAttributes[K] } & { [K in keyof QTooltip & keyof QTooltipAttributes as `prop:${K}`]?: QTooltip[K] };
@@ -4708,6 +4761,11 @@ declare module "@stencil/core" {
              * Media thumbnail that emits qMaximize for gallery and reel lightbox workflows.
              */
             "q-thumbnail": LocalJSX.IntrinsicElements["q-thumbnail"] & JSXBase.HTMLAttributes<HTMLQThumbnailElement>;
+            /**
+             * Global viewport toast host. Add exactly one instance near the application root,
+             * then use the framework-neutral `toast` controller or the component methods.
+             */
+            "q-toast": LocalJSX.IntrinsicElements["q-toast"] & JSXBase.HTMLAttributes<HTMLQToastElement>;
             /**
              * Form-associated switch or checkbox toggle control.
              */
