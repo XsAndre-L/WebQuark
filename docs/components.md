@@ -37,6 +37,7 @@ See the [component documentation standard and index](./components/README.md), [c
 | `q-reel` | Media | Implemented | [Guide](./components/q-reel.md) | Thumbnail gallery with optional lightbox. |
 | `q-thumbnail` | Media | Implemented | [Guide](./components/q-thumbnail.md) | Lazy media poster and activation metadata. |
 | `q-dialog` | Overlay | Implemented | [Guide](./components/q-dialog.md) | Modal lifecycle, focus management, actions, and CEF-safe backdrop. |
+| `q-toast` | Overlay | Implemented | [Guide](./components/q-toast.md) | Global queued mutation feedback composed from `q-alert`. |
 | `q-tooltip` | Overlay | Implemented with known limitation | [Guide](./components/q-tooltip.md) | Parent-attached hover/focus tooltip without collision flipping. |
 
 ## Inventory rule
