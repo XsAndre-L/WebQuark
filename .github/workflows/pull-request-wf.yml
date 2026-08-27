@@ -1,6 +1,7 @@
 # ============================================================================
 # PULL REQUEST WORKFLOW
-# Each target branch is dormant unless its branch-specific pipeline variable is exactly "true".
+# Automatic pre-merge checks are temporarily disabled.
+# The original branch-specific checks remain commented below for easy restoration.
 # ============================================================================
 
 name: Pull Request
@@ -20,31 +21,38 @@ permissions:
 
 jobs:
   validate:
-    name: Build packages
-    if: >-
-      ${{ (github.base_ref == 'dev' && vars.WEBQUARK_DEV_PIPELINE_ENABLED == 'true') ||
-      (github.base_ref == 'main' && vars.WEBQUARK_PROD_PIPELINE_ENABLED == 'true') }}
+    name: Pre-merge checks disabled
+    # A false job condition skips the job before GitHub allocates a runner.
+    # Restore this branch-specific condition in place of `if: ${{ false }}`
+    # to re-enable pre-merge checks:
+    # if: >-
+    #   ${{ (github.base_ref == 'dev' && vars.WEBQUARK_DEV_PIPELINE_ENABLED == 'true') ||
+    #   (github.base_ref == 'main' && vars.WEBQUARK_PROD_PIPELINE_ENABLED == 'true') }}
+    if: ${{ false }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout WebQuark
-        uses: actions/checkout@v4
+      - name: Pre-merge checks are disabled
+        run: echo "Pre-merge checks are temporarily disabled."
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24.15.0
-
-      - name: Set up Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Build npm packages
-        run: bun run packages:build
-
-      # Tests are temporarily disabled to minimize pull-request pipeline minutes.
+      # Uncomment the steps below when pre-merge checks are re-enabled.
+      # - name: Checkout WebQuark
+      #   uses: actions/checkout@v4
+      #
+      # - name: Set up Node
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: 24.15.0
+      #
+      # - name: Set up Bun
+      #   uses: oven-sh/setup-bun@v2
+      #   with:
+      #     bun-version: latest
+      #
+      # - name: Install dependencies
+      #   run: bun install --frozen-lockfile
+      #
+      # - name: Build npm packages
+      #   run: bun run packages:build
+      #
       # - name: Run tooling and unit tests
       #   run: bunx vitest run --project tooling && bunx vitest run --project unit
