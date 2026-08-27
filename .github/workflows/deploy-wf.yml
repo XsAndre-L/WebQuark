@@ -17,7 +17,6 @@ concurrency:
 
 permissions:
   contents: write
-  id-token: write
 
 jobs:
   publish:
@@ -70,7 +69,8 @@ jobs:
           --tag ${{ steps.release.outputs.npm_tag }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_CONFIG_PROVENANCE: "true"
+          # npm provenance is unsupported while the source repository is private.
+          NPM_CONFIG_PROVENANCE: "false"
 
       - name: Create stable GitHub release
         if: ${{ github.ref_name == 'main' }}
