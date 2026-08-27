@@ -20,7 +20,7 @@ permissions:
 
 jobs:
   validate:
-    name: Build, test, and package
+    name: Build packages
     if: >-
       ${{ (github.base_ref == 'dev' && vars.WEBQUARK_DEV_PIPELINE_ENABLED == 'true') ||
       (github.base_ref == 'main' && vars.WEBQUARK_PROD_PIPELINE_ENABLED == 'true') }}
@@ -42,5 +42,9 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Verify all npm packages
-        run: bun run release:verify
+      - name: Build npm packages
+        run: bun run packages:build
+
+      # Tests are temporarily disabled to minimize pull-request pipeline minutes.
+      # - name: Run tooling and unit tests
+      #   run: bunx vitest run --project tooling && bunx vitest run --project unit
