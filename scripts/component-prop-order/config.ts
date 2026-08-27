@@ -103,6 +103,7 @@ export const DEFAULT_CLASSIFICATIONS: readonly ClassificationEntry[] = [
       'lift',
       'lineStyle',
       'maxHeight',
+      'maxVisible',
       'noBorders',
       'orientation',
       'padding',

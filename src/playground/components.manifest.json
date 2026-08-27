@@ -32,5 +32,6 @@
   { "tag": "q-reel",              "name": "Reel",              "category": "media" },
 
   { "tag": "q-dialog",            "name": "Dialog",            "category": "overlays" },
+  { "tag": "q-toast",             "name": "Toast",             "category": "overlays" },
   { "tag": "q-tooltip",           "name": "Tooltip",           "category": "overlays" }
 ]
