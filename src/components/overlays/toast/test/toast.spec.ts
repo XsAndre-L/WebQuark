@@ -82,7 +82,9 @@ describe('q-toast', () => {
     await host.danger('Persistent', undefined, { dismissible: false });
     await wait();
 
-    const initialAlerts = Array.from(host.shadowRoot.querySelectorAll('q-alert'));
+    const initialAlerts = Array.from(
+      host.shadowRoot.querySelectorAll('q-alert'),
+    ) as HTMLQAlertElement[];
     expect(initialAlerts).toHaveLength(2);
     expect(initialAlerts[1].dismissible).toBe(false);
 
@@ -90,7 +92,7 @@ describe('q-toast', () => {
 
     const remainingAlerts = Array.from(
       host.shadowRoot.querySelectorAll('q-alert'),
-    );
+    ) as HTMLQAlertElement[];
     expect(remainingAlerts).toHaveLength(1);
     expect(remainingAlerts[0].heading).toBe('Persistent');
   });

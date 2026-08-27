@@ -34,8 +34,8 @@ A numeric prerelease identifier cannot contain a leading zero. The valid form is
 | Event | Result | npm dist-tag | Environment |
 |---|---|---|---|
 | Pull request into `dev` or `main` | Validate only | None | None |
-| Merge/push to `dev` | Next automatic `-dev.N` version | `dev` | `npm-prerelease` |
-| Merge/push to `main` | Stable `nextVersion` | `latest` | `npm-production` |
+| Merge/push to `dev` | Next automatic `-dev.N` version | `dev` | `dev` |
+| Merge/push to `main` | Stable `nextVersion` | `latest` | `prod` |
 
 Consumers choose the stream explicitly:
 
@@ -58,17 +58,18 @@ The root `publish-all` package script points to this guarded publisher. A real p
 
 Create these repository settings before enabling deployment:
 
-- Repository variable `WEBQUARK_PIPELINE_ENABLED=false`.
-- GitHub environments `npm-prerelease` and `npm-production`.
-- Secret `NPM_TOKEN` in both environments, with npm publish access to all three `@webquark` packages.
-- Recommended reviewer approval on `npm-production`.
+- Repository variables `WEBQUARK_DEV_PIPELINE_ENABLED=true` and `WEBQUARK_PROD_PIPELINE_ENABLED=false`.
+- GitHub environment `dev`, managed by AnythingDevOps. `prod` remains inactive.
+- One repository secret named `NPM_TOKEN`, with npm publish access to the `@webquark` scope. This shared credential publishes core, React, and Angular; there are no per-package secrets.
+- Recommended reviewer approval on `prod`.
 
-The pipeline uses two independent locks:
+The pipeline uses independent controls:
 
-1. Every job requires `WEBQUARK_PIPELINE_ENABLED` to equal the exact string `true`.
-2. Both workflow files should remain disabled in GitHub until validation and npm access are confirmed.
+1. Dev jobs require `WEBQUARK_DEV_PIPELINE_ENABLED` to equal the exact string `true`.
+2. Production jobs separately require `WEBQUARK_PROD_PIPELINE_ENABLED` to equal the exact string `true`.
+3. AnythingDevOps excludes each GitHub environment while its `active` flag is `false`.
 
-Setting the variable does not enable a disabled workflow.
+Dev publishing is enabled independently. Production remains disabled even when commits reach `main`.
 
 ## Local safe checks
 
@@ -84,12 +85,10 @@ The dry-run commands do not change npm or GitHub.
 
 ## Enabling later
 
-Only after the local diff and credentials have been reviewed:
+Only after `dev` exists and the npm credential has been reviewed:
 
 ```bash
-gh variable set WEBQUARK_PIPELINE_ENABLED --body true
-gh workflow enable pull-request-wf.yml
-gh workflow enable deploy-wf.yml
+gh variable set WEBQUARK_DEV_PIPELINE_ENABLED --body true
 ```
 
-To make the pipeline dormant again, first set the variable to `false`, then disable both workflows.
+To make dev publishing dormant again, set `WEBQUARK_DEV_PIPELINE_ENABLED` back to `false`.
