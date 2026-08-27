@@ -5,9 +5,9 @@ WebQuark has one validation workflow and one publishing workflow. Both use only 
 ## The developer flow
 
 1. Work on a feature branch and open a pull request into `dev`.
-2. The pull-request workflow builds, tests, and packs all three libraries. It does not publish.
+2. The pull-request workflow builds all three libraries. Pipeline tests are temporarily disabled.
 3. Merge the pull request into `dev`.
-4. The deploy workflow reads `.github/release.json`, finds the next available npm sequence, and publishes all packages together as `1.1.0-dev.1`.
+4. The deploy workflow reads `.github/release.json`, finds the next available npm sequence, builds all three libraries, and publishes them together as `1.1.0-dev.1`. Pipeline tests and full release verification are temporarily disabled.
 5. The next merge into `dev` becomes `1.1.0-dev.2`, then `dev.3`, and so on.
 6. Open a pull request from `dev` into `main`. Validation runs again.
 7. Merge into `main`. The deploy workflow publishes all packages as `1.1.0` and creates the `v1.1.0` GitHub release.
@@ -48,8 +48,10 @@ npm install @webquark/core@latest @webquark/react@latest @webquark/angular@lates
 
 The release logic lives under `.github/scripts/publishing/`:
 
+- The root `packages:build` package script builds core, React, and Angular without running tests.
+- The root `pr:verify` package script adds tooling and unit tests for local verification; the pull-request workflow does not currently call it.
 - `prepare-release.ts` validates `.github/release.json`, calculates `-dev.N`, and aligns all package versions.
-- `verify-packages.ts` builds core, React, and Angular, runs Vitest, checks package entry files, and performs npm pack dry-runs.
+- `verify-packages.ts` provides the complete release verification, but its workflow step is temporarily commented out.
 - `publish-packages.ts` packs first, publishes in core/React/Angular order, prevents overwriting different npm contents, and applies the requested npm dist-tag.
 
 The root `publish-all` package script points to this guarded publisher. A real publish requires both an explicit `--tag dev|latest` argument and `NODE_AUTH_TOKEN`.
@@ -71,10 +73,17 @@ The pipeline uses independent controls:
 
 Dev publishing is enabled independently. Production remains disabled even when commits reach `main`.
 
+## Temporary pipeline test pause
+
+Both workflow files retain their test commands as commented steps so they can be restored without rediscovering the required commands. Pull requests and deployments still build core, React, and Angular. Deployments can publish after a successful build, but they currently skip Vitest, Playwright browser tests, Angular compatibility checks, manifest checks, and npm pack dry-runs.
+
+Run the local checks below before merging while pipeline tests are disabled. Re-enable the commented deployment verification steps before enabling production publishing.
+
 ## Local safe checks
 
 ```bash
 bun install --frozen-lockfile
+bun run pr:verify
 bun run release:prepare -- --channel dev --sequence 1 --dry-run
 bun run release:prepare -- --channel stable --dry-run
 bun run release:verify

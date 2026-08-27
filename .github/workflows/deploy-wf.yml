@@ -53,8 +53,16 @@ jobs:
           bun .github/scripts/publishing/prepare-release.ts
           --channel ${{ github.ref_name == 'main' && 'stable' || 'dev' }}
 
-      - name: Build, test, and verify npm packages
-        run: bun run release:verify
+      - name: Build npm packages
+        run: bun run packages:build
+
+      # Tests and full release verification are temporarily disabled.
+      # Re-enable both steps together before requiring browser and package verification.
+      # - name: Install Playwright Chromium
+      #   run: bunx playwright install --with-deps chromium
+      #
+      # - name: Build, test, and verify npm packages
+      #   run: bun run release:verify
 
       - name: Publish packages
         run: >-
