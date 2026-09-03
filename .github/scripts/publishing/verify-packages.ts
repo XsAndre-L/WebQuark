@@ -43,10 +43,28 @@ function entryPaths(manifest: Record<string, any>): string[] {
   return [...entries];
 }
 
-function verifyManifest(directory: string): void {
+function verifyManifest(directory: string, coreVersion: string): void {
   const manifest = readPackage(directory);
   assertNoLocalDependencies(manifest.dependencies, manifest.name + ' dependencies');
   assertNoLocalDependencies(manifest.devDependencies, manifest.name + ' devDependencies');
+
+  if (manifest.version !== coreVersion) {
+    throw new Error(
+      manifest.name + ' version ' + manifest.version +
+      ' does not match @webquark/core@' + coreVersion,
+    );
+  }
+
+  const runtimeCoreVersion = manifest.dependencies?.['@webquark/core'];
+  if (runtimeCoreVersion !== undefined) {
+    const peerCoreVersion = manifest.peerDependencies?.['@webquark/core'];
+    if (runtimeCoreVersion !== coreVersion || peerCoreVersion !== coreVersion) {
+      throw new Error(
+        manifest.name + ' must depend on and peer @webquark/core@' + coreVersion +
+        ' after release preparation',
+      );
+    }
+  }
 
   for (const entry of entryPaths(manifest)) {
     assertFile(resolve(directory, entry), manifest.name + ' package entry ' + entry);
@@ -97,8 +115,9 @@ console.log('\nRunning the Vitest suite...');
 run(['bunx', 'vitest', 'run']);
 
 console.log('\nChecking package manifests and npm tarballs...');
+const coreVersion = readPackage(repositoryRoot).version;
 for (const definition of packages) {
-  verifyManifest(definition.directory);
+  verifyManifest(definition.directory, coreVersion);
   verifyTarball(definition.directory);
 }
 

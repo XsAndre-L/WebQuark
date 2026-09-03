@@ -1,4 +1,5 @@
 import { AttachInternals, Component, Element, Event, EventEmitter, Host, Method, Prop, State, Watch, h } from '@stencil/core';
+import { Braces, Check, Copy } from '@lucide/icons';
 import { formatCode } from '../../../utils/formatter';
 import { syncNativeControlValidity } from '../../../utils/form-control-validity';
 import { highlight as highlightSyntax } from '../../../utils/syntax';
@@ -347,13 +348,18 @@ export class QSyntaxBox {
                 <slot name="actions"></slot>
                 {this.editable && (
                   <q-button class="format-btn" variant="ghost" size="sm" onClick={this.handleFormat} disabled={this.disabled}>
-                    <q-icon slot="icon-left" lib="local" name="braces" size="sm"></q-icon>
+                    <q-icon slot="icon-left" definition={Braces} name="braces" size="sm"></q-icon>
                     <q-tooltip slot="icon-left" position="bottom" content="Format Code"></q-tooltip>
                   </q-button>
                 )}
                 {this.copyable && (
                   <q-button variant="ghost" size="sm" onClick={this.copyCode} disabled={this.disabled}>
-                    <q-icon slot="icon-left" lib="local" name={this.copied ? 'check' : 'copy'} size="sm"></q-icon>
+                    <q-icon
+                      slot="icon-left"
+                      definition={this.copied ? Check : Copy}
+                      name={this.copied ? 'check' : 'copy'}
+                      size="sm"
+                    ></q-icon>
                     <q-tooltip slot="icon-left" position="bottom" content={this.getCopyTooltipContent()}></q-tooltip>
                   </q-button>
                 )}

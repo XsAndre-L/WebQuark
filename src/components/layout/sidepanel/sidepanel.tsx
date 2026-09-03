@@ -1,5 +1,20 @@
 import { Component, Prop, Event, EventEmitter, Watch, Listen, State, Element, h } from '@stencil/core';
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+  PanelBottomClose,
+  PanelBottomOpen,
+  PanelLeftClose,
+  PanelLeftOpen,
+  PanelRightClose,
+  PanelRightOpen,
+  PanelTopClose,
+  PanelTopOpen,
+} from '@lucide/icons';
 import { focusFirstElement, handleTabTrap } from '../../../utils/dom';
+import type { QIconDefinition } from '../../media/icon/icon.types';
 import { handleDrawerOpenChange } from './internals/drawer';
 import { seedExpandedGroups, toggleGroup } from './internals/groups';
 import { renderNavItems } from './internals/nav-items';
@@ -18,6 +33,20 @@ import type {
 import { getSidepanelItems } from './sidepanel.utils';
 
 const DEFAULT_COLLAPSE_LABEL = 'Toggle sidebar';
+const COLLAPSE_ICON_DEFINITIONS: Readonly<Record<string, QIconDefinition>> = {
+  'chevron-down': ChevronDown,
+  'chevron-left': ChevronLeft,
+  'chevron-right': ChevronRight,
+  'chevron-up': ChevronUp,
+  'panel-bottom-close': PanelBottomClose,
+  'panel-bottom-open': PanelBottomOpen,
+  'panel-left-close': PanelLeftClose,
+  'panel-left-open': PanelLeftOpen,
+  'panel-right-close': PanelRightClose,
+  'panel-right-open': PanelRightOpen,
+  'panel-top-close': PanelTopClose,
+  'panel-top-open': PanelTopOpen,
+};
 
 /**
  * Drawer, persistent panel, or hierarchical navigation side panel.
@@ -291,6 +320,10 @@ export class QSidepanel {
       : this.getIconButtonCollapseIconName();
   }
 
+  private getCollapseIconDefinition(): QIconDefinition {
+    return COLLAPSE_ICON_DEFINITIONS[this.getCollapseIconName()];
+  }
+
   private getCollapseControlLabel(): string {
     const label = this.collapseLabel.trim();
 
@@ -327,7 +360,11 @@ export class QSidepanel {
         onClick={this.handleCollapseToggle}
       >
         <slot name={iconSlotName}>
-          <q-icon name={this.getCollapseIconName()} lib="lucide" size="sm" />
+          <q-icon
+            definition={this.getCollapseIconDefinition()}
+            name={this.getCollapseIconName()}
+            size="sm"
+          />
         </slot>
         <span
           class="collapse-control__adornment"

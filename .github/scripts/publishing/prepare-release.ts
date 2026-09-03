@@ -81,6 +81,10 @@ function updateManifest(directory: string, version: string, dryRun: boolean): vo
   if (manifest.name !== '@webquark/core') {
     manifest.dependencies ??= {};
     manifest.dependencies['@webquark/core'] = version;
+    manifest.peerDependencies ??= {};
+    // Stable ranges such as ^1.0.2 do not accept 1.1.0-dev.N prereleases.
+    // Keep the wrapper's runtime and peer contracts aligned with lockstep publishing.
+    manifest.peerDependencies['@webquark/core'] = version;
   }
 
   if (!dryRun) {

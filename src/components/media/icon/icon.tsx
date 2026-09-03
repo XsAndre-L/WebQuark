@@ -1,14 +1,16 @@
 import { Component, Element, Prop, State, Watch, h } from '@stencil/core';
-import type { QIconColor, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from './icon.types';
+import type { QIconColor, QIconDefinition, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from './icon.types';
 import { DEFAULT_FETCH_TIMEOUT_MS } from './internals/constants';
 import { fetchIconSvg } from './internals/fetch-icon';
+import { isQIconStrictMode, prepareQIconDefinition, resolveRegisteredQIcon } from './internals/registry';
+import { renderQIconDefinition } from './internals/render-definition';
 import { sanitizeIconSvg } from './internals/sanitize-svg';
 import { getIconSizeStyle } from './internals/size';
 import { isBinaryIconUrl, resolveFetchableIconUrl, resolveIconUrl } from './internals/url';
 
 /**
- * Remote, local, or binary icon renderer with SVG sanitization.
- * @part svg - Container for a sanitized inline SVG.
+ * Synchronous registered icon renderer with optional backwards-compatible URL loading.
+ * @part svg - Container for registered or sanitized inline SVG content.
  * @part image - Native image used for binary icon assets.
  * @part fallback - Error fallback shown when an icon cannot load.
  */
@@ -23,6 +25,8 @@ export class QIcon {
 
   /** Icon name or local asset filename. */
   @Prop() name?: QIconName;
+  /** Trusted compile-time icon data. Takes precedence over `name` and never performs I/O. */
+  @Prop() definition?: QIconDefinition;
   /** Supports built-in libraries, local assets, and custom URL templates. */
   @Prop() lib: QIconLibrary = 'lucide';
   /** Base path used when `lib="local"`. */
@@ -43,12 +47,14 @@ export class QIcon {
   @State() isBinary: boolean = false;
   @State() resolvedUrl: string = '';
   @State() hasError: boolean = false;
+  @State() resolvedDefinition?: QIconDefinition;
 
   private fetchId = 0;
 
   // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
   @Watch('name')
+  @Watch('definition')
   @Watch('lib')
   @Watch('localPath')
   @Watch('libVersion')
@@ -57,9 +63,8 @@ export class QIcon {
   }
 
   componentWillLoad() {
-    // Icon I/O must not hold up this component's hydration or the hydration of
-    // parent components (such as q-sidepanel). The initial render reserves the
-    // icon's dimensions; the fetched SVG is rendered when it becomes available.
+    // Registered data resolves immediately. Backwards-compatible icon I/O must
+    // not hold up this component or any parent component's hydration.
     void this.loadIcon();
   }
 
@@ -118,12 +123,39 @@ export class QIcon {
   private async loadIcon() {
     const currentFetchId = ++this.fetchId;
     this.hasError = false;
+    this.resolvedDefinition = undefined;
     this.syncHostState();
+
+    const definition = this.definition ?? resolveRegisteredQIcon(this.name);
+    if (definition) {
+      try {
+        this.resolvedDefinition = this.definition
+          ? prepareQIconDefinition(definition, 'q-icon definition')
+          : definition;
+        this.svgContent = '';
+        this.resolvedUrl = '';
+        this.isBinary = false;
+      } catch (error) {
+        console.error(error);
+        this.hasError = true;
+      }
+      this.syncHostState();
+      return;
+    }
 
     if (!this.name) {
       this.svgContent = '';
       this.resolvedUrl = '';
       this.isBinary = false;
+      this.syncHostState();
+      return;
+    }
+
+    if (isQIconStrictMode()) {
+      this.svgContent = '';
+      this.resolvedUrl = '';
+      this.isBinary = false;
+      this.hasError = true;
       this.syncHostState();
       return;
     }
@@ -137,20 +169,20 @@ export class QIcon {
 
     if (isBinaryIconUrl(url)) {
       if (this.fetchId === currentFetchId) {
-            this.isBinary = true;
-            this.resolvedUrl = url;
-            this.svgContent = '';
-            this.syncHostState();
-          }
-          return;
-        }
+        this.isBinary = true;
+        this.resolvedUrl = url;
+        this.svgContent = '';
+        this.syncHostState();
+      }
+      return;
+    }
 
     // Otherwise, fetch SVG inline
-        if (this.fetchId === currentFetchId) {
-          this.isBinary = false;
-          this.resolvedUrl = '';
-          this.syncHostState();
-        }
+    if (this.fetchId === currentFetchId) {
+      this.isBinary = false;
+      this.resolvedUrl = '';
+      this.syncHostState();
+    }
 
     try {
       const finalUrl = resolveFetchableIconUrl(url);
@@ -161,18 +193,18 @@ export class QIcon {
         throw new Error(`Failed to sanitize icon SVG from ${finalUrl}`);
       }
 
-        if (this.fetchId === currentFetchId) {
-          this.svgContent = sanitizedSvg;
-          this.syncHostState();
-        }
-      } catch (error) {
-        console.error(error);
-        if (this.fetchId === currentFetchId) {
-          this.hasError = true;
-          this.svgContent = '';
-          this.syncHostState();
-        }
+      if (this.fetchId === currentFetchId) {
+        this.svgContent = sanitizedSvg;
+        this.syncHostState();
       }
+    } catch (error) {
+      console.error(error);
+      if (this.fetchId === currentFetchId) {
+        this.hasError = true;
+        this.svgContent = '';
+        this.syncHostState();
+      }
+    }
   }
 
   // ===================== [6] RENDER (Visual Template Only) =====================
@@ -186,6 +218,14 @@ export class QIcon {
             <line x1="9" y1="9" x2="15" y2="15" />
             <line x1="15" y1="9" x2="9" y2="15" />
           </svg>
+        </div>
+      );
+    }
+
+    if (this.resolvedDefinition) {
+      return (
+        <div class="svg-container" part="svg">
+          {renderQIconDefinition(this.resolvedDefinition)}
         </div>
       );
     }
