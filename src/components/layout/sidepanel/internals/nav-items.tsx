@@ -1,4 +1,5 @@
 import { h } from '@stencil/core';
+import { ChevronRight } from '@lucide/icons';
 import { identifyItems } from '../../../../utils/collection-identity';
 import type { RenderNavItemsOptions } from '../sidepanel.types';
 
@@ -52,8 +53,8 @@ export function renderNavItems(options: RenderNavItemsOptions): any[] {
           {hasChildren && !isAlwaysExpanded && (
             <q-icon
               class={{ 'nav-item__chevron': true, 'nav-item__chevron--open': isExpanded }}
+              definition={ChevronRight}
               name="chevron-right"
-              lib="lucide"
               size="sm"
             />
           )}

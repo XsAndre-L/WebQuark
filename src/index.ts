@@ -89,6 +89,17 @@ export type {
   QMapStatusChangeDetail,
   QMapViewportRect,
 } from './components/data-display/map/map.types';
+export {
+  configureQIcons,
+  registerQIcons,
+} from './components/media/icon/internals/registry';
+export type {
+  QIconAttributes,
+  QIconConfiguration,
+  QIconDefinition,
+  QIconNode,
+  QIconRegistry,
+} from './components/media/icon/icon.types';
 export type {
   NavbarItem,
   NavbarItemInput,

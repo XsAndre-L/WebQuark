@@ -7,7 +7,7 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { QAlertAnnouncement, QAlertVariant } from "./components/data-display/alert/alert.types";
 import { QAvatarShape, QAvatarSize } from "./components/media/avatar/avatar.types";
-import { QIconColor, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
+import { QIconColor, QIconDefinition, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
 import { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
 import { QCardElevation } from "./components/layout/card/card.types";
 import { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/layout/carousel/carousel.types";
@@ -40,7 +40,7 @@ import { QToolbarEdge } from "./components/layout/toolbar/toolbar.types";
 import { QTooltipPosition } from "./components/overlays/tooltip/tooltip.types";
 export { QAlertAnnouncement, QAlertVariant } from "./components/data-display/alert/alert.types";
 export { QAvatarShape, QAvatarSize } from "./components/media/avatar/avatar.types";
-export { QIconColor, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
+export { QIconColor, QIconDefinition, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
 export { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
 export { QCardElevation } from "./components/layout/card/card.types";
 export { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/layout/carousel/carousel.types";
@@ -629,13 +629,17 @@ export namespace Components {
         "target"?: QFormTarget;
     }
     /**
-     * Remote, local, or binary icon renderer with SVG sanitization.
+     * Synchronous registered icon renderer with optional backwards-compatible URL loading.
      */
     interface QIcon {
         /**
           * @default 'currentColor'
          */
         "color": QIconColor;
+        /**
+          * Trusted compile-time icon data. Takes precedence over `name` and never performs I/O.
+         */
+        "definition"?: QIconDefinition;
         /**
           * SVG fetch timeout in milliseconds.
           * @default 8000
@@ -2022,7 +2026,7 @@ declare global {
         new (): HTMLQFormElement;
     };
     /**
-     * Remote, local, or binary icon renderer with SVG sanitization.
+     * Synchronous registered icon renderer with optional backwards-compatible URL loading.
      */
     interface HTMLQIconElement extends Components.QIcon, HTMLStencilElement {
     }
@@ -3085,13 +3089,17 @@ declare namespace LocalJSX {
         "target"?: QFormTarget;
     }
     /**
-     * Remote, local, or binary icon renderer with SVG sanitization.
+     * Synchronous registered icon renderer with optional backwards-compatible URL loading.
      */
     interface QIcon {
         /**
           * @default 'currentColor'
          */
         "color"?: QIconColor;
+        /**
+          * Trusted compile-time icon data. Takes precedence over `name` and never performs I/O.
+         */
+        "definition"?: QIconDefinition;
         /**
           * SVG fetch timeout in milliseconds.
           * @default 8000
@@ -4660,7 +4668,7 @@ declare module "@stencil/core" {
              */
             "q-form": LocalJSX.IntrinsicElements["q-form"] & JSXBase.HTMLAttributes<HTMLQFormElement>;
             /**
-             * Remote, local, or binary icon renderer with SVG sanitization.
+             * Synchronous registered icon renderer with optional backwards-compatible URL loading.
              */
             "q-icon": LocalJSX.IntrinsicElements["q-icon"] & JSXBase.HTMLAttributes<HTMLQIconElement>;
             /**
