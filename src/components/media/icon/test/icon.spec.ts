@@ -1,6 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 // @ts-ignore
 import { defineCustomElements } from '../../../../../dist/loader';
+// @ts-ignore - integration tests exercise the built package entry point used by consumers.
+import { configureQIcons, registerQIcons } from '../../../../../dist/index.js';
 
 defineCustomElements();
 
@@ -34,8 +36,97 @@ describe('q-icon', () => {
 
   afterEach(() => {
     document.body.innerHTML = '';
+    registerQIcons({});
+    configureQIcons({ strict: false });
     vi.unstubAllGlobals();
     vi.restoreAllMocks();
+  });
+
+  it('renders registered icon data synchronously without fetching', async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+    registerQIcons({
+      settings: {
+        size: 24,
+        node: [['path', { d: 'M2 12h20', 'data-registered': 'settings' }]],
+      },
+    });
+
+    const el = await createComponent({ name: 'settings', size: 32, color: 'rebeccapurple' });
+    const path = el.shadowRoot.querySelector('path[data-registered="settings"]');
+
+    expect(path).not.toBeNull();
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(el.classList.contains('q-icon-svg')).toBe(true);
+    expect(el.style.width).toBe('32px');
+    expect(el.style.height).toBe('32px');
+    expect(el.style.color).toBe('rebeccapurple');
+    expect(el.shadowRoot.querySelector('svg')?.getAttribute('stroke')).toBe('currentColor');
+  });
+
+  it('prioritizes an explicit definition over registry lookup in strict mode', async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+    registerQIcons({
+      status: { size: 24, node: [['path', { d: 'M1 1', 'data-icon': 'registered' }]] },
+    });
+    configureQIcons({ strict: true });
+
+    const el = await createComponent({
+      name: 'status',
+      definition: { size: 24, node: [['circle', { cx: '12', cy: '12', r: '3', 'data-icon': 'direct' }]] },
+    });
+
+    expect(el.shadowRoot.querySelector('[data-icon="direct"]')).not.toBeNull();
+    expect(el.shadowRoot.querySelector('[data-icon="registered"]')).toBeNull();
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('uses a deterministic local fallback and never fetches unknown names in strict mode', async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+    configureQIcons({ strict: true });
+
+    const el = await createComponent({ name: 'not-registered' });
+
+    expect(el.shadowRoot.querySelector('.icon-fallback')).not.toBeNull();
+    expect(el.classList.contains('q-icon-error')).toBe(true);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('updates synchronously when a registered icon name changes', async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
+    registerQIcons({
+      first: { size: 24, node: [['path', { d: 'M1 1', 'data-icon': 'first' }]] },
+      second: { size: 24, node: [['circle', { cx: '12', cy: '12', r: '4', 'data-icon': 'second' }]] },
+    });
+    configureQIcons({ strict: true });
+
+    const el = await createComponent({ name: 'first' });
+    expect(el.shadowRoot.querySelector('[data-icon="first"]')).not.toBeNull();
+
+    el.name = 'second';
+    await wait();
+
+    expect(el.shadowRoot.querySelector('[data-icon="first"]')).toBeNull();
+    expect(el.shadowRoot.querySelector('[data-icon="second"]')).not.toBeNull();
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('preserves host accessibility semantics for registered icons', async () => {
+    registerQIcons({
+      alert: { size: 24, node: [['path', { d: 'M12 2 2 22h20Z' }]] },
+    });
+
+    const el = await createComponent({ name: 'alert', label: 'Important alert' });
+    const svg = el.shadowRoot.querySelector('.svg-container svg') as SVGElement;
+
+    expect(el.getAttribute('role')).toBe('img');
+    expect(el.getAttribute('aria-label')).toBe('Important alert');
+    expect(el.getAttribute('aria-hidden')).toBe('false');
+    expect(svg.getAttribute('aria-hidden')).toBe('true');
+    expect(svg.getAttribute('focusable')).toBe('false');
   });
 
   it('fetches built-in Lucide icons from a pinned version and sanitizes inline SVG', async () => {
