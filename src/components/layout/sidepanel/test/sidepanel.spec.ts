@@ -62,7 +62,7 @@ describe('q-sidepanel', () => {
           value: 'admin',
           children: [{ label: 'Users', value: 'users' }],
         },
-        { label: 'Reports', value: 'reports' },
+        { label: 'Reports', value: 'reports', badgeCount: 123, badgeLabel: '123 unread reports' },
       ],
     });
 
@@ -74,6 +74,23 @@ describe('q-sidepanel', () => {
     expect(body.hasAttribute('role')).toBe(false);
     expect(roles.every(role => role === 'button')).toBe(true);
     expect(activeItem.textContent).toContain('Reports');
+    expect(activeItem.getAttribute('aria-label')).toBe('Reports, 123 unread reports');
+    expect(activeItem.querySelector('[part="item-badge"]')?.textContent).toBe('99+');
+    expect(activeItem.querySelector('[part="item-badge"]')?.getAttribute('aria-hidden')).toBe('true');
+
+    el.collapsible = true;
+    el.collapsed = true;
+    el.collapseMode = 'rail';
+    el.items = [{ label: 'Reports', value: 'reports', badgeCount: 2, badgeLabel: '2 unread reports' }];
+    await wait();
+    expect(el.shadowRoot.querySelector('[part="item-badge"]')?.textContent).toBe('2');
+    expect(el.shadowRoot.querySelector('.nav-sidebar').classList.contains('is-collapsed')).toBe(true);
+    expect(el.shadowRoot.querySelector('.nav-item').getAttribute('aria-label')).toBe('Reports, 2 unread reports');
+
+    el.items = [{ label: 'Reports', value: 'reports', badgeCount: 0 }];
+    await wait();
+    expect(el.shadowRoot.querySelector('[part="item-badge"]')).toBeNull();
+    expect(el.shadowRoot.querySelector('.nav-item').getAttribute('aria-label')).toBe('Reports');
   });
 
   it('normalizes string navigation items into matching labels and values', async () => {
