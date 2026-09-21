@@ -1,4 +1,5 @@
 import Supercluster from 'supercluster';
+import type { AnyProps, ClusterFeature, PointFeature } from 'supercluster';
 
 import type { QMapMarker, QMapMarkerId } from '../map.types';
 import { getMapMarkerClusterGroup, getMapMarkerKey } from './markers';
@@ -75,8 +76,8 @@ function sourceSignature(markers: QMapMarker[], options: MapMarkerClusteringOpti
 }
 
 function isClusterFeature(
-  feature: Supercluster.ClusterFeature<Supercluster.AnyProps> | Supercluster.PointFeature<MarkerPointProperties>,
-): feature is Supercluster.ClusterFeature<Supercluster.AnyProps> {
+  feature: ClusterFeature<AnyProps> | PointFeature<MarkerPointProperties>,
+): feature is ClusterFeature<AnyProps> {
   return 'cluster' in feature.properties && feature.properties.cluster === true;
 }
 
