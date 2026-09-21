@@ -53,6 +53,14 @@ export function checkAngularDrift(inStoreFocusFrontendPath?: string): void {
     ...hostPackage.dependencies,
   };
 
+  // Published packages use the consumer's Angular peers, not this checkout's
+  // build dependencies. Their compatibility is checked by the packed consumers.
+  const wrapperDependency = hostDependencies['@webquark/angular'];
+  if (!wrapperDependency || !/^(file:|link:|workspace:)/.test(wrapperDependency)) {
+    console.log('InStoreFocus does not locally link @webquark/angular. Skipping sibling drift check.');
+    return;
+  }
+
   const webquarkDevDependencies = webquarkPackage.devDependencies || {};
 
   const driftedPackages: Array<{
