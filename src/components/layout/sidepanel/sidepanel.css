@@ -440,6 +440,23 @@ slot[name='footer'] {
 
 /* ── Chevron ─────────────────────────────────────────────────────────────── */
 
+.nav-item__badge {
+  box-sizing: border-box;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  min-width: 19px;
+  height: 19px;
+  padding: 0 5px;
+  border-radius: 999px;
+  color: var(--q-fg-base);
+  background: var(--q-color-primary);
+  font-size: 0.65rem;
+  font-weight: 700;
+  pointer-events: none;
+}
+
 .nav-item__chevron {
   flex-shrink: 0;
   margin-left: auto;
@@ -472,6 +489,12 @@ slot[name='footer'] {
 
 .nav-sidebar.is-collapsed.collapse-mode-rail .nav-item--always-expanded {
   display: none;
+}
+
+.nav-sidebar.is-collapsed.collapse-mode-rail .nav-item__badge {
+  position: absolute;
+  top: 0;
+  right: 4px;
 }
 
 .nav-sidebar.is-collapsed.collapse-mode-rail .nav-item__label,

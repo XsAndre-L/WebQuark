@@ -68,6 +68,7 @@ Drawer, persistent panel, or hierarchical navigation side panel.
 | `"drawer"`                     | Drawer dialog surface.                                                    |
 | `"footer"`                     | Footer region.                                                            |
 | `"header"`                     | Header region.                                                            |
+| `"item-badge"`                 | Navigation item's optional count badge.                                   |
 | `"panel"`                      | Persistent panel surface.                                                 |
 
 
