@@ -41,7 +41,7 @@ describe('Angular sibling drift check', () => {
   );
 
   it('allows a local link with aligned Angular versions', () => {
-    const result = checkHost('file:../../WebQuark/packages/angular', '21.2.18');
+    const result = checkHost('file:../../WebQuark/packages/angular', '21.2.20');
     expect(result.status, result.stderr).toBe(0);
     expect(result.stdout).toContain('Verified Angular version alignment');
   });
