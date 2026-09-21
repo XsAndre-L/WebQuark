@@ -51,6 +51,7 @@
     "packages/angular"
   ],
   "overrides": {
+    "@types/leaflet": "1.9.22",
     "brace-expansion": "5.0.9",
     "browserslist": "4.28.8",
     "nanoid": "3.3.18",
@@ -102,12 +103,11 @@
     "@types/leaflet": "1.9.22",
     "@types/leaflet.gridlayer.googlemutant": "0.4.11",
     "@types/node": "^26.6.2",
-    "@types/supercluster": "^7.1.3",
-    "@vitest/browser": "5.0.1",
-    "@vitest/browser-playwright": "5.0.1",
+    "@vitest/browser": "4.1.11",
+    "@vitest/browser-playwright": "4.1.11",
     "playwright": "^1.63.0",
-    "typescript": "~7.0.2",
-    "vitest": "5.0.1"
+    "typescript": "~5.9.3",
+    "vitest": "4.1.11"
   },
   "license": "MIT"
 }
