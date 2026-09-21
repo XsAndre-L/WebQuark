@@ -10,6 +10,12 @@ Install with `npm install @webquark/core @webquark/angular`.
 compiled with Angular 21 in partial-Ivy mode and is verified from its packed npm
 artifact in strict Angular 21 and Angular 22 consumer projects.
 
+Keep the build dependencies on Angular 21 so the package remains consumable by
+both supported major versions. The sibling drift check requires matching Angular
+versions only when InStoreFocus uses a local `file:`, `link:`, or `workspace:`
+wrapper dependency. Published-package compatibility is verified by the packed
+consumer checks, including Angular 22.0.7 used by InStoreFocus.
+
 ## Standalone components
 
 The generated WebQuark proxies and form value accessors are standalone Angular
