@@ -2,6 +2,10 @@ export interface SidepanelItem {
   label: string;
   value: string;
   icon?: string;
+  /** Positive integer count; hidden at zero and displayed as 99+ above 99. */
+  badgeCount?: number;
+  /** Accessible description of the full count, e.g. "120 unread announcements". */
+  badgeLabel?: string;
   /** Keeps a parent category visible and non-collapsible. Ignored for leaf items. */
   alwaysExpanded?: boolean;
   children?: SidepanelItem[];
