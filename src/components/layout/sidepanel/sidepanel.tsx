@@ -61,6 +61,7 @@ const COLLAPSE_ICON_DEFINITIONS: Readonly<Record<string, QIconDefinition>> = {
  * @part panel - Persistent panel surface.
  * @part header - Header region.
  * @part body - Body or navigation region.
+ * @part item-badge - Navigation item's optional count badge.
  * @part footer - Footer region.
  * @part collapse-control - Built-in collapse button.
  * @part collapse-control-adornment - Positioning wrapper for the built-in control's optional visual adornment.
