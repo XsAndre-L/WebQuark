@@ -16,7 +16,7 @@ export function renderNavItems(options: RenderNavItemsOptions): any[] {
     const isAlwaysExpanded = Boolean(hasChildren && item.alwaysExpanded === true);
     const isExpanded = isAlwaysExpanded || expandedGroups.has(item.value);
     const isActive = !hasChildren && item.value === activeValue;
-    const depthTone = depth % 2 === 0 ? 'primary' : 'secondary';
+    const depthTone = !hasChildren || depth === 0 ? 'primary' : 'secondary';
     const count = item.badgeCount ?? 0;
     const hasBadge = Number.isSafeInteger(count) && count > 0;
     const accessibleLabel = hasBadge ? `${item.label}, ${item.badgeLabel?.trim() || count}` : item.label;
