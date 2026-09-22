@@ -212,7 +212,7 @@ describe('q-sidepanel', () => {
     expect(slot.assignedNodes()).toContain(content);
   });
 
-  it('exposes alternating depth tone attributes on nav items', async () => {
+  it('uses the primary tone for links and top-level groups while muting nested groups', async () => {
     const el = await createComponent({
       variant: 'nav',
       items: [
@@ -227,13 +227,34 @@ describe('q-sidepanel', () => {
             },
           ],
         },
+        { label: 'Dashboard', value: 'dashboard' },
+        {
+          label: 'Reports',
+          value: 'reports',
+          children: [{ label: 'Overview', value: 'overview' }],
+        },
       ],
     });
 
     const items = Array.from(el.shadowRoot.querySelectorAll('.nav-item')) as HTMLElement[];
 
-    expect(items.map(item => item.dataset.depth)).toEqual(['0', '1', '2']);
-    expect(items.map(item => item.dataset.depthTone)).toEqual(['primary', 'secondary', 'primary']);
+    expect(items.map(item => item.textContent?.trim())).toEqual([
+      'Admin',
+      'Users',
+      'Invites',
+      'Dashboard',
+      'Reports',
+      'Overview',
+    ]);
+    expect(items.map(item => item.dataset.depth)).toEqual(['0', '1', '2', '0', '0', '1']);
+    expect(items.map(item => item.dataset.depthTone)).toEqual([
+      'primary',
+      'secondary',
+      'primary',
+      'primary',
+      'primary',
+      'primary',
+    ]);
   });
 
   it('keeps designated navigation categories expanded and non-collapsible', async () => {
