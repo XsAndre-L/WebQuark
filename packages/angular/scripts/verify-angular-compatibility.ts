@@ -29,7 +29,7 @@ const nodeCommand = process.env.WEBQUARK_COMPAT_NODE || 'node';
 const targets: CompatibilityTarget[] = [
   {
     name: 'angular-21',
-    angular: '21.2.18',
+    angular: '21.2.20',
     typescript: '5.9.3',
   },
   {
