@@ -158,15 +158,18 @@ Exposes variables specialized for fine-tuning specific complex components.
 *   `--q-reel-columns-mobile`: `1fr` — Mobile grid column distribution.
 *   `--q-lightbox-max-size`: `90vh` — Constraint on maximized media overlay.
 
-### D. Circular Progress (`q-circular-progress`)
-*   `--q-progress-size`: `120px` — Width and height of the SVG circular frame.
-*   `--q-progress-stroke-width`: `8px` — Thickness of the progress track.
-*   `--q-progress-linecap`: `round` — Progress line cap ending style (`round` or `butt`).
-*   `--q-progress-track-color`: `var(--q-border-color)` — Background circle color.
-*   `--q-progress-fill-color`: `var(--q-color-primary)` — Active percentage ring color.
-*   `--q-progress-font-size`: `var(--q-font-size-lg)` — Text size of percentage label.
-*   `--q-progress-font-weight`: `var(--q-font-weight-bold)` — Text weight of percentage label.
-*   `--q-progress-animation-duration`: `1s` — Animation fill duration.
+### D. Progress (`q-progress`)
+
+The [progress guide](./components/q-progress.md#styling-hooks) lists all component-specific hooks, including functional fallback aliases.
+
+*   `--q-progress-linear-height-sm` / `-md` / `-lg`: `4px` / `6px` / `8px` — Linear bar height presets.
+*   `--q-progress-circular-size-sm` / `-md` / `-lg`: `64px` / `120px` / `180px` — Circular ring size presets.
+*   `--q-progress-circular-stroke-width-sm` / `-md` / `-lg`: `6px` / `8px` / `10px` — Circular stroke presets.
+*   `--q-progress-circular-linecap`: `round` — Circular fill stroke end shape.
+*   `--q-progress-fill-color`: semantic tone color — Fill override for either variant.
+*   `--q-progress-track-color`: surface color for linear, border color for circular — Track override for either variant.
+*   `--q-progress-transition`: `var(--q-transition-normal)` — Determinate fill transition.
+*   `--q-progress-indeterminate-duration`: `1.4s` — Indeterminate animation cycle.
 
 ### E. Button (`q-button`)
 *   `--q-btn-radius`: `var(--q-radius-md)` — Corner rounding for the button.
