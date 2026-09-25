@@ -69,11 +69,27 @@ Generated API references live beside each component implementation under `src/co
 
 ---
 
+## Local package switching
+
+Run `bun run wq-setup` in a consuming project to generate `.wq-switch.json` and
+the `wq-sandbox`/`wq-switch` package scripts. Fill in the config's `source` path,
+then run `bun run wq-switch local`. The switcher builds core, React, and Angular and
+activates only the packages that project uses. Run `bun run wq-switch npm` to
+restore the original installed packages. See [the switcher guide](scripts/wq-switch/README.md).
+
 ## 🧪 WebQuark Component Sandbox
 
 WebQuark includes a built-in interactive sandbox playground where you can preview components, inspect their layout behaviors, and test theme design variables in real-time.
 
-To launch the sandbox:
+From a project with `@webquark/core` installed, launch the packaged sandbox:
+
+```bash
+bun run wq-sandbox
+```
+
+Open [http://localhost:3333](http://localhost:3333). This shows the installed package's sandbox.
+
+To develop the sandbox in the WebQuark repository:
 1. Navigate to the WebQuark root directory.
 2. Start the playground server:
    ```bash

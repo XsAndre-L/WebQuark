@@ -1,3 +1,4 @@
+import { spaceValue, surfaceValue, type QSpace, type QSurface } from '../../../theme/tokens';
 import { Component, Element, Prop, State, h } from '@stencil/core';
 import { getSlottedElements } from '../../../utils/dom';
 
@@ -23,10 +24,15 @@ export class QPanel {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Element() el!: HTMLElement;
 
+  /** Explicit surface; omitted preserves the variant's role. */
+  @Prop() surface?: QSurface;
+  @Prop() headerPadding?: QSpace;
+  @Prop() footerPadding?: QSpace;
+  @Prop() dividers: boolean = false;
   @Prop({ reflect: true }) variant: QPanelVariant = 'bordered';
   /** Removes the panel border while preserving the selected variant's other styling. */
   @Prop({ reflect: true }) noBorders: boolean = false;
-  @Prop({ reflect: true }) padding: QPanelPadding = 'md';
+  @Prop({ reflect: true }) padding: QPanelPadding = 'lg';
   @Prop({ reflect: true }) fullHeight: boolean = false;
 
   @Prop({ reflect: true }) scrollable: boolean = false;
@@ -69,8 +75,10 @@ export class QPanel {
   render() {
     return (
       <section
+        style={{ '--_q-surface': surfaceValue(this.surface ?? (this.variant === 'plain' ? 'transparent' : 'panel')), '--_q-body-padding': spaceValue(this.padding), '--_q-header-padding': spaceValue(this.headerPadding ?? this.padding), '--_q-footer-padding': spaceValue(this.footerPadding ?? this.padding) }}
         class={{
           'panel': true,
+          'has-dividers': this.dividers,
           [`variant-${this.variant}`]: true,
           'has-no-borders': this.noBorders,
           [`padding-${this.padding}`]: true,

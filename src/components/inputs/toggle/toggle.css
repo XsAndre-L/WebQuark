@@ -1,11 +1,8 @@
+@import '../../../theme/control.css';
 :host {
   /* Toggle Switch Dimensions */
-  --q-toggle-switch-width: var(--q-toggle-width, 44px);
-  --q-toggle-switch-height: var(--q-toggle-height, 24px);
-  --q-toggle-thumb-size: var(--q-toggle-size, 18px);
 
   /* Checkbox Mode Dimensions */
-  --q-toggle-checkbox-size: var(--q-toggle-box-size, 18px);
 
   /* Colors */
   --q-toggle-bg-off: var(--q-bg-surface-2, #374151);
@@ -174,47 +171,15 @@
 }
 
 /* Sizing Overrides */
-.toggle-wrapper.size-sm {
-  gap: 8px;
-  --q-toggle-switch-width: 32px;
-  --q-toggle-switch-height: 18px;
-  --q-toggle-thumb-size: 12px;
-  --q-toggle-checkbox-size: 14px;
-}
-.toggle-wrapper.size-sm .toggle-label-text {
-  font-size: var(--q-font-size-sm, 0.7rem);
-}
-.toggle-wrapper.size-sm .default-check-icon {
-  width: 10px;
-  height: 10px;
-}
+/* Shared foundation geometry. */
+.toggle-container { --_q-field-error-color: var(--q-toggle-error-color, var(--q-color-danger, #f87171)); }
+.toggle-wrapper { min-height: var(--_q-control-height); gap: var(--q-space-sm, .5rem); }
+.toggle-wrapper:is(.size-sm, .size-md, .size-lg, .size-inherit) .toggle-label-text { font-size: var(--_q-control-font); line-height: var(--_q-control-line); margin-bottom: 0; }
 
-.toggle-wrapper.size-md {
-  gap: 12px;
-  --q-toggle-switch-width: 44px;
-  --q-toggle-switch-height: 24px;
-  --q-toggle-thumb-size: 18px;
-  --q-toggle-checkbox-size: 16px;
-}
-.toggle-wrapper.size-md .toggle-label-text {
-  font-size: 0.95rem;
-}
-.toggle-wrapper.size-md .default-check-icon {
-  width: 12px;
-  height: 12px;
-}
+@import '../../../theme/field.css';
 
-.toggle-wrapper.size-lg {
-  gap: 16px;
-  --q-toggle-switch-width: 56px;
-  --q-toggle-switch-height: 30px;
-  --q-toggle-thumb-size: 24px;
-  --q-toggle-checkbox-size: 22px;
-}
-.toggle-wrapper.size-lg .toggle-label-text {
-  font-size: var(--q-font-size-lg, 1rem);
-}
-.toggle-wrapper.size-lg .default-check-icon {
-  width: 16px;
-  height: 16px;
-}
+.toggle-wrapper { --_q-switch-width: var(--q-toggle-switch-width, var(--q-toggle-width, calc(var(--_q-control-icon) * 2.75))); --_q-switch-height: var(--q-toggle-switch-height, var(--q-toggle-height, calc(var(--_q-control-icon) * 1.5))); --_q-thumb-size: var(--q-toggle-thumb-size, var(--q-toggle-size, calc(var(--_q-control-icon) * 1.125))); }
+.switch-track { width: var(--_q-switch-width); height: var(--_q-switch-height); }
+.switch-thumb { width: var(--_q-thumb-size); height: var(--_q-thumb-size); }
+.type-switch.is-checked .switch-thumb { transform: translate(calc(var(--_q-switch-width) - var(--_q-thumb-size) - 6px), -50%); }
+.checkbox-box { width: var(--q-toggle-checkbox-size, var(--q-toggle-box-size, var(--_q-control-icon))); height: var(--q-toggle-checkbox-size, var(--q-toggle-box-size, var(--_q-control-icon))); }

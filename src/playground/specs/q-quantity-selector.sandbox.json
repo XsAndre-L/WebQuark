@@ -30,6 +30,17 @@
       "type": "number",
       "default": 0,
       "desc": "The current quantity value"
+    },
+    "size": {
+      "type": "select",
+      "default": "inherit",
+      "options": [
+        "inherit",
+        "sm",
+        "md",
+        "lg"
+      ],
+      "desc": "Control size; inherit follows the nearest form or toolbar"
     }
   },
   "variants": [

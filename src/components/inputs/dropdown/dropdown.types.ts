@@ -1,3 +1,4 @@
+import type { QControlSize } from '../../../theme/tokens';
 export interface Option {
   label: string;
   value: string;
@@ -6,6 +7,6 @@ export interface Option {
 /** A concise option label/value or a fully configured option object. */
 export type DropdownOptionInput = Option | string;
 
-export type QDropdownSize = 'sm' | 'md' | 'lg';
+export type QDropdownSize = QControlSize;
 
 export type QDropdownPlacement = 'auto' | 'top' | 'bottom';

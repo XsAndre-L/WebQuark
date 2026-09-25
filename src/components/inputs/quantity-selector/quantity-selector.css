@@ -1,12 +1,11 @@
+@import '../../../theme/control.css';
 :host {
   /* Dimensions */
-  --q-quantity-selector-height: 38px;
   --q-quantity-selector-width-vertical: 50px;
   
   /* Colors */
   --q-quantity-selector-bg: var(--q-bg-surface-2, #374151);
   --q-quantity-selector-border-color: var(--q-border-color, #4b5563);
-  --q-quantity-selector-radius: var(--q-radius-md, 8px);
   
   /* Input area */
   --q-quantity-selector-input-bg: var(--q-bg-base, #111827);
@@ -29,7 +28,7 @@
 .quantity-selector {
   display: inline-flex;
   border: 1px solid var(--q-quantity-selector-border-color);
-  border-radius: var(--q-quantity-selector-radius);
+  border-radius: var(--q-quantity-selector-radius, var(--q-field-radius, var(--_q-control-radius)));
   background: var(--q-quantity-selector-bg);
   box-sizing: border-box;
   overflow: hidden;
@@ -129,3 +128,10 @@
   width: 16px;
   height: 16px;
 }
+
+/* Shared foundation geometry. */
+.quantity-selector.variant-horizontal { min-height: var(--q-quantity-selector-height, var(--_q-control-height)); height: auto; }
+.quantity-selector .quantity-input { min-height: calc(var(--_q-control-height) - 2px); font-size: var(--_q-control-font); line-height: var(--_q-control-line); }
+.variant-horizontal .quantity-btn { width: var(--q-quantity-selector-height, var(--_q-control-height)); min-height: calc(var(--_q-control-height) - 2px); }
+.variant-vertical .quantity-btn { height: var(--q-quantity-selector-height, var(--_q-control-height)); }
+.btn-icon { width: var(--_q-control-icon); height: var(--_q-control-icon); }

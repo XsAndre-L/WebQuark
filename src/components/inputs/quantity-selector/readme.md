@@ -11,13 +11,14 @@ Numeric quantity control with increment/decrement buttons and a bounded editable
 
 ## Properties
 
-| Property  | Attribute | Description | Type                         | Default        |
-| --------- | --------- | ----------- | ---------------------------- | -------------- |
-| `max`     | `max`     |             | `number`                     | `undefined`    |
-| `min`     | `min`     |             | `number`                     | `undefined`    |
-| `step`    | `step`    |             | `number`                     | `1`            |
-| `value`   | `value`   |             | `number`                     | `0`            |
-| `variant` | `variant` |             | `"horizontal" \| "vertical"` | `'horizontal'` |
+| Property  | Attribute | Description | Type                                | Default        |
+| --------- | --------- | ----------- | ----------------------------------- | -------------- |
+| `max`     | `max`     |             | `number`                            | `undefined`    |
+| `min`     | `min`     |             | `number`                            | `undefined`    |
+| `size`    | `size`    |             | `"inherit" \| "lg" \| "md" \| "sm"` | `'inherit'`    |
+| `step`    | `step`    |             | `number`                            | `1`            |
+| `value`   | `value`   |             | `number`                            | `0`            |
+| `variant` | `variant` |             | `"horizontal" \| "vertical"`        | `'horizontal'` |
 
 
 ## Events

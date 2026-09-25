@@ -246,3 +246,19 @@
   }
 }
 
+
+.dialog-wrapper { height: 100dvh; box-sizing: border-box; padding: var(--q-dialog-gutter, var(--q-space-lg, 1rem)); }
+.dialog-modal { width: 100%; max-width: var(--q-dialog-width, 36rem); max-height: 100%; background: var(--q-dialog-bg, var(--q-bg-floating, var(--q-bg-surface-4, #2c3a58))); }
+:host([size='sm']) .dialog-modal { max-width: var(--q-dialog-width, 24rem); }
+:host([size='lg']) .dialog-modal { max-width: var(--q-dialog-width, 48rem); }
+:host([size='full']) .dialog-modal { max-width: none; }
+.dialog-header { padding: var(--q-dialog-header-padding, var(--q-space-lg, 1rem)); background: var(--q-dialog-header-bg, transparent); }
+.dialog-body { padding: var(--q-dialog-body-padding, var(--q-space-lg, 1rem)); background: var(--q-dialog-body-bg, transparent); }
+.dialog-footer { padding: var(--q-dialog-footer-padding, var(--q-space-lg, 1rem)); background: var(--q-dialog-footer-bg, transparent); flex-wrap: wrap; }
+
+.dialog-actions { flex-wrap: wrap; min-width: 0; }
+.dialog-actions > * { min-width: 0; max-width: 100%; }
+.dialog-header, .dialog-footer { flex-shrink: 0; }
+.dialog-body { min-height: 0; }
+.dialog-footer.is-hidden { display: none; }
+.btn-cancel, .btn-confirm { min-height: var(--q-control-height-md, 2.25rem); height: auto; padding: 0 var(--q-control-padding-md, .75rem); font-size: var(--q-control-font-md, .875rem); line-height: var(--q-control-line-md, 1.25rem); overflow-wrap: anywhere; }

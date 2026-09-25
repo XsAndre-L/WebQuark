@@ -11,21 +11,22 @@ Modal confirmation or message dialog with focus trapping and safe solid backdrop
 
 ## Properties
 
-| Property              | Attribute                | Description                                                                                | Type                | Default          |
-| --------------------- | ------------------------ | ------------------------------------------------------------------------------------------ | ------------------- | ---------------- |
-| `ariaLabel`           | `aria-label`             | Accessible name for the dialog, especially when using a custom header without dialogTitle. | `string`            | `null`           |
-| `backdropEffect`      | `backdrop-effect`        | `solid` is CEF-safe; `none` keeps only a transparent click layer.                          | `"none" \| "solid"` | `'solid'`        |
-| `cancelLabel`         | `cancel-label`           |                                                                                            | `string`            | `'Cancel'`       |
-| `closeLabel`          | `close-label`            | Accessible label for the header close button.                                              | `string`            | `'Close dialog'` |
-| `closeOnEsc`          | `close-on-esc`           |                                                                                            | `boolean`           | `true`           |
-| `closeOnOverlayClick` | `close-on-overlay-click` |                                                                                            | `boolean`           | `true`           |
-| `confirmLabel`        | `confirm-label`          |                                                                                            | `string`            | `'Confirm'`      |
-| `dialogTitle`         | `dialog-title`           | Rendered by the default dialog header.                                                     | `string`            | `undefined`      |
-| `loading`             | `loading`                | Disables dialog actions and marks the confirm button busy.                                 | `boolean`           | `false`          |
-| `message`             | `message`                | Rendered by the default dialog body.                                                       | `string`            | `undefined`      |
-| `open`                | `open`                   |                                                                                            | `boolean`           | `false`          |
-| `showCancel`          | `show-cancel`            |                                                                                            | `boolean`           | `true`           |
-| `showConfirm`         | `show-confirm`           |                                                                                            | `boolean`           | `true`           |
+| Property              | Attribute                | Description                                                                                | Type                             | Default          |
+| --------------------- | ------------------------ | ------------------------------------------------------------------------------------------ | -------------------------------- | ---------------- |
+| `ariaLabel`           | `aria-label`             | Accessible name for the dialog, especially when using a custom header without dialogTitle. | `string`                         | `null`           |
+| `backdropEffect`      | `backdrop-effect`        | `solid` is CEF-safe; `none` keeps only a transparent click layer.                          | `"none" \| "solid"`              | `'solid'`        |
+| `cancelLabel`         | `cancel-label`           |                                                                                            | `string`                         | `'Cancel'`       |
+| `closeLabel`          | `close-label`            | Accessible label for the header close button.                                              | `string`                         | `'Close dialog'` |
+| `closeOnEsc`          | `close-on-esc`           |                                                                                            | `boolean`                        | `true`           |
+| `closeOnOverlayClick` | `close-on-overlay-click` |                                                                                            | `boolean`                        | `true`           |
+| `confirmLabel`        | `confirm-label`          |                                                                                            | `string`                         | `'Confirm'`      |
+| `dialogTitle`         | `dialog-title`           | Rendered by the default dialog header.                                                     | `string`                         | `undefined`      |
+| `loading`             | `loading`                | Disables dialog actions and marks the confirm button busy.                                 | `boolean`                        | `false`          |
+| `message`             | `message`                | Rendered by the default dialog body.                                                       | `string`                         | `undefined`      |
+| `open`                | `open`                   |                                                                                            | `boolean`                        | `false`          |
+| `showCancel`          | `show-cancel`            |                                                                                            | `boolean`                        | `true`           |
+| `showConfirm`         | `show-confirm`           |                                                                                            | `boolean`                        | `true`           |
+| `size`                | `size`                   |                                                                                            | `"full" \| "lg" \| "md" \| "sm"` | `'md'`           |
 
 
 ## Events

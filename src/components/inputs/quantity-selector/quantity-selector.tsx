@@ -1,3 +1,4 @@
+import type { QControlSize } from '../../../theme/tokens';
 import { Component, Prop, State, Event, EventEmitter, h, Watch } from '@stencil/core';
 
 import type { QQuantitySelectorVariant } from './quantity-selector.types';
@@ -29,6 +30,7 @@ export class QQuantitySelector {
   @Prop() max?: number;
   @Prop() step: number = 1;
 
+  @Prop() size: QControlSize = 'inherit';
   @Prop({ reflect: true }) variant: QQuantitySelectorVariant = 'horizontal';
 
   @Event() qChange!: EventEmitter<number>;
@@ -171,6 +173,7 @@ export class QQuantitySelector {
       <div
         class={{
           'quantity-selector': true,
+          [`size-${this.size}`]: true,
           [`variant-${this.variant}`]: true,
         }}
         onClick={this.handleClick}
