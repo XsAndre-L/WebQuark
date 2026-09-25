@@ -21,23 +21,21 @@ export class QAvatar {
 
   /** Image source. An empty value renders the fallback immediately. */
   @Prop() src?: string;
-
-  /** Name used to derive fallback initials and, unless `alt` is supplied, the accessible name. */
-  @Prop() name?: string;
-
   /** Explicit fallback text. Values are normalized to at most two visible characters. */
   @Prop() initials?: string;
 
-  /** Accessible image text. Set an explicit empty string when the avatar is decorative. */
-  @Prop() alt?: string;
-
   /** Preset, pixel number, or CSS size. */
   @Prop() size: QAvatarSize = 'md';
-
   @Prop({ reflect: true }) shape: QAvatarShape = 'circle';
 
   /** Native image loading policy. */
   @Prop() loading: 'eager' | 'lazy' = 'lazy';
+
+  /** Name used to derive fallback initials and, unless `alt` is supplied, the accessible name. */
+  @Prop() name?: string;
+
+  /** Accessible image text. Set an explicit empty string when the avatar is decorative. */
+  @Prop() alt?: string;
 
   @Event() qLoad!: EventEmitter<void>;
 

@@ -56,6 +56,16 @@
       "type": "boolean",
       "default": false,
       "desc": "Shows busy spinner and disables all button interactions"
+    },
+    "size": {
+      "type": "select",
+      "default": "md",
+      "options": [
+        "sm",
+        "md",
+        "lg",
+        "full"
+      ]
     }
   },
   "slots": {

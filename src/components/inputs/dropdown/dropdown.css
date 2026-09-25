@@ -1,3 +1,4 @@
+@import '../../../theme/control.css';
 :host {
   display: block;
   width: 100%;
@@ -32,7 +33,7 @@
   width: 100%;
   background: var(--q-dropdown-bg, var(--q-bg-surface-2, #374151));
   border: var(--q-dropdown-border, var(--q-border, 1px solid var(--q-border-color, #4b5563)));
-  border-radius: var(--q-dropdown-radius, var(--q-radius-md, 8px));
+  border-radius: var(--q-dropdown-radius, var(--q-field-radius, var(--_q-control-radius)));
   padding: var(--q-dropdown-padding, var(--q-field-padding, 10px 14px));
   line-height: 1.2;
   box-sizing: border-box;
@@ -163,17 +164,6 @@
 }
 
 /* Sizing Layouts */
-.dropdown-wrapper.size-sm .dropdown-label {
-  font-size: var(--q-font-size-sm, 0.7rem);
-}
-.dropdown-wrapper.size-sm .dropdown-trigger {
-  padding: var(--q-dropdown-padding, 6px 10px);
-  font-size: var(--q-dropdown-font-size, var(--q-font-size-sm, 0.7rem));
-}
-.dropdown-wrapper.size-sm .chevron-icon {
-  width: 14px;
-  height: 14px;
-}
 .dropdown-wrapper.size-sm .menu-item {
   padding: var(--q-dropdown-padding, 6px 10px);
   font-size: var(--q-dropdown-font-size, var(--q-font-size-sm, 0.7rem));
@@ -182,17 +172,6 @@
   padding-left: 7px;
 }
 
-.dropdown-wrapper.size-md .dropdown-label {
-  font-size: var(--q-font-size-sm, 0.7rem);
-}
-.dropdown-wrapper.size-md .dropdown-trigger {
-  padding: var(--q-dropdown-padding, 10px 14px);
-  font-size: var(--q-dropdown-font-size, var(--q-font-size-base, 0.9rem));
-}
-.dropdown-wrapper.size-md .chevron-icon {
-  width: 16px;
-  height: 16px;
-}
 .dropdown-wrapper.size-md .menu-item {
   padding: var(--q-dropdown-padding, 10px 14px);
   font-size: var(--q-dropdown-font-size, var(--q-font-size-base, 0.9rem));
@@ -201,17 +180,6 @@
   padding-left: 11px;
 }
 
-.dropdown-wrapper.size-lg .dropdown-label {
-  font-size: var(--q-font-size-base, 0.9rem);
-}
-.dropdown-wrapper.size-lg .dropdown-trigger {
-  padding: var(--q-dropdown-padding, 14px 18px);
-  font-size: var(--q-dropdown-font-size, var(--q-font-size-lg, 1rem));
-}
-.dropdown-wrapper.size-lg .chevron-icon {
-  width: 20px;
-  height: 20px;
-}
 .dropdown-wrapper.size-lg .menu-item {
   padding: var(--q-dropdown-padding, 14px 18px);
   font-size: var(--q-dropdown-font-size, var(--q-font-size-lg, 1rem));
@@ -342,3 +310,11 @@
 }
 
 
+
+/* Shared foundation geometry. */
+.dropdown-wrapper:is(.size-sm, .size-md, .size-lg, .size-inherit) .dropdown-trigger { min-height: var(--q-dropdown-height, var(--_q-control-height)); padding: var(--q-dropdown-padding, 0 var(--_q-control-padding)); font-size: var(--q-dropdown-font-size, var(--_q-control-font)); line-height: var(--_q-control-line); background: var(--q-dropdown-bg, var(--q-field-bg, var(--q-bg-field, var(--q-bg-surface-3, #22304d)))); }
+.dropdown-wrapper .chevron-icon { width: var(--_q-control-icon); height: var(--_q-control-icon); }
+.dropdown-menu { background: var(--q-dropdown-menu-bg, var(--q-bg-floating, var(--q-bg-surface-4, #2c3a58))); }
+.dropdown-trigger[aria-invalid='true'] { border-color: var(--q-color-danger, #f87171); }
+
+@import '../../../theme/field.css';

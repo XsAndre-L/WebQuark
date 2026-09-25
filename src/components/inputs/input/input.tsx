@@ -1,3 +1,4 @@
+import { fieldFeedback, feedbackStyle } from '../../shared/field';
 import { Component, Prop, State, Event, EventEmitter, Method, AttachInternals, Watch, h } from '@stencil/core';
 
 import { syncNativeControlValidity } from '../../../utils/form-control-validity';
@@ -30,8 +31,14 @@ export class QInput {
   @Prop() label?: string;
   /** Accessible name for the native input when a visible label is not used. */
   @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
+  /** Supporting text, replaced by an active error. */
+  @Prop() description?: string;
 
-  @Prop() size: QInputSize = 'md';
+  /** Keep the label accessible without displaying it. */
+  @Prop() labelHidden: boolean = false;
+  /** Omitted inherits the enclosing form; false cancels reservation. */
+  @Prop() reserveFeedback?: boolean;
+  @Prop() size: QInputSize = 'inherit';
 
   /** Shows a clear button when the field has a value. */
   @Prop() clearable: boolean = false;
@@ -308,7 +315,8 @@ export class QInput {
     const ariaLabel = this.ariaLabel?.trim() || undefined;
 
     return (
-      <div 
+      <div
+        style={feedbackStyle(this.reserveFeedback)}
         class={{
           'input-wrapper': true,
           'is-disabled': this.disabled,
@@ -318,7 +326,7 @@ export class QInput {
       >
         {/* Optional Header Label linked via htmlFor */}
         {this.label && (
-          <label class="input-label" htmlFor="q-field" part="label">
+          <label class={{ 'input-label': true, 'q-label-hidden': this.labelHidden }} htmlFor="q-field" part="label">
             {this.label}
           </label>
         )}
@@ -365,7 +373,7 @@ export class QInput {
             aria-valuemin={this.type === 'number' && this.min !== undefined && this.min !== null ? String(this.min) : undefined}
             aria-valuemax={this.type === 'number' && this.max !== undefined && this.max !== null ? String(this.max) : undefined}
             aria-invalid={hasError ? 'true' : 'false'}
-            aria-describedby={hasError ? 'q-field-error' : undefined}
+            aria-describedby={hasError || this.description ? 'q-field-error' : undefined}
             aria-label={ariaLabel}
           />
 
@@ -436,11 +444,7 @@ export class QInput {
         </div>
 
         {/* Validation Helper Message */}
-        {hasError && (
-          <span id="q-field-error" class="error-msg" part="error-msg">
-            {displayError}
-          </span>
-        )}
+        {fieldFeedback('q-field-error', displayError, this.description)}
       </div>
     );
   }

@@ -11,16 +11,19 @@ Form-associated switch or checkbox toggle control.
 
 ## Properties
 
-| Property   | Attribute  | Description                                                            | Type                     | Default     |
-| ---------- | ---------- | ---------------------------------------------------------------------- | ------------------------ | ----------- |
-| `checked`  | `checked`  |                                                                        | `boolean`                | `false`     |
-| `disabled` | `disabled` |                                                                        | `boolean`                | `false`     |
-| `error`    | `error`    | Validation helper text displayed when the toggle is in an error state. | `string`                 | `undefined` |
-| `label`    | `label`    |                                                                        | `string`                 | `undefined` |
-| `name`     | `name`     |                                                                        | `string`                 | `undefined` |
-| `required` | `required` |                                                                        | `boolean`                | `false`     |
-| `size`     | `size`     |                                                                        | `"lg" \| "md" \| "sm"`   | `'md'`      |
-| `type`     | `type`     | Controls switch/checkbox visuals and semantics.                        | `"checkbox" \| "switch"` | `'switch'`  |
+| Property          | Attribute          | Description                                                            | Type                                | Default     |
+| ----------------- | ------------------ | ---------------------------------------------------------------------- | ----------------------------------- | ----------- |
+| `checked`         | `checked`          |                                                                        | `boolean`                           | `false`     |
+| `description`     | `description`      | Supporting text, replaced by an active error.                          | `string`                            | `undefined` |
+| `disabled`        | `disabled`         |                                                                        | `boolean`                           | `false`     |
+| `error`           | `error`            | Validation helper text displayed when the toggle is in an error state. | `string`                            | `undefined` |
+| `label`           | `label`            |                                                                        | `string`                            | `undefined` |
+| `labelHidden`     | `label-hidden`     | Keep the label accessible without displaying it.                       | `boolean`                           | `false`     |
+| `name`            | `name`             |                                                                        | `string`                            | `undefined` |
+| `required`        | `required`         |                                                                        | `boolean`                           | `false`     |
+| `reserveFeedback` | `reserve-feedback` | Omitted inherits the enclosing form; false cancels reservation.        | `boolean`                           | `undefined` |
+| `size`            | `size`             |                                                                        | `"inherit" \| "lg" \| "md" \| "sm"` | `'inherit'` |
+| `type`            | `type`             | Controls switch/checkbox visuals and semantics.                        | `"checkbox" \| "switch"`            | `'switch'`  |
 
 
 ## Events

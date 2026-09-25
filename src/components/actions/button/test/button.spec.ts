@@ -107,7 +107,7 @@ describe('q-button', () => {
 
     expect(icon).toBeTruthy();
     expect(icon.name).toBe('save');
-    expect(icon.size).toBe('lg');
+    expect(icon.size).toBe('var(--_q-control-icon)');
     expect(el.shadowRoot.querySelector('.btn').classList.contains('is-icon-only')).toBe(true);
     el.remove();
   });

@@ -40,6 +40,9 @@ function entryPaths(manifest: Record<string, any>): string[] {
   }
 
   visit(manifest.exports);
+  for (const entry of Object.values(manifest.bin ?? {})) {
+    if (typeof entry === 'string') entries.add(entry.replace(/^\.\//, ''));
+  }
   return [...entries];
 }
 
@@ -85,6 +88,12 @@ function verifyTarball(directory: string): void {
   }>;
   if (!summary) {
     throw new Error('npm pack returned no package summary for ' + directory);
+  }
+
+  for (const entry of Object.values(readPackage(directory).bin ?? {})) {
+    if (typeof entry === 'string' && !summary.files.some(file => file.path === entry.replace(/^\.\//, ''))) {
+      throw new Error('Packed executable missing: ' + entry);
+    }
   }
 
   const sourceFiles = summary.files.filter((file) => file.path.startsWith('src/'));

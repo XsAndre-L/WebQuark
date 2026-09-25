@@ -91,3 +91,15 @@
   font-weight: var(--q-font-weight-normal, 400);
   line-height: 1.5;
 }
+
+/* Region padding is local and cannot alter descendants' spacing tokens. */
+:host { min-width: var(--q-card-min-width, 0px); }
+.card-container { padding: 0; background: var(--q-card-bg, var(--_q-surface)); }
+.card-container.is-glass { background: var(--q-card-bg, var(--q-bg-glass, rgba(25,36,59,.85))); }
+.elevation-none { box-shadow: none; }
+.card-header { padding: var(--q-card-header-padding, var(--_q-header-padding)); margin: 0; }
+.card-body { padding: var(--q-card-padding, var(--_q-body-padding)); }
+.card-footer { padding: var(--q-card-footer-padding, var(--_q-footer-padding)); }
+.card-footer.is-hidden { display: none; }
+.has-dividers .card-header { border-bottom: var(--q-card-divider, var(--q-border, 1px solid #374151)); }
+.has-dividers .card-footer { border-top: var(--q-card-divider, var(--q-border, 1px solid #374151)); }

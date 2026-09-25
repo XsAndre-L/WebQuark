@@ -17,13 +17,14 @@
     },
     "size": {
       "type": "select",
+      "default": "inherit",
       "options": [
+        "inherit",
         "sm",
         "md",
         "lg"
       ],
-      "default": "md",
-      "desc": "Vertical padding & font size modifier"
+      "desc": "Control size; inherit follows the nearest form or toolbar"
     },
     "icon": {
       "type": "string",

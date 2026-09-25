@@ -1,4 +1,5 @@
-import { Component, Prop, State, Event, EventEmitter, Element, AttachInternals, Watch, Listen, h } from '@stencil/core';
+import { fieldFeedback, feedbackStyle } from '../../shared/field';
+import { Component, Prop, State, Event, EventEmitter, Element, AttachInternals, Watch, Listen, Method, h } from '@stencil/core';
 import { identifyItems } from '../../../utils/collection-identity';
 import type { DropdownOptionInput, Option, QDropdownPlacement, QDropdownSize } from './dropdown.types';
 import { getDropdownOptions, getFilteredOptions, getOptionLabel, getSelectedOption, getVisibleOptions } from './internals/options';
@@ -27,12 +28,18 @@ export class QDropdown {
   @Prop() label?: string;
   /** Accessible name for the trigger and option list when no visible label is available. */
   @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
+  /** Supporting text, replaced by an active error. */
+  @Prop() description?: string;
   @Prop() placeholder: string = 'Select an option...';
   /** Options to render; strings use the same text for label and value, while objects allow separate values. */
   @Prop() options: DropdownOptionInput[] | string = [];
   @Prop({ mutable: true }) value: string = '';
 
-  @Prop({ reflect: true }) size: QDropdownSize = 'md';
+  /** Keep the label accessible without displaying it. */
+  @Prop() labelHidden: boolean = false;
+  /** Omitted inherits the enclosing form; false cancels reservation. */
+  @Prop() reserveFeedback?: boolean;
+  @Prop({ reflect: true }) size: QDropdownSize = 'inherit';
 
   @Prop() searchable: boolean = false;
   /** Delegates filtering and pagination to the consumer. */
@@ -47,6 +54,10 @@ export class QDropdown {
   @Prop() collisionPadding: number = 8;
 
   @Prop({ reflect: true }) disabled: boolean = false;
+
+  @Prop({ reflect: true }) required: boolean = false;
+  /** Custom validation error; independent of currently loaded options. */
+  @Prop() error?: string;
 
   @Prop({ reflect: true }) name?: string;
 
@@ -99,6 +110,7 @@ export class QDropdown {
   }
 
   componentDidRender() {
+    this.syncValidity();
     if (this.isOpen) {
       this.openFloatingMenu();
       return;
@@ -112,6 +124,37 @@ export class QDropdown {
     if (this.internals && typeof this.internals.setFormValue === 'function') {
       this.internals.setFormValue(newValue);
     }
+    this.syncValidity();
+  }
+
+  @Watch('required')
+  @Watch('error')
+  @Watch('disabled')
+  syncValidity(): void {
+    if (typeof this.internals?.setValidity !== 'function') return;
+    const message = this.disabled ? '' : this.error?.trim() || (this.required && !this.value ? 'Please select an option.' : '');
+    this.internals.setValidity(message ? this.error?.trim() ? { customError: true } : { valueMissing: true } : {}, message, this.triggerEl);
+  }
+
+  @Method()
+  async checkValidity(): Promise<boolean> {
+    this.syncValidity();
+    return this.disabled || !(this.error?.trim() || (this.required && !this.value));
+  }
+
+  @Method()
+  async reportValidity(): Promise<boolean> {
+    const valid = await this.checkValidity();
+    if (!valid) {
+      this.triggerEl?.focus();
+      this.internals?.reportValidity?.();
+    }
+    return valid;
+  }
+
+  @Method()
+  async focusElement(): Promise<void> {
+    this.triggerEl?.focus();
   }
 
   @Watch('options')
@@ -136,6 +179,7 @@ export class QDropdown {
     if (!this.searchTerm) {
       this.searchTerm = '';
     }
+    this.syncValidity();
   }
 
   formResetCallback() {
@@ -143,6 +187,7 @@ export class QDropdown {
     if (this.internals && typeof this.internals.setFormValue === 'function') {
       this.internals.setFormValue(this.value);
     }
+    this.syncValidity();
   }
 
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
@@ -533,7 +578,8 @@ export class QDropdown {
     const ariaLabel = this.ariaLabel?.trim() || undefined;
 
     return (
-      <div 
+      <div
+        style={feedbackStyle(this.reserveFeedback)}
         class={{
           'dropdown-wrapper': true,
           'is-open': this.isOpen,
@@ -544,7 +590,7 @@ export class QDropdown {
       >
         {/* Optional Header Label */}
         {this.label && (
-          <label class="dropdown-label" htmlFor="q-field" part="label">
+          <label class={{ 'dropdown-label': true, 'q-label-hidden': this.labelHidden }} htmlFor="q-field" part="label">
             {this.label}
           </label>
         )}
@@ -561,6 +607,9 @@ export class QDropdown {
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}
           aria-haspopup="listbox"
+          aria-required={this.required ? 'true' : 'false'}
+          aria-invalid={this.error || (this.required && !this.value) ? 'true' : 'false'}
+          aria-describedby={this.error || this.description ? 'q-field-error' : undefined}
           aria-label={ariaLabel}
           aria-expanded={this.isOpen ? 'true' : 'false'}
           aria-controls={this.isOpen ? 'q-field-menu' : undefined}
@@ -576,6 +625,8 @@ export class QDropdown {
             <polyline points="6 9 12 15 18 9" />
           </svg>
         </button>
+
+        {fieldFeedback('q-field-error', this.error, this.description)}
 
         {/* Viewport-positioned menu promoted to the browser top layer when supported. */}
         {this.isOpen && (

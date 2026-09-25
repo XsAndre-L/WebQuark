@@ -1,4 +1,5 @@
-import { Component, Element, Event, EventEmitter, Listen, Method, Prop, State, h } from '@stencil/core';
+import { controlScope, type QControlSize } from '../../../theme/tokens';
+import { Component, Element, Event, EventEmitter, Host, Listen, Method, Prop, State, h } from '@stencil/core';
 import { handleEnterBehavior } from './internals/enter-behavior';
 import { getNamedControls, shouldSkipControl } from './internals/controls';
 import { applyValues, collectValues, createFormData, resetValues } from './internals/values';
@@ -43,6 +44,10 @@ export class QForm {
   /** Names the native form when no custom header is slotted. */
   @Prop() label?: string;
 
+  @Prop() size: QControlSize = 'inherit';
+  @Prop() reserveFeedback?: boolean;
+  @Prop() labelHidden: boolean = false;
+
   /** Prevents the native submit event's default navigation. */
   @Prop() preventDefault: boolean = true;
   /** Controls how Enter behaves inside text-like controls. */
@@ -55,6 +60,9 @@ export class QForm {
   @Prop() autocomplete: QFormAutocomplete = 'on';
   @Prop() enctype: QFormEnctype = 'application/x-www-form-urlencoded';
   @Prop() target?: QFormTarget;
+
+  /** Names the native form without requiring a visible heading. */
+  @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
 
   /** Emitted after a valid submit with collected values and FormData. */
   @Event() qSubmit!: EventEmitter<QFormSubmitDetail>;
@@ -286,12 +294,13 @@ export class QForm {
 
   render() {
     const hasHeaderContent = Boolean(this.label) || this.hasHeaderSlot;
-    const formLabelledBy = this.label && !this.hasHeaderSlot ? this.titleId : undefined;
-    const formAriaLabel = this.label && this.hasHeaderSlot ? this.label : undefined;
+    const formLabelledBy = !this.ariaLabel && this.label && !this.hasHeaderSlot ? this.titleId : undefined;
+    const formAriaLabel = this.ariaLabel?.trim() || (this.label && this.hasHeaderSlot ? this.label : undefined);
 
     return (
+      <Host style={{ ...controlScope(this.size), '--q-context-feedback-min': this.reserveFeedback === undefined ? '' : this.reserveFeedback ? '1rem' : '0px' }}>
       <div class="form-shell">
-        <div class={{ 'form-header': true, 'is-hidden': !hasHeaderContent }} part="header">
+        <div class={{ 'form-header': true, 'is-hidden': !hasHeaderContent, 'q-label-hidden': this.labelHidden }} part="header">
           <slot name="header" ref={(el) => (this.headerSlot = el as HTMLSlotElement)} onSlotchange={this.handleHeaderSlotChange}>
             {this.label && <h2 id={this.titleId} class="form-title">{this.label}</h2>}
           </slot>
@@ -320,6 +329,7 @@ export class QForm {
           </div>
         </form>
       </div>
+      </Host>
     );
   }
 }

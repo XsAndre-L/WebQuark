@@ -4,13 +4,13 @@
   "props": {
     "elevation": {
       "type": "select",
+      "default": "low",
       "options": [
+        "none",
         "low",
         "medium",
         "high"
-      ],
-      "default": "medium",
-      "desc": "Box-shadow elevation strength index"
+      ]
     },
     "glass": {
       "type": "boolean",
@@ -26,6 +26,36 @@
       "type": "boolean",
       "default": false,
       "desc": "Combines with interactive to translate card upward on hover/focus"
+    },
+    "surface": {
+      "type": "select",
+      "options": [
+        "canvas",
+        "panel",
+        "card",
+        "field",
+        "floating",
+        "transparent"
+      ],
+      "desc": "Explicit semantic surface"
+    },
+    "padding": {
+      "type": "select",
+      "default": "lg",
+      "options": [
+        "none",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl",
+        "2xl",
+        "3xl"
+      ]
+    },
+    "dividers": {
+      "type": "boolean",
+      "default": false
     }
   },
   "slots": {
@@ -38,6 +68,10 @@
       "type": "text",
       "default": "Card Panel Header",
       "desc": "Slotted card header caption"
+    },
+    "footer": {
+      "type": "html",
+      "default": "<q-inline justify=\"end\"><q-button>Continue</q-button></q-inline>"
     }
   },
   "variants": [

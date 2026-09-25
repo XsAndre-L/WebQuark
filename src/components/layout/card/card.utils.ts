@@ -1,6 +1,6 @@
 import type { QCardElevation } from './card.types';
 
-export type NormalizedCardElevation = 'low' | 'medium' | 'high';
+export type NormalizedCardElevation = 'none' | 'low' | 'medium' | 'high';
 
 export function normalizeCardElevation(elevation: QCardElevation): NormalizedCardElevation {
   if (elevation === 1) return 'low';

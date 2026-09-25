@@ -30,19 +30,17 @@ export class QConversationBubble {
 
   @Element() el!: HTMLElement;
 
-  @Prop({ reflect: true }) variant: QConversationBubbleVariant = 'incoming';
-
   /** Visible sender name. */
   @Prop() sender?: string;
-
   /** Visible timestamp or short temporal description. */
   @Prop() timestamp?: string;
 
-  /** Overrides the generated accessible message label. */
-  @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
-
+  @Prop({ reflect: true }) variant: QConversationBubbleVariant = 'incoming';
   /** Reduces spacing for dense conversations. */
   @Prop({ reflect: true }) compact: boolean = false;
+
+  /** Overrides the generated accessible message label. */
+  @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
 
   @State() hasAvatar: boolean = false;
   @State() hasMeta: boolean = false;

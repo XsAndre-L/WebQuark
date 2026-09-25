@@ -1,0 +1,11 @@
+:host { display: block; min-width: 0; }
+div {
+  display: grid;
+  min-width: 0;
+  align-items: start;
+  column-gap: var(--_q-column-gap);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, max(var(--_q-min-item), calc((100% - (var(--_q-columns) - 1) * var(--_q-column-gap)) / var(--_q-columns)))), 1fr));
+}
+slot { display: contents; }
+::slotted(*) { min-width: 0; }
+::slotted([data-q-span='full']) { grid-column: 1 / -1; }

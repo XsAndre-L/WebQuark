@@ -96,18 +96,19 @@
   overflow: auto;
 }
 
-.padding-none .panel-body {
-  padding: 0;
-}
 
-.padding-sm .panel-body {
-  padding: var(--q-panel-padding-sm, var(--q-padding-sm, 4px));
-}
 
-.padding-md .panel-body {
-  padding: var(--q-panel-padding-md, var(--q-padding-md, 9px));
-}
+.padding-sm .panel-body { padding: var(--q-panel-padding, var(--q-panel-padding-sm, var(--_q-body-padding))); }
 
-.padding-lg .panel-body {
-  padding: var(--q-panel-padding-lg, var(--q-padding-lg, 16px));
-}
+.padding-md .panel-body { padding: var(--q-panel-padding, var(--q-panel-padding-md, var(--_q-body-padding))); }
+
+.padding-lg .panel-body { padding: var(--q-panel-padding, var(--q-panel-padding-lg, var(--_q-body-padding))); }
+
+/* Region padding is local and cannot alter descendants' spacing tokens. */
+.panel { background: var(--q-panel-bg, var(--_q-surface)); }
+.panel-header { padding: var(--q-panel-header-padding, var(--_q-header-padding)); margin: 0; }
+.panel-body { padding: var(--q-panel-padding, var(--_q-body-padding)); }
+.panel-footer { padding: var(--q-panel-footer-padding, var(--_q-footer-padding)); }
+.panel-footer.is-hidden { display: none; }
+.has-dividers .panel-header { border-bottom: var(--q-panel-divider, var(--q-border, 1px solid #374151)); }
+.has-dividers .panel-footer { border-top: var(--q-panel-divider, var(--q-border, 1px solid #374151)); }

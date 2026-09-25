@@ -1,3 +1,4 @@
+import type { QControlSize } from '../../../theme/tokens';
 import type { QIconName } from '../../media/icon/icon.types';
 
 export interface RadioGroupOption {
@@ -11,4 +12,4 @@ export interface RadioGroupOption {
 export type RadioGroupOptionInput = RadioGroupOption | string;
 
 export type QRadioGroupOrientation = 'horizontal' | 'responsive' | 'vertical';
-export type QRadioGroupSize = 'sm' | 'md' | 'lg';
+export type QRadioGroupSize = QControlSize;

@@ -24,7 +24,7 @@ Action button that renders a native button or anchor according to `href`.
 | `loading`   | `loading`    | Shows a spinner and prevents interaction while loading.                   | `boolean`                                                                | `false`     |
 | `rel`       | `rel`        | Defaults to `noopener noreferrer` when `target="_blank"`.                 | `string`                                                                 | `undefined` |
 | `shape`     | `shape`      | The `circle` shape uses a fixed-size circular presentation.               | `"circle" \| "default" \| "pill"`                                        | `'default'` |
-| `size`      | `size`       |                                                                           | `"lg" \| "md" \| "sm"`                                                   | `'md'`      |
+| `size`      | `size`       |                                                                           | `"inherit" \| "lg" \| "md" \| "sm"`                                      | `'inherit'` |
 | `target`    | `target`     |                                                                           | `string`                                                                 | `undefined` |
 | `type`      | `type`       | Applied to the native `<button>` when `href` is unset.                    | `"button" \| "reset" \| "submit"`                                        | `'button'`  |
 | `variant`   | `variant`    |                                                                           | `"danger" \| "ghost" \| "primary" \| "secondary" \| "success" \| "text"` | `'primary'` |
