@@ -1,150 +1,200 @@
-# 🧩 Component Specification: `q-reel`
+# q-reel
 
-> Contract note: see [Current public contracts](./current-contracts.md#q-reel), the [generated API](../../src/components/media/reel/readme.md), and the separate [q-thumbnail guide](./q-thumbnail.md). Generated API wins if an older design note below differs.
+`q-reel` arranges thumbnail children in a grid or scrolling row and can open a built-in media viewer.
 
-The `<q-reel>` and `<q-thumbnail>` components collaborate to create a premium, modular media showcase grid or horizontal gallery (carousel) that supports a built-in media viewer (lightbox). It is specifically optimized to avoid rendering bugs inside Unreal Engine's Off-Screen Rendering (OSR) environments.
+**Component tag:** `<q-reel>`
 
----
+**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Media → Reel**.
 
-## 1. Component API (Properties & Attributes)
+**On this page**
 
-### A. Parent Reel Container: `<q-reel>`
+- [Quick start](#quick-start)
+- [Examples](#examples)
+- [Behavior & accessibility](#behavior--accessibility)
+- [Styling](#styling)
+- [API reference](#api-reference)
 
-| Property | Attribute | Type | Default | Description |
-| :--- | :--- | :--- | :--- | :--- |
-| `layout` | `layout` | `"grid" \| "carousel"` | `'grid'` | Visual arrangement of the thumbnails. `'grid'` wraps items into a multi-column responsive layout. `'carousel'` aligns them horizontally with a scrollbar. |
-| `lightbox` | `lightbox` | `boolean` | `true` | When `true`, clicking a thumbnail automatically opens the fullscreen media viewer overlay. |
+## Quick start
 
-### B. Child Thumbnail: `<q-thumbnail>`
+1. Follow the central [installation instructions](../../README.md#1-install-library).
+2. In your application entry file, register WebQuark. This assumes a bundler that resolves package imports and CSS imports.
 
-| Property | Attribute | Type | Default | Description |
-| :--- | :--- | :--- | :--- | :--- |
-| `src` | `src` | `string` | `""` | Image or video media source URL. |
-| `video` | `video` | `boolean` | `false` | Marks the thumbnail as a video. If `true`, a play button overlay is drawn. |
-| `label` | `label` | `string` | `undefined` | Translucent text caption displayed at the bottom of the thumbnail. |
-| `alt` | `alt` | `string` | `""` | Alternate text description for screen readers and accessibility. |
-| `highlighted` | `highlighted` | `boolean` | `false` | Applies an active glowing accent border frame. |
+```javascript
+import '@webquark/core/dist/webquark/webquark.css';
+import { defineCustomElements } from '@webquark/core/loader';
+defineCustomElements();
+```
 
----
+3. Add this markup to your application page. Any module script runs after that shared setup.
 
-## 2. Slots
-
-### A. Parent Container: `<q-reel>`
-*   `default` (unnamed): Receives the list of `<q-thumbnail>` items.
-
-### B. Child Thumbnail: `<q-thumbnail>`
-*   `default` (unnamed): Optional custom overlays or text content to show on top of the image container.
-
----
-
-## 3. Events
-
-### A. Child Thumbnail: `<q-thumbnail>`
-*   `qMaximize`: Emitted when the thumbnail is clicked. The event payload carries the thumbnail's data: `{ src: string; label?: string; video: boolean; alt: string; triggerEl: HTMLElement }`.
-
-### B. Parent Reel: `<q-reel>`
-*   `qLightboxOpen`: Emitted when the fullscreen media overlay opens.
-*   `qLightboxClose`: Emitted when the fullscreen media overlay is closed.
-
----
-
-## 4. Visual Variants
-
-The components change layout and animations based on properties and active states:
-
-### Variant A: Reel Layouts (`layout`)
-*   **Grid Flow (`layout="grid"`)**: Displays items in a responsive grid that automatically wraps based on screen width using CSS grid columns (`--q-reel-columns-desktop` and `--q-reel-columns-mobile`).
-*   **Carousel Flow (`layout="carousel"`)**: Displays items in a single, non-wrapping horizontal row with smooth horizontal scroll snapping.
-
-### Variant B: Highlighted State (`highlighted`)
-*   When a thumbnail has `highlighted="true"`, it renders a constant glowing border using `--q-thumb-border-color` and `--q-thumb-glow` to indicate that it is actively selected, running, or featured.
-
-### Variant C: Fullscreen Lightbox Overlay
-*   When a thumbnail is clicked and `lightbox` is active, a fullscreen overlay container (`.lightbox-overlay`) is dynamically rendered directly within the shadow root of `<q-reel>`.
-*   **CEF OSR Compatibility**: Instead of using the native `<dialog>` element (which can lock viewports and render black screens in game UI overlays) or `backdrop-filter: blur()`, the lightbox overlay uses a high-opacity solid backdrop (`rgba(0, 0, 0, 0.85)` via `--q-bg-overlay`) to dim the viewport.
-*   **Controls**: Features close and navigation control buttons designed using custom SVGs. Keyboard arrows (`ArrowLeft` / `ArrowRight`) slide items.
-
----
-
-## 5. Typography & Font Styles
-
-*   **Global Font Stack**: Inherits `--q-font-family` (e.g., system font).
-*   **Thumbnail Captions (`label`)**:
-    *   Font size: `--q-font-size-xs` (e.g., `0.75rem` / `12px`).
-    *   Font weight: `--q-font-weight-medium` (e.g., `500`).
-    *   Color: `#ffffff` (fixed white for dark contrast over images).
-    *   Line-height: `1.2` (with ellipsis clamp clipping).
-*   **Lightbox Caption**:
-    *   Font size: `--q-font-size-base` (e.g., `1rem` / `16px`).
-    *   Font weight: `--q-font-weight-bold` (e.g., `700`).
-    *   Color: `#ffffff`.
-
----
-
-## 6. CSS Variable Mapping
-
-Below is the complete list of styling tokens mapped to the component's internal CSS:
-
-| Variable Name | Default Value | Purpose |
-| :--- | :--- | :--- |
-| `--q-reel-gap` | `16px` | Spacing gap between adjacent media thumbnails. |
-| `--q-reel-columns-desktop` | `repeat(auto-fill, minmax(220px, 1fr))` | Column template layout in grid mode for desktop viewports. |
-| `--q-reel-columns-mobile` | `repeat(auto-fill, minmax(140px, 1fr))` | Column template layout in grid mode for mobile viewports. |
-| `--q-thumb-aspect-ratio` | `16 / 9` | Locked aspect ratio proportion for all thumbnails. |
-| `--q-thumb-radius` | `var(--q-radius-md, 8px)` | Corner rounding of the thumbnail container. |
-| `--q-thumb-border-color` | `transparent` | Border boundary color around each thumbnail. |
-| `--q-thumb-glow` | `var(--q-glow-interactive, 0 0 20px rgba(96,165,250,0.3))` | Glowing shadow drop around a highlighted thumbnail. |
-| `--q-bg-overlay` | `rgba(0, 0, 0, 0.85)` | Solid, high-opacity dimming backdrop for the media viewer. |
-| `--q-lightbox-max-size` | `85%` | Max size bounds for the expanded media inside the viewer. |
-| `--q-transition-normal` | `250ms ease` | Animation transition duration for hovers and fade-ins. |
-| `--q-color-primary` | `#60a5fa` | Primary color applied to highlighted borders and video icon hovers. |
-| `--q-bg-surface-2` | `#374151` | Fallback background color for thumbnail media loaders. |
-
----
-
-## 7. Implementation source
-
-The implementation is intentionally not duplicated in this guide. Use the generated API linked at the top of the page for the canonical public contract and the component's TypeScript source for implementation details. This avoids stale source snapshots in authored documentation.
-
----
-
-## 8. Unreal Engine / Webview Compatibility Notes
-
-*   **Custom Lightbox Modal (No `<dialog>` Element)**: Native HTML `<dialog>` elements suffer from overlay and positioning miscalculations under CEF OSR, frequently rendering as opaque black viewports. `<q-reel>` prevents this by assembling the fullscreen overlay using standard HTML `<div>` nodes structured absolute inside the shadow DOM.
-*   **No Backdrop Blur**: The media viewer overlay backdrop uses a solid high-opacity color (`rgba(0, 0, 0, 0.85)` via `--q-bg-overlay`) instead of `backdrop-filter: blur(...)`. This prevents major OSR performance degradation or WebUI rendering thread crashes.
-*   **2D Image Scale Transitions**: Hovering thumbnails triggers standard 2D vector zooms (`transform: scale(1.03)` on the wrapper, and `scale(1.05)` on the internal `.thumb-image`). This works smoothly and avoids clipping or redrawing errors.
-*   **Focus Restoring**: When closing the lightbox overlay, the component restores focus to the previously active `<q-thumbnail>` trigger element, ensuring focus tracking behaves correctly on the game UI framework.
-*   **Video Codecs**: Video thumbnails rendered in lightbox mode require the CEF container to support the underlying video codec. CEF configurations without proprietary video codecs (like H.264) will fail to render native `<video>` elements. Consider standard WebM/VP8 formats for video source assets.
-
----
-
-## 9. Developer Guidelines & Examples
-
-### Basic Media Grid Layout
 ```html
-<q-reel layout="grid">
-  <q-thumbnail src="/media/img1.jpg" alt="First scene description" label="Introduction Scene"></q-thumbnail>
-  <q-thumbnail src="/media/video1.mp4" video alt="Cinematic trailer" label="Cinematic Trailer"></q-thumbnail>
-  <q-thumbnail src="/media/img2.jpg" alt="Final artwork" label="Ending Screen" highlighted></q-thumbnail>
+<q-reel>
+  <q-thumbnail src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='180' viewBox='0 0 320 180'%3E%3Crect width='320' height='180' fill='%2322304d'/%3E%3Cpath d='M0 180L100 50L190 180M130 180L235 75L320 180' fill='%2360a5fa'/%3E%3C/svg%3E" label="Mountain study" alt="Blue geometric mountains" ></q-thumbnail>
 </q-reel>
 ```
 
-### Programmatic Lightbox Listeners
+**Result:** a one-item gallery whose thumbnail opens the image viewer.
+
+### At a glance
+
+| Capability | Options | Default |
+| :--- | :--- | :--- |
+| [Layout](#layouts) | grid or carousel | grid |
+| [Viewer](#state-and-interaction) | Built-in lightbox or application handling | Enabled |
+| [Media](#slots) | q-thumbnail image/video entries | None |
+| [Events](#events) | qLightboxOpen and qLightboxClose | No current-item property |
+
+**With no properties:** An empty grid renders with no thumbnails or viewer. Supply q-thumbnail children. Playground sample photographs are demo content, not defaults.
+
+## Examples
+
+These examples share the [Quick start registration](#quick-start). Screenshots show the real registered component in a temporary preview fixture using the existing playground runtime. They do not imply extra permanent playground presets.
+
+### Open a gallery image
+
+Use thumbnail children and listen for viewer lifecycle events.
+
+![Open a gallery image: Use thumbnail children and listen for viewer lifecycle events.](./assets/q-reel-open-viewer.png)
+
 ```html
-<q-reel id="gallery-reel" layout="carousel">
-  <q-thumbnail src="/media/scene1.jpg" label="Act 1"></q-thumbnail>
-  <q-thumbnail src="/media/scene2.jpg" label="Act 2"></q-thumbnail>
+<q-reel id="gallery">
+  <q-thumbnail src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='180' viewBox='0 0 320 180'%3E%3Crect width='320' height='180' fill='%2322304d'/%3E%3Cpath d='M0 180L100 50L190 180M130 180L235 75L320 180' fill='%2360a5fa'/%3E%3C/svg%3E" label="Mountain study" alt="Blue geometric mountains" ></q-thumbnail>
+  <q-thumbnail src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='180' viewBox='0 0 320 180'%3E%3Crect width='320' height='180' fill='%2322304d'/%3E%3Cpath d='M0 180L100 50L190 180M130 180L235 75L320 180' fill='%2360a5fa'/%3E%3C/svg%3E" label="Mountain study" alt="Blue geometric mountains" highlighted></q-thumbnail>
 </q-reel>
-
-<script>
-  const reel = document.getElementById('gallery-reel');
-  
-  reel.addEventListener('qLightboxOpen', () => {
-    console.log('Lightbox overlay has opened!');
-  });
-
-  reel.addEventListener('qLightboxClose', () => {
-    console.log('Lightbox overlay closed, restoring game focus.');
-  });
+<p id="viewer-status" role="status">Viewer closed.</p>
+<script type="module">
+const gallery = document.querySelector('#gallery');
+gallery.addEventListener('qLightboxOpen', () => { document.querySelector('#viewer-status').textContent = 'Viewer open.'; });
+gallery.addEventListener('qLightboxClose', () => { document.querySelector('#viewer-status').textContent = 'Viewer closed.'; });
 </script>
 ```
+
+The screenshot follows selecting the first thumbnail. The viewer is open; the status paragraph remains behind it.
+
+### Use a scrolling thumbnail row
+
+Give carousel children explicit widths and disable the built-in viewer.
+
+![Use a scrolling thumbnail row: Give carousel children explicit widths and disable the built-in viewer.](./assets/q-reel-scroll-gallery.png)
+
+```html
+<q-reel class="strip" layout="carousel" lightbox="false">
+  <q-thumbnail src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='180' viewBox='0 0 320 180'%3E%3Crect width='320' height='180' fill='%2322304d'/%3E%3Cpath d='M0 180L100 50L190 180M130 180L235 75L320 180' fill='%2360a5fa'/%3E%3C/svg%3E" label="Mountain study" alt="Blue geometric mountains" ></q-thumbnail>
+  <q-thumbnail src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='180' viewBox='0 0 320 180'%3E%3Crect width='320' height='180' fill='%2322304d'/%3E%3Cpath d='M0 180L100 50L190 180M130 180L235 75L320 180' fill='%2360a5fa'/%3E%3C/svg%3E" label="Mountain study" alt="Blue geometric mountains" ></q-thumbnail>
+  <q-thumbnail src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='180' viewBox='0 0 320 180'%3E%3Crect width='320' height='180' fill='%2322304d'/%3E%3Cpath d='M0 180L100 50L190 180M130 180L235 75L320 180' fill='%2360a5fa'/%3E%3C/svg%3E" label="Mountain study" alt="Blue geometric mountains" ></q-thumbnail>
+</q-reel>
+<style>
+  q-reel.strip { max-width: 520px; }
+  q-reel.strip > q-thumbnail { width: 240px; }
+</style>
+```
+
+lightbox="false" is parsed by Stencil as false. Thumbnails still emit qMaximize, allowing an application listener to handle them.
+
+## Behavior & accessibility
+
+### State and interaction
+
+When lightbox=true, a child qMaximize supplies the active media and emits qLightboxOpen. Closing through Escape, backdrop, close button, or setting lightbox=false emits qLightboxClose. Navigating between items does not emit another open event. Navigation clamps at the first/last item rather than wrapping.
+
+The application owns children. Use q-thumbnail directly; the viewer reads its src, alt, label, video and host identity. The same src is used for preview and viewer; video=true asks the viewer to create a native autoplay/loop video even though the thumbnail itself is an image. Supply an appropriate media strategy.
+
+There is no public show/close method or current-index property. A false lightbox property disables opening but does not stop thumbnail qMaximize events.
+
+### Keyboard and focus
+
+| Key | Action |
+| :--- | :--- |
+| Enter / Space | Activate focused thumbnail. |
+| ArrowLeft / ArrowRight | Previous/next viewer item within bounds. |
+| Escape | Close the active viewer. |
+| Tab / Shift+Tab | Trap focus within the viewer when a Tab event is handled. |
+
+The code attempts delayed focus on the close button and restoration to the thumbnail host. Initial opening captures the button reference before the new viewer renders, and thumbnail hosts are not inherently focusable; do not rely on successful initial focus/restoration. The application may need to move focus explicitly.
+
+### Labels and announcements
+
+The open viewer has role="dialog", aria-modal="true", and a name from label or “Media Viewer”. Images use alt; video controls are native. Close/previous/next controls have accessible labels. The gallery itself has no list role or live region.
+
+### Limitations and compatibility
+
+The viewer does not inert the page or lock document scrolling. Its window-wide key listener assumes one active viewer. Smooth carousel scrolling and viewer fade-in have no reduced-motion override. Native autoplay may be restricted by the browser.
+
+## Styling
+
+### Layouts
+
+| layout | Appearance |
+| :--- | :--- |
+| `grid` (default) | Responsive grid; shared theme defaults to one column below 768px and auto-fill 200px minimum columns above |
+| `carousel` | Horizontal scrolling row with scroll snapping; give children a width |
+
+Without the shared theme, CSS fallbacks use 140px mobile and 220px desktop minimum columns. Unknown layout values keep a base grid without the named layout rules.
+
+### Custom styling
+
+Scope CSS to the host or supplied content. See the exact [CSS variables](#css-variables) and [Shadow Parts](#shadow-parts).
+
+```html
+<q-reel class="gallery">
+  <q-thumbnail src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='180' viewBox='0 0 320 180'%3E%3Crect width='320' height='180' fill='%2322304d'/%3E%3Cpath d='M0 180L100 50L190 180M130 180L235 75L320 180' fill='%2360a5fa'/%3E%3C/svg%3E" label="Mountain study" alt="Blue geometric mountains" ></q-thumbnail>
+</q-reel>
+<style>
+  q-reel.gallery { --q-reel-gap: 20px; --q-reel-columns-desktop: repeat(2, minmax(0, 1fr)); }
+</style>
+```
+
+Shared geometry and theme setup are documented in [Foundation](../foundation.md) and [theme tokens](../theme-tokens.md).
+
+## API reference
+
+Cross-check the [generated API](../../src/components/media/reel/readme.md) and [implementation](../../src/components/media/reel/reel.tsx). Source nullability and actual rendering limitations are preserved below.
+
+### Properties
+
+All properties are optional and listed alphabetically.
+
+| Name | Default | Description |
+| :--- | :--- | :--- |
+| `layout` | `'grid'` | grid or carousel; unknown values use only base grid styling.<br>**Type:** `"carousel" \| "grid"`. **HTML attribute:** `layout`. **Required:** No. |
+| `lightbox` | `true` | Enable built-in viewer; setting false closes an active viewer.<br>**Type:** `boolean`. **HTML attribute:** `lightbox`. **Required:** No. |
+
+### Slots
+
+| Name | Description |
+| :--- | :--- |
+| (default) | q-thumbnail children; no fallback. Supply src and accessible text on each child. |
+
+### Events
+
+| Name | When it fires | Payload |
+| :--- | :--- | :--- |
+| `qLightboxClose` | An active viewer closes. | `CustomEvent<void>` |
+| `qLightboxOpen` | An enabled viewer receives qMaximize. | `CustomEvent<void>` |
+
+These events bubble, cross shadow boundaries (composed), and are cancelable. The implementation does not check preventDefault(); cancellation does not stop the documented state changes.
+
+### Methods
+
+This component exposes no public methods.
+
+### Styling hooks
+
+#### CSS variables
+
+Defaults include the shared theme when set there; nested `var()` expressions show CSS fallbacks. Shared palette/typography tokens and fallback aliases are listed in the [shared variable reference](../theme_variables.md). Internal `--_q-*` variables are not public hooks.
+
+| Name | Default | Controls |
+| :--- | :--- | :--- |
+| `--q-lightbox-max-size` | `90vh` | max size. |
+| `--q-reel-columns-desktop` | `repeat(auto-fill, minmax(200px, 1fr))` | columns desktop. |
+| `--q-reel-columns-mobile` | `1fr` | columns mobile. |
+| `--q-reel-gap` | `12px` | gap. |
+| `--q-reel-lightbox-btn-bg` | `rgba(0, 0, 0, 0.5)` | lightbox button background. |
+| `--q-reel-lightbox-btn-border` | `1px solid rgba(255, 255, 255, 0.2)` | lightbox button border. |
+| `--q-reel-lightbox-btn-color` | `#ffffff` | lightbox button color. |
+| `--q-reel-lightbox-btn-hover-bg` | `rgba(255, 255, 255, 0.2)` | lightbox button hover background. |
+
+#### Shadow Parts
+
+This component exposes no Shadow Parts.

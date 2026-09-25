@@ -1,198 +1,348 @@
-# 🧩 Component Specification: `q-sidepanel`
+# q-sidepanel
 
-> Contract note: see [Current public contracts](./current-contracts.md#q-sidepanel) and the [generated API](../../src/components/layout/sidepanel/readme.md) for the complete current surface. Generated API wins if an older design note below differs.
+`q-sidepanel` provides hierarchical navigation, a persistent content panel, or a dismissible drawer.
 
-The `<q-sidepanel>` is a customizable sidebar component. It supports two primary modes: a slide-out overlay drawer (drawer mode) and a fixed navigation sidebar (nav mode). It uses standard 2D translation transforms, thin layout structures, and lightweight backdrops to remain completely glitch-free inside Unreal Engine's Off-Screen Rendering (OSR) browser context.
+**Component tag:** `<q-sidepanel>`
 
----
+**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Layout → Sidepanel**. The examples below use temporary fixtures in this same registered runtime.
 
-## 1. Component API (Properties & Attributes)
+**On this page**
 
-| Property | Attribute | Type | Default | Description |
-| :--- | :--- | :--- | :--- | :--- |
-| `variant` | `variant` | `"drawer" \| "nav" \| "panel"` | `'nav'` | Selects overlay drawer, fixed navigation, or persistent slotted panel behavior. |
-| `open` | `open` | `boolean` | `false` | Controls drawer open/close state (drawer mode only). |
-| `side` | `side` | `"bottom" \| "left" \| "right" \| "top"` | `'right'` | Screen edge the drawer slides from (drawer mode only). |
-| `panelSize` | `panel-size` | `string` | `'320px'` | Panel dimension – width or height depending on `side` (drawer mode only). |
-| `items` | -- | `(SidepanelItem \| string)[]` | `[]` | Navigation entries passed programmatically. Strings use the same label and value. |
-| `ariaLabel` | `aria-label` | `string` | `undefined` | Accessible name for the navigation, panel region, or drawer dialog. |
-| `value` | `value` | `string` | `''` | Value of the currently active/selected item (nav mode only). |
-| `mode` | `mode` | `"flat" \| "grouped" \| "tree"` | `'flat'` | Display mode for items: flat list, one-level groups, or deep tree. |
-| `expanded` | `expanded` | `boolean` | `true` | Whether all parent groups start expanded on first render (nav mode only). |
-| `accordion` | `accordion` | `boolean` | `false` | If true, opening one group collapses all sibling groups (nav mode only). |
+- [Quick start](#quick-start)
+- [Examples](#examples)
+- [Behavior & accessibility](#behavior--accessibility)
+- [Styling](#styling)
+- [API reference](#api-reference)
 
-### Navigation Item Interface (`SidepanelItem`)
-```typescript
-export interface SidepanelItem {
-  label: string;
-  value: string;
-  icon?: string;
-  badgeCount?: number;
-  badgeLabel?: string;
-  alwaysExpanded?: boolean;
-  children?: SidepanelItem[];
-}
+## Quick start
+
+1. Follow the central [installation instructions](../../README.md#1-install-library).
+2. Add registration to your application entry file (`main.js`). This requires a bundler that resolves package imports and CSS imports.
+
+```javascript
+import '@webquark/core/dist/webquark/webquark.css';
+import { defineCustomElements } from '@webquark/core/loader';
+
+defineCustomElements();
 ```
 
-Set `badgeCount` to a positive integer to show a navigation badge. Zero, negative,
-fractional and non-finite values are hidden; counts above 99 display `99+`.
-The full count remains in the accessible name and tooltip. Set `badgeLabel` for a
-description such as `120 unread announcements`. The badge sits beside the label
-when expanded and over the icon in collapsed rail mode. Style it with `::part(item-badge)`.
+3. Add this markup to the application page after setup.
 
-Set `alwaysExpanded` on a parent item to render it as a persistent category heading. Its children
-remain visible, it has no collapse affordance, and it does not affect the collapsible behavior of
-other navigation groups. It overrides `expanded=false` and accordion mode, applies only to the item
-where it is set, and is ignored for items without children.
-
-For a flat navigation list, the concise form is enough:
-
-```js
-sidepanel.items = ['Home', 'Reports', 'Settings'];
+```html
+<div style="height:240px">
+  <q-sidepanel variant="panel" aria-label="Project summary">
+    <strong slot="header">Project summary</strong>
+    <p>Three tasks are ready for review.</p>
+  </q-sidepanel>
+</div>
 ```
 
----
+**Result:** a persistent 320px-wide labelled content panel; this example explicitly selects panel rather than the default nav variant.
 
-## 2. Slots
+### At a glance
 
-*   `header`: Top header section slot (drawer and nav modes).
-*   `footer`: Bottom footer section slot (nav mode only).
-*   `default` (unnamed): Core content container for nested elements (drawer mode only).
-*   `collapse-icon`: Optional icon shown by the built-in control while expanded.
-*   `expand-icon`: Optional icon shown by the built-in control while collapsed.
-*   `collapse-control-adornment`: Optional non-interactive notification badge or visible label anchored over the built-in control's top-left corner. Keep `collapse-label` synchronized with meaningful content.
-
----
-
-## 3. Events
-
-*   `qClose`: Emitted when the drawer is closed (drawer mode only).
-*   `qSelect`: Emitted when a leaf navigation item is clicked. The event payload carries `{ value: string; label: string; item: SidepanelItem }` (nav mode only).
-
----
-
-## 4. Visual Variants
-
-The sidepanel operates in two distinct variant layouts:
-
-### Variant A: Slide Overlay Drawer (`variant="drawer"`)
-*   **Edge Alignment (`side`)**: The panel slides in from the `left`, `right`, `top`, or `bottom` of the viewport. Left/right drawers occupy 100% viewport height and stretch to `panelSize` width. Top/bottom drawers occupy 100% viewport width and stretch to `panelSize` height.
-*   **Animation Transitions**: Utilizes standard 2D translation offsets (`transform: translateX(100%)` to `translateX(0)`) for OSR-safe, hardware-accelerated drawer slides.
-*   **Overlay Backdrop**: Fades in a semi-transparent dark dim overlay (`rgba(0, 0, 0, 0.5)`). Avoids `backdrop-filter: blur` to prevent rendering crashes.
-*   **Mobile sheet translation**: Automatically overrides left/right panels into bottom sheets on screen widths `< 600px`.
-
-### Variant B: Fixed Navigation Sidebar (`variant="nav"`)
-*   **Menu Item States**: Supports flat lists, grouping headers, and hierarchical tree structures (nesting padding scaled via item depth).
-*   **Interactive Styles**: Employs active hover backgrounds (`--q-bg-surface-2`) and selected indicator bars (`::before` border highlighted in `--q-color-primary`).
-*   **Group Chevrons**: Chevron icons rotate 90 degrees when nested item directories are expanded.
-
----
-
-## 5. Typography & Font Styles
-
-*   **Global Font Stack**: Inherits `--q-font-family` (e.g., system font).
-*   **Drawer Typography**:
-    *   Header: `--q-font-size-lg` (e.g., `1.125rem`), bold (`700`).
-    *   Body: `--q-font-size-base` (e.g., `1rem`), normal (`400`).
-*   **Navigation Sidebar Typography**:
-    *   Group Header Label: size `0.75rem`, bold (`700`), uppercase, letter-spacing `0.06em`.
-    *   Leaf Item Label: size `0.875rem`, normal (`400`), line-height `1.4`.
-
----
-
-## 6. CSS Variable Mapping
-
-Below is the complete list of styling tokens mapped to the component's internal CSS:
-
-| Variable Name | Default Value | Purpose |
+| Capability | Options | Default |
 | :--- | :--- | :--- |
-| `--q-panel-bg` | `var(--q-bg-surface-1, #1f2937)` | Drawer background color. |
-| `--q-panel-border` | `var(--q-border, 1px solid var(--q-border-color, #374151))` | Edge separator border line. |
-| `--q-panel-shadow` | `var(--q-shadow-high, 0 16px 32px rgba(0,0,0,0.12))` | Shadow depth applied on the drawer border. |
-| `--q-panel-transition-duration`| `var(--q-transition-normal, 250ms)` | Slide animation duration. |
-| `--q-transition-normal` | `250ms ease` | Normal easing transition timing function. |
-| `--q-sidepanel-bg` | `var(--bg-sidebar, #111827)` | Sidebar background color (nav variant). |
-| `--q-fg-muted` | `#9ca3af` | Secondary/inactive text color. |
-| `--q-fg-base` | `#f9fafb` | Primary/active text color. |
-| `--q-color-primary` | `#6366f1` | Selected active item background glow & left indicator accent color. |
-| `--q-bg-surface-2` | `rgba(255, 255, 255, 0.05)` | Hover state background fill. |
-| `--q-fg-subtle` | `#6b7280` | Parent header/category text color. |
-| `--q-sidepanel-collapse-control-adornment-top` | `0` | Adornment anchor offset from the control's top edge. |
-| `--q-sidepanel-collapse-control-adornment-left` | `0` | Adornment anchor offset from the control's left edge. |
-| `--q-sidepanel-collapse-control-adornment-translate-x` | `-50%` | Horizontal translation from the adornment anchor. |
-| `--q-sidepanel-collapse-control-adornment-translate-y` | `-50%` | Vertical translation from the adornment anchor. |
+| [Variant](#variants) | nav, panel, drawer | nav |
+| [Navigation](#state-and-interaction) | Nested items, badges, expandable groups | Empty; groups initially expanded |
+| [Collapse](#state-and-interaction) | rail or hidden; none/header/footer/edge control | Not collapsible; no control |
+| [Edges and sizes](#sizes) | left, right, top, bottom; drawer CSS size | right; drawer 320px |
+| [Content](#slots) | Header/footer and panel/drawer body | Empty |
+| [Selection](#state-and-interaction) | Application-owned value; leaf qSelect | Empty |
 
----
+**With no properties:** `<q-sidepanel></q-sidepanel>` renders an empty nav surface 264px wide and 100% high, with its header/footer hidden. It does not open a drawer or render default-slot content in nav mode. Supply items as a JavaScript array and a definite parent height.
 
-## 7. Implementation source
+**Playground preset:** The playground starts with a configured drawer and content; the component’s default is nav with open=false.
 
-The implementation is intentionally not duplicated in this guide. Use the generated API linked at the top of the page for the canonical public contract and the component's TypeScript source for implementation details. This avoids stale source snapshots in authored documentation.
+## Examples
 
----
+These examples share the registration above. Place each complete snippet in the application page; scripts use module syntax. Screenshots show the real component in the playground runtime with the shared dark theme.
 
-## 8. Unreal Engine / Webview Compatibility Notes
+### Navigate nested project sections
 
-*   **No Backdrop Blur Filter**: Native backdrop filters (`backdrop-filter`) are excluded from `.sidepanel-backdrop` to avoid compositing crashes and opaque black backgrounds inside Unreal's Off-Screen Rendering (OSR). Uses a robust solid alpha overlay (`rgba(0, 0, 0, 0.5)`) instead.
-*   **OSR Safe 2D Slide Translations**: The drawer slides utilize pure 2D translation offsets (`transform: translateX(100%)` to `translateX(0)`) rather than modifying absolute positioning (e.g. `right: -320px` to `0`), which prevents continuous layout repaints and rendering frame drops.
-*   **Focus Capture Trap**: Focus trapping is fully managed via native tab trapping functions. Key events are routed safely through the Stencil shadow DOM lifecycle to prevent focus bridging issues.
-*   **Custom Scrollbar**: In nav mode, the scrollbar style is customized using thin Webkit scrollbar selectors. Native mouse scroll input operates correctly under CEF.
+A navigation sidepanel shows an expanded project group and a count badge.
 
----
+![A navigation sidepanel shows an expanded project group and a count badge](./assets/q-sidepanel-navigation.png)
 
-## 9. Developer Guidelines & Examples
-
-### Navigation Sidebar (Nav Mode)
 ```html
-<q-sidepanel id="sidebar-nav" variant="nav"></q-sidepanel>
-
-<script>
-  const sidebar = document.getElementById('sidebar-nav');
-  sidebar.items = [
-    {
-      label: 'Dashboard',
-      value: 'dashboard',
-      icon: 'layout-dashboard'
-    },
-    {
-      label: 'Management',
-      value: 'management',
-      icon: 'settings',
-      children: [
-        { label: 'Users', value: 'users' },
-        { label: 'System Logs', value: 'logs' }
-      ]
-    }
+<div style="height:280px">
+  <q-sidepanel id="workspace-nav" side="left" aria-label="Workspace navigation" value="overview">
+    <strong slot="header" style="padding:16px">Workspace</strong>
+  </q-sidepanel>
+</div>
+<script type="module">
+  await customElements.whenDefined('q-sidepanel');
+  const navigation = document.querySelector('#workspace-nav');
+  navigation.items = [
+    { label: 'Overview', value: 'overview' },
+    { label: 'Projects', value: 'projects', children: [
+      { label: 'Active', value: 'active', badgeCount: 3, badgeLabel: '3 active projects' },
+      { label: 'Archived', value: 'archived' }
+    ] }
   ];
-  sidebar.value = 'dashboard';
-
-  sidebar.addEventListener('qSelect', (e) => {
-    console.log('Selected menu item:', e.detail.value);
-    sidebar.value = e.detail.value;
-  });
+  navigation.addEventListener('qSelect', event => { navigation.value = event.detail.value; });
 </script>
 ```
 
-### Overlay Slide-Out Drawer (Drawer Mode)
+Click a leaf to update value; click Projects to toggle its children. mode does not currently change this nested rendering.
+
+### Collapse a persistent inspector
+
+A persistent panel includes an edge control that can hide and reopen it.
+
+![A persistent panel includes an edge control that can hide and reopen it](./assets/q-sidepanel-inspector.png)
+
 ```html
-<q-button id="open-btn">Open Settings</q-button>
+<div style="height:240px;padding-left:40px">
+  <q-sidepanel variant="panel" side="right" collapsible collapse-mode="hidden"
+    collapse-control="edge" collapse-control-appearance="edge-tab" aria-label="Inspector">
+    <strong slot="header">Inspector</strong>
+    <p>Select a project to inspect its details.</p>
+    <span slot="footer">All changes saved</span>
+  </q-sidepanel>
+</div>
+```
 
-<q-sidepanel id="settings-drawer" variant="drawer" side="right" panel-size="360px">
-  <h2 slot="header">Settings</h2>
-  <div>
-    <p>Configure game options and hotkeys below.</p>
-    <q-button variant="primary">Save Configuration</q-button>
-  </div>
+The screenshot shows the expanded panel. Activate the edge control to toggle collapsed; it stays outside hidden content. Leave room for the protruding control.
+
+### Open a settings drawer
+
+A settings drawer overlays the page and provides a Done action.
+
+![A settings drawer overlays the page and provides a Done action](./assets/q-sidepanel-drawer.png)
+
+```html
+<button id="open-settings" type="button">Open settings</button>
+<q-sidepanel id="settings-drawer" variant="drawer" side="right" panel-size="320px" aria-label="Workspace settings">
+  <h3 slot="header">Workspace settings</h3>
+  <p>Review your workspace preferences.</p>
+  <button id="close-settings" slot="footer" type="button">Done</button>
 </q-sidepanel>
-
-<script>
-  const drawer = document.getElementById('settings-drawer');
-  
-  document.getElementById('open-btn').addEventListener('click', () => {
-    drawer.open = true;
-  });
-
-  drawer.addEventListener('qClose', () => {
-    drawer.open = false;
-  });
+<script type="module">
+  await customElements.whenDefined('q-sidepanel');
+  const drawer = document.querySelector('#settings-drawer');
+  await drawer.componentOnReady();
+  document.querySelector('#open-settings').addEventListener('click', () => { drawer.open = true; });
+  document.querySelector('#close-settings').addEventListener('click', () => { drawer.open = false; });
 </script>
 ```
+
+Click Open settings to reach the screenshot. Done sets open=false directly; backdrop and Escape additionally emit qClose. The viewport shown is wider than 600px.
+
+## Behavior & accessibility
+
+### State and interaction
+
+| Variant/state | Ownership and result |
+| :--- | :--- |
+| nav | Application supplies items and value. Leaf activation emits qSelect; parent activation toggles internal expanded groups. The default body slot is not rendered. |
+| panel | Persistent header/body/footer. open is ignored. |
+| drawer | Mutable open controls visibility. Backdrop/Escape set open=false then emit qClose. Programmatic changes emit no qClose. |
+| collapsible nav/panel | Built-in control mutates collapsed then emits qCollapsedChange. External changes emit no event. collapsed has no visual effect until collapsible is true. |
+
+Navigation accepts JavaScript arrays only. String entries are trimmed and blank entries dropped; object items require string label/value. Nested children normalize recursively. Replace the array after editing. Keep values unique at each level (and group values unique throughout the tree) for stable item identity and group state.
+
+`expanded` seeds all groups during initialization and during items replacements before any user group toggle. Updating expanded alone does not open/close current groups. After a user toggle, replacements preserve surviving group values. `accordion` closes siblings when opening a group; it does not force only one group open on initialization. alwaysExpanded parents remain open. The declared `mode` values flat/grouped/tree are currently unused by rendering: children produce nesting in all three.
+
+Rail collapse hides nav labels/chevrons and preserves icon items (text-only leaves can look blank). Always-expanded headings disappear in the rail. Panel rail only narrows/clips its content; it does not create icons. Hidden collapse hides content. In panel mode, use an edge control or external trigger for hidden collapse: header/footer controls sit inside the hidden inert content and cannot reopen it. In nav mode built-in controls remain outside aria-hidden content wrappers.
+
+### Keyboard and focus
+
+Nav items are role=button elements with Tab stops and Enter/Space activation; this is not a tree-widget arrow-key model. Always-expanded parent categories use heading semantics with level min(depth+2,6), are not focusable, and do not toggle.
+
+An already-open drawer focuses its first focusable descendant after load. A later open change records prior focus and focuses the first control after its transition; close restores recorded focus. Tab/Shift+Tab wrap among focusable descendants when present. The drawer itself has tabindex=-1 as a focus fallback, but an empty drawer has no loopable descendants for the Tab trap. Closed drawer content is inert. Provide a labelled close action. Background content is not made inert and no document scroll lock is implemented. Changing variant while already open does not rerun the open watcher; choose variant before opening.
+
+### Labels and announcements
+
+Nav role=navigation uses trimmed aria-label or “Sidebar navigation”. A labelled persistent panel has role=region. Drawers have role=dialog and aria-modal=true but no fallback accessible name: supply aria-label. Header content is not automatically linked as the dialog name.
+
+Leaf matches use aria-current=page. Toggleable parents expose aria-expanded. A valid badge is a positive safe integer: values above 99 show 99+, while the item’s accessible label contains the full badgeLabel (trimmed) or count; badge visuals are aria-hidden. Fractions, zero, negative, NaN, and infinities show no badge.
+
+Collapse controls use aria-expanded, title, and a dynamic Collapse/Expand sidebar/panel label when collapseLabel is empty, whitespace, or the default “Toggle sidebar”. A custom label stays fixed. Control adornments are aria-hidden and non-interactive; include their meaning in collapseLabel if needed. No live region is created.
+
+### Forms
+
+The sidepanel has no form value. Built-in collapse controls use type=button; application controls retain native form behavior.
+
+### Limitations and compatibility
+
+Left/right drawers become bottom sheets at viewport widths ≤600px with height clamp(280px, panelSize, 80vh); top/bottom drawers retain their edges. No component-specific reduced-motion override exists. The drawer transition declaration combines a timing function with --q-transition-normal (which already contains one), so the default computed transform transition can be zero; set --q-panel-transition-duration to a duration-only value for a valid animated transition. Unknown variants fall through to drawer rendering, while reflected host selectors may not match; use supported values. Unknown sides have no positioning rule.
+
+## Styling
+
+Choose the variant and collapse mode, then size the containing layout.
+
+### Variants
+
+| variant | Use |
+| :--- | :--- |
+| `nav` (default) | A persistent hierarchical navigation surface. |
+| `panel` | Persistent slotted content such as an inspector. |
+| `drawer` | A temporary viewport overlay with backdrop. |
+
+Collapse requires collapsible. rail (default) retains a 65px strip; hidden defaults to 0px. Controls are none (default), header, footer, or edge. icon-button (default) works at each placement; edge-tab styling applies only at edge.
+
+### Sizes
+
+Nav width defaults to 264px; persistent panel width to 320px. Their height is 100% and needs a parent height. drawer panelSize defaults to 320px and becomes width for left/right or height for top/bottom. It does not size persistent panels; use their CSS hooks. side defaults right. A persistent panel’s side changes borders/control placement, not its horizontal flow direction or its width-based collapse.
+
+The edge-tab defaults to 24×52px; horizontal sides swap the dimensions. collapseControlPosition sets an inline offset variable used by panel edge controls and nav left/right edge-tabs; nav icon-button edge placement remains fixed.
+
+### Custom styling
+
+```html
+<div style="height:240px">
+  <q-sidepanel class="inspector" variant="panel" aria-label="Inspector">Project details</q-sidepanel>
+</div>
+<style>
+  q-sidepanel.inspector { --q-sidepanel-panel-width: 360px; --q-sidepanel-panel-padding: 24px; }
+</style>
+```
+
+--q-sidepanel-* hooks precede their --q-panel-* aliases where the table notes a fallback. The drawer sets --q-panel-width inline from panelSize, so a host width variable does not override it. See [CSS variables](#css-variables), [Shadow Parts](#shadow-parts), and [theme setup](../theme_variables.md).
+
+## API reference
+
+See the [Stencil-generated API](../../src/components/layout/sidepanel/readme.md) and [component source](../../src/components/layout/sidepanel/sidepanel.tsx). The tables below include source-level types and effective rendering constraints.
+
+### Properties
+
+All properties are optional and are listed alphabetically. Boolean attributes use Stencil boolean parsing: a present empty attribute enables the property, `="false"` disables it; JavaScript properties accept `true`/`false`. Removing a boolean attribute makes it false, including properties initially declared true. For updates, set the desired JavaScript property explicitly instead of relying on attribute removal to restore initializer defaults.
+
+| Name | Default | Description |
+| :--- | :--- | :--- |
+| `accordion` | `false` | Close sibling groups when opening another; initial expansion is unaffected.<br>**Type:** `boolean`. **HTML attribute:** `accordion`. **Required:** No. |
+| `ariaLabel` | `null` | Names navigation, region, or dialog; drawer needs an explicit meaningful label.<br>**Type:** `string \| null`. **HTML attribute:** `aria-label`. **Required:** No. |
+| `collapseControl` | `'none'` | Built-in collapse control placement; none delegates to application.<br>**Type:** `'none' \| 'header' \| 'footer' \| 'edge'`. **HTML attribute:** `collapse-control`. **Required:** No. |
+| `collapseControlAppearance` | `'icon-button'` | Control appearance; edge-tab requires edge placement for the tab shape.<br>**Type:** `'icon-button' \| 'edge-tab'`. **HTML attribute:** `collapse-control-appearance`. **Required:** No. |
+| `collapseControlPosition` | `''` | CSS offset string; blank uses appearance-specific defaults. See placement limitations.<br>**Type:** `string`. **HTML attribute:** `collapse-control-position`. **Required:** No. |
+| `collapsed` | `false` | Mutable collapse state for nav/panel when collapsible.<br>**Type:** `boolean`. **HTML attribute:** `collapsed`. **Required:** No. |
+| `collapseLabel` | `'Toggle sidebar'` | Accessible collapse-control name; default/blank becomes dynamic.<br>**Type:** `string`. **HTML attribute:** `collapse-label`. **Required:** No. |
+| `collapseMode` | `'rail'` | rail narrows; hidden hides to configured near-zero width.<br>**Type:** `'rail' \| 'hidden'`. **HTML attribute:** `collapse-mode`. **Required:** No. |
+| `collapsible` | `false` | Enable nav/panel collapse behavior.<br>**Type:** `boolean`. **HTML attribute:** `collapsible`. **Required:** No. |
+| `expanded` | `true` | Seed nav group expansion initially; not a controlled group-state property.<br>**Type:** `boolean`. **HTML attribute:** `expanded`. **Required:** No. |
+| `items` | `[]` | JavaScript array of strings or nested SidepanelItem objects; no JSON attribute parsing.<br>**Type:** `SidepanelItemInput[]`. **HTML attribute:** `none; JavaScript property only`. **Required:** No. |
+| `mode` | `'flat'` | Declared flat/grouped/tree configuration; currently does not alter rendering.<br>**Type:** `'flat' \| 'grouped' \| 'tree'`. **HTML attribute:** `mode`. **Required:** No. |
+| `open` | `false` | Mutable drawer visibility; ignored in other variants.<br>**Type:** `boolean`. **HTML attribute:** `open`. **Required:** No. |
+| `panelSize` | `'320px'` | CSS drawer width/height; persistent sizes use hooks.<br>**Type:** `string`. **HTML attribute:** `panel-size`. **Required:** No. |
+| `side` | `'right'` | Drawer edge and persistent border/control direction.<br>**Type:** `'left' \| 'right' \| 'top' \| 'bottom'`. **HTML attribute:** `side`. **Required:** No. |
+| `value` | `''` | Application-owned active leaf value.<br>**Type:** `string`. **HTML attribute:** `value`. **Required:** No. |
+| `variant` | `'nav'` | Choose nav, panel, or drawer.<br>**Type:** `'drawer' \| 'nav' \| 'panel'`. **HTML attribute:** `variant`. **Required:** No. |
+
+#### SidepanelItemInput and SidepanelItem
+
+A string becomes the same trimmed label/value. Object shape:
+
+| Field | Type and meaning |
+| :--- | :--- |
+| label | Required string; visible name (object values are not trimmed). |
+| value | Required string; selection and group identity. |
+| icon | Optional string; lucide q-icon name. See [q-icon](./q-icon.md). |
+| badgeCount | Optional number; positive safe integer only; visual cap 99+. |
+| badgeLabel | Optional string; accessible full count description. |
+| alwaysExpanded | Optional boolean; true makes a parent a non-collapsible heading. Ignored on leaves. |
+| children | Optional SidepanelItem[]; recursive nested items. |
+
+### Slots
+
+| Name | Description |
+| :--- | :--- |
+| `collapse-control-adornment` | Built-in control visual adornment; wrapper aria-hidden, no fallback. |
+| `collapse-icon` | Built-in control while expanded; default bundled side-specific icon. |
+| `expand-icon` | Built-in control while collapsed; default bundled side-specific icon. |
+| `footer` | All variants; hidden without content unless a nav/panel footer control requires the region. |
+| `header` | All variants; hidden without content unless a nav/panel header control requires the region. |
+| Default (unnamed) | Panel/drawer body only; absent in nav. No fallback. |
+
+### Events
+
+All three events bubble, cross shadow boundaries, and are cancelable CustomEvents. State changes happen before emission and do not inspect cancellation.
+
+| Name | When it fires | Payload |
+| :--- | :--- | :--- |
+| `qClose` | Drawer backdrop/Escape closure; open is already false. | `CustomEvent<void>` |
+| `qCollapsedChange` | Built-in collapse control activation. | `CustomEvent<QSidepanelCollapsedChangeDetail>`; detail `{ collapsed: boolean }`. |
+| `qSelect` | Leaf activation; does not change value. | `CustomEvent<QSidepanelSelectDetail>`; detail `{ value: string; label: string; item: SidepanelItem }`. |
+
+### Methods
+
+This component exposes no public methods.
+
+### Styling hooks
+
+Defaults below include the imported shared stylesheet; `var(...)` values follow the active theme. Component-specific hooks and the shared tokens they consume are listed. For shared setup, see [Theme variables](../theme_variables.md).
+
+#### CSS variables
+
+| Name | Default | Controls |
+| :--- | :--- | :--- |
+| `--q-bg-overlay` | `rgba(0, 0, 0, 0.85)` | bg overlay applied to `.sidepanel-backdrop`. |
+| `--q-bg-surface-1` | `#111827` | bg surface 1 applied to `.sidepanel-drawer`, `.nav-sidebar`, `.collapse-control--edge-tab`. |
+| `--q-bg-surface-2` | `#19243b` | bg surface 2 applied to `.nav-item:hover, .nav-item:focus-visible`, `.collapse-control:hover, .collapse-control:focus-visible`, `.collapse-control--edge-tab:hover, .collapse-control--edge-tab:focus-visible`. |
+| `--q-border` | `var(--q-border-width) solid var(--q-border-color)` | border applied to `.side-left .sidepanel-drawer`, `.side-right .sidepanel-drawer`, `.side-top .sidepanel-drawer`. |
+| `--q-border-color` | `#374151` | border color applied to `.side-left .sidepanel-drawer`, `.side-right .sidepanel-drawer`, `.side-top .sidepanel-drawer`. |
+| `--q-color-primary` | `#60a5fa` | color primary applied to `.nav-item--active`, `.nav-item--active::before`, `.nav-item--active:hover, .nav-item--active:focus-visible`. |
+| `--q-fg-base` | `#f9fafb` | fg base applied to `.drawer-header`, `.drawer-body`, `.drawer-footer`. |
+| `--q-fg-muted` | `#9ca3af` | fg muted applied to `.nav-item[data-depth-tone='secondary']`, `.collapse-control`. |
+| `--q-focus-ring` | `2px solid var(--q-color-primary)` | focus ring applied to `.collapse-control:focus-visible`. |
+| `--q-font-family` | `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif` | font family applied to `.drawer-header`, `.drawer-body`, `.drawer-footer`. |
+| `--q-font-size-base` | `0.9rem` | font size base applied to `.drawer-body`, `.panel-body`. |
+| `--q-font-size-lg` | `1rem` | font size lg applied to `.drawer-header`, `.panel-header`. |
+| `--q-font-weight-bold` | `600` | font weight bold applied to `.drawer-header`, `.panel-header`. |
+| `--q-font-weight-normal` | `400` | font weight normal applied to `.drawer-body`, `.panel-body`. |
+| `--q-padding-lg` | `var(--q-space-lg, 1rem)` | padding lg applied to `.drawer-header`, `.drawer-body`, `.drawer-footer`. |
+| `--q-panel-bg` | `var(--q-bg-surface-1, #111827)` | Drawer/persistent fallback background alias; --q-sidepanel-bg takes precedence and is set by shared theme. |
+| `--q-panel-border` | `var(--q-border)` | Drawer/persistent fallback border alias; --q-sidepanel-border takes precedence where used. Also directly controls drawer header and mobile top border. |
+| `--q-panel-shadow` | `var(--q-shadow-high, 0 16px 32px rgba(0,0,0,0.12))` | Drawer shadow fallback; --q-sidepanel-shadow takes precedence and is set by shared theme. |
+| `--q-panel-transition-duration` | `var(--q-transition-normal, 250ms ease)` | Drawer opacity/transform duration. Use duration only, such as 250ms; default shared shorthand can invalidate transition. |
+| `--q-panel-width` | `Drawer: panelSize inline (320px); persistent fallback: 320px` | Drawer inline sizing from panelSize overrides host inheritance. Fallback alias for persistent width when --q-sidepanel-panel-width is unset. |
+| `--q-shadow-high` | `0 16px 32px rgba(0, 0, 0, 0.45)` | shadow high applied to `.sidepanel-drawer`. |
+| `--q-sidepanel-bg` | `var(--q-bg-surface-1)` | All variants’ background; overrides --q-panel-bg where both appear. |
+| `--q-sidepanel-border` | `var(--q-border)` | Drawer/persistent edge border; nav outer border uses --q-border-color instead. |
+| `--q-sidepanel-collapse-control-adornment-left` | `0` | sidepanel collapse control adornment left applied to `.collapse-control__adornment`. |
+| `--q-sidepanel-collapse-control-adornment-top` | `0` | sidepanel collapse control adornment top applied to `.collapse-control__adornment`. |
+| `--q-sidepanel-collapse-control-adornment-translate-x` | `-50%` | sidepanel collapse control adornment translate x applied to `.collapse-control__adornment`. |
+| `--q-sidepanel-collapse-control-adornment-translate-y` | `-50%` | sidepanel collapse control adornment translate y applied to `.collapse-control__adornment`. |
+| `--q-sidepanel-collapse-control-position` | `12px` | Appearance-specific start offset, default 12px where used; nonblank collapseControlPosition sets it inline on the button. |
+| `--q-sidepanel-collapse-control-size` | `32px` | sidepanel collapse control size applied to `:host([variant="nav"])`, `.collapse-control`, `.nav-sidebar.is-collapsed.collapse-mode-rail .collapse-control--edge`. |
+| `--q-sidepanel-collapse-icon-size` | `20px` | Built-in icon-button icon size; edge-tab icon size overrides it. |
+| `--q-sidepanel-collapsed-header-height` | `112px` | sidepanel collapsed header height applied to `.nav-sidebar.is-collapsed.collapse-mode-rail .nav-header`, `.nav-sidebar.is-collapsed.collapse-mode-rail .collapse-control--edge`. |
+| `--q-sidepanel-collapsed-width` | `65px` | sidepanel collapsed width applied to `:host([variant="nav"])`, `:host([variant="nav"][collapsible][collapsed][collapse-mode="rail"])`, `:host([variant="panel"][collapsible][collapsed][collapse-mode="rail"])`. |
+| `--q-sidepanel-drawer-footer-padding` | `var(--q-padding-lg, 24px)` | sidepanel drawer footer padding applied to `.drawer-footer`. |
+| `--q-sidepanel-drawer-section-border` | `var(--q-panel-border, var(--q-border, 1px solid var(--q-border-color, #374151)))` | sidepanel drawer section border applied to `.drawer-footer`. |
+| `--q-sidepanel-edge-tab-bg` | `var(--q-bg-surface-1, #111827)` | sidepanel edge tab bg applied to `.collapse-control--edge-tab`. |
+| `--q-sidepanel-edge-tab-border` | `var(--q-border, 1px solid var(--q-border-color, #374151))` | sidepanel edge tab border applied to `.collapse-control--edge-tab`. |
+| `--q-sidepanel-edge-tab-height` | `52px` | sidepanel edge tab height applied to `.collapse-control--edge-tab`, `.panel-side-top > .collapse-control--edge-tab, .panel-side-bottom > .collapse-control--edge-tab`. |
+| `--q-sidepanel-edge-tab-hover-bg` | `var(--q-bg-surface-2, rgba(255, 255, 255, 0.05))` | sidepanel edge tab hover bg applied to `.collapse-control--edge-tab:hover, .collapse-control--edge-tab:focus-visible`. |
+| `--q-sidepanel-edge-tab-icon-size` | `16px` | sidepanel edge tab icon size applied to `.collapse-control--edge-tab q-icon`. |
+| `--q-sidepanel-edge-tab-radius` | `6px` | sidepanel edge tab radius applied to `.collapse-control--edge-tab`, `:host([side="left"]) .nav-sidebar > .collapse-control--edge-tab`, `:host([side="right"]) .nav-sidebar > .collapse-control--edge-tab`. |
+| `--q-sidepanel-edge-tab-shoulder-radius` | `0px` | Optional concave shoulder radius; 0px means none. |
+| `--q-sidepanel-edge-tab-width` | `24px` | sidepanel edge tab width applied to `.collapse-control--edge-tab`, `.panel-side-top > .collapse-control--edge-tab, .panel-side-bottom > .collapse-control--edge-tab`. |
+| `--q-sidepanel-expanded-width` | `264px` | sidepanel expanded width applied to `:host([variant="nav"])`. |
+| `--q-sidepanel-hidden-width` | `0px` | sidepanel hidden width applied to `:host([variant="nav"])`, `:host([variant="nav"][collapsible][collapsed][collapse-mode="hidden"])`, `:host([variant="panel"][collapsible][collapsed][collapse-mode="hidden"])`. |
+| `--q-sidepanel-nav-border` | `var(--q-border, 1px solid var(--q-border-color, rgba(255,255,255,0.08)))` | sidepanel nav border applied to `.nav-header`, `.nav-footer`. |
+| `--q-sidepanel-nav-depth-primary-color` | `var(--q-fg-base, #f9fafb)` | Leaf text and top-level parent text color. |
+| `--q-sidepanel-nav-depth-secondary-color` | `var(--q-fg-muted, #9ca3af)` | Nested parent text color. |
+| `--q-sidepanel-nav-icon-opacity` | `1` | sidepanel nav icon opacity applied to `.nav-item__icon`. |
+| `--q-sidepanel-panel-footer-padding` | `var(--q-padding-lg)` | sidepanel panel footer padding applied to `.panel-footer`. |
+| `--q-sidepanel-panel-header-padding` | `var(--q-padding-lg)` | sidepanel panel header padding applied to `.panel-header`. |
+| `--q-sidepanel-panel-padding` | `var(--q-padding-lg)` | sidepanel panel padding applied to `.panel-body`. |
+| `--q-sidepanel-panel-section-border` | `var(--q-border)` | sidepanel panel section border applied to `.panel-header`, `.panel-footer`. |
+| `--q-sidepanel-panel-width` | `320px` | sidepanel panel width applied to `:host([variant="panel"])`. |
+| `--q-sidepanel-shadow` | `var(--q-shadow-high)` | sidepanel shadow applied to `.sidepanel-drawer`. |
+| `--q-transition-normal` | `250ms cubic-bezier(0.4, 0, 0.2, 1)` | transition normal applied to `.sidepanel-backdrop`, `.sidepanel-drawer`, `:host([variant="nav"])`. |
+| `--q-z-index-overlay` | `1000` | z index overlay applied to `.sidepanel-wrapper`. |
+
+#### Shadow Parts
+
+| Name | Targets |
+| :--- | :--- |
+| `backdrop` | Drawer only, clickable backdrop. |
+| `body` | Nav list or panel/drawer body. |
+| `collapse-control` | Built-in nav/panel control only when collapsible and placement is supported/non-none. |
+| `collapse-control-adornment` | Adornment wrapper inside each rendered built-in control. |
+| `drawer` | Drawer dialog surface. |
+| `footer` | All variants; wrapper may be hidden. |
+| `header` | All variants; wrapper may be hidden. |
+| `item-badge` | Each nav item with a valid positive badgeCount. |
+| `panel` | Persistent panel surface only; nav has no equivalent surface part. |

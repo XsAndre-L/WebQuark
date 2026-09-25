@@ -16,7 +16,7 @@
 
 ## Quick start
 
-Follow the central [installation instructions](../../README.md). In a bundled application that resolves package imports and CSS imports, add this to the JavaScript entry file:
+Follow the central [installation instructions](../../README.md#1-install-library). In a bundled application that resolves package imports and CSS imports, add this to the JavaScript entry file:
 
 ```javascript
 import '@webquark/core/dist/webquark/webquark.css';
@@ -186,21 +186,21 @@ Defaults show local declarations, shared defaults where declared, or the compone
 
 | Name | Default | Controls |
 | :--- | :--- | :--- |
-| `--q-pagination-button-bg` | `transparent` | button bg. |
-| `--q-pagination-button-border` | `1px solid var(--q-border-color, #374151)` | button border. |
-| `--q-pagination-button-fg` | `var(--q-fg-base, #f9fafb)` | button fg. |
-| `--q-pagination-button-height` | `30px` | button height. |
-| `--q-pagination-button-hover-bg` | `color-mix(in srgb, var(--q-fg-base, #f9fafb) 8%, transparent)` | button hover bg. |
-| `--q-pagination-button-hover-border` | `var(--q-color-primary, #60a5fa)` | button hover border. |
-| `--q-pagination-button-hover-fg` | `var(--q-color-primary, #60a5fa)` | button hover fg. |
-| `--q-pagination-button-padding` | `5px 8px` | button padding. |
-| `--q-pagination-button-radius` | `var(--q-radius-sm, 4px)` | button radius. |
-| `--q-pagination-controls-gap` | `8px` | controls gap. |
-| `--q-pagination-fg` | `var(--q-fg-muted, #9ca3af)` | fg. |
-| `--q-pagination-font-size` | `var(--q-font-size-sm, 0.8125rem)` | font size. |
-| `--q-pagination-font-weight` | `600` | font weight. |
-| `--q-pagination-gap` | `12px` | gap. |
-| `--q-pagination-page-count-width` | `48px` | page count width. |
+| `--q-pagination-button-bg` | `transparent` | Navigation button background. |
+| `--q-pagination-button-border` | `1px solid var(--q-border-color, #374151)` | Navigation button border. |
+| `--q-pagination-button-fg` | `var(--q-fg-base, #f9fafb)` | Navigation button text color. |
+| `--q-pagination-button-height` | `30px` | Minimum navigation button height. |
+| `--q-pagination-button-hover-bg` | `color-mix(in srgb, var(--q-fg-base, #f9fafb) 8%, transparent)` | Enabled button background on hover. |
+| `--q-pagination-button-hover-border` | `var(--q-color-primary, #60a5fa)` | Enabled button border color on hover. |
+| `--q-pagination-button-hover-fg` | `var(--q-color-primary, #60a5fa)` | Enabled button text color on hover. |
+| `--q-pagination-button-padding` | `5px 8px` | Navigation button padding. |
+| `--q-pagination-button-radius` | `var(--q-radius-sm, 4px)` | Navigation button corner radius. |
+| `--q-pagination-controls-gap` | `8px` | Gap between the buttons and page count. |
+| `--q-pagination-fg` | `var(--q-fg-muted, #9ca3af)` | Summary and page-count text color. |
+| `--q-pagination-font-size` | `var(--q-font-size-sm, 0.8125rem)` | Summary, page count and button text size. |
+| `--q-pagination-font-weight` | `600` | Summary, page-count and navigation button text weight. |
+| `--q-pagination-gap` | `12px` | Gap between the summary and navigation controls. |
+| `--q-pagination-page-count-width` | `48px` | Minimum page-count width. |
 
 #### Shadow Parts
 
