@@ -59,7 +59,7 @@ webquark/ (Root)
 ## 📚 Documentation
 
 * [Component index and documentation standard](docs/components/README.md)
-* [Current public contracts for all 26 components](docs/components/current-contracts.md)
+* [Current public contracts](docs/components/current-contracts.md)
 * [Component implementation status](docs/components.md)
 * [Theme variables](docs/theme_variables.md)
 * [Unreal Engine / CEF compatibility](docs/unreal_compatibility.md)

@@ -9,19 +9,19 @@ If an authored guide and generated API disagree, treat the generated API and Typ
 
 ## Documentation standard
 
-Every public component must have an authored guide and generated API page. An authored guide must cover:
+Every public component needs an authored guide and a generated API page. Begin each guide with the component name, a one-sentence purpose, its tag, a working preview where the platform supports one, and an “On this page” list. Use these exact five main sections in this order:
 
-1. Purpose and appropriate use cases.
-2. Public contract, with a link to the generated API.
-3. Slots, events, and public methods.
-4. Keyboard, focus, screen-reader, disabled, loading, empty, and error behavior where applicable.
-5. Form behavior where applicable, including value encoding and reset behavior.
-6. Styling hooks: component-specific custom properties and shadow parts.
-7. CEF/Unreal and performance constraints.
-8. At least one minimal example and one stateful example when the component emits events.
-9. Known limitations that materially affect consumers.
+1. Quick start
+2. Examples
+3. Behavior & accessibility
+4. Styling
+5. API reference
 
-Do not paste a full implementation snapshot into an authored guide. Source snapshots become stale; link to the implementation or generated API instead. Use the exact public camelCase property/event/method names and kebab-case HTML attributes. Examples that assign arrays, objects, or callbacks must use JavaScript properties rather than HTML attributes unless JSON-string input is explicitly supported.
+Quick start includes registration, a minimal accessible example, its expected result, and a link to installation instructions. Examples use task-based titles and put explanations beside copyable code and a preview or screenshot where supported. Behavior covers applicable interaction, accessibility, form, limitation, and CEF/Unreal details. Styling explains the component's own choices and links to its exact hooks.
+
+Within API reference, always use **Properties**, **Slots**, **Events**, **Methods**, and **Styling hooks**, in that order. Keep all five headings even when a category is unsupported. Use **Name / Default / Description** for properties and put types, attributes, allowed values, and constraints beside each entry. Use **Name / Description** for slots, **Name / When it fires / Payload** for events, and **Signature / Purpose / Returns** for methods. Styling hooks use separate CSS-variable (**Name / Default / Controls**) and Shadow-Part (**Name / Targets**) tables. Sort required properties first, then alphabetically; sort slots with the default first and all other API entries alphabetically.
+
+Do not paste a full implementation snapshot into an authored guide. Link to the implementation or generated API instead. Use exact public camelCase property/event/method names and kebab-case HTML attributes. Assign arrays, objects, and callbacks as JavaScript properties unless JSON-string input is explicitly supported. Preserve useful component-specific information, verify claims against current source, and leave shared theme setup in central documentation.
 
 ## Component index
 
@@ -47,7 +47,7 @@ Do not paste a full implementation snapshot into an authored guide. Source snaps
 | 18 | `q-data-table` | Data display | [Guide](./q-data-table.md) | [API](../../src/components/data-display/data-table/readme.md) |
 | 19 | `q-map` | Data display | [Guide](./q-map.md) | [API](../../src/components/data-display/map/readme.md) |
 | 20 | `q-syntax-box` | Data display / input | [Guide](./q-syntax-box.md) | [API](../../src/components/data-display/syntax-box/readme.md) |
-| 21 | `q-circular-progress` | Indicator | [Guide](./q-circular-progress.md) | [API](../../src/components/indicators/circular-progress/readme.md) |
+| 21 | `q-progress` | Indicator | [Guide](./q-progress.md) | [API](../../src/components/indicators/progress/readme.md) |
 | 22 | `q-step-diagram` | Indicator | [Guide](./q-step-diagram.md) | [API](../../src/components/indicators/step-diagram/readme.md) |
 | 23 | `q-step-diagram-item` | Indicator | [Guide](./q-step-diagram-item.md) | [API](../../src/components/indicators/step-diagram-item/readme.md) |
 | 24 | `q-icon` | Media | [Guide](./q-icon.md) | [API](../../src/components/media/icon/readme.md) |
