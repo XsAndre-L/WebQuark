@@ -16,7 +16,7 @@
 
 ## Quick start
 
-1. Follow the central [installation instructions](../../README.md).
+1. Follow the central [installation instructions](../../README.md#1-install-library).
 2. Register the components in your application's JavaScript entry file. This setup assumes a bundler that resolves package imports and CSS imports.
 
 ```javascript
@@ -50,7 +50,7 @@ The playground starts at **35%** as a demo preset. The component's default is **
 
 ## Examples
 
-These examples assume the component has been registered as shown in [Quick start](#quick-start). The screenshots come from the existing playground; select **Indicators → Progress** there to try the controls.
+These examples assume the component has been registered as shown in [Quick start](#quick-start). The screenshots run these snippets with the existing playground build; select **Indicators → Progress** there to try the controls.
 
 ### Show a circular percentage
 
@@ -116,7 +116,7 @@ Set the `value` property when the application receives a new completion percenta
 </script>
 ```
 
-Click **Advance upload** twice to move from 25% to the 75% shown in the screenshot, which shows the indicator only. The component does not advance itself or emit a change event; the application owns `value`.
+Click **Advance upload** twice to move from 25% to the 75% shown in the screenshot. The component does not advance itself or emit a change event; the application owns `value`.
 
 ## Behavior & accessibility
 
@@ -225,7 +225,7 @@ See [Theme variables](../theme_variables.md) for shared color, typography, and t
 
 ## API reference
 
-The [Stencil-generated API](../../src/components/indicators/progress/readme.md) is the canonical generated property and Shadow-Part reference. The property types below also follow the current [TypeScript source](../../src/components/indicators/progress/progress.tsx), which retains `null` in the accessible-label types.
+The [Stencil-generated API](../../src/components/indicators/progress/readme.md) provides generated property and Shadow-Part tables. The property types below also follow the current [TypeScript source](../../src/components/indicators/progress/progress.tsx), which retains `null` in the accessible-label types.
 
 ### Properties
 
@@ -233,14 +233,14 @@ All properties are optional. They are listed alphabetically.
 
 | Name | Default | Description |
 | :--- | :--- | :--- |
-| `ariaLabel` | `null` | Names the progressbar; an empty or absent name falls back to “Progress.”<br>**Type:** `string \| null`. **HTML attribute:** `aria-label`. |
-| `ariaValueText` | `null` | Overrides the spoken value text in determinate mode when nonblank.<br>**Type:** `string \| null`. **HTML attribute:** `aria-valuetext`. Ignored in indeterminate mode. |
-| `indeterminate` | `false` | Animates progress without a known percentage.<br>**Type:** `boolean`. **HTML attribute:** `indeterminate`. |
-| `label` | `undefined` | Replaces the visible center text of a determinate circular ring.<br>**Type:** `string`. **HTML attribute:** `label`. It also supplies `aria-valuetext` unless that is set separately. |
-| `size` | `'md'` | Selects a built-in size or a custom nonnegative pixel dimension.<br>**Type:** `'sm' \| 'md' \| 'lg' \| number`. **HTML attribute:** `size`. Numeric inputs below 0 render as 0 px. |
-| `tone` | `'primary'` | Selects the fill's semantic color.<br>**Type:** `'neutral' \| 'primary' \| 'success' \| 'warning' \| 'danger'`. **HTML attribute:** `tone`. |
-| `value` | `0` | Sets the determinate percentage; finite values are clamped to 0–100 and nonfinite values render as 0.<br>**Type:** `number`. **HTML attribute:** `value`. Not exposed as a current value in indeterminate mode. |
-| `variant` | `'linear'` | Selects a horizontal bar or circular ring.<br>**Type:** `'linear' \| 'circular'`. **HTML attribute:** `variant`. An empty or unrecognized value currently renders linear. |
+| `ariaLabel` | `null` | Names the progressbar; an empty or absent name falls back to “Progress.”<br>**Type:** `string \| null`. **HTML attribute:** `aria-label`. **Required:** No. |
+| `ariaValueText` | `null` | Overrides the spoken value text in determinate mode when nonblank.<br>**Type:** `string \| null`. **HTML attribute:** `aria-valuetext`. **Required:** No. Ignored in indeterminate mode. |
+| `indeterminate` | `false` | Animates progress without a known percentage.<br>**Type:** `boolean`. **HTML attribute:** `indeterminate`. **Required:** No. |
+| `label` | `undefined` | Replaces the visible center text of a determinate circular ring.<br>**Type:** `string`. **HTML attribute:** `label`. **Required:** No. It also supplies `aria-valuetext` unless that is set separately. |
+| `size` | `'md'` | Selects a built-in size or a custom nonnegative pixel dimension.<br>**Type:** `'sm' \| 'md' \| 'lg' \| number`. **HTML attribute:** `size`. **Required:** No. Numeric inputs below 0 render as 0 px. |
+| `tone` | `'primary'` | Selects the fill's semantic color.<br>**Type:** `'neutral' \| 'primary' \| 'success' \| 'warning' \| 'danger'`. **HTML attribute:** `tone`. **Required:** No. |
+| `value` | `0` | Sets the determinate percentage; finite values are clamped to 0–100 and nonfinite values render as 0.<br>**Type:** `number`. **HTML attribute:** `value`. **Required:** No. Not exposed as a current value in indeterminate mode. |
+| `variant` | `'linear'` | Selects a horizontal bar or circular ring.<br>**Type:** `'linear' \| 'circular'`. **HTML attribute:** `variant`. **Required:** No. An empty or unrecognized value currently renders linear. |
 
 ### Slots
 

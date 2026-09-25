@@ -16,7 +16,7 @@
 
 ## Quick start
 
-Follow the central [installation instructions](../../README.md). In a bundled application that resolves package imports and CSS imports, add this to the JavaScript entry file:
+Follow the central [installation instructions](../../README.md#1-install-library). In a bundled application that resolves package imports and CSS imports, add this to the JavaScript entry file:
 
 ```javascript
 import '@webquark/core/dist/webquark/webquark.css';
@@ -153,7 +153,7 @@ The shadow root delegates focus. A hidden instruction describes Tab and Escape. 
 
 The editable textarea name uses trimmed `ariaLabel`, then trimmed `heading`, then the uppercased language plus “code editor.” Read-only output is code content, not an input.
 
-The built-in copy and format icon buttons currently lack explicit accessible names; tooltips do not reliably supply those names. If named actions are required, provide a named control in the `actions` slot and implement its behavior. Copy feedback changes an icon/tooltip; no dedicated live region announces it.
+The built-in copy and format icon buttons currently lack explicit accessible names; tooltips do not reliably supply those names. For an editor with fully named actions, use `variant="plain"` and provide external, accessibly named controls with application-owned behavior. The panel `actions` slot adds controls but does not replace its built-in Format button. Copy feedback changes an icon/tooltip; no dedicated live region announces it.
 
 ### Forms
 
@@ -235,9 +235,9 @@ All properties are optional. Use JavaScript properties for structured values and
 
 These types describe property values and event payloads. Optional fields are marked with `?`; callbacks must be assigned in JavaScript.
 
-**QSyntaxBoxVariant**: `'panel' \| 'plain'`.
+**QSyntaxBoxVariant**: `'panel' | 'plain'`.
 
-**QSyntaxBoxLanguage**: `'html' \| 'javascript' \| 'css' \| 'json'`.
+**QSyntaxBoxLanguage**: `'html' | 'javascript' | 'css' | 'json'`.
 
 ### Slots
 
@@ -250,8 +250,8 @@ These types describe property values and event payloads. Optional fields are mar
 
 | Name | When it fires | Payload |
 | :--- | :--- | :--- |
-| `qChange` | Native textarea change or successful nonempty Format action | `CustomEvent<string>` with current code |
-| `qInput` | Typing, Tab insertion, or successful nonempty Format action | `CustomEvent<string>` with current code |
+| `qChange` | Native textarea change or a Format invocation with nonempty code (including unchanged or invalid JSON input) | `CustomEvent<string>` with current code |
+| `qInput` | Typing, Tab insertion, or a Format invocation with nonempty code (including unchanged or invalid JSON input) | `CustomEvent<string>` with current code |
 
 Both events bubble, are composed and cancelable. State is already updated; cancellation does not undo edits. Programmatic property changes do not emit these events.
 
@@ -273,19 +273,19 @@ Defaults show local declarations, shared defaults where declared, or the compone
 
 | Name | Default | Controls |
 | :--- | :--- | :--- |
-| `--q-syntax-attr` | `#79c0ff` | attr. |
-| `--q-syntax-bg` | `#0d1117` | bg. |
-| `--q-syntax-border` | `#21262d` | border. |
-| `--q-syntax-code-font-size` | `var(--q-font-size-base, 0.9rem)` | code font size. |
-| `--q-syntax-comment` | `#8b949e` | comment. |
-| `--q-syntax-compact-font-size` | `var(--q-font-size-sm, 0.7rem)` | compact font size. |
-| `--q-syntax-font-mono` | `ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace` | font mono. |
-| `--q-syntax-header-bg` | `#161b22` | header bg. |
-| `--q-syntax-header-font-size` | `var(--q-font-size-sm, 0.7rem)` | header font size. |
-| `--q-syntax-number` | `#f0883e` | number. |
-| `--q-syntax-tag` | `#ff7b72` | tag. |
-| `--q-syntax-text` | `#c9d1d9` | text. |
-| `--q-syntax-value` | `#a5d6ff` | value. |
+| `--q-syntax-attr` | `#79c0ff` | Attribute and applicable keyword highlight color. |
+| `--q-syntax-bg` | `#0d1117` | Code panel and editor background. |
+| `--q-syntax-border` | `#21262d` | Panel border color. |
+| `--q-syntax-code-font-size` | `var(--q-font-size-base, 0.9rem)` | Read-only code and editor text size. |
+| `--q-syntax-comment` | `#8b949e` | Comment highlight color. |
+| `--q-syntax-compact-font-size` | `var(--q-font-size-sm, 0.7rem)` | Read-only text size with the variant-card-code host class. |
+| `--q-syntax-font-mono` | `ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace` | Code and editor font family. |
+| `--q-syntax-header-bg` | `#161b22` | Panel header background. |
+| `--q-syntax-header-font-size` | `var(--q-font-size-sm, 0.7rem)` | Panel heading text size. |
+| `--q-syntax-number` | `#f0883e` | Numeric token highlight color. |
+| `--q-syntax-tag` | `#ff7b72` | Tag and applicable keyword highlight color. |
+| `--q-syntax-text` | `#c9d1d9` | Base code and editor text color. |
+| `--q-syntax-value` | `#a5d6ff` | String and attribute value highlight color. |
 
 #### Shadow Parts
 
