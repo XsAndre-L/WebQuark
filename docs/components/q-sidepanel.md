@@ -27,10 +27,18 @@ export interface SidepanelItem {
   label: string;
   value: string;
   icon?: string;
+  badgeCount?: number;
+  badgeLabel?: string;
   alwaysExpanded?: boolean;
   children?: SidepanelItem[];
 }
 ```
+
+Set `badgeCount` to a positive integer to show a navigation badge. Zero, negative,
+fractional and non-finite values are hidden; counts above 99 display `99+`.
+The full count remains in the accessible name and tooltip. Set `badgeLabel` for a
+description such as `120 unread announcements`. The badge sits beside the label
+when expanded and over the icon in collapsed rail mode. Style it with `::part(item-badge)`.
 
 Set `alwaysExpanded` on a parent item to render it as a persistent category heading. Its children
 remain visible, it has no collapse affordance, and it does not affect the collapsible behavior of

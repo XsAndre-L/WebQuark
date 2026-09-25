@@ -4794,6 +4794,10 @@ declare namespace LocalJSX {
         "height": QBannerHeight;
         "alignment": QBannerAlignment;
     }
+    interface QBannerAttributes {
+        "height": QBannerHeight;
+        "alignment": QBannerAlignment;
+    }
     interface QButtonAttributes {
         "disabled": boolean;
         "href": string;

@@ -39,6 +39,7 @@
 
 /* Native Input Box */
 .input-box {
+  text-align: var(--q-input-text-align, start);
   width: 100%;
   background: transparent;
   border: none;
@@ -51,6 +52,18 @@
   color: var(--q-fg-base, #f9fafb);
   outline: none;
   box-sizing: border-box;
+}
+
+/* Custom spinner buttons provide number stepping; suppress duplicate native arrows. */
+.input-box[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.input-box[type="number"]::-webkit-inner-spin-button,
+.input-box[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 /* Slot & Button Positioning inside the Flex Control */
