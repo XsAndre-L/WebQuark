@@ -93,10 +93,10 @@ The data table supports state transitions and custom layouts:
 - Enabling `showToolbar` wraps search fields (`q-input`) and custom slot controls into a unified dashboard header.
 - Includes built-in SVG magnifying glass indicators.
 
-### Variant C: Loading Overlay
+### Variant C: Loading State
 
-- When `loading="true"`, a full container overlay (`.table-loading-overlay`) is drawn directly over the table body.
-- Embeds a small `<q-circular-progress>` spinner.
+- When `loading="true"`, an in-table loading row replaces the normal body rows.
+- The row centers a small, indeterminate `<q-progress variant="circular">` ring.
 
 ---
 
@@ -147,10 +147,10 @@ The implementation is intentionally not duplicated in this guide. Use the genera
 
 ## 8. Unreal Engine / Webview Compatibility Notes
 
-- **No Backdrop Blur Filters**: The `.table-loading-overlay` avoids `backdrop-filter` rules, drawing an opaque backdrop color (`var(--q-bg-base, #111827)`) to cover rows and prevent rendering crashes in Unreal OSR.
+- **Loading Surface**: The in-table `.table-loading-state` uses a solid `var(--q-bg-base, #111827)` background and no backdrop filter.
 - **Performance Optimization (DOM Nodes)**: The scrollable view utilizes a standard native `<table>` construct inside `.table-scroll-area`, avoiding thousands of heavy absolute nested `div` containers. This reduces DOM node counts and composite repaints inside CEF.
 - **Checkbox Inputs**: Utilizes standard HTML `<input type="checkbox">` elements. Focus ring styling relies on standard outlines which are supported inside OSR.
-- **Nested Components**: Table depends on `<q-input>` (search) and `<q-circular-progress>` (loading) which must be registered and whitelisted.
+- **Nested Components**: Table depends on `<q-input>` (search) and `<q-progress>` (loading), which must be registered and whitelisted.
 
 ---
 

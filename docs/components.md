@@ -29,7 +29,7 @@ See the [component documentation standard and index](./components/README.md), [c
 | `q-data-table` | Data display | Implemented | [Guide](./components/q-data-table.md) | Search events, selection, sorting, and row actions. |
 | `q-map` | Data display | Implemented | [Guide](./components/q-map.md) | Leaflet-backed tile or Google imagery, typed markers, selection, and resize handling. |
 | `q-syntax-box` | Data display / input | Implemented with security follow-up | [Guide](./components/q-syntax-box.md) | Highlighting, editing, formatting, copying, and form participation. |
-| `q-circular-progress` | Indicator | Implemented | [Guide](./components/q-circular-progress.md) | Determinate and indeterminate progress. |
+| `q-progress` | Indicator | Implemented | [Guide](./components/q-progress.md) | Linear and circular, determinate and indeterminate progress. |
 | `q-step-diagram` | Indicator | Implemented | [Guide](./components/q-step-diagram.md) | Vertical/horizontal step sequence parent. |
 | `q-step-diagram-item` | Indicator | Implemented with known limitation | [Guide](./components/q-step-diagram-item.md) | Pending items still emit activation events. |
 | `q-avatar` | Media | Implemented | [Guide](./components/q-avatar.md) | Identity image with initials or slotted fallback. |

@@ -1,6 +1,6 @@
 # Current public component contracts
 
-This reference was reconciled against the 27 Stencil component implementations on 2026-07-15. It fills gaps in older authored specification tables while those longer design guides are progressively simplified. The generated API page linked for each component remains canonical for exact TypeScript types and defaults.
+This compact reference fills gaps in older authored specification tables while those longer design guides are progressively simplified. Check current source and the generated API page linked for each component for exact types and defaults.
 
 For array and object inputs, assign the JavaScript property unless the contract explicitly accepts a JSON string. Event names are case-sensitive DOM custom-event names.
 
@@ -208,12 +208,11 @@ For array and object inputs, assign the JavaScript property unless the contract 
 - Behavior: `code` and `value` are mirrored compatibility aliases. Editable mode provides formatting and form participation; read-only mode does not contribute a form value. Escape leaves the editor and Tab inserts two spaces.
 - Limitations: languages are `html`, `javascript`, `css`, and `json`; highlighting is regex-based, not a validating parser.
 
-### `q-circular-progress`
+### `q-progress`
 
-- API: [generated reference](../../src/components/indicators/circular-progress/readme.md)
-- Properties: `value`, `label`, `ariaLabel`, `indeterminate`, `size`.
-- Behavior: finite determinate values are clamped to 0–100. `label` controls visible/value text; `ariaLabel` names the progressbar. Indeterminate mode suppresses value attributes and center text.
-- Accessibility: use a task-specific `ariaLabel`; the default “Circular Progress” is intentionally generic.
+- Guide: [q-progress](./q-progress.md); API: [generated reference](../../src/components/indicators/progress/readme.md).
+- Behavior: `variant` selects a linear bar (the default) or circular ring. Finite determinate values are clamped to 0–100; nonfinite values render as 0. Indeterminate mode omits current-value metadata and circular center text.
+- Accessibility: use a task-specific `ariaLabel`; the fallback name is “Progress.” See the guide for `ariaValueText`, sizing, tones, and styling hooks.
 
 ### `q-step-diagram`
 
