@@ -1,3 +1,4 @@
+@import '../../../theme/control.css';
 :host {
   display: block;
   width: 100%;
@@ -5,10 +6,21 @@
 }
 
 .textarea-wrapper {
+  position: relative;
   display: flex;
   flex-direction: column;
   width: 100%;
   box-sizing: border-box;
+}
+
+.textarea-size-probe {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+  width: max-content;
+  font-family: var(--q-font-family, inherit);
+  font-size: var(--_q-control-font);
+  line-height: var(--_q-control-line);
 }
 
 /* Header Label Typography */
@@ -28,7 +40,7 @@
   box-sizing: border-box;
   background: var(--q-input-bg, var(--q-bg-surface-2, #374151));
   border: var(--q-input-border, var(--q-border, 1px solid var(--q-border-color, #4b5563)));
-  border-radius: var(--q-input-radius, var(--q-radius-md, 8px));
+  border-radius: var(--q-input-radius, var(--q-field-radius, var(--_q-control-radius)));
   padding: var(--q-input-padding, 10px 14px);
   
   font-family: var(--q-font-family, inherit);
@@ -86,3 +98,8 @@
   cursor: not-allowed;
   pointer-events: none;
 }
+
+/* Shared foundation geometry. */
+.textarea-wrapper .textarea-box { min-height: var(--_q-control-height); padding: var(--q-input-padding, var(--q-field-padding, var(--q-space-sm, .5rem) var(--_q-control-padding))); font-size: var(--_q-control-font); line-height: var(--_q-control-line); background: var(--q-input-bg, var(--q-field-bg, var(--q-bg-field, var(--q-bg-surface-3, #22304d)))); }
+
+@import '../../../theme/field.css';

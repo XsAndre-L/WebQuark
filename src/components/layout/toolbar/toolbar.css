@@ -88,7 +88,7 @@
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: var(--q-toolbar-gap, 16px);
+  gap: var(--q-toolbar-gap, var(--_q-toolbar-gap, var(--q-space-sm, .5rem)));
   min-height: var(--q-toolbar-height, 64px);
   padding: var(--q-toolbar-padding, var(--q-toolbar-edge-padding, 0 24px));
   box-sizing: border-box;
@@ -143,3 +143,26 @@
 :host([edge='right']) .toolbar-content {
   min-height: 0;
 }
+
+/* Wrap regions only on horizontal toolbars; vertical toolbars keep their grid. */
+:host([edge='top']) .toolbar-row, :host([edge='bottom']) .toolbar-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--q-toolbar-gap, var(--_q-toolbar-gap));
+  min-height: var(--q-toolbar-height, 0px);
+  padding: var(--q-toolbar-padding, var(--q-space-sm, .5rem) var(--q-space-lg, 1rem));
+}
+:host([edge='top']) .toolbar.is-compact .toolbar-row, :host([edge='bottom']) .toolbar.is-compact .toolbar-row {
+  min-height: var(--q-toolbar-compact-height, 0px);
+  padding: var(--q-toolbar-compact-padding, var(--q-space-xs, .25rem) var(--q-space-md, .75rem));
+}
+:host([wrap][edge='top']) .toolbar-row, :host([wrap][edge='bottom']) .toolbar-row { flex-wrap: wrap; }
+:host([edge='top']) .toolbar-content, :host([edge='bottom']) .toolbar-content { flex: 1 1 12rem; }
+.toolbar-start, .toolbar-end { gap: var(--q-toolbar-gap, var(--_q-toolbar-gap)); }
+
+:host([edge='top']) { --q-toolbar-edge-padding: max(env(safe-area-inset-top, 0px), var(--q-space-sm, .5rem)) var(--q-space-lg, 1rem) var(--q-space-sm, .5rem); --q-toolbar-edge-compact-padding: max(env(safe-area-inset-top, 0px), var(--q-space-xs, .25rem)) var(--q-space-md, .75rem) var(--q-space-xs, .25rem); }
+:host([edge='bottom']) { --q-toolbar-edge-padding: var(--q-space-sm, .5rem) var(--q-space-lg, 1rem) max(env(safe-area-inset-bottom, 0px), var(--q-space-sm, .5rem)); --q-toolbar-edge-compact-padding: var(--q-space-xs, .25rem) var(--q-space-md, .75rem) max(env(safe-area-inset-bottom, 0px), var(--q-space-xs, .25rem)); }
+:host([edge='top']) .toolbar-row, :host([edge='bottom']) .toolbar-row { padding: var(--q-toolbar-padding, var(--q-toolbar-edge-padding)); }
+:host([edge='top']) .toolbar.is-compact .toolbar-row, :host([edge='bottom']) .toolbar.is-compact .toolbar-row { padding: var(--q-toolbar-compact-padding, var(--q-toolbar-padding, var(--q-toolbar-edge-compact-padding))); }
+:host([wrap][edge='top']) .toolbar-start, :host([wrap][edge='top']) .toolbar-end, :host([wrap][edge='bottom']) .toolbar-start, :host([wrap][edge='bottom']) .toolbar-end { flex-wrap: wrap; }
+::slotted(*) { min-width: 0; max-width: 100%; }

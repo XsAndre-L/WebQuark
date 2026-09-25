@@ -1,4 +1,5 @@
-import { Component, Prop, h } from '@stencil/core';
+import { controlScope, spaceValue, type QControlSize, type QSpace } from '../../../theme/tokens';
+import { Component, Host, Prop, h } from '@stencil/core';
 import type { QToolbarEdge } from './toolbar.types';
 
 /**
@@ -24,12 +25,16 @@ export class QToolbar {
   @Prop({ reflect: true }) compact: boolean = false;
   @Prop({ reflect: true }) transparent: boolean = false;
   @Prop({ reflect: true }) bordered: boolean = false;
+  @Prop() size: QControlSize = 'inherit';
+  @Prop() gap: QSpace = 'sm';
+  @Prop({ reflect: true }) wrap: boolean = true;
 
   /** Accessible label for the toolbar content group. */
   @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
 
   render() {
     return (
+      <Host style={{ ...controlScope(this.size), '--_q-toolbar-gap': spaceValue(this.gap) }}>
       <div
         class={{
           toolbar: true,
@@ -55,6 +60,7 @@ export class QToolbar {
           </div>
         </div>
       </div>
+      </Host>
     );
   }
 }

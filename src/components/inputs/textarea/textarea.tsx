@@ -1,3 +1,5 @@
+import { fieldFeedback, feedbackStyle } from '../../shared/field';
+import type { QControlSize } from '../../../theme/tokens';
 import { Component, Prop, Event, EventEmitter, Method, AttachInternals, Watch, h } from '@stencil/core';
 
 import { syncNativeControlValidity } from '../../../utils/form-control-validity';
@@ -24,6 +26,14 @@ export class QTextarea {
   @Prop() label?: string;
   /** Accessible name for the native textarea when a visible label is not used. */
   @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
+  /** Supporting text, replaced by an active error. */
+  @Prop() description?: string;
+
+  @Prop() size: QControlSize = 'inherit';
+  /** Keep the label accessible without displaying it. */
+  @Prop() labelHidden: boolean = false;
+  /** Omitted inherits the enclosing form; false cancels reservation. */
+  @Prop() reserveFeedback?: boolean;
 
   @Prop() rows: number = 3;
   /** Grows with content when `resizeMode` is `auto`. */
@@ -55,6 +65,10 @@ export class QTextarea {
   @Event() qClick!: EventEmitter<MouseEvent>;
 
   private textareaEl?: HTMLTextAreaElement;
+  private sizeProbeEl?: HTMLSpanElement;
+  private resizeObserver?: ResizeObserver;
+  private resizeFrame?: number;
+  private lastGeometry = '';
 
   // ========================= [2] INTERNAL STATE & REFS =========================
 
@@ -78,6 +92,8 @@ export class QTextarea {
 
   @Watch('resizeMode')
   @Watch('autoGrow')
+  @Watch('size')
+  @Watch('rows')
   handleResizeModeChange() {
     requestAnimationFrame(() => this.adjustHeightInternal());
   }
@@ -92,6 +108,38 @@ export class QTextarea {
   componentDidLoad() {
     this.adjustHeightInternal();
     this.syncValidity();
+    this.observeGeometry();
+  }
+
+  connectedCallback() {
+    if (this.textareaEl) this.observeGeometry();
+  }
+
+  disconnectedCallback() {
+    this.resizeObserver?.disconnect();
+    this.resizeObserver = undefined;
+    if (this.resizeFrame !== undefined) cancelAnimationFrame(this.resizeFrame);
+    this.resizeFrame = undefined;
+    this.lastGeometry = '';
+  }
+
+  private observeGeometry() {
+    if (this.resizeObserver || !this.textareaEl || !this.sizeProbeEl || typeof ResizeObserver === 'undefined') return;
+    this.resizeObserver = new ResizeObserver(() => {
+      if (this.resizeFrame !== undefined) return;
+      this.resizeFrame = requestAnimationFrame(() => {
+        this.resizeFrame = undefined;
+        if (!this.textareaEl || this.activeResizeMode !== 'auto') return;
+        const style = getComputedStyle(this.textareaEl);
+        // Exclude height: changing it is the result of auto-grow, not a new input.
+        const geometry = [style.width, style.font, style.letterSpacing, style.padding, style.borderWidth, this.rows].join('|');
+        if (geometry === this.lastGeometry) return;
+        this.lastGeometry = geometry;
+        this.adjustHeightInternal();
+      });
+    });
+    this.resizeObserver.observe(this.textareaEl);
+    this.resizeObserver.observe(this.sizeProbeEl);
   }
 
   componentDidRender() {
@@ -214,15 +262,19 @@ export class QTextarea {
 
     return (
       <div
+        style={feedbackStyle(this.reserveFeedback)}
         class={{
           'textarea-wrapper': true,
           'is-disabled': this.disabled,
-          'has-error': hasError
+          'has-error': hasError,
+          [`size-${this.size}`]: true
         }}
       >
+        {/* A fixed-height textarea cannot report inherited font changes itself. */}
+        <span class="textarea-size-probe" aria-hidden="true" ref={el => (this.sizeProbeEl = el)}>M</span>
         {/* Optional Header Label linked via htmlFor */}
         {this.label && (
-          <label class="textarea-label" htmlFor="q-field" part="label">
+          <label class={{ 'textarea-label': true, 'q-label-hidden': this.labelHidden }} htmlFor="q-field" part="label">
             {this.label}
           </label>
         )}
@@ -248,16 +300,12 @@ export class QTextarea {
           onFocus={this.handleFocus}
           onClick={this.handleClick}
           aria-invalid={hasError ? 'true' : 'false'}
-          aria-describedby={hasError ? 'q-field-error' : undefined}
+          aria-describedby={hasError || this.description ? 'q-field-error' : undefined}
           aria-label={ariaLabel}
         />
 
         {/* Validation Helper Message */}
-        {hasError && (
-          <span id="q-field-error" class="error-msg" part="error-msg">
-            {displayError}
-          </span>
-        )}
+        {fieldFeedback('q-field-error', displayError, this.description)}
       </div>
     );
   }

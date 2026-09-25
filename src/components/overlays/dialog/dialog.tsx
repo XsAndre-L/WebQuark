@@ -40,6 +40,7 @@ export class QDialog {
   /** Rendered by the default dialog body. */
   @Prop() message?: string;
 
+  @Prop({ reflect: true }) size: 'sm' | 'md' | 'lg' | 'full' = 'md';
   /** `solid` is CEF-safe; `none` keeps only a transparent click layer. */
   @Prop({ attribute: 'backdrop-effect', reflect: true }) backdropEffect: QDialogBackdropEffect = 'solid';
 
@@ -66,6 +67,7 @@ export class QDialog {
 
   @State() isVisible: boolean = false;
   @State() isAnimatedOpen: boolean = false;
+  @State() hasFooter: boolean = false;
 
   private dialogEl?: HTMLDivElement;
 
@@ -290,8 +292,10 @@ export class QDialog {
           </div>
 
           {/* Footer */}
-          <footer class="dialog-footer" part="footer">
-            <slot name="footer">
+          <footer class={{ 'dialog-footer': true, 'is-hidden': !this.showCancel && !this.showConfirm && !this.hasFooter }} part="footer">
+            <slot name="footer" onSlotchange={event => {
+              this.hasFooter = (event.target as HTMLSlotElement).assignedNodes().some(node => node.nodeType === 1 || !!node.textContent?.trim());
+            }}>
               <div class="dialog-actions">
                 {this.showCancel && (
                   <button

@@ -14,13 +14,22 @@
     },
     "size": {
       "type": "select",
-      "options": ["sm", "md", "lg"],
-      "default": "md",
-      "desc": "Control sizing"
+      "default": "inherit",
+      "options": [
+        "inherit",
+        "sm",
+        "md",
+        "lg"
+      ],
+      "desc": "Control size; inherit follows the nearest form or toolbar"
     },
     "orientation": {
       "type": "select",
-      "options": ["horizontal", "responsive", "vertical"],
+      "options": [
+        "horizontal",
+        "responsive",
+        "vertical"
+      ],
       "default": "responsive",
       "desc": "Option arrangement"
     },
@@ -33,26 +42,53 @@
       "type": "boolean",
       "default": false,
       "desc": "Locks all options"
+    },
+    "labelHidden": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Keep the label accessible without displaying it"
+    },
+    "reserveFeedback": {
+      "type": "boolean",
+      "desc": "Reserve one feedback line; omit to inherit"
     }
   },
   "slots": {},
   "options": [
-    { "label": "Email", "value": "email" },
-    { "label": "Username", "value": "username" },
-    { "label": "Email and Username", "value": "both" }
+    {
+      "label": "Email",
+      "value": "email"
+    },
+    {
+      "label": "Username",
+      "value": "username"
+    },
+    {
+      "label": "Email and Username",
+      "value": "both"
+    }
   ],
   "variants": [
     {
       "name": "Responsive",
-      "props": { "orientation": "responsive", "value": "both" }
+      "props": {
+        "orientation": "responsive",
+        "value": "both"
+      }
     },
     {
       "name": "Vertical",
-      "props": { "orientation": "vertical", "value": "email" }
+      "props": {
+        "orientation": "vertical",
+        "value": "email"
+      }
     },
     {
       "name": "Disabled",
-      "props": { "disabled": true, "value": "username" }
+      "props": {
+        "disabled": true,
+        "value": "username"
+      }
     }
   ]
 }

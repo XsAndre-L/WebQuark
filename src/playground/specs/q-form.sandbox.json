@@ -1,20 +1,98 @@
-﻿{
+{
   "name": "Form",
   "tag": "q-form",
   "props": {
-    "label": { "type": "string", "default": "Profile", "desc": "Optional title rendered above the form" },
-    "preventDefault": { "type": "boolean", "default": true, "desc": "Prevents the browser submit navigation" },
-    "noValidate": { "type": "boolean", "default": false, "desc": "Skips native validity checks" },
-    "autocomplete": { "type": "select", "options": ["on", "off"], "default": "on", "desc": "Native autocomplete behavior" }
+    "label": {
+      "type": "string",
+      "default": "Profile",
+      "desc": "Optional title rendered above the form"
+    },
+    "preventDefault": {
+      "type": "boolean",
+      "default": true,
+      "desc": "Prevents the browser submit navigation"
+    },
+    "noValidate": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Skips native validity checks"
+    },
+    "autocomplete": {
+      "type": "select",
+      "options": [
+        "on",
+        "off"
+      ],
+      "default": "on",
+      "desc": "Native autocomplete behavior"
+    },
+    "size": {
+      "type": "select",
+      "default": "inherit",
+      "options": [
+        "inherit",
+        "sm",
+        "md",
+        "lg"
+      ],
+      "desc": "Control size; inherit follows the nearest form or toolbar"
+    },
+    "labelHidden": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Keep the label accessible without displaying it"
+    },
+    "reserveFeedback": {
+      "type": "boolean",
+      "desc": "Reserve one feedback line; omit to inherit"
+    }
   },
   "slots": {
-    "default": { "type": "html", "default": "<q-input name=\"name\" label=\"Name\" value=\"Ada\"></q-input><q-textarea name=\"bio\" label=\"Bio\" value=\"Builder\"></q-textarea>", "desc": "Form fields" },
-    "actions": { "type": "html", "default": "<q-button type=\"submit\">Save</q-button>", "desc": "Action controls" }
+    "default": {
+      "type": "html",
+      "default": "<q-input name=\"name\" label=\"Name\" value=\"Ada\"></q-input><q-textarea name=\"bio\" label=\"Bio\" value=\"Builder\"></q-textarea>",
+      "desc": "Form fields"
+    },
+    "actions": {
+      "type": "html",
+      "default": "<q-button type=\"submit\">Save</q-button>",
+      "desc": "Action controls"
+    }
   },
   "variants": [
-    { "name": "Profile Form", "props": { "label": "Profile" }, "slots": { "default": "<q-input name=\"name\" label=\"Name\" value=\"Ada\"></q-input><q-dropdown name=\"role\" label=\"Role\" value=\"admin\" options='[{\"label\":\"Admin\",\"value\":\"admin\"},{\"label\":\"Editor\",\"value\":\"editor\"}]'></q-dropdown>", "actions": "<q-button type=\"submit\">Save</q-button>" } }
+    {
+      "name": "Profile Form",
+      "props": {
+        "label": "Profile"
+      },
+      "slots": {
+        "actions": "<q-button type=\"submit\">Save</q-button>"
+      },
+      "slot": "<q-input name=\"name\" label=\"Name\" value=\"Ada\"></q-input><q-dropdown name=\"role\" label=\"Role\" value=\"admin\" options='[{\"label\":\"Admin\",\"value\":\"admin\"},{\"label\":\"Editor\",\"value\":\"editor\"}]'></q-dropdown>"
+    },
+    {
+      "name": "Composed billing form",
+      "props": {
+        "size": "md",
+        "reserveFeedback": true,
+        "label": "Billing details"
+      },
+      "slots": {
+        "actions": "<q-inline justify=\"end\"><q-button variant=\"ghost\" type=\"reset\">Reset</q-button><q-button type=\"submit\">Save</q-button></q-inline>"
+      },
+      "slot": "<q-panel surface=\"panel\" padding=\"lg\"><q-grid columns=\"2\"><q-input label=\"Payer name\" name=\"payer\" required data-q-span=\"full\"></q-input><q-input label=\"Email\" name=\"email\" type=\"email\" description=\"Receipts go here\"></q-input><q-dropdown label=\"Country\" name=\"country\" required options='[{\"label\":\"South Africa\",\"value\":\"ZA\"},{\"label\":\"United Kingdom\",\"value\":\"GB\"}]'></q-dropdown><q-textarea label=\"Notes\" name=\"notes\" data-q-span=\"full\"></q-textarea></q-grid></q-panel>"
+    }
   ],
   "edgeCases": [
-    { "name": "Native Inputs", "props": { "label": "Native Form" }, "slots": { "default": "<input name=\"plain\" value=\"native\" />", "actions": "<q-button type=\"submit\">Submit</q-button>" } }
+    {
+      "name": "Native Inputs",
+      "props": {
+        "label": "Native Form"
+      },
+      "slots": {
+        "actions": "<q-button type=\"submit\">Submit</q-button>"
+      },
+      "slot": "<input name=\"plain\" value=\"native\" />"
+    }
   ]
 }

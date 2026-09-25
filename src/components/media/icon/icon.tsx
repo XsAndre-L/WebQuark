@@ -25,8 +25,6 @@ export class QIcon {
 
   /** Icon name or local asset filename. */
   @Prop() name?: QIconName;
-  /** Trusted compile-time icon data. Takes precedence over `name` and never performs I/O. */
-  @Prop() definition?: QIconDefinition;
   /** Supports built-in libraries, local assets, and custom URL templates. */
   @Prop() lib: QIconLibrary = 'lucide';
   /** Base path used when `lib="local"`. */
@@ -35,6 +33,8 @@ export class QIcon {
   @Prop() libVersion?: string;
   /** SVG fetch timeout in milliseconds. */
   @Prop() fetchTimeout: number = DEFAULT_FETCH_TIMEOUT_MS;
+  /** Trusted compile-time icon data. Takes precedence over `name` and never performs I/O. */
+  @Prop() definition?: QIconDefinition;
 
   /** Accepts a preset, pixel number, or CSS size. */
   @Prop() size: QIconSize = 'md';

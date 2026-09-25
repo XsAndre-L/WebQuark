@@ -1,3 +1,4 @@
+@import '../../../theme/control.css';
 :host {
   display: inline-block;
   box-sizing: border-box;
@@ -14,7 +15,7 @@
   justify-content: center;
   position: relative;
   text-decoration: none;
-  border-radius: var(--q-btn-radius, var(--q-radius-md, 7px));
+  border-radius: var(--q-btn-radius, var(--_q-control-radius));
   font-family: var(--q-font-family, inherit);
   font-weight: var(--q-btn-font-weight, var(--q-font-weight-bold, 600));
   border: 1px solid transparent;
@@ -34,17 +35,17 @@
 
 /* Sizing Layouts */
 .size-sm {
-  border-radius: var(--q-btn-radius-sm, var(--q-radius-sm, 4px));
+  border-radius: var(--q-btn-radius-sm, var(--q-btn-radius, var(--_q-control-radius)));
   padding: var(--q-btn-padding-sm, 6px 10px);
   font-size: var(--q-font-size-sm, 0.7rem);
 }
 .size-md {
-  border-radius: var(--q-btn-radius-md, var(--q-radius-md, 7px));
+  border-radius: var(--q-btn-radius-md, var(--q-btn-radius, var(--_q-control-radius)));
   padding: var(--q-btn-padding-md, 5px 8px);
   font-size: var(--q-btn-font-size, var(--q-font-size-base, 0.9rem));
 }
 .size-lg {
-  border-radius: var(--q-btn-radius-lg, var(--q-radius-lg, 11px));
+  border-radius: var(--q-btn-radius-lg, var(--q-btn-radius, var(--_q-control-radius)));
   padding: var(--q-btn-padding-lg, 9px 16px);
   font-size: var(--q-font-size-lg, 1rem);
 }
@@ -52,12 +53,15 @@
 /* Icon-Only Sizing Overrides */
 .btn.is-icon-only.size-sm {
   padding: var(--q-btn-icon-padding-sm, 4px);
+  --_q-btn-icon-padding: var(--q-btn-icon-padding-sm, 0px);
 }
 .btn.is-icon-only.size-md {
   padding: var(--q-btn-icon-padding-md, 6px);
+  --_q-btn-icon-padding: var(--q-btn-icon-padding-md, 0px);
 }
 .btn.is-icon-only.size-lg {
   padding: var(--q-btn-icon-padding-lg, 9px);
+  --_q-btn-icon-padding: var(--q-btn-icon-padding-lg, 0px);
 }
 
 /* Shape and content layout */
@@ -189,3 +193,16 @@
     transform: rotate(360deg);
   }
 }
+
+/* Shared foundation geometry. */
+.btn:not(.shape-circle) { min-height: var(--q-btn-height, var(--_q-control-height)); padding: var(--q-btn-padding, var(--_q-btn-padding, 0 var(--_q-control-padding))); font-size: var(--q-btn-font-size, var(--_q-control-font)); line-height: var(--_q-control-line); }
+.btn.is-icon-only:not(.shape-circle) { min-width: var(--q-btn-height, var(--_q-control-height)); padding: var(--_q-btn-icon-padding, 0px); }
+.btn-content-wrap { gap: var(--q-btn-content-gap, var(--q-space-sm, .5rem)); }
+
+
+.size-sm { --_q-btn-padding: var(--q-btn-padding-sm, 0 var(--_q-control-padding)); }
+.size-md { --_q-btn-padding: var(--q-btn-padding-md, 0 var(--_q-control-padding)); }
+.size-lg { --_q-btn-padding: var(--q-btn-padding-lg, 0 var(--_q-control-padding)); }
+
+.btn { max-width: 100%; }
+.btn-content-wrap, .btn-label { min-width: 0; overflow-wrap: anywhere; }

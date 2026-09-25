@@ -5,10 +5,13 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { QAccordionMode } from "./components/data-display/accordion/accordion.types";
 import { QAlertAnnouncement, QAlertVariant } from "./components/data-display/alert/alert.types";
 import { QAvatarShape, QAvatarSize } from "./components/media/avatar/avatar.types";
+import { QBannerAlignment, QBannerHeight } from "./components/content/banner/banner.types";
 import { QIconColor, QIconDefinition, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
 import { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
+import { QControlSize, QSpace, QSurface } from "./theme/tokens";
 import { QCardElevation } from "./components/layout/card/card.types";
 import { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/layout/carousel/carousel.types";
 import { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/actions/chip/chip.types";
@@ -20,6 +23,7 @@ import { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QForm
 import { QInputSize, QInputType } from "./components/inputs/input/input.types";
 import { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
 import { QMapBoundsInput, QMapClickDetail, QMapClusterSelectDetail, QMapErrorDetail, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapMarkerVisibilityResult, QMapProvider, QMapRasterTileLoadingPolicy, QMapStatusChangeDetail, QMapViewportRect } from "./components/data-display/map/map.types";
+import { QMediaKind, QMediaLoading } from "./components/media/media/media.types";
 import { NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode } from "./components/layout/navbar/navbar.types";
 import { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
 import { QProgressSize, QProgressTone, QProgressVariant } from "./components/indicators/progress/progress.types";
@@ -27,6 +31,7 @@ import { QQuantitySelectorVariant } from "./components/inputs/quantity-selector/
 import { QRadioGroupOrientation, QRadioGroupSize, RadioGroupOptionInput } from "./components/inputs/radio-group/radio-group.types";
 import { QReelLayout } from "./components/media/reel/reel.types";
 import { QScrollableEventDetail, QScrollableMode } from "./components/layout/scrollable/scrollable.types";
+import { QSectionLayout } from "./components/layout/section/section.types";
 import { QSidepanelCollapseControl, QSidepanelCollapseControlAppearance, QSidepanelCollapsedChangeDetail, QSidepanelCollapseMode, QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItemInput } from "./components/layout/sidepanel/sidepanel.types";
 import { QStepDiagramLayout } from "./components/indicators/step-diagram/step-diagram.types";
 import { QStepDiagramItemLayout, QStepDiagramItemLineStyle, QStepDiagramItemStatus } from "./components/indicators/step-diagram-item/step-diagram-item.types";
@@ -38,10 +43,13 @@ import { QToastId, QToastOptions, QToastPosition } from "./components/overlays/t
 import { QToggleSize, QToggleType } from "./components/inputs/toggle/toggle.types";
 import { QToolbarEdge } from "./components/layout/toolbar/toolbar.types";
 import { QTooltipPosition } from "./components/overlays/tooltip/tooltip.types";
+export { QAccordionMode } from "./components/data-display/accordion/accordion.types";
 export { QAlertAnnouncement, QAlertVariant } from "./components/data-display/alert/alert.types";
 export { QAvatarShape, QAvatarSize } from "./components/media/avatar/avatar.types";
+export { QBannerAlignment, QBannerHeight } from "./components/content/banner/banner.types";
 export { QIconColor, QIconDefinition, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
 export { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
+export { QControlSize, QSpace, QSurface } from "./theme/tokens";
 export { QCardElevation } from "./components/layout/card/card.types";
 export { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/layout/carousel/carousel.types";
 export { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/actions/chip/chip.types";
@@ -53,6 +61,7 @@ export { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QForm
 export { QInputSize, QInputType } from "./components/inputs/input/input.types";
 export { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
 export { QMapBoundsInput, QMapClickDetail, QMapClusterSelectDetail, QMapErrorDetail, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapMarkerVisibilityResult, QMapProvider, QMapRasterTileLoadingPolicy, QMapStatusChangeDetail, QMapViewportRect } from "./components/data-display/map/map.types";
+export { QMediaKind, QMediaLoading } from "./components/media/media/media.types";
 export { NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode } from "./components/layout/navbar/navbar.types";
 export { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
 export { QProgressSize, QProgressTone, QProgressVariant } from "./components/indicators/progress/progress.types";
@@ -60,6 +69,7 @@ export { QQuantitySelectorVariant } from "./components/inputs/quantity-selector/
 export { QRadioGroupOrientation, QRadioGroupSize, RadioGroupOptionInput } from "./components/inputs/radio-group/radio-group.types";
 export { QReelLayout } from "./components/media/reel/reel.types";
 export { QScrollableEventDetail, QScrollableMode } from "./components/layout/scrollable/scrollable.types";
+export { QSectionLayout } from "./components/layout/section/section.types";
 export { QSidepanelCollapseControl, QSidepanelCollapseControlAppearance, QSidepanelCollapsedChangeDetail, QSidepanelCollapseMode, QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItemInput } from "./components/layout/sidepanel/sidepanel.types";
 export { QStepDiagramLayout } from "./components/indicators/step-diagram/step-diagram.types";
 export { QStepDiagramItemLayout, QStepDiagramItemLineStyle, QStepDiagramItemStatus } from "./components/indicators/step-diagram-item/step-diagram-item.types";
@@ -72,6 +82,15 @@ export { QToggleSize, QToggleType } from "./components/inputs/toggle/toggle.type
 export { QToolbarEdge } from "./components/layout/toolbar/toolbar.types";
 export { QTooltipPosition } from "./components/overlays/tooltip/tooltip.types";
 export namespace Components {
+    /**
+     * Accordion API scaffold. Disclosure behavior and item coordination are deferred.
+     */
+    interface QAccordion {
+        /**
+          * @default 'single'
+         */
+        "mode": QAccordionMode;
+    }
     /**
      * Inline contextual message with opt-in announcements and controlled dismissal.
      */
@@ -132,6 +151,19 @@ export namespace Components {
         "src"?: string;
     }
     /**
+     * Generic banner shell. The media, copy and actions are supplied through slots; final layout is deferred.
+     */
+    interface QBanner {
+        /**
+          * @default 'center'
+         */
+        "alignment": QBannerAlignment;
+        /**
+          * @default 'auto'
+         */
+        "height": QBannerHeight;
+    }
+    /**
      * Action button that renders a native button or anchor according to `href`.
      */
     interface QButton {
@@ -184,7 +216,7 @@ export namespace Components {
          */
         "shape": QButtonShape;
         /**
-          * @default 'md'
+          * @default 'inherit'
          */
         "size": QButtonSize;
         "target"?: string;
@@ -203,15 +235,21 @@ export namespace Components {
      */
     interface QCard {
         /**
+          * @default false
+         */
+        "dividers": boolean;
+        /**
           * Numeric values remain supported as legacy elevation aliases.
-          * @default 'medium'
+          * @default 'low'
          */
         "elevation": QCardElevation;
+        "footerPadding"?: QSpace;
         /**
           * Applies translucent glass styling without backdrop-filter.
           * @default false
          */
         "glass": boolean;
+        "headerPadding"?: QSpace;
         /**
           * Adds button semantics and keyboard activation to the card container.
           * @default false
@@ -222,6 +260,14 @@ export namespace Components {
           * @default false
          */
         "lift": boolean;
+        /**
+          * @default 'lg'
+         */
+        "padding": QSpace;
+        /**
+          * Explicit surface; omitted preserves the variant's role.
+         */
+        "surface"?: QSurface;
     }
     /**
      * A horizontal carousel viewport with optional arrow and dot navigation.
@@ -509,6 +555,10 @@ export namespace Components {
           * @default true
          */
         "showConfirm": boolean;
+        /**
+          * @default 'md'
+         */
+        "size": 'sm' | 'md' | 'lg' | 'full';
     }
     /**
      * Form-associated dropdown/select control with optional search, incremental option rendering,
@@ -520,26 +570,41 @@ export namespace Components {
           * @default null
          */
         "ariaLabel": string | null;
+        "checkValidity": () => Promise<boolean>;
         /**
           * Minimum distance maintained between the open menu and viewport edges.
           * @default 8
          */
         "collisionPadding": number;
         /**
+          * Supporting text, replaced by an active error.
+         */
+        "description"?: string;
+        /**
           * @default false
          */
         "disabled": boolean;
+        /**
+          * Custom validation error; independent of currently loaded options.
+         */
+        "error"?: string;
         /**
           * Delegates filtering and pagination to the consumer.
           * @default false
          */
         "externalSearch": boolean;
+        "focusElement": () => Promise<void>;
         /**
           * Indicates another externally loaded option page is available.
           * @default false
          */
         "hasMore": boolean;
         "label"?: string;
+        /**
+          * Keep the label accessible without displaying it.
+          * @default false
+         */
+        "labelHidden": boolean;
         /**
           * @default false
          */
@@ -559,12 +624,21 @@ export namespace Components {
           * @default 'auto'
          */
         "placement": QDropdownPlacement;
+        "reportValidity": () => Promise<boolean>;
+        /**
+          * @default false
+         */
+        "required": boolean;
+        /**
+          * Omitted inherits the enclosing form; false cancels reservation.
+         */
+        "reserveFeedback"?: boolean;
         /**
           * @default false
          */
         "searchable": boolean;
         /**
-          * @default 'md'
+          * @default 'inherit'
          */
         "size": QDropdownSize;
         /**
@@ -580,6 +654,11 @@ export namespace Components {
      */
     interface QForm {
         "action"?: string;
+        /**
+          * Names the native form without requiring a visible heading.
+          * @default null
+         */
+        "ariaLabel": string | null;
         /**
           * @default 'on'
          */
@@ -602,6 +681,10 @@ export namespace Components {
          */
         "label"?: string;
         /**
+          * @default false
+         */
+        "labelHidden": boolean;
+        /**
           * @default 'post'
          */
         "method": QFormMethod;
@@ -614,6 +697,7 @@ export namespace Components {
           * @default true
          */
         "preventDefault": boolean;
+        "reserveFeedback"?: boolean;
         /**
           * Resets the native form and associated controls.
          */
@@ -623,10 +707,33 @@ export namespace Components {
          */
         "setValues": (values: QFormValues) => Promise<void>;
         /**
+          * @default 'inherit'
+         */
+        "size": QControlSize;
+        /**
           * Requests native form submission, falling back to dispatching a submit event.
          */
         "submitForm": () => Promise<void>;
         "target"?: QFormTarget;
+    }
+    /**
+     * Container-fitting grid; data-q-span="full" spans a direct child across a row.
+     */
+    interface QGrid {
+        "columnGap"?: QSpace;
+        /**
+          * @default 2
+         */
+        "columns": 1 | 2 | 3 | 4;
+        /**
+          * @default 'lg'
+         */
+        "gap": QSpace;
+        /**
+          * @default '16rem'
+         */
+        "minItemWidth": string;
+        "rowGap"?: QSpace;
     }
     /**
      * Synchronous registered icon renderer with optional backwards-compatible URL loading.
@@ -674,6 +781,27 @@ export namespace Components {
         "size": QIconSize;
     }
     /**
+     * Wrapping action/content row.
+     */
+    interface QInline {
+        /**
+          * @default 'center'
+         */
+        "align": 'stretch' | 'start' | 'center' | 'end';
+        /**
+          * @default 'sm'
+         */
+        "gap": QSpace;
+        /**
+          * @default 'start'
+         */
+        "justify": 'start' | 'center' | 'end' | 'between';
+        /**
+          * @default true
+         */
+        "wrap": boolean;
+    }
+    /**
      * Form-associated input field with optional prefix/suffix slots, clear button, password visibility toggle, and numeric spinner controls.
      */
     interface QInput {
@@ -696,6 +824,10 @@ export namespace Components {
          */
         "clearable": boolean;
         /**
+          * Supporting text, replaced by an active error.
+         */
+        "description"?: string;
+        /**
           * @default false
          */
         "disabled": boolean;
@@ -712,6 +844,11 @@ export namespace Components {
          */
         "focusElement": () => Promise<void>;
         "label"?: string;
+        /**
+          * Keep the label accessible without displaying it.
+          * @default false
+         */
+        "labelHidden": boolean;
         "max"?: number;
         "min"?: number;
         "name"?: string;
@@ -728,7 +865,11 @@ export namespace Components {
          */
         "required": boolean;
         /**
-          * @default 'md'
+          * Omitted inherits the enclosing form; false cancels reservation.
+         */
+        "reserveFeedback"?: boolean;
+        /**
+          * @default 'inherit'
          */
         "size": QInputSize;
         /**
@@ -952,6 +1093,27 @@ export namespace Components {
         "zoomControls": boolean;
     }
     /**
+     * Generic media API scaffold. Native media rendering is deferred; consumers should continue using their existing media renderer.
+     */
+    interface QMedia {
+        /**
+          * @default ''
+         */
+        "alt": string;
+        /**
+          * @default 'image'
+         */
+        "kind": QMediaKind;
+        /**
+          * @default 'lazy'
+         */
+        "loading": QMediaLoading;
+        /**
+          * @default ''
+         */
+        "src": string;
+    }
+    /**
      * Edge-aware site navigation with optional brand content, actions, and mobile menu.
      */
     interface QNavbar {
@@ -1063,14 +1225,20 @@ export namespace Components {
         /**
           * @default false
          */
+        "dividers": boolean;
+        "footerPadding"?: QSpace;
+        /**
+          * @default false
+         */
         "fullHeight": boolean;
+        "headerPadding"?: QSpace;
         /**
           * Removes the panel border while preserving the selected variant's other styling.
           * @default false
          */
         "noBorders": boolean;
         /**
-          * @default 'md'
+          * @default 'lg'
          */
         "padding": QPanelPadding;
         /**
@@ -1087,6 +1255,10 @@ export namespace Components {
           * @default false
          */
         "stickyHeader": boolean;
+        /**
+          * Explicit surface; omitted preserves the variant's role.
+         */
+        "surface"?: QSurface;
         /**
           * @default 'bordered'
          */
@@ -1141,6 +1313,10 @@ export namespace Components {
         "max"?: number;
         "min"?: number;
         /**
+          * @default 'inherit'
+         */
+        "size": QControlSize;
+        /**
           * @default 1
          */
         "step": number;
@@ -1167,6 +1343,10 @@ export namespace Components {
          */
         "checkValidity": () => Promise<boolean>;
         /**
+          * Supporting text, replaced by an active error.
+         */
+        "description"?: string;
+        /**
           * @default false
          */
         "disabled": boolean;
@@ -1183,6 +1363,11 @@ export namespace Components {
          */
         "focusElement": () => Promise<void>;
         "label"?: string;
+        /**
+          * Keep the label accessible without displaying it.
+          * @default false
+         */
+        "labelHidden": boolean;
         "name"?: string;
         /**
           * Options to render; strings use the same text for label and value.
@@ -1203,7 +1388,11 @@ export namespace Components {
          */
         "required": boolean;
         /**
-          * @default 'md'
+          * Omitted inherits the enclosing form; false cancels reservation.
+         */
+        "reserveFeedback"?: boolean;
+        /**
+          * @default 'inherit'
          */
         "size": QRadioGroupSize;
         /**
@@ -1259,6 +1448,23 @@ export namespace Components {
           * @default ''
          */
         "target": string;
+    }
+    /**
+     * Generic section shell. Layout properties are reserved for the presentation pass.
+     */
+    interface QSection {
+        /**
+          * @default 1
+         */
+        "columns": number;
+        /**
+          * @default 'full'
+         */
+        "layout": QSectionLayout;
+        /**
+          * @default false
+         */
+        "reverse": boolean;
     }
     /**
      * Drawer, persistent panel, or hierarchical navigation side panel.
@@ -1347,6 +1553,19 @@ export namespace Components {
           * @default 'nav'
          */
         "variant": QSidepanelVariant;
+    }
+    /**
+     * Vertical layout without surface or landmark semantics.
+     */
+    interface QStack {
+        /**
+          * @default 'stretch'
+         */
+        "align": 'stretch' | 'start' | 'center' | 'end';
+        /**
+          * @default 'lg'
+         */
+        "gap": QSpace;
     }
     /**
      * Groups step diagram items into a vertical or horizontal sequence.
@@ -1508,6 +1727,10 @@ export namespace Components {
          */
         "checkValidity": () => Promise<boolean>;
         /**
+          * Supporting text, replaced by an active error.
+         */
+        "description"?: string;
+        /**
           * @default false
          */
         "disabled": boolean;
@@ -1524,6 +1747,11 @@ export namespace Components {
          */
         "focusElement": () => Promise<void>;
         "label"?: string;
+        /**
+          * Keep the label accessible without displaying it.
+          * @default false
+         */
+        "labelHidden": boolean;
         "name"?: string;
         /**
           * @default ""
@@ -1538,6 +1766,10 @@ export namespace Components {
          */
         "required": boolean;
         /**
+          * Omitted inherits the enclosing form; false cancels reservation.
+         */
+        "reserveFeedback"?: boolean;
+        /**
           * Resize behavior: auto grows to content, manual allows vertical drag, fixed locks the height.
           * @default 'auto'
          */
@@ -1546,6 +1778,10 @@ export namespace Components {
           * @default 3
          */
         "rows": number;
+        /**
+          * @default 'inherit'
+         */
+        "size": QControlSize;
         /**
           * @default ""
          */
@@ -1612,6 +1848,10 @@ export namespace Components {
          */
         "checked": boolean;
         /**
+          * Supporting text, replaced by an active error.
+         */
+        "description"?: string;
+        /**
           * @default false
          */
         "disabled": boolean;
@@ -1620,6 +1860,11 @@ export namespace Components {
          */
         "error"?: string;
         "label"?: string;
+        /**
+          * Keep the label accessible without displaying it.
+          * @default false
+         */
+        "labelHidden": boolean;
         "name"?: string;
         /**
           * Reports a required constraint violation and returns whether the toggle is valid.
@@ -1630,7 +1875,11 @@ export namespace Components {
          */
         "required": boolean;
         /**
-          * @default 'md'
+          * Omitted inherits the enclosing form; false cancels reservation.
+         */
+        "reserveFeedback"?: boolean;
+        /**
+          * @default 'inherit'
          */
         "size": QToggleSize;
         /**
@@ -1665,6 +1914,14 @@ export namespace Components {
          */
         "edge": QToolbarEdge;
         /**
+          * @default 'sm'
+         */
+        "gap": QSpace;
+        /**
+          * @default 'inherit'
+         */
+        "size": QControlSize;
+        /**
           * @default false
          */
         "sticky": boolean;
@@ -1672,6 +1929,10 @@ export namespace Components {
           * @default false
          */
         "transparent": boolean;
+        /**
+          * @default true
+         */
+        "wrap": boolean;
     }
     /**
      * Non-interactive tooltip attached to its immediate parent element.
@@ -1790,6 +2051,15 @@ export interface QToggleCustomEvent<T> extends CustomEvent<T> {
     target: HTMLQToggleElement;
 }
 declare global {
+    /**
+     * Accordion API scaffold. Disclosure behavior and item coordination are deferred.
+     */
+    interface HTMLQAccordionElement extends Components.QAccordion, HTMLStencilElement {
+    }
+    var HTMLQAccordionElement: {
+        prototype: HTMLQAccordionElement;
+        new (): HTMLQAccordionElement;
+    };
     interface HTMLQAlertElementEventMap {
         "qDismiss": void;
     }
@@ -1830,6 +2100,15 @@ declare global {
     var HTMLQAvatarElement: {
         prototype: HTMLQAvatarElement;
         new (): HTMLQAvatarElement;
+    };
+    /**
+     * Generic banner shell. The media, copy and actions are supplied through slots; final layout is deferred.
+     */
+    interface HTMLQBannerElement extends Components.QBanner, HTMLStencilElement {
+    }
+    var HTMLQBannerElement: {
+        prototype: HTMLQBannerElement;
+        new (): HTMLQBannerElement;
     };
     interface HTMLQButtonElementEventMap {
         "qClick": MouseEvent;
@@ -2026,6 +2305,15 @@ declare global {
         new (): HTMLQFormElement;
     };
     /**
+     * Container-fitting grid; data-q-span="full" spans a direct child across a row.
+     */
+    interface HTMLQGridElement extends Components.QGrid, HTMLStencilElement {
+    }
+    var HTMLQGridElement: {
+        prototype: HTMLQGridElement;
+        new (): HTMLQGridElement;
+    };
+    /**
      * Synchronous registered icon renderer with optional backwards-compatible URL loading.
      */
     interface HTMLQIconElement extends Components.QIcon, HTMLStencilElement {
@@ -2033,6 +2321,15 @@ declare global {
     var HTMLQIconElement: {
         prototype: HTMLQIconElement;
         new (): HTMLQIconElement;
+    };
+    /**
+     * Wrapping action/content row.
+     */
+    interface HTMLQInlineElement extends Components.QInline, HTMLStencilElement {
+    }
+    var HTMLQInlineElement: {
+        prototype: HTMLQInlineElement;
+        new (): HTMLQInlineElement;
     };
     interface HTMLQInputElementEventMap {
         "qChange": string;
@@ -2129,6 +2426,15 @@ declare global {
     var HTMLQMapElement: {
         prototype: HTMLQMapElement;
         new (): HTMLQMapElement;
+    };
+    /**
+     * Generic media API scaffold. Native media rendering is deferred; consumers should continue using their existing media renderer.
+     */
+    interface HTMLQMediaElement extends Components.QMedia, HTMLStencilElement {
+    }
+    var HTMLQMediaElement: {
+        prototype: HTMLQMediaElement;
+        new (): HTMLQMediaElement;
     };
     interface HTMLQNavbarElementEventMap {
         "qSelect": NavbarSelectDetail;
@@ -2276,6 +2582,15 @@ declare global {
         prototype: HTMLQScrollableElement;
         new (): HTMLQScrollableElement;
     };
+    /**
+     * Generic section shell. Layout properties are reserved for the presentation pass.
+     */
+    interface HTMLQSectionElement extends Components.QSection, HTMLStencilElement {
+    }
+    var HTMLQSectionElement: {
+        prototype: HTMLQSectionElement;
+        new (): HTMLQSectionElement;
+    };
     interface HTMLQSidepanelElementEventMap {
         "qClose": void;
         "qSelect": QSidepanelSelectDetail;
@@ -2297,6 +2612,15 @@ declare global {
     var HTMLQSidepanelElement: {
         prototype: HTMLQSidepanelElement;
         new (): HTMLQSidepanelElement;
+    };
+    /**
+     * Vertical layout without surface or landmark semantics.
+     */
+    interface HTMLQStackElement extends Components.QStack, HTMLStencilElement {
+    }
+    var HTMLQStackElement: {
+        prototype: HTMLQStackElement;
+        new (): HTMLQStackElement;
     };
     /**
      * Groups step diagram items into a vertical or horizontal sequence.
@@ -2464,8 +2788,10 @@ declare global {
         new (): HTMLQTooltipElement;
     };
     interface HTMLElementTagNameMap {
+        "q-accordion": HTMLQAccordionElement;
         "q-alert": HTMLQAlertElement;
         "q-avatar": HTMLQAvatarElement;
+        "q-banner": HTMLQBannerElement;
         "q-button": HTMLQButtonElement;
         "q-card": HTMLQCardElement;
         "q-carousel": HTMLQCarouselElement;
@@ -2475,10 +2801,13 @@ declare global {
         "q-dialog": HTMLQDialogElement;
         "q-dropdown": HTMLQDropdownElement;
         "q-form": HTMLQFormElement;
+        "q-grid": HTMLQGridElement;
         "q-icon": HTMLQIconElement;
+        "q-inline": HTMLQInlineElement;
         "q-input": HTMLQInputElement;
         "q-link": HTMLQLinkElement;
         "q-map": HTMLQMapElement;
+        "q-media": HTMLQMediaElement;
         "q-navbar": HTMLQNavbarElement;
         "q-pagination": HTMLQPaginationElement;
         "q-panel": HTMLQPanelElement;
@@ -2487,7 +2816,9 @@ declare global {
         "q-radio-group": HTMLQRadioGroupElement;
         "q-reel": HTMLQReelElement;
         "q-scrollable": HTMLQScrollableElement;
+        "q-section": HTMLQSectionElement;
         "q-sidepanel": HTMLQSidepanelElement;
+        "q-stack": HTMLQStackElement;
         "q-step-diagram": HTMLQStepDiagramElement;
         "q-step-diagram-item": HTMLQStepDiagramItemElement;
         "q-syntax-box": HTMLQSyntaxBoxElement;
@@ -2501,6 +2832,15 @@ declare global {
     }
 }
 declare namespace LocalJSX {
+    /**
+     * Accordion API scaffold. Disclosure behavior and item coordination are deferred.
+     */
+    interface QAccordion {
+        /**
+          * @default 'single'
+         */
+        "mode"?: QAccordionMode;
+    }
     /**
      * Inline contextual message with opt-in announcements and controlled dismissal.
      */
@@ -2567,6 +2907,19 @@ declare namespace LocalJSX {
         "src"?: string;
     }
     /**
+     * Generic banner shell. The media, copy and actions are supplied through slots; final layout is deferred.
+     */
+    interface QBanner {
+        /**
+          * @default 'center'
+         */
+        "alignment"?: QBannerAlignment;
+        /**
+          * @default 'auto'
+         */
+        "height"?: QBannerHeight;
+    }
+    /**
      * Action button that renders a native button or anchor according to `href`.
      */
     interface QButton {
@@ -2625,7 +2978,7 @@ declare namespace LocalJSX {
          */
         "shape"?: QButtonShape;
         /**
-          * @default 'md'
+          * @default 'inherit'
          */
         "size"?: QButtonSize;
         "target"?: string;
@@ -2644,15 +2997,21 @@ declare namespace LocalJSX {
      */
     interface QCard {
         /**
+          * @default false
+         */
+        "dividers"?: boolean;
+        /**
           * Numeric values remain supported as legacy elevation aliases.
-          * @default 'medium'
+          * @default 'low'
          */
         "elevation"?: QCardElevation;
+        "footerPadding"?: QSpace;
         /**
           * Applies translucent glass styling without backdrop-filter.
           * @default false
          */
         "glass"?: boolean;
+        "headerPadding"?: QSpace;
         /**
           * Adds button semantics and keyboard activation to the card container.
           * @default false
@@ -2663,6 +3022,14 @@ declare namespace LocalJSX {
           * @default false
          */
         "lift"?: boolean;
+        /**
+          * @default 'lg'
+         */
+        "padding"?: QSpace;
+        /**
+          * Explicit surface; omitted preserves the variant's role.
+         */
+        "surface"?: QSurface;
     }
     /**
      * A horizontal carousel viewport with optional arrow and dot navigation.
@@ -2954,6 +3321,10 @@ declare namespace LocalJSX {
           * @default true
          */
         "showConfirm"?: boolean;
+        /**
+          * @default 'md'
+         */
+        "size"?: 'sm' | 'md' | 'lg' | 'full';
     }
     /**
      * Form-associated dropdown/select control with optional search, incremental option rendering,
@@ -2971,9 +3342,17 @@ declare namespace LocalJSX {
          */
         "collisionPadding"?: number;
         /**
+          * Supporting text, replaced by an active error.
+         */
+        "description"?: string;
+        /**
           * @default false
          */
         "disabled"?: boolean;
+        /**
+          * Custom validation error; independent of currently loaded options.
+         */
+        "error"?: string;
         /**
           * Delegates filtering and pagination to the consumer.
           * @default false
@@ -2989,6 +3368,11 @@ declare namespace LocalJSX {
          */
         "hasMore"?: boolean;
         "label"?: string;
+        /**
+          * Keep the label accessible without displaying it.
+          * @default false
+         */
+        "labelHidden"?: boolean;
         /**
           * @default false
          */
@@ -3033,9 +3417,17 @@ declare namespace LocalJSX {
         /**
           * @default false
          */
+        "required"?: boolean;
+        /**
+          * Omitted inherits the enclosing form; false cancels reservation.
+         */
+        "reserveFeedback"?: boolean;
+        /**
+          * @default false
+         */
         "searchable"?: boolean;
         /**
-          * @default 'md'
+          * @default 'inherit'
          */
         "size"?: QDropdownSize;
         /**
@@ -3051,6 +3443,11 @@ declare namespace LocalJSX {
      */
     interface QForm {
         "action"?: string;
+        /**
+          * Names the native form without requiring a visible heading.
+          * @default null
+         */
+        "ariaLabel"?: string | null;
         /**
           * @default 'on'
          */
@@ -3069,6 +3466,10 @@ declare namespace LocalJSX {
          */
         "label"?: string;
         /**
+          * @default false
+         */
+        "labelHidden"?: boolean;
+        /**
           * @default 'post'
          */
         "method"?: QFormMethod;
@@ -3086,7 +3487,31 @@ declare namespace LocalJSX {
           * @default true
          */
         "preventDefault"?: boolean;
+        "reserveFeedback"?: boolean;
+        /**
+          * @default 'inherit'
+         */
+        "size"?: QControlSize;
         "target"?: QFormTarget;
+    }
+    /**
+     * Container-fitting grid; data-q-span="full" spans a direct child across a row.
+     */
+    interface QGrid {
+        "columnGap"?: QSpace;
+        /**
+          * @default 2
+         */
+        "columns"?: 1 | 2 | 3 | 4;
+        /**
+          * @default 'lg'
+         */
+        "gap"?: QSpace;
+        /**
+          * @default '16rem'
+         */
+        "minItemWidth"?: string;
+        "rowGap"?: QSpace;
     }
     /**
      * Synchronous registered icon renderer with optional backwards-compatible URL loading.
@@ -3134,6 +3559,27 @@ declare namespace LocalJSX {
         "size"?: QIconSize;
     }
     /**
+     * Wrapping action/content row.
+     */
+    interface QInline {
+        /**
+          * @default 'center'
+         */
+        "align"?: 'stretch' | 'start' | 'center' | 'end';
+        /**
+          * @default 'sm'
+         */
+        "gap"?: QSpace;
+        /**
+          * @default 'start'
+         */
+        "justify"?: 'start' | 'center' | 'end' | 'between';
+        /**
+          * @default true
+         */
+        "wrap"?: boolean;
+    }
+    /**
      * Form-associated input field with optional prefix/suffix slots, clear button, password visibility toggle, and numeric spinner controls.
      */
     interface QInput {
@@ -3147,6 +3593,10 @@ declare namespace LocalJSX {
           * @default false
          */
         "clearable"?: boolean;
+        /**
+          * Supporting text, replaced by an active error.
+         */
+        "description"?: string;
         /**
           * @default false
          */
@@ -3164,6 +3614,11 @@ declare namespace LocalJSX {
          */
         "form"?: string;
         "label"?: string;
+        /**
+          * Keep the label accessible without displaying it.
+          * @default false
+         */
+        "labelHidden"?: boolean;
         "max"?: number;
         "min"?: number;
         "name"?: string;
@@ -3187,7 +3642,11 @@ declare namespace LocalJSX {
          */
         "required"?: boolean;
         /**
-          * @default 'md'
+          * Omitted inherits the enclosing form; false cancels reservation.
+         */
+        "reserveFeedback"?: boolean;
+        /**
+          * @default 'inherit'
          */
         "size"?: QInputSize;
         /**
@@ -3437,6 +3896,27 @@ declare namespace LocalJSX {
         "zoomControls"?: boolean;
     }
     /**
+     * Generic media API scaffold. Native media rendering is deferred; consumers should continue using their existing media renderer.
+     */
+    interface QMedia {
+        /**
+          * @default ''
+         */
+        "alt"?: string;
+        /**
+          * @default 'image'
+         */
+        "kind"?: QMediaKind;
+        /**
+          * @default 'lazy'
+         */
+        "loading"?: QMediaLoading;
+        /**
+          * @default ''
+         */
+        "src"?: string;
+    }
+    /**
      * Edge-aware site navigation with optional brand content, actions, and mobile menu.
      */
     interface QNavbar {
@@ -3554,14 +4034,20 @@ declare namespace LocalJSX {
         /**
           * @default false
          */
+        "dividers"?: boolean;
+        "footerPadding"?: QSpace;
+        /**
+          * @default false
+         */
         "fullHeight"?: boolean;
+        "headerPadding"?: QSpace;
         /**
           * Removes the panel border while preserving the selected variant's other styling.
           * @default false
          */
         "noBorders"?: boolean;
         /**
-          * @default 'md'
+          * @default 'lg'
          */
         "padding"?: QPanelPadding;
         /**
@@ -3578,6 +4064,10 @@ declare namespace LocalJSX {
           * @default false
          */
         "stickyHeader"?: boolean;
+        /**
+          * Explicit surface; omitted preserves the variant's role.
+         */
+        "surface"?: QSurface;
         /**
           * @default 'bordered'
          */
@@ -3639,6 +4129,10 @@ declare namespace LocalJSX {
         "onQClick"?: (event: QQuantitySelectorCustomEvent<MouseEvent>) => void;
         "onQFocus"?: (event: QQuantitySelectorCustomEvent<FocusEvent>) => void;
         /**
+          * @default 'inherit'
+         */
+        "size"?: QControlSize;
+        /**
           * @default 1
          */
         "step"?: number;
@@ -3661,6 +4155,10 @@ declare namespace LocalJSX {
          */
         "ariaLabel"?: string | null;
         /**
+          * Supporting text, replaced by an active error.
+         */
+        "description"?: string;
+        /**
           * @default false
          */
         "disabled"?: boolean;
@@ -3677,6 +4175,11 @@ declare namespace LocalJSX {
          */
         "form"?: string;
         "label"?: string;
+        /**
+          * Keep the label accessible without displaying it.
+          * @default false
+         */
+        "labelHidden"?: boolean;
         "name"?: string;
         "onQBlur"?: (event: QRadioGroupCustomEvent<FocusEvent>) => void;
         /**
@@ -3699,7 +4202,11 @@ declare namespace LocalJSX {
          */
         "required"?: boolean;
         /**
-          * @default 'md'
+          * Omitted inherits the enclosing form; false cancels reservation.
+         */
+        "reserveFeedback"?: boolean;
+        /**
+          * @default 'inherit'
          */
         "size"?: QRadioGroupSize;
         /**
@@ -3756,6 +4263,23 @@ declare namespace LocalJSX {
           * @default ''
          */
         "target"?: string;
+    }
+    /**
+     * Generic section shell. Layout properties are reserved for the presentation pass.
+     */
+    interface QSection {
+        /**
+          * @default 1
+         */
+        "columns"?: number;
+        /**
+          * @default 'full'
+         */
+        "layout"?: QSectionLayout;
+        /**
+          * @default false
+         */
+        "reverse"?: boolean;
     }
     /**
      * Drawer, persistent panel, or hierarchical navigation side panel.
@@ -3856,6 +4380,19 @@ declare namespace LocalJSX {
           * @default 'nav'
          */
         "variant"?: QSidepanelVariant;
+    }
+    /**
+     * Vertical layout without surface or landmark semantics.
+     */
+    interface QStack {
+        /**
+          * @default 'stretch'
+         */
+        "align"?: 'stretch' | 'start' | 'center' | 'end';
+        /**
+          * @default 'lg'
+         */
+        "gap"?: QSpace;
     }
     /**
      * Groups step diagram items into a vertical or horizontal sequence.
@@ -4014,6 +4551,10 @@ declare namespace LocalJSX {
          */
         "autoGrow"?: boolean;
         /**
+          * Supporting text, replaced by an active error.
+         */
+        "description"?: string;
+        /**
           * @default false
          */
         "disabled"?: boolean;
@@ -4030,6 +4571,11 @@ declare namespace LocalJSX {
          */
         "form"?: string;
         "label"?: string;
+        /**
+          * Keep the label accessible without displaying it.
+          * @default false
+         */
+        "labelHidden"?: boolean;
         "name"?: string;
         "onQBlur"?: (event: QTextareaCustomEvent<FocusEvent>) => void;
         /**
@@ -4048,6 +4594,10 @@ declare namespace LocalJSX {
          */
         "required"?: boolean;
         /**
+          * Omitted inherits the enclosing form; false cancels reservation.
+         */
+        "reserveFeedback"?: boolean;
+        /**
           * Resize behavior: auto grows to content, manual allows vertical drag, fixed locks the height.
           * @default 'auto'
          */
@@ -4056,6 +4606,10 @@ declare namespace LocalJSX {
           * @default 3
          */
         "rows"?: number;
+        /**
+          * @default 'inherit'
+         */
+        "size"?: QControlSize;
         /**
           * @default ""
          */
@@ -4112,6 +4666,10 @@ declare namespace LocalJSX {
          */
         "checked"?: boolean;
         /**
+          * Supporting text, replaced by an active error.
+         */
+        "description"?: string;
+        /**
           * @default false
          */
         "disabled"?: boolean;
@@ -4124,6 +4682,11 @@ declare namespace LocalJSX {
          */
         "form"?: string;
         "label"?: string;
+        /**
+          * Keep the label accessible without displaying it.
+          * @default false
+         */
+        "labelHidden"?: boolean;
         "name"?: string;
         "onQBlur"?: (event: QToggleCustomEvent<FocusEvent>) => void;
         "onQChange"?: (event: QToggleCustomEvent<boolean>) => void;
@@ -4137,7 +4700,11 @@ declare namespace LocalJSX {
          */
         "required"?: boolean;
         /**
-          * @default 'md'
+          * Omitted inherits the enclosing form; false cancels reservation.
+         */
+        "reserveFeedback"?: boolean;
+        /**
+          * @default 'inherit'
          */
         "size"?: QToggleSize;
         /**
@@ -4168,6 +4735,14 @@ declare namespace LocalJSX {
          */
         "edge"?: QToolbarEdge;
         /**
+          * @default 'sm'
+         */
+        "gap"?: QSpace;
+        /**
+          * @default 'inherit'
+         */
+        "size"?: QControlSize;
+        /**
           * @default false
          */
         "sticky"?: boolean;
@@ -4175,6 +4750,10 @@ declare namespace LocalJSX {
           * @default false
          */
         "transparent"?: boolean;
+        /**
+          * @default true
+         */
+        "wrap"?: boolean;
     }
     /**
      * Non-interactive tooltip attached to its immediate parent element.
@@ -4192,6 +4771,9 @@ declare namespace LocalJSX {
         "position"?: QTooltipPosition;
     }
 
+    interface QAccordionAttributes {
+        "mode": QAccordionMode;
+    }
     interface QAlertAttributes {
         "heading": string;
         "variant": QAlertVariant;
@@ -4201,12 +4783,16 @@ declare namespace LocalJSX {
     }
     interface QAvatarAttributes {
         "src": string;
-        "name": string;
         "initials": string;
-        "alt": string;
         "size": string;
         "shape": QAvatarShape;
         "loading": 'eager' | 'lazy';
+        "name": string;
+        "alt": string;
+    }
+    interface QBannerAttributes {
+        "height": QBannerHeight;
+        "alignment": QBannerAlignment;
     }
     interface QButtonAttributes {
         "disabled": boolean;
@@ -4226,6 +4812,11 @@ declare namespace LocalJSX {
         "type": QButtonType;
     }
     interface QCardAttributes {
+        "surface": QSurface;
+        "headerPadding": QSpace;
+        "footerPadding": QSpace;
+        "dividers": boolean;
+        "padding": QSpace;
         "elevation": string;
         "glass": boolean;
         "lift": boolean;
@@ -4253,11 +4844,11 @@ declare namespace LocalJSX {
         "target": QChipTarget;
     }
     interface QConversationBubbleAttributes {
-        "variant": QConversationBubbleVariant;
         "sender": string;
         "timestamp": string;
-        "ariaLabel": string | null;
+        "variant": QConversationBubbleVariant;
         "compact": boolean;
+        "ariaLabel": string | null;
     }
     interface QDataTableAttributes {
         "columns": TableColumn[] | string;
@@ -4282,6 +4873,7 @@ declare namespace LocalJSX {
         "dialogTitle": string;
         "ariaLabel": string | null;
         "message": string;
+        "size": 'sm' | 'md' | 'lg' | 'full';
         "backdropEffect": QDialogBackdropEffect;
         "closeOnEsc": boolean;
         "closeOnOverlayClick": boolean;
@@ -4296,9 +4888,12 @@ declare namespace LocalJSX {
     interface QDropdownAttributes {
         "label": string;
         "ariaLabel": string | null;
+        "description": string;
         "placeholder": string;
         "options": DropdownOptionInput[] | string;
         "value": string;
+        "labelHidden": boolean;
+        "reserveFeedback": boolean;
         "size": QDropdownSize;
         "searchable": boolean;
         "externalSearch": boolean;
@@ -4307,10 +4902,15 @@ declare namespace LocalJSX {
         "placement": QDropdownPlacement;
         "collisionPadding": number;
         "disabled": boolean;
+        "required": boolean;
+        "error": string;
         "name": string;
     }
     interface QFormAttributes {
         "label": string;
+        "size": QControlSize;
+        "reserveFeedback": boolean;
+        "labelHidden": boolean;
         "preventDefault": boolean;
         "enterBehavior": QFormEnterBehavior;
         "noValidate": boolean;
@@ -4319,6 +4919,14 @@ declare namespace LocalJSX {
         "autocomplete": QFormAutocomplete;
         "enctype": QFormEnctype;
         "target": QFormTarget;
+        "ariaLabel": string | null;
+    }
+    interface QGridAttributes {
+        "columns": 1 | 2 | 3 | 4;
+        "minItemWidth": string;
+        "gap": QSpace;
+        "rowGap": QSpace;
+        "columnGap": QSpace;
     }
     interface QIconAttributes {
         "name": QIconName;
@@ -4330,11 +4938,20 @@ declare namespace LocalJSX {
         "color": QIconColor;
         "label": string;
     }
+    interface QInlineAttributes {
+        "gap": QSpace;
+        "align": 'stretch' | 'start' | 'center' | 'end';
+        "justify": 'start' | 'center' | 'end' | 'between';
+        "wrap": boolean;
+    }
     interface QInputAttributes {
         "value": string;
         "placeholder": string;
         "label": string;
         "ariaLabel": string | null;
+        "description": string;
+        "labelHidden": boolean;
+        "reserveFeedback": boolean;
         "size": QInputSize;
         "clearable": boolean;
         "disabled": boolean;
@@ -4388,6 +5005,12 @@ declare namespace LocalJSX {
         "googleMapType": QMapGoogleMapType;
         "ariaLabel": string | null;
     }
+    interface QMediaAttributes {
+        "src": string;
+        "alt": string;
+        "kind": QMediaKind;
+        "loading": QMediaLoading;
+    }
     interface QNavbarAttributes {
         "brand": string;
         "logoSrc": string;
@@ -4414,6 +5037,10 @@ declare namespace LocalJSX {
         "ariaLabel": string | null;
     }
     interface QPanelAttributes {
+        "surface": QSurface;
+        "headerPadding": QSpace;
+        "footerPadding": QSpace;
+        "dividers": boolean;
         "variant": QPanelVariant;
         "noBorders": boolean;
         "padding": QPanelPadding;
@@ -4438,12 +5065,16 @@ declare namespace LocalJSX {
         "min": number;
         "max": number;
         "step": number;
+        "size": QControlSize;
         "variant": QQuantitySelectorVariant;
     }
     interface QRadioGroupAttributes {
         "label": string;
+        "description": string;
         "options": RadioGroupOptionInput[] | string;
         "value": string;
+        "labelHidden": boolean;
+        "reserveFeedback": boolean;
         "size": QRadioGroupSize;
         "orientation": QRadioGroupOrientation;
         "disabled": boolean;
@@ -4465,6 +5096,11 @@ declare namespace LocalJSX {
         "nativeOnMobile": boolean;
         "autoHide": boolean;
     }
+    interface QSectionAttributes {
+        "layout": QSectionLayout;
+        "reverse": boolean;
+        "columns": number;
+    }
     interface QSidepanelAttributes {
         "variant": QSidepanelVariant;
         "open": boolean;
@@ -4482,6 +5118,10 @@ declare namespace LocalJSX {
         "collapseMode": QSidepanelCollapseMode;
         "collapseLabel": string;
         "ariaLabel": string | null;
+    }
+    interface QStackAttributes {
+        "gap": QSpace;
+        "align": 'stretch' | 'start' | 'center' | 'end';
     }
     interface QStepDiagramAttributes {
         "layout": QStepDiagramLayout;
@@ -4520,6 +5160,10 @@ declare namespace LocalJSX {
         "placeholder": string;
         "label": string;
         "ariaLabel": string | null;
+        "description": string;
+        "size": QControlSize;
+        "labelHidden": boolean;
+        "reserveFeedback": boolean;
         "rows": number;
         "autoGrow": boolean;
         "resizeMode": QTextareaResizeMode;
@@ -4542,6 +5186,9 @@ declare namespace LocalJSX {
     }
     interface QToggleAttributes {
         "label": string;
+        "description": string;
+        "labelHidden": boolean;
+        "reserveFeedback": boolean;
         "size": QToggleSize;
         "type": QToggleType;
         "checked": boolean;
@@ -4556,6 +5203,9 @@ declare namespace LocalJSX {
         "compact": boolean;
         "transparent": boolean;
         "bordered": boolean;
+        "size": QControlSize;
+        "gap": QSpace;
+        "wrap": boolean;
         "ariaLabel": string | null;
     }
     interface QTooltipAttributes {
@@ -4565,8 +5215,10 @@ declare namespace LocalJSX {
     }
 
     interface IntrinsicElements {
+        "q-accordion": Omit<QAccordion, keyof QAccordionAttributes> & { [K in keyof QAccordion & keyof QAccordionAttributes]?: QAccordion[K] } & { [K in keyof QAccordion & keyof QAccordionAttributes as `attr:${K}`]?: QAccordionAttributes[K] } & { [K in keyof QAccordion & keyof QAccordionAttributes as `prop:${K}`]?: QAccordion[K] };
         "q-alert": Omit<QAlert, keyof QAlertAttributes> & { [K in keyof QAlert & keyof QAlertAttributes]?: QAlert[K] } & { [K in keyof QAlert & keyof QAlertAttributes as `attr:${K}`]?: QAlertAttributes[K] } & { [K in keyof QAlert & keyof QAlertAttributes as `prop:${K}`]?: QAlert[K] };
         "q-avatar": Omit<QAvatar, keyof QAvatarAttributes> & { [K in keyof QAvatar & keyof QAvatarAttributes]?: QAvatar[K] } & { [K in keyof QAvatar & keyof QAvatarAttributes as `attr:${K}`]?: QAvatarAttributes[K] } & { [K in keyof QAvatar & keyof QAvatarAttributes as `prop:${K}`]?: QAvatar[K] };
+        "q-banner": Omit<QBanner, keyof QBannerAttributes> & { [K in keyof QBanner & keyof QBannerAttributes]?: QBanner[K] } & { [K in keyof QBanner & keyof QBannerAttributes as `attr:${K}`]?: QBannerAttributes[K] } & { [K in keyof QBanner & keyof QBannerAttributes as `prop:${K}`]?: QBanner[K] };
         "q-button": Omit<QButton, keyof QButtonAttributes> & { [K in keyof QButton & keyof QButtonAttributes]?: QButton[K] } & { [K in keyof QButton & keyof QButtonAttributes as `attr:${K}`]?: QButtonAttributes[K] } & { [K in keyof QButton & keyof QButtonAttributes as `prop:${K}`]?: QButton[K] };
         "q-card": Omit<QCard, keyof QCardAttributes> & { [K in keyof QCard & keyof QCardAttributes]?: QCard[K] } & { [K in keyof QCard & keyof QCardAttributes as `attr:${K}`]?: QCardAttributes[K] } & { [K in keyof QCard & keyof QCardAttributes as `prop:${K}`]?: QCard[K] };
         "q-carousel": Omit<QCarousel, keyof QCarouselAttributes> & { [K in keyof QCarousel & keyof QCarouselAttributes]?: QCarousel[K] } & { [K in keyof QCarousel & keyof QCarouselAttributes as `attr:${K}`]?: QCarouselAttributes[K] } & { [K in keyof QCarousel & keyof QCarouselAttributes as `prop:${K}`]?: QCarousel[K] };
@@ -4576,10 +5228,13 @@ declare namespace LocalJSX {
         "q-dialog": Omit<QDialog, keyof QDialogAttributes> & { [K in keyof QDialog & keyof QDialogAttributes]?: QDialog[K] } & { [K in keyof QDialog & keyof QDialogAttributes as `attr:${K}`]?: QDialogAttributes[K] } & { [K in keyof QDialog & keyof QDialogAttributes as `prop:${K}`]?: QDialog[K] };
         "q-dropdown": Omit<QDropdown, keyof QDropdownAttributes> & { [K in keyof QDropdown & keyof QDropdownAttributes]?: QDropdown[K] } & { [K in keyof QDropdown & keyof QDropdownAttributes as `attr:${K}`]?: QDropdownAttributes[K] } & { [K in keyof QDropdown & keyof QDropdownAttributes as `prop:${K}`]?: QDropdown[K] };
         "q-form": Omit<QForm, keyof QFormAttributes> & { [K in keyof QForm & keyof QFormAttributes]?: QForm[K] } & { [K in keyof QForm & keyof QFormAttributes as `attr:${K}`]?: QFormAttributes[K] } & { [K in keyof QForm & keyof QFormAttributes as `prop:${K}`]?: QForm[K] };
+        "q-grid": Omit<QGrid, keyof QGridAttributes> & { [K in keyof QGrid & keyof QGridAttributes]?: QGrid[K] } & { [K in keyof QGrid & keyof QGridAttributes as `attr:${K}`]?: QGridAttributes[K] } & { [K in keyof QGrid & keyof QGridAttributes as `prop:${K}`]?: QGrid[K] };
         "q-icon": Omit<QIcon, keyof QIconAttributes> & { [K in keyof QIcon & keyof QIconAttributes]?: QIcon[K] } & { [K in keyof QIcon & keyof QIconAttributes as `attr:${K}`]?: QIconAttributes[K] } & { [K in keyof QIcon & keyof QIconAttributes as `prop:${K}`]?: QIcon[K] };
+        "q-inline": Omit<QInline, keyof QInlineAttributes> & { [K in keyof QInline & keyof QInlineAttributes]?: QInline[K] } & { [K in keyof QInline & keyof QInlineAttributes as `attr:${K}`]?: QInlineAttributes[K] } & { [K in keyof QInline & keyof QInlineAttributes as `prop:${K}`]?: QInline[K] };
         "q-input": Omit<QInput, keyof QInputAttributes> & { [K in keyof QInput & keyof QInputAttributes]?: QInput[K] } & { [K in keyof QInput & keyof QInputAttributes as `attr:${K}`]?: QInputAttributes[K] } & { [K in keyof QInput & keyof QInputAttributes as `prop:${K}`]?: QInput[K] };
         "q-link": Omit<QLink, keyof QLinkAttributes> & { [K in keyof QLink & keyof QLinkAttributes]?: QLink[K] } & { [K in keyof QLink & keyof QLinkAttributes as `attr:${K}`]?: QLinkAttributes[K] } & { [K in keyof QLink & keyof QLinkAttributes as `prop:${K}`]?: QLink[K] };
         "q-map": Omit<QMap, keyof QMapAttributes> & { [K in keyof QMap & keyof QMapAttributes]?: QMap[K] } & { [K in keyof QMap & keyof QMapAttributes as `attr:${K}`]?: QMapAttributes[K] } & { [K in keyof QMap & keyof QMapAttributes as `prop:${K}`]?: QMap[K] };
+        "q-media": Omit<QMedia, keyof QMediaAttributes> & { [K in keyof QMedia & keyof QMediaAttributes]?: QMedia[K] } & { [K in keyof QMedia & keyof QMediaAttributes as `attr:${K}`]?: QMediaAttributes[K] } & { [K in keyof QMedia & keyof QMediaAttributes as `prop:${K}`]?: QMedia[K] };
         "q-navbar": Omit<QNavbar, keyof QNavbarAttributes> & { [K in keyof QNavbar & keyof QNavbarAttributes]?: QNavbar[K] } & { [K in keyof QNavbar & keyof QNavbarAttributes as `attr:${K}`]?: QNavbarAttributes[K] } & { [K in keyof QNavbar & keyof QNavbarAttributes as `prop:${K}`]?: QNavbar[K] };
         "q-pagination": Omit<QPagination, keyof QPaginationAttributes> & { [K in keyof QPagination & keyof QPaginationAttributes]?: QPagination[K] } & { [K in keyof QPagination & keyof QPaginationAttributes as `attr:${K}`]?: QPaginationAttributes[K] } & { [K in keyof QPagination & keyof QPaginationAttributes as `prop:${K}`]?: QPagination[K] };
         "q-panel": Omit<QPanel, keyof QPanelAttributes> & { [K in keyof QPanel & keyof QPanelAttributes]?: QPanel[K] } & { [K in keyof QPanel & keyof QPanelAttributes as `attr:${K}`]?: QPanelAttributes[K] } & { [K in keyof QPanel & keyof QPanelAttributes as `prop:${K}`]?: QPanel[K] };
@@ -4588,7 +5243,9 @@ declare namespace LocalJSX {
         "q-radio-group": Omit<QRadioGroup, keyof QRadioGroupAttributes> & { [K in keyof QRadioGroup & keyof QRadioGroupAttributes]?: QRadioGroup[K] } & { [K in keyof QRadioGroup & keyof QRadioGroupAttributes as `attr:${K}`]?: QRadioGroupAttributes[K] } & { [K in keyof QRadioGroup & keyof QRadioGroupAttributes as `prop:${K}`]?: QRadioGroup[K] };
         "q-reel": Omit<QReel, keyof QReelAttributes> & { [K in keyof QReel & keyof QReelAttributes]?: QReel[K] } & { [K in keyof QReel & keyof QReelAttributes as `attr:${K}`]?: QReelAttributes[K] } & { [K in keyof QReel & keyof QReelAttributes as `prop:${K}`]?: QReel[K] };
         "q-scrollable": Omit<QScrollable, keyof QScrollableAttributes> & { [K in keyof QScrollable & keyof QScrollableAttributes]?: QScrollable[K] } & { [K in keyof QScrollable & keyof QScrollableAttributes as `attr:${K}`]?: QScrollableAttributes[K] } & { [K in keyof QScrollable & keyof QScrollableAttributes as `prop:${K}`]?: QScrollable[K] };
+        "q-section": Omit<QSection, keyof QSectionAttributes> & { [K in keyof QSection & keyof QSectionAttributes]?: QSection[K] } & { [K in keyof QSection & keyof QSectionAttributes as `attr:${K}`]?: QSectionAttributes[K] } & { [K in keyof QSection & keyof QSectionAttributes as `prop:${K}`]?: QSection[K] };
         "q-sidepanel": Omit<QSidepanel, keyof QSidepanelAttributes> & { [K in keyof QSidepanel & keyof QSidepanelAttributes]?: QSidepanel[K] } & { [K in keyof QSidepanel & keyof QSidepanelAttributes as `attr:${K}`]?: QSidepanelAttributes[K] } & { [K in keyof QSidepanel & keyof QSidepanelAttributes as `prop:${K}`]?: QSidepanel[K] };
+        "q-stack": Omit<QStack, keyof QStackAttributes> & { [K in keyof QStack & keyof QStackAttributes]?: QStack[K] } & { [K in keyof QStack & keyof QStackAttributes as `attr:${K}`]?: QStackAttributes[K] } & { [K in keyof QStack & keyof QStackAttributes as `prop:${K}`]?: QStack[K] };
         "q-step-diagram": Omit<QStepDiagram, keyof QStepDiagramAttributes> & { [K in keyof QStepDiagram & keyof QStepDiagramAttributes]?: QStepDiagram[K] } & { [K in keyof QStepDiagram & keyof QStepDiagramAttributes as `attr:${K}`]?: QStepDiagramAttributes[K] } & { [K in keyof QStepDiagram & keyof QStepDiagramAttributes as `prop:${K}`]?: QStepDiagram[K] };
         "q-step-diagram-item": Omit<QStepDiagramItem, keyof QStepDiagramItemAttributes> & { [K in keyof QStepDiagramItem & keyof QStepDiagramItemAttributes]?: QStepDiagramItem[K] } & { [K in keyof QStepDiagramItem & keyof QStepDiagramItemAttributes as `attr:${K}`]?: QStepDiagramItemAttributes[K] } & { [K in keyof QStepDiagramItem & keyof QStepDiagramItemAttributes as `prop:${K}`]?: QStepDiagramItem[K] };
         "q-syntax-box": Omit<QSyntaxBox, keyof QSyntaxBoxAttributes> & { [K in keyof QSyntaxBox & keyof QSyntaxBoxAttributes]?: QSyntaxBox[K] } & { [K in keyof QSyntaxBox & keyof QSyntaxBoxAttributes as `attr:${K}`]?: QSyntaxBoxAttributes[K] } & { [K in keyof QSyntaxBox & keyof QSyntaxBoxAttributes as `prop:${K}`]?: QSyntaxBox[K] };
@@ -4606,6 +5263,10 @@ declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
             /**
+             * Accordion API scaffold. Disclosure behavior and item coordination are deferred.
+             */
+            "q-accordion": LocalJSX.IntrinsicElements["q-accordion"] & JSXBase.HTMLAttributes<HTMLQAccordionElement>;
+            /**
              * Inline contextual message with opt-in announcements and controlled dismissal.
              */
             "q-alert": LocalJSX.IntrinsicElements["q-alert"] & JSXBase.HTMLAttributes<HTMLQAlertElement>;
@@ -4613,6 +5274,10 @@ declare module "@stencil/core" {
              * Compact identity image with an initials or consumer-supplied fallback.
              */
             "q-avatar": LocalJSX.IntrinsicElements["q-avatar"] & JSXBase.HTMLAttributes<HTMLQAvatarElement>;
+            /**
+             * Generic banner shell. The media, copy and actions are supplied through slots; final layout is deferred.
+             */
+            "q-banner": LocalJSX.IntrinsicElements["q-banner"] & JSXBase.HTMLAttributes<HTMLQBannerElement>;
             /**
              * Action button that renders a native button or anchor according to `href`.
              */
@@ -4668,9 +5333,17 @@ declare module "@stencil/core" {
              */
             "q-form": LocalJSX.IntrinsicElements["q-form"] & JSXBase.HTMLAttributes<HTMLQFormElement>;
             /**
+             * Container-fitting grid; data-q-span="full" spans a direct child across a row.
+             */
+            "q-grid": LocalJSX.IntrinsicElements["q-grid"] & JSXBase.HTMLAttributes<HTMLQGridElement>;
+            /**
              * Synchronous registered icon renderer with optional backwards-compatible URL loading.
              */
             "q-icon": LocalJSX.IntrinsicElements["q-icon"] & JSXBase.HTMLAttributes<HTMLQIconElement>;
+            /**
+             * Wrapping action/content row.
+             */
+            "q-inline": LocalJSX.IntrinsicElements["q-inline"] & JSXBase.HTMLAttributes<HTMLQInlineElement>;
             /**
              * Form-associated input field with optional prefix/suffix slots, clear button, password visibility toggle, and numeric spinner controls.
              */
@@ -4709,6 +5382,10 @@ declare module "@stencil/core" {
              */
             "q-map": LocalJSX.IntrinsicElements["q-map"] & JSXBase.HTMLAttributes<HTMLQMapElement>;
             /**
+             * Generic media API scaffold. Native media rendering is deferred; consumers should continue using their existing media renderer.
+             */
+            "q-media": LocalJSX.IntrinsicElements["q-media"] & JSXBase.HTMLAttributes<HTMLQMediaElement>;
+            /**
              * Edge-aware site navigation with optional brand content, actions, and mobile menu.
              */
             "q-navbar": LocalJSX.IntrinsicElements["q-navbar"] & JSXBase.HTMLAttributes<HTMLQNavbarElement>;
@@ -4742,9 +5419,17 @@ declare module "@stencil/core" {
              */
             "q-scrollable": LocalJSX.IntrinsicElements["q-scrollable"] & JSXBase.HTMLAttributes<HTMLQScrollableElement>;
             /**
+             * Generic section shell. Layout properties are reserved for the presentation pass.
+             */
+            "q-section": LocalJSX.IntrinsicElements["q-section"] & JSXBase.HTMLAttributes<HTMLQSectionElement>;
+            /**
              * Drawer, persistent panel, or hierarchical navigation side panel.
              */
             "q-sidepanel": LocalJSX.IntrinsicElements["q-sidepanel"] & JSXBase.HTMLAttributes<HTMLQSidepanelElement>;
+            /**
+             * Vertical layout without surface or landmark semantics.
+             */
+            "q-stack": LocalJSX.IntrinsicElements["q-stack"] & JSXBase.HTMLAttributes<HTMLQStackElement>;
             /**
              * Groups step diagram items into a vertical or horizontal sequence.
              */

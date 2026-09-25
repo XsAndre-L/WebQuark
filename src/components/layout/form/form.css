@@ -6,7 +6,7 @@
 .form-shell {
   display: flex;
   flex-direction: column;
-  gap: var(--q-form-gap, 16px);
+  gap: var(--q-form-gap, var(--q-space-xl, 1.5rem));
   width: 100%;
   color: var(--q-form-fg, var(--q-fg-base, #172033));
   font-family: var(--q-font-family, inherit);
@@ -28,7 +28,7 @@
 form {
   display: flex;
   flex-direction: column;
-  gap: var(--q-form-gap, 16px);
+  gap: var(--q-form-gap, var(--q-space-xl, 1.5rem));
   width: 100%;
   margin: 0;
 }
@@ -44,6 +44,9 @@ form {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: var(--q-form-action-gap, 10px);
+  flex-wrap: wrap;
+  gap: var(--q-form-action-gap, var(--q-space-sm, .5rem));
   padding-top: var(--q-form-actions-padding-top, 4px);
 }
+
+@import '../../../theme/field.css';
