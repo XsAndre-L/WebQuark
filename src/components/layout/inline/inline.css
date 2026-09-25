@@ -1,0 +1,4 @@
+:host { display: block; min-width: 0; }
+div { display: flex; min-width: 0; }
+slot { display: contents; }
+::slotted(*) { min-width: 0; }

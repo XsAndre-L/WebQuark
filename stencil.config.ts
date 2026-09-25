@@ -4,7 +4,7 @@ import { angularOutputTarget } from '@stencil/angular-output-target';
 
 export const config: Config = {
   namespace: 'webquark',
-  globalStyle: 'src/global/global.css',
+  globalStyle: 'src/theme/theme.css',
   minifyCss: true,
   minifyJs: true,
   sourceMap: false,

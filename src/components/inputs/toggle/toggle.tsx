@@ -1,3 +1,4 @@
+import { fieldFeedback, feedbackStyle } from '../../shared/field';
 import { Component, Prop, State, Event, EventEmitter, Element, Method, AttachInternals, Watch, h } from '@stencil/core';
 
 import { syncRequiredBooleanValidity } from '../../../utils/form-control-validity';
@@ -31,8 +32,14 @@ export class QToggle {
   @AttachInternals() internals!: ElementInternals;
 
   @Prop() label?: string;
+  /** Supporting text, replaced by an active error. */
+  @Prop() description?: string;
 
-  @Prop() size: QToggleSize = 'md';
+  /** Keep the label accessible without displaying it. */
+  @Prop() labelHidden: boolean = false;
+  /** Omitted inherits the enclosing form; false cancels reservation. */
+  @Prop() reserveFeedback?: boolean;
+  @Prop() size: QToggleSize = 'inherit';
 
   /** Controls switch/checkbox visuals and semantics. */
   @Prop() type: QToggleType = 'switch';
@@ -192,7 +199,7 @@ export class QToggle {
     const hasError = !!this.error;
 
     return (
-      <div class="toggle-container">
+      <div class="toggle-container" style={feedbackStyle(this.reserveFeedback)}>
         <div
           ref={el => (this.controlEl = el as HTMLElement)}
           class={{
@@ -209,7 +216,7 @@ export class QToggle {
           aria-disabled={this.disabled ? 'true' : 'false'}
           aria-required={this.required ? 'true' : 'false'}
           aria-invalid={hasError ? 'true' : 'false'}
-          aria-describedby={hasError ? 'toggle-error-msg' : undefined}
+          aria-describedby={hasError || this.description ? 'toggle-error-msg' : undefined}
           tabindex={this.disabled ? -1 : 0}
           onClick={this.handleClick}
           onKeyDown={this.handleKeyDown}
@@ -243,6 +250,7 @@ export class QToggle {
           <span
             class={{
               'toggle-label-text': true,
+              'q-label-hidden': this.labelHidden,
               'is-hidden': !showLabel
             }}
             part="label"
@@ -254,11 +262,7 @@ export class QToggle {
         </div>
 
         {/* Error message */}
-        {hasError && (
-          <span id="toggle-error-msg" class="error-msg" part="error-msg">
-            {this.error}
-          </span>
-        )}
+        {fieldFeedback('toggle-error-msg', this.error, this.description)}
       </div>
     );
   }

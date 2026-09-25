@@ -118,3 +118,10 @@ export type {
   QToastPosition,
   QToastVariant,
 } from './components/overlays/toast/toast.types';
+
+// Generic content component contracts (visual implementation is scaffolded).
+export type { QBannerHeight, QBannerAlignment } from './components/content/banner/banner.types';
+export type { QSectionLayout } from './components/layout/section/section.types';
+export type { QMediaKind, QMediaLoading } from './components/media/media/media.types';
+export type { QAccordionMode } from './components/data-display/accordion/accordion.types';
+export type { QSpace, QSize, QControlSize, QSurface } from './theme/tokens';

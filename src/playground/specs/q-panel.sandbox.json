@@ -1,28 +1,149 @@
-﻿{
+{
   "name": "Panel",
   "tag": "q-panel",
   "props": {
-    "variant": { "type": "select", "options": ["plain", "surface", "bordered"], "default": "bordered", "desc": "Panel surface styling" },
-    "noBorders": { "type": "boolean", "default": false, "desc": "Removes the panel border while preserving other variant styling" },
-    "padding": { "type": "select", "options": ["none", "sm", "md", "lg"], "default": "md", "desc": "Body padding scale" },
-    "scrollable": { "type": "boolean", "default": false, "desc": "Makes the body region scrollable" },
-    "fullHeight": { "type": "boolean", "default": false, "desc": "Stretches panel to fill parent height" },
-    "stickyHeader": { "type": "boolean", "default": false, "desc": "Keeps header pinned while body scrolls" },
-    "stickyFooter": { "type": "boolean", "default": false, "desc": "Keeps footer pinned while body scrolls" }
+    "variant": {
+      "type": "select",
+      "options": [
+        "plain",
+        "surface",
+        "bordered"
+      ],
+      "default": "bordered",
+      "desc": "Panel surface styling"
+    },
+    "noBorders": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Removes the panel border while preserving other variant styling"
+    },
+    "padding": {
+      "type": "select",
+      "default": "lg",
+      "options": [
+        "none",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl",
+        "2xl",
+        "3xl"
+      ]
+    },
+    "scrollable": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Makes the body region scrollable"
+    },
+    "fullHeight": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Stretches panel to fill parent height"
+    },
+    "stickyHeader": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Keeps header pinned while body scrolls"
+    },
+    "stickyFooter": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Keeps footer pinned while body scrolls"
+    },
+    "surface": {
+      "type": "select",
+      "options": [
+        "canvas",
+        "panel",
+        "card",
+        "field",
+        "floating",
+        "transparent"
+      ],
+      "desc": "Explicit semantic surface"
+    },
+    "dividers": {
+      "type": "boolean",
+      "default": false
+    }
   },
   "slots": {
-    "header": { "type": "text", "default": "Panel Header", "desc": "Header slot content" },
-    "default": { "type": "textarea", "default": "Panel body content", "desc": "Main panel body" },
-    "footer": { "type": "text", "default": "Panel Footer", "desc": "Footer slot content" }
+    "header": {
+      "type": "text",
+      "default": "Panel Header",
+      "desc": "Header slot content"
+    },
+    "default": {
+      "type": "textarea",
+      "default": "Panel body content",
+      "desc": "Main panel body"
+    },
+    "footer": {
+      "type": "text",
+      "default": "Panel Footer",
+      "desc": "Footer slot content"
+    }
   },
   "variants": [
-    { "name": "Default Bordered Panel", "props": {}, "slots": { "default": "Basic bordered panel." } },
-    { "name": "Borderless Panel", "props": { "noBorders": true }, "slots": { "default": "Rounded panel without a border." } },
-    { "name": "Surface Panel", "props": { "variant": "surface" }, "slots": { "default": "Basic surface panel." } },
-    { "name": "Bordered Panel", "props": { "variant": "bordered" }, "slots": { "header": "Settings", "default": "Settings body", "footer": "Actions" } },
-    { "name": "Plain Layout Region", "props": { "variant": "plain", "padding": "none" }, "slots": { "default": "Plain structural region." } }
+    {
+      "name": "Default Bordered Panel",
+      "props": {},
+      "slots": {
+        "default": "Basic bordered panel."
+      }
+    },
+    {
+      "name": "Borderless Panel",
+      "props": {
+        "noBorders": true
+      },
+      "slots": {
+        "default": "Rounded panel without a border."
+      }
+    },
+    {
+      "name": "Surface Panel",
+      "props": {
+        "variant": "surface"
+      },
+      "slots": {
+        "default": "Basic surface panel."
+      }
+    },
+    {
+      "name": "Bordered Panel",
+      "props": {
+        "variant": "bordered"
+      },
+      "slots": {
+        "header": "Settings",
+        "default": "Settings body",
+        "footer": "Actions"
+      }
+    },
+    {
+      "name": "Plain Layout Region",
+      "props": {
+        "variant": "plain",
+        "padding": "none"
+      },
+      "slots": {
+        "default": "Plain structural region."
+      }
+    }
   ],
   "edgeCases": [
-    { "name": "Long Scrollable Body", "props": { "variant": "bordered", "scrollable": true }, "slots": { "header": "Scrollable", "default": "Line one<br/>Line two<br/>Line three<br/>Line four<br/>Line five<br/>Line six<br/>Line seven<br/>Line eight" } }
+    {
+      "name": "Long Scrollable Body",
+      "props": {
+        "variant": "bordered",
+        "scrollable": true
+      },
+      "slots": {
+        "header": "Scrollable",
+        "default": "Line one<br/>Line two<br/>Line three<br/>Line four<br/>Line five<br/>Line six<br/>Line seven<br/>Line eight"
+      }
+    }
   ]
 }

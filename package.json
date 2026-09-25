@@ -58,7 +58,9 @@
     "postcss": "8.5.26"
   },
   "bin": {
-    "webquark-sandbox": "./scripts/webquark-serve.js"
+    "wq-sandbox": "./scripts/webquark-serve.js",
+    "wq-switch": "./scripts/wq-switch/dist/index.js",
+    "wq-setup": "./scripts/wq-switch/dist/setup.js"
   },
   "repository": {
     "type": "git",
@@ -66,13 +68,18 @@
   },
   "files": [
     "dist/",
-    "scripts/webquark-serve.js"
+    "scripts/webquark-serve.js",
+    "scripts/wq-switch/dist/index.js",
+    "scripts/wq-switch/dist/setup.js",
+    "scripts/wq-switch/README.md"
   ],
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "build": "bun build src/playground/playground.ts --outfile=src/playground/playground.bundled.js --loader .html:text --loader .css:text && bun build scripts/webquark-serve.ts --outfile=scripts/webquark-serve.js --target=node --format=cjs && stencil build",
+    "theme:generate": "bun scripts/generate-theme.ts",
+    "switch:build": "tsc -p scripts/wq-switch/tsconfig.json && bun build scripts/wq-switch/index.ts scripts/wq-switch/setup.ts --outdir=scripts/wq-switch/dist --target=node --format=cjs",
+    "build": "bun run switch:build && bun run theme:generate && bun build src/playground/playground.ts --outfile=src/playground/playground.bundled.js --loader .html:text --loader .css:text && bun build scripts/webquark-serve.ts --outfile=scripts/webquark-serve.js --target=node --format=cjs && stencil build",
     "start": "bun run scripts/start-playground.ts",
     "dev": "bun run start",
     "test": "stencil-test --prod",

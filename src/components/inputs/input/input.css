@@ -1,3 +1,4 @@
+@import '../../../theme/control.css';
 :host {
   display: block;
   width: 100%;
@@ -29,7 +30,7 @@
   width: 100%;
   background: var(--q-input-bg, var(--q-bg-surface-2, #374151));
   border: var(--q-input-border, var(--q-border, 1px solid var(--q-border-color, #4b5563)));
-  border-radius: var(--q-input-radius, var(--q-radius-md, 8px));
+  border-radius: var(--q-input-radius, var(--q-field-radius, var(--_q-control-radius)));
   box-sizing: border-box;
   overflow: hidden;
   transition: border-color var(--q-transition-fast, 150ms ease), 
@@ -152,7 +153,7 @@
 
 /* Color input styling */
 input.input-box[type="color"] {
-  height: 40px;
+  height: calc(var(--q-input-height, var(--_q-control-height)) - 2px);
   padding: 6px;
   cursor: pointer;
   background: transparent;
@@ -170,66 +171,6 @@ input.input-box[type="color"]::-webkit-color-swatch {
 input.input-box[type="color"]::-moz-color-swatch {
   border: none;
   border-radius: var(--q-radius-sm, 4px);
-}
-
-/* Sizing Layouts */
-.input-wrapper.size-sm .input-control {
-  min-height: 32px;
-  height: 32px;
-}
-.input-wrapper.size-sm .input-label {
-  font-size: var(--q-font-size-sm, 0.7rem);
-}
-.input-wrapper.size-sm .input-box {
-  padding: 4px 8px;
-  font-size: var(--q-font-size-sm, 0.75rem);
-}
-.input-wrapper.size-sm .prefix-container,
-.input-wrapper.size-sm .suffix-container {
-  padding: 0 8px;
-}
-.input-wrapper.size-sm .clear-btn svg,
-.input-wrapper.size-sm .password-toggle-btn svg {
-  width: 12px;
-  height: 12px;
-}
-.input-wrapper.size-sm input.input-box[type="color"] {
-  height: 32px;
-  padding: 4px;
-}
-
-.input-wrapper.size-md .input-label {
-  font-size: var(--q-font-size-sm, 0.7rem);
-}
-.input-wrapper.size-md .input-box {
-  padding: 10px 14px;
-  font-size: var(--q-font-size-base, 0.9rem);
-}
-.input-wrapper.size-md .prefix-container,
-.input-wrapper.size-md .suffix-container {
-  padding: 0 12px;
-}
-.input-wrapper.size-md .clear-btn svg,
-.input-wrapper.size-md .password-toggle-btn svg {
-  width: 14px;
-  height: 14px;
-}
-
-.input-wrapper.size-lg .input-label {
-  font-size: var(--q-font-size-base, 0.9rem);
-}
-.input-wrapper.size-lg .input-box {
-  padding: 14px 18px;
-  font-size: var(--q-font-size-lg, 1.1rem);
-}
-.input-wrapper.size-lg .prefix-container,
-.input-wrapper.size-lg .suffix-container {
-  padding: 0 14px;
-}
-.input-wrapper.size-lg .clear-btn svg,
-.input-wrapper.size-lg .password-toggle-btn svg {
-  width: 16px;
-  height: 16px;
 }
 
 /* Number Spinners */
@@ -275,3 +216,11 @@ input.input-box[type="color"]::-moz-color-swatch {
   width: 10px;
   height: 10px;
 }
+
+/* Shared foundation geometry. */
+.input-wrapper .input-control { min-height: var(--q-input-height, var(--_q-control-height)); height: auto; background: var(--q-input-bg, var(--q-field-bg, var(--q-bg-field, var(--q-bg-surface-3, #22304d)))); }
+.input-wrapper:is(.size-sm, .size-md, .size-lg, .size-inherit) .input-box { min-width: 0; padding: var(--q-input-padding, 0 var(--_q-control-padding)); min-height: calc(var(--q-input-height, var(--_q-control-height)) - 2px); font-size: var(--_q-control-font); line-height: var(--_q-control-line); }
+.input-wrapper .prefix-container, .input-wrapper .suffix-container { padding-inline: var(--_q-control-padding); }
+.input-wrapper .clear-btn svg, .input-wrapper .password-toggle-btn svg { width: var(--_q-control-icon); height: var(--_q-control-icon); }
+
+@import '../../../theme/field.css';

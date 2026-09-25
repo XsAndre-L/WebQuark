@@ -1,300 +1,292 @@
 # Current public component contracts
 
-This reference was reconciled against the 27 Stencil component implementations on 2026-07-15. It fills gaps in older authored specification tables while those longer design guides are progressively simplified. The generated API page linked for each component remains canonical for exact TypeScript types and defaults.
+Use this directory to reach each authored contract and generated API. Detailed state, styling, and data shapes live in the guide; generated tables are cross-checks against current source.
 
-For array and object inputs, assign the JavaScript property unless the contract explicitly accepts a JSON string. Event names are case-sensitive DOM custom-event names.
+Shared [foundation rules](../foundation.md) define inherited control sizes, layout spacing, surfaces, and feedback. Each component documents whether it participates. Assign structured data and callbacks as JavaScript properties unless its guide explicitly supports JSON attributes.
 
-## Actions
+### `q-accordion`
 
-### `q-button`
+`q-accordion` is a public content scaffold that currently projects consumer-owned content without disclosure behavior.
 
-- API: [generated reference](../../src/components/actions/button/readme.md)
-- Properties: `variant`, `size`, `icon`, `shape`, `layout`, `disabled`, `loading`, `type`, `expand`, `href`, `target`, `rel`, `download`, `iconOnly`, `ariaLabel`.
-- Events: `qClick`, `qFocus`, `qBlur`.
-- Slots: default label, `icon-left`, `icon-right`.
-- Behavior: renders a native `<a>` when `href` is non-empty and a native `<button>` otherwise. `icon` renders a leading default-library `q-icon`; assigned `icon-left` content replaces that fallback. `target="_blank"` receives `rel="noopener noreferrer"` unless `rel` is supplied. `loading` suppresses activation and sets `aria-busy`.
-- Accessibility: visible text names the native control without a redundant `aria-label`. Set `ariaLabel` for icon-only controls; development builds warn once when it is missing. Icon names are never used as accessible names.
+- [Authored guide](./q-accordion.md) · [Generated API](../../src/components/data-display/accordion/readme.md)
+- Status: Public scaffold; behavior incomplete.
 
-### `q-chip`
+### `q-alert`
 
-- API: [generated reference](../../src/components/actions/chip/readme.md)
-- Properties: `label`, `value`, `href`, `target`, `rel`, `download`, `variant`, `size`, `selected`, `disabled`, `clickable`, `removable`.
-- Events: `qClick`, `qRemove`, `qFocus`, `qBlur`.
-- Slots: default label, `icon-left`, `icon-right`.
-- Behavior: link chips use an anchor; clickable non-link chips use a button. A removable chip deliberately makes only its remove button interactive to avoid nested controls.
-- Accessibility: when visible text is supplied only through the default slot, also set `label` so the remove action can be named as “Remove {label}”.
+`q-alert` shows an inline contextual message with optional actions and application-controlled dismissal.
 
-### `q-link`
-
-- API: [generated reference](../../src/components/actions/link/readme.md)
-- Properties: `href`, `url`, `mailto`, `tel`, `target`, `rel`, `download`, `label`, `variant`, `underline`, `external`, `disabled`.
-- Events: `qClick`, `qFocus`, `qBlur`.
-- Slots: default label, `icon-left`, `icon-right`.
-- Behavior: destination precedence is `href`, `url`, `mailto`, then `tel`. `url` is a compatibility alias. Blank-target or external links receive a safe default `rel` unless overridden.
-- Accessibility: `external` adds visible and screen-reader external-link context. Disabled links lose navigation and tab focus.
-
-## Layout and navigation
-
-### `q-card`
-
-- API: [generated reference](../../src/components/layout/card/readme.md)
-- Properties: `elevation`, `interactive`, `glass`, `lift`.
-- Slots: `header`, default body.
-- Behavior: `interactive` adds button semantics and Enter/Space activation; `lift` is only a visual hover/focus treatment. Numeric elevations `1`, `2`, and `3` remain legacy aliases.
-- Accessibility: avoid placing nested interactive controls inside an interactive card. The header region is removed visually when its slot is empty.
-
-### `q-carousel`
-
-- API: [generated reference](../../src/components/layout/carousel/readme.md)
-- Properties: `snapAlignment`, `showArrows`, `showIndicators`, `repeat`, `itemWidth`.
-- Event: `qSlideChange` with the active zero-based index and slide element.
-- Methods: `slideTo(index)`, `updateLimits()`.
-- Slot: default slide content.
-- Behavior: navigation uses measured slide offsets and scroll snapping. Call `updateLimits()` after layout changes that do not trigger a slot or resize observation.
-- Accessibility: arrows and indicators have labels; consumers must give individual slide content meaningful names and structure.
-
-### `q-form`
-
-- API: [generated reference](../../src/components/layout/form/readme.md)
-- Properties: `label`, `action`, `method`, `autocomplete`, `enctype`, `target`, `noValidate`, `preventDefault`, `enterBehavior`.
-- Events: `qSubmit`, `qReset`.
-- Methods: `getValues()`, `setValues(values)`, `resetForm()`, `submitForm()`.
-- Slots: `header`, default fields/body, `actions`.
-- Behavior: wraps a real form and bridges slotted `q-button` submit/reset actions across shadow boundaries. `enterBehavior` is `submit`, `focus-next`, or `none`. `qSubmit.detail` includes `values`, `formData`, the native form, and the original event.
-- Forms: `preventDefault` defaults to true. Named WebQuark controls are included; read-only `q-syntax-box` elements are excluded. Toggle values are booleans in `values` and checkbox-like entries in `FormData`.
-
-### `q-navbar`
-
-- API: [generated reference](../../src/components/layout/navbar/readme.md)
-- Properties: `brand`, `logoSrc`, `logoAlt`, `brandHref`, `items`, `activeValue`, `ariaLabel`, `mobileLabel`, `edge`, `mobileMode`, `sticky`, `compact`, `transparent`, `bordered`.
-- Events: `qSelect`, `qMenuToggle`.
-- Slots: `brand`, `nav`, `actions`, `mobile-nav`, `mobile-actions`.
-- Behavior: `items` accepts an array or JSON string; string entries normalize to matching labels and values. At narrow top/bottom layouts, `mobileMode="menu"` uses a dismissible menu; `mobileMode="inline"` keeps navigation inline. `edge` also controls sizing/orientation styles.
-- Accessibility: `logoAlt` is required for a logo-only brand. Icon-only items should supply `ariaLabel`; disabled items do not navigate or emit selection.
-
-### `q-panel`
-
-- API: [generated reference](../../src/components/layout/panel/readme.md)
-- Properties: `variant`, `padding`, `scrollable`, `fullHeight`, `stickyHeader`, `stickyFooter`, `ariaLabel`.
-- Slots: `header`, default body, `footer`.
-- Behavior: empty header/footer regions collapse. Sticky regions take effect when the panel owns scrolling.
-- Accessibility: a scrollable body becomes a keyboard-focusable region. Use `ariaLabel` to replace the generic “Panel content” name.
-
-### `q-scrollable`
-
-- API: [generated reference](../../src/components/layout/scrollable/readme.md)
-- Properties: `height`, `maxHeight`, `autoHide`, `nativeOnMobile`, `mode`, `target`.
-- Event: `qScroll` with `scrollTop`, `scrollHeight`, and `clientHeight`.
-- Methods: `scrollToBottom()`, `scrollToPosition(top)`.
-- Slot: default scroll content.
-- Behavior: `custom` mode renders a vertical draggable thumb; `native` mode uses browser scrollbars. `target` optionally styles another scroll container in the same document or shadow root. Coarse pointers use native scrollbars when `nativeOnMobile` is true.
-- Limitations: the custom scrollbar is vertical only. Treat `target` as a selector, not an element reference.
-
-### `q-sidepanel`
-
-- API: [generated reference](../../src/components/layout/sidepanel/readme.md)
-- Properties: `variant`, `open`, `side`, `panelSize`, `items`, `ariaLabel`, `value`, `mode`, `expanded`, `accordion`, `collapsible`, `collapsed`, `collapseControl`, `collapseControlAppearance`, `collapseControlPosition`, `collapseMode`, `collapseLabel`.
-- Events: `qClose`, `qSelect`, `qCollapsedChange`.
-- Slots: `header`, default body, `footer`, `collapse-icon`, `expand-icon`, `collapse-control-adornment`.
-- Behavior: `drawer` is modal, `panel` is persistent slotted content, and `nav` renders item trees. Top-level string items normalize to matching labels and values. An item-level `alwaysExpanded` value of `true` turns a parent into a persistent, non-interactive category heading; it overrides `expanded=false` and accordion mode, is not inherited, and is ignored for leaf items. The built-in collapse control mutates `collapsed` and emits `qCollapsedChange`; direct consumer assignments do not emit it. `collapse-control-adornment` provides a non-interactive visual badge or label anchored over the control's top-left corner.
-- Accessibility: the drawer traps focus and restores it after closing. Use `ariaLabel` to name the navigation, panel region, or drawer dialog. Keep `collapseLabel` synchronized with meaningful visual adornment content.
-- Known limitation: `mode` is exposed but currently does not change rendering; do not depend on distinct `flat`, `grouped`, or `tree` behavior until that contract is implemented.
-
-### `q-toolbar`
-
-- API: [generated reference](../../src/components/layout/toolbar/readme.md)
-- Properties: `edge`, `sticky`, `compact`, `transparent`, `bordered`, `ariaLabel`.
-- Slots: `start`, default content, `end`.
-- Behavior: WebQuark owns layout and edge styling; consumers own every control and action.
-- Accessibility: providing `ariaLabel` currently gives the container `role="group"`. Consumers must preserve a logical tab order among slotted controls.
-
-## Form controls
-
-### `q-input`
-
-- API: [generated reference](../../src/components/inputs/input/readme.md)
-- Properties: `value`, `name`, `type`, `placeholder`, `label`, `ariaLabel`, `disabled`, `required`, `error`, `errorMessage`, `size`, `clearable`, `min`, `max`, `step`.
-- Events: `qChange`, `qInput`, `qBlur`, `qFocus`, `qClick`.
-- Methods: `focusElement()`, `clearValue()`.
-- Slots: `prefix`, `suffix`.
-- Forms: form-associated; value and initial reset value are synchronized through `ElementInternals`. Number mode adds custom step buttons and clamps on blur.
-- UX: the suffix slot is hidden while the clear action is visible. Password mode adds a visibility toggle and preserves selection where supported.
-
-### `q-textarea`
-
-- API: [generated reference](../../src/components/inputs/textarea/readme.md)
-- Properties: `value`, `name`, `placeholder`, `label`, `ariaLabel`, `rows`, `autoGrow`, `resizeMode`, `disabled`, `required`, `error`, `errorMessage`.
-- Events: `qChange`, `qInput`, `qBlur`, `qFocus`, `qClick`.
-- Methods: `focusElement()`, `adjustHeight()`.
-- Forms: form-associated and reset-aware. `resizeMode` is `auto`, `manual`, or `fixed`; setting `autoGrow=false` makes `auto` behave as fixed.
-- Accessibility: when no visible label exists, the placeholder is used as a fallback accessible name. A durable label is preferred.
-
-### `q-dropdown`
-
-- API: [generated reference](../../src/components/inputs/dropdown/readme.md)
-- Properties: `value`, `name`, `label`, `ariaLabel`, `placeholder`, `options`, `disabled`, `size`, `searchable`.
-- Events: `qChange`, `qSelect`, `qFocus`, `qBlur`, `qClick`.
-- Slot: `icon-left`.
-- Forms: form-associated and reset-aware. `options` accepts strings or `{ label, value }` records in a JavaScript array or JSON string. A string becomes both its label and value.
-- Keyboard: supports Arrow keys, Home, End, Enter, Space, Escape, and Tab. Search filters labels case-insensitively and incrementally renders 20 options at a time.
-- Limitations: options cannot currently be disabled and search/loading/empty strings are not configurable.
-
-### `q-quantity-selector`
-
-- API: [generated reference](../../src/components/inputs/quantity-selector/readme.md)
-- Properties: `value`, `step`, `min`, `max`, `variant`.
-- Events: `qChange`, `qFocus`, `qBlur`, `qClick`.
-- Behavior: supports direct editing, step buttons, Arrow Up/Down, and bounded Home/End shortcuts. Invalid or incomplete text is reconciled on change/blur.
-- Forms: this component is not currently form-associated and has no `name`, `disabled`, `required`, or error contract.
-
-### `q-radio-group`
-
-- API: [generated reference](../../src/components/inputs/radio-group/readme.md)
-- Properties: `value`, `name`, `label`, `ariaLabel`, `options`, `size`, `orientation`, `disabled`, `required`, `error`, `errorMessage`.
-- Events: `qChange`, `qFocus`, `qBlur`.
-- Methods: `focusElement()`, `checkValidity()`, `reportValidity()`.
-- Forms: form-associated and reset-aware. A selected enabled option contributes its string value; required groups report `valueMissing` until one is selected.
-- Accessibility: native same-name radio inputs preserve Tab, Arrow-key, Space, fieldset, and legend semantics.
-
-### `q-toggle`
-
-- API: [generated reference](../../src/components/inputs/toggle/readme.md)
-- Properties: `checked`, `name`, `size`, `type`, `label`, `disabled`, `required`, `error`.
-- Events: `qChange`, `qFocus`, `qBlur`, `qClick`.
-- Method: `toggle()`.
-- Slots: default label, `checked-icon`, `unchecked-icon`.
-- Forms: form-associated. Checked contributes the string `true`; unchecked contributes no FormData entry, matching native checkbox behavior. Reset restores the initial checked state.
-- Accessibility: renders switch or checkbox semantics according to `type`; the default slot or `label` should name the control.
-
-## Data display and indicators
-
-### `q-conversation-bubble`
-
-- API: [generated reference](../../src/components/data-display/conversation-bubble/readme.md)
-- Properties: `variant`, `sender`, `timestamp`, `ariaLabel`, `compact`.
-- Slots: `avatar`, default message body, `meta`, `actions`.
-- Behavior: `incoming`, `outgoing`, and `system` control alignment and appearance without owning message state. Message body text wraps and preserves line breaks.
-- Accessibility: renders a named message group without an automatic live region. Consumers own restrained announcement behavior for newly arriving messages.
-
-### `q-data-table`
-
-- API: [generated reference](../../src/components/data-display/data-table/readme.md)
-- Properties: `columns`, `items`, `rowActions`, `rowClickable`, `loading`, `selectable`, `selectedKeys`, `keyField`, `sortable`, `sortMode`, `sortColumn`, `sortDirection`, `showToolbar`, `toolbarTitle`, `showSearch`, `searchPlaceholder`, `searchValue`.
-- Events: `qRowClick`, `qRowAction`, `qSelectionChange`, `qSearch`, `qSortChange`.
-- Slots: `toolbar-left`, `filters`, `actions`, `empty`, `footer`.
-- Behavior: columns, rows, and row actions accept arrays or JSON strings. `sortMode="table"` sorts locally; `external` emits state without reordering. Search is controlled/event-driven and does not filter rows automatically.
-- DX: use a stable primitive `keyField`; index fallback becomes unstable when sorting or replacing rows. Callback-based cell renderers and disabled predicates require JavaScript property assignment.
-- Performance: rows are not virtualized; paginate or window large datasets outside the component.
-
-### `q-map`
-
-- API: [generated reference](../../src/components/data-display/map/readme.md)
-- Properties: `provider`, `tileUrl`, `tilePreloadBuffer`, `rasterTileLoadingPolicy`, `vectorStyleUrl`, `vectorPadding`, `googleApiKey`, `googleMapType`, `attribution`, `attributionUrl`, `centerLatitude`, `centerLongitude`, `zoom`, `minZoom`, `maxZoom`, `maxBounds`, `maxBoundsViscosity`, `markers`, `selectedMarkerId`, `ariaLabel`.
-- Events: `qReady`, `qMarkerSelect`, `qStatusChange`, `qError`.
-- Slots: `empty` replaces missing provider configuration; `error` replaces the visible failure message when no requested or fallback provider can be activated.
-- Shadow parts: `surface`, `canvas`, `marker`, `attribution`, `empty`, `error`.
-- Behavior: wraps Leaflet behind a framework-neutral Web Component contract. Provider swaps are transactional, preserve the previous working layer until replacement succeeds, discard stale async results, and report serializable status/errors. Raster replacements wait for the full initial batch by default; the opt-in `progressive` loading policy commits after the first successful tile and preserves loaded parent tiles while finer children remain pending or fail. The `tiles` provider uses a consumer-supplied URL and attribution; the optional `google` provider loads the official Maps JavaScript API through GoogleMutant, preserves Google's legal controls, and falls back to `tileUrl` when configured. `maxBounds` accepts an object or JSON string; malformed non-empty updates emit `qError` and preserve the last valid boundary. Assign `markers` as a JavaScript array of records containing a stable type-sensitive `id`, finite coordinates, a `label`, and an optional visual `variant`. Marker selection is controlled through `selectedMarkerId`; activation emits `qMarkerSelect` without mutating application data.
-- Accessibility: `ariaLabel` names the map region and markers are keyboard operable. Important locations and actions must also be available outside the map because a spatial canvas is not an accessible replacement for structured content.
-- Performance: marker layers are reconciled by stable ID and map sizing follows its host container. Paginate, cluster, or otherwise limit very large marker collections in the consuming application.
-- Limitations: consumers provide and license the imagery service, API key and CSP where applicable, attribution, location data, real-time transport, geocoding, routing, clustering, and domain-specific popups. `q-map` does not call an application backend. Google imagery is network-only and GoogleMutant's legal controls require visual validation in each supported runtime.
-
-### `q-syntax-box`
-
-- API: [generated reference](../../src/components/data-display/syntax-box/readme.md)
-- Properties: `variant`, `name`, `language`, `code`, `value`, `heading`, `copyable`, `height`, `editable`, `disabled`, `required`.
-- Events: `qChange`, `qInput`.
-- Method: `scrollToBottom()`.
-- Slots: default fallback code/content, `actions`.
-- Behavior: `code` and `value` are mirrored compatibility aliases. Editable mode provides formatting and form participation; read-only mode does not contribute a form value. Escape leaves the editor and Tab inserts two spaces.
-- Limitations: languages are `html`, `javascript`, `css`, and `json`; highlighting is regex-based, not a validating parser.
-
-### `q-circular-progress`
-
-- API: [generated reference](../../src/components/indicators/circular-progress/readme.md)
-- Properties: `value`, `label`, `ariaLabel`, `indeterminate`, `size`.
-- Behavior: finite determinate values are clamped to 0–100. `label` controls visible/value text; `ariaLabel` names the progressbar. Indeterminate mode suppresses value attributes and center text.
-- Accessibility: use a task-specific `ariaLabel`; the default “Circular Progress” is intentionally generic.
-
-### `q-step-diagram`
-
-- API: [generated reference](../../src/components/indicators/step-diagram/readme.md)
-- Properties: `layout`, `ariaLabel`.
-- Slot: default `q-step-diagram-item` children.
-- Behavior: propagates `layout` to slotted step items on load, property change, and slot change.
-- Accessibility: the container uses list semantics and should receive a workflow-specific `ariaLabel`.
-
-### `q-step-diagram-item`
-
-- API: [generated reference](../../src/components/indicators/step-diagram-item/readme.md)
-- Properties: `status`, `lineStyle`, `layout`.
-- Event: `qItemClick`.
-- Slots: `badge`, `title`, default body.
-- Behavior: the parent normally controls `layout`. Enter, Space, or pointer activation emits `qItemClick`. `status` controls visuals and current-step semantics.
-- Known limitation: `pending` is exposed as `aria-disabled` but currently still activates; consumers must ignore the event until that implementation is corrected.
-
-## Media
+- [Authored guide](./q-alert.md) · [Generated API](../../src/components/data-display/alert/readme.md)
+- Status: Implemented; see guide limitations.
 
 ### `q-avatar`
 
-- API: [generated reference](../../src/components/media/avatar/readme.md)
-- Properties: `src`, `name`, `initials`, `alt`, `size`, `shape`, `loading`.
-- Events: `qLoad`, `qError`.
-- Slot: `fallback`.
-- Behavior: reserves its dimensions and replaces a missing or failed image with explicit initials, initials derived from `name`, or slotted fallback content.
-- Accessibility: `alt` takes precedence over `name`; an explicit empty `alt` makes the avatar decorative. Fallback content is visual and does not duplicate the accessible name.
+`q-avatar` shows an identity image with initials or custom fallback content.
 
-### `q-icon`
+- [Authored guide](./q-avatar.md) · [Generated API](../../src/components/media/avatar/readme.md)
+- Status: Implemented; see guide limitations.
 
-- API: [generated reference](../../src/components/media/icon/readme.md)
-- Properties: `name`, `lib`, `size`, `color`, `localPath`, `libVersion`, `fetchTimeout`, `label`.
-- Behavior: `lucide` and `font-awesome` resolve pinned CDN URLs; `local` resolves from `localPath`; custom libraries may be base URLs or `{name}` templates. SVG is fetched, sanitized, and inlined without blocking component or parent hydration; the sized host renders first and fills when the request completes. Common raster formats use `<img>`.
-- Accessibility: icons without `label` are decorative. Supplying `label` gives the host `role="img"` and an accessible name.
-- CEF/offline: prefer `lib="local"` for offline, deterministic, or restricted webviews.
+### `q-banner`
 
-### `q-reel`
+`q-banner` is a public content scaffold that currently projects consumer-owned content without its planned layout styling.
 
-- API: [generated reference](../../src/components/media/reel/readme.md)
-- Properties: `layout`, `lightbox`.
-- Events: `qLightboxOpen`, `qLightboxClose`.
-- Slot: default `q-thumbnail` children.
-- Behavior: thumbnail activation opens the built-in lightbox when enabled. Escape closes; Arrow Left/Right navigates; Tab is trapped inside the open overlay.
-- UX: video items currently autoplay and loop in the lightbox. Disable the built-in lightbox and provide a custom viewer if that policy is inappropriate.
+- [Authored guide](./q-banner.md) · [Generated API](../../src/components/content/banner/readme.md)
+- Status: Public scaffold; behavior incomplete.
 
-### `q-thumbnail`
+### `q-button`
 
-- API: [generated reference](../../src/components/media/thumbnail/readme.md)
-- Properties: `src`, `video`, `label`, `alt`, `highlighted`.
-- Event: `qMaximize` with source, label, video flag, alt text, and trigger element.
-- Slot: default overlay content.
-- Behavior: pointer, Enter, and Space activation emit `qMaximize`. Images lazy-load; `video` adds a decorative play indicator but `src` is still rendered as an image/poster.
-- Accessibility: `label`, then `alt`, then “Media item” names the interactive wrapper. Supply meaningful `alt` even when a visible caption exists.
+`q-button` runs an action or presents a destination as a button.
 
-## Overlays
+- [Authored guide](./q-button.md) · [Generated API](../../src/components/actions/button/readme.md)
+- Status: Implemented; see guide limitations.
 
-### `q-toast`
+### `q-card`
 
-- API: [generated reference](../../src/components/overlays/toast/readme.md)
-- Properties: `position`, `maxVisible`.
-- Methods: `info(title, description?, options?)`, `success(...)`, `warning(...)`, `danger(...)`, `error(...)`, `dismiss(id)`, `clear()`.
-- Controller: import `toast` from `@webquark/core` for the same methods without repeated component HTML. `error` is an alias for `danger`.
-- Behavior: exactly one explicit root host owns the global queue, timers, stacking, announcements, and animation. The first three items are visible by default; later items wait in FIFO order. Info/success dismiss after 5 seconds, warning after 8 seconds, and danger persists unless a duration is supplied. Hover, focus, and hidden documents pause active timers.
-- Accessibility: the host uses one polite atomic live region and does not move focus. Each visual composes `q-alert` with its own announcement disabled. Built-in semantic SVG icons render synchronously without network access.
-- Limitations: V1 has no actions, updates, deduplication, custom icons, scoped hosts, or assertive announcements.
+`q-card` groups consumer content in a raised surface with an optional header and button interaction.
+
+- [Authored guide](./q-card.md) · [Generated API](../../src/components/layout/card/readme.md)
+- Status: Implemented; see guide limitations.
+
+### `q-carousel`
+
+`q-carousel` lays out slotted slides in a horizontal scroll viewport with optional arrows and indicator buttons.
+
+- [Authored guide](./q-carousel.md) · [Generated API](../../src/components/layout/carousel/readme.md)
+- Status: Implemented; dynamic item-width limitation.
+
+### `q-chip`
+
+`q-chip` shows a compact label, selectable filter, link, or removable token.
+
+- [Authored guide](./q-chip.md) · [Generated API](../../src/components/actions/chip/readme.md)
+- Status: Implemented; see guide limitations.
+
+### `q-conversation-bubble`
+
+`q-conversation-bubble` presents a conversation message with optional sender, timestamp, identity, metadata, and actions.
+
+- [Authored guide](./q-conversation-bubble.md) · [Generated API](../../src/components/data-display/conversation-bubble/readme.md)
+- Status: Implemented; see guide limitations.
+
+### `q-data-table`
+
+`q-data-table` displays records with optional sorting, selection, grouping, search, and row actions.
+
+- [Authored guide](./q-data-table.md) · [Generated API](../../src/components/data-display/data-table/readme.md)
+- Status: Implemented; see guide limitations.
 
 ### `q-dialog`
 
-- API: [generated reference](../../src/components/overlays/dialog/readme.md)
-- Properties: `open`, `dialogTitle`, `ariaLabel`, `message`, `closeOnEsc`, `closeOnOverlayClick`, `loading`, `confirmLabel`, `cancelLabel`, `closeLabel`, `showCancel`, `showConfirm`, `backdropEffect`.
-- Events: `qConfirm`, `qCancel`, `qClose`.
-- Methods: `show()`, `close()`, `confirm()`, `cancel()`.
-- Slots: `header`, default body, `footer`.
-- Behavior: traps focus while open and restores prior focus after an animated close. `loading` blocks built-in actions and dismissal. CEF-safe `solid` is the default backdrop; `none` keeps only the click layer.
-- Accessibility: `dialogTitle` and `message` wire `aria-labelledby`/`aria-describedby`. Set `ariaLabel` when a custom header does not provide `dialogTitle`; an explicit label takes naming precedence.
+`q-dialog` shows a modal message or confirmation surface with default actions and replaceable content regions.
+
+- [Authored guide](./q-dialog.md) · [Generated API](../../src/components/overlays/dialog/readme.md)
+- Status: Implemented; see guide limitations.
+
+### `q-dropdown`
+
+`q-dropdown` chooses a string value from a floating option menu with optional local or external search.
+
+- [Authored guide](./q-dropdown.md) · [Generated API](../../src/components/inputs/dropdown/readme.md)
+- Status: Implemented; see guide limitations.
+
+### `q-form`
+
+`q-form` collects and validates named controls while sharing field size and feedback spacing.
+
+- [Authored guide](./q-form.md) · [Generated API](../../src/components/layout/form/readme.md)
+- Status: Implemented; see guide limitations.
+
+### `q-grid`
+
+`q-grid` arranges content in a responsive grid constrained by a maximum column count.
+
+- [Authored guide](./q-grid.md) · [Generated API](../../src/components/layout/grid/readme.md)
+- Status: Implemented; see guide limitations.
+
+### `q-icon`
+
+`q-icon` renders registered SVG definitions or loads named remote/local icon assets.
+
+- [Authored guide](./q-icon.md) · [Generated API](../../src/components/media/icon/readme.md)
+- Status: Implemented; see guide limitations.
+
+### `q-inline`
+
+`q-inline` arranges actions or content in a wrapping horizontal row.
+
+- [Authored guide](./q-inline.md) · [Generated API](../../src/components/layout/inline/readme.md)
+- Status: Implemented; see guide limitations.
+
+### `q-input`
+
+`q-input` collects a single value with a visible label, validation messages, and optional inline controls.
+
+- [Authored guide](./q-input.md) · [Generated API](../../src/components/inputs/input/readme.md)
+- Status: Implemented; see guide limitations.
+
+### `q-link`
+
+`q-link` renders an inline destination with optional icon slots and an external-link cue.
+
+- [Authored guide](./q-link.md) · [Generated API](../../src/components/actions/link/readme.md)
+- Status: Implemented; see guide limitations.
+
+### `q-map`
+
+`q-map` displays an interactive Leaflet map with configurable imagery, markers, clustering, and selected-location state.
+
+- [Authored guide](./q-map.md) · [Generated API](../../src/components/data-display/map/readme.md)
+- Status: Implemented; see guide limitations.
+
+### `q-media`
+
+`q-media` provides a scaffold that projects application-owned media and fallback content without rendering media itself.
+
+- [Authored guide](./q-media.md) · [Generated API](../../src/components/media/media/readme.md)
+- Status: Public scaffold; behavior incomplete.
+
+### `q-navbar`
+
+`q-navbar` displays brand, navigation items, and actions with optional edge placement and a responsive mobile menu.
+
+- [Authored guide](./q-navbar.md) · [Generated API](../../src/components/layout/navbar/readme.md)
+- Status: Implemented; see guide limitations.
+
+### `q-pagination`
+
+`q-pagination` requests previous and next pages and displays the current item range.
+
+- [Authored guide](./q-pagination.md) · [Generated API](../../src/components/data-display/pagination/readme.md)
+- Status: Implemented; see guide limitations.
+
+### `q-panel`
+
+`q-panel` groups header, body, and footer content in a configurable surface with optional scrolling.
+
+- [Authored guide](./q-panel.md) · [Generated API](../../src/components/layout/panel/readme.md)
+- Status: Implemented; see guide limitations.
+
+### `q-progress`
+
+`q-progress` shows how much of a task is complete as a horizontal bar or a circular ring.
+
+- [Authored guide](./q-progress.md) · [Generated API](../../src/components/indicators/progress/readme.md)
+- Status: Implemented; see guide limitations.
+
+### `q-quantity-selector`
+
+`q-quantity-selector` edits a number using step buttons and a bounded text field.
+
+- [Authored guide](./q-quantity-selector.md) · [Generated API](../../src/components/inputs/quantity-selector/readme.md)
+- Status: Implemented; see guide limitations.
+
+### `q-radio-group`
+
+`q-radio-group` chooses one value from a short set of connected radio options.
+
+- [Authored guide](./q-radio-group.md) · [Generated API](../../src/components/inputs/radio-group/readme.md)
+- Status: Implemented; see guide limitations.
+
+### `q-reel`
+
+`q-reel` arranges thumbnail children in a grid or scrolling row and can open a built-in media viewer.
+
+- [Authored guide](./q-reel.md) · [Generated API](../../src/components/media/reel/readme.md)
+- Status: Implemented; viewer focus limitations.
+
+### `q-scrollable`
+
+`q-scrollable` provides a bounded scroll viewport with a custom vertical thumb or styled native scrollbars.
+
+- [Authored guide](./q-scrollable.md) · [Generated API](../../src/components/layout/scrollable/readme.md)
+- Status: Implemented; see guide limitations.
+
+### `q-section`
+
+`q-section` is a public content scaffold that currently projects consumer-owned content without its planned layout styling.
+
+- [Authored guide](./q-section.md) · [Generated API](../../src/components/layout/section/readme.md)
+- Status: Public scaffold; behavior incomplete.
+
+### `q-sidepanel`
+
+`q-sidepanel` provides hierarchical navigation, a persistent content panel, or a dismissible drawer.
+
+- [Authored guide](./q-sidepanel.md) · [Generated API](../../src/components/layout/sidepanel/readme.md)
+- Status: Implemented; drawer transition and resize limitations.
+
+### `q-stack`
+
+`q-stack` arranges content in a vertical stack with consistent spacing.
+
+- [Authored guide](./q-stack.md) · [Generated API](../../src/components/layout/stack/readme.md)
+- Status: Implemented; see guide limitations.
+
+### `q-step-diagram`
+
+`q-step-diagram` arranges interactive step items into a vertical or horizontal sequence.
+
+- [Authored guide](./q-step-diagram.md) · [Generated API](../../src/components/indicators/step-diagram/readme.md)
+- Status: Implemented; see guide limitations.
+
+### `q-step-diagram-item`
+
+`q-step-diagram-item` renders a focusable step with a decorative badge, connector, title, and body.
+
+- [Authored guide](./q-step-diagram-item.md) · [Generated API](../../src/components/indicators/step-diagram-item/readme.md)
+- Status: Implemented; pending state still permits activation.
+
+### `q-syntax-box`
+
+`q-syntax-box` displays highlighted code and optionally provides an editable, form-associated code field.
+
+- [Authored guide](./q-syntax-box.md) · [Generated API](../../src/components/data-display/syntax-box/readme.md)
+- Status: Implemented; trusted code only; escaping and action-name limitations.
+
+### `q-tabs`
+
+`q-tabs` renders a keyboard-operable tab selector while the application owns its selected value and content panels.
+
+- [Authored guide](./q-tabs.md) · [Generated API](../../src/components/layout/tabs/readme.md)
+- Status: Implemented; see guide limitations.
+
+### `q-textarea`
+
+`q-textarea` collects multiline text with automatic growth, optional manual resizing, and form validation.
+
+- [Authored guide](./q-textarea.md) · [Generated API](../../src/components/inputs/textarea/readme.md)
+- Status: Implemented; see guide limitations.
+
+### `q-thumbnail`
+
+`q-thumbnail` shows an interactive image preview that requests maximization through an event.
+
+- [Authored guide](./q-thumbnail.md) · [Generated API](../../src/components/media/thumbnail/readme.md)
+- Status: Implemented; see guide limitations.
+
+### `q-toast`
+
+`q-toast` hosts application notifications with queued display, timed dismissal, and a shared polite live region.
+
+- [Authored guide](./q-toast.md) · [Generated API](../../src/components/overlays/toast/readme.md)
+- Status: Implemented; see guide limitations.
+
+### `q-toggle`
+
+`q-toggle` switches a Boolean preference using switch or checkbox presentation.
+
+- [Authored guide](./q-toggle.md) · [Generated API](../../src/components/inputs/toggle/readme.md)
+- Status: Implemented; see guide limitations.
+
+### `q-toolbar`
+
+`q-toolbar` arranges consumer-owned controls and content along a horizontal or vertical edge.
+
+- [Authored guide](./q-toolbar.md) · [Generated API](../../src/components/layout/toolbar/readme.md)
+- Status: Implemented; see guide limitations.
 
 ### `q-tooltip`
 
-- API: [generated reference](../../src/components/overlays/tooltip/readme.md)
-- Properties: `content`, `position`, `delay`.
-- Slot: default content fallback.
-- Behavior: attaches to its immediate parent, updates that trigger’s `aria-describedby`, and shows on mouse hover or descendant focus. Scrolling or resizing hides it.
-- Limitations: tooltips are non-interactive, do not collision-flip at viewport edges, and do not currently expose touch/click or Escape dismissal behavior.
+`q-tooltip` adds a noninteractive description to its immediate parent on hover or focus.
+
+- [Authored guide](./q-tooltip.md) · [Generated API](../../src/components/overlays/tooltip/readme.md)
+- Status: Implemented; dismissal and accessible-description limitations.

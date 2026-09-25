@@ -1,3 +1,4 @@
+import { fieldFeedback, feedbackStyle } from '../../shared/field';
 import { AttachInternals, Component, Element, Event, EventEmitter, h, Method, Prop, Watch } from '@stencil/core';
 
 import { identifyItems } from '../../../utils/collection-identity';
@@ -32,11 +33,17 @@ export class QRadioGroup {
   @AttachInternals() internals!: ElementInternals;
 
   @Prop() label?: string;
+  /** Supporting text, replaced by an active error. */
+  @Prop() description?: string;
   /** Options to render; strings use the same text for label and value. */
   @Prop() options: RadioGroupOptionInput[] | string = [];
   @Prop({ mutable: true }) value: string = '';
 
-  @Prop({ reflect: true }) size: QRadioGroupSize = 'md';
+  /** Keep the label accessible without displaying it. */
+  @Prop() labelHidden: boolean = false;
+  /** Omitted inherits the enclosing form; false cancels reservation. */
+  @Prop() reserveFeedback?: boolean;
+  @Prop({ reflect: true }) size: QRadioGroupSize = 'inherit';
   /** `responsive` stacks the connected options below 680px. */
   @Prop({ reflect: true }) orientation: QRadioGroupOrientation = 'responsive';
 
@@ -217,6 +224,7 @@ export class QRadioGroup {
 
     return (
       <div
+        style={feedbackStyle(this.reserveFeedback)}
         class={{
           'radio-group': true,
           'is-disabled': this.disabled,
@@ -234,9 +242,9 @@ export class QRadioGroup {
           aria-label={!this.label ? ariaLabel : undefined}
           aria-required={this.required ? 'true' : 'false'}
           aria-invalid={hasError ? 'true' : 'false'}
-          aria-describedby={hasError ? 'q-radio-group-error' : undefined}
+          aria-describedby={hasError || this.description ? 'q-radio-group-error' : undefined}
         >
-          {this.label && <legend part="label">{this.label}</legend>}
+          {this.label && <legend part="label" class={{ 'q-label-hidden': this.labelHidden }}>{this.label}</legend>}
 
           <div
             class="options"
@@ -270,7 +278,7 @@ export class QRadioGroup {
                 {option.icon && (
                   <q-icon
                     name={option.icon}
-                    size={this.size === 'sm' ? '14' : this.size === 'lg' ? '18' : '16'}
+                    size="var(--_q-control-icon)"
                     part="option-icon"
                     class="option-icon"
                   />
@@ -281,11 +289,7 @@ export class QRadioGroup {
           </div>
         </fieldset>
 
-        {hasError && (
-          <span id="q-radio-group-error" class="error-msg" part="error-msg">
-            {displayError}
-          </span>
-        )}
+        {fieldFeedback('q-radio-group-error', displayError, this.description)}
       </div>
     );
   }
