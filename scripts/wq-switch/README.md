@@ -15,17 +15,26 @@ consumer's `@webquark/core` dependency in package.json):
 
 ```json
 {
-  "version": 1,
-  "source": "",
-  "preferredVersion": "1.1.0-dev.2"
+  "wq-switch": {
+    "version": 1,
+    "source": "",
+    "preferredVersion": "1.1.0-dev.5"
+  }
 }
 ```
 
-Fill in `source` with the physical WebQuark repository root before running
+Fill in `wq-switch.source` with the physical WebQuark repository root before running
 `local` or `build`. Alternatively pass `--source "path/to/WebQuark"` to setup.
 The exact dependency specifier is preserved, including a range when one is used.
 `preferredVersion` records your release preference; `npm` still restores the saved
 installation and does not download a different version.
+
+The shared configuration file is `.webquark.json`. Setup preserves other top-level
+sections. Older `.wq-switch.json` files remain readable by the updated CLI; running
+setup migrates their settings into `"wq-switch"` and removes the migrated file.
+If both files already contain switcher settings, the new section wins and the old
+file is left untouched. Published older CLIs need updating before using the new
+format. The `.wq-switch/` snapshot directory is unchanged.
 
 Setup also adds these scripts without changing dependency versions or lockfiles:
 
@@ -94,7 +103,7 @@ through the original package store or through the active package entry.
   package-manager install; backups depend on the original package store remaining.
 - Old snapshots are retained so existing processes and recovery references stay
   valid. After restoring and stopping app processes, the `.wq-switch` directory
-  can be removed to reclaim disk space. Keep `.wq-switch.json` for future use.
+  can be removed to reclaim disk space. Keep `.webquark.json` for future use.
 
 ## Source layout
 

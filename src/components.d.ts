@@ -24,7 +24,7 @@ import { QInputSize, QInputType } from "./components/inputs/input/input.types";
 import { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
 import { QMapBoundsInput, QMapClickDetail, QMapClusterSelectDetail, QMapErrorDetail, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapMarkerVisibilityResult, QMapProvider, QMapRasterTileLoadingPolicy, QMapStatusChangeDetail, QMapViewportRect } from "./components/data-display/map/map.types";
 import { QMediaKind, QMediaLoading } from "./components/media/media/media.types";
-import { NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode } from "./components/layout/navbar/navbar.types";
+import { NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode, QNavbarNavAlign, QNavbarNavCenterWithin } from "./components/layout/navbar/navbar.types";
 import { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
 import { QProgressSize, QProgressTone, QProgressVariant } from "./components/indicators/progress/progress.types";
 import { QQuantitySelectorOrientation, QQuantitySelectorVariant } from "./components/inputs/quantity-selector/quantity-selector.types";
@@ -62,7 +62,7 @@ export { QInputSize, QInputType } from "./components/inputs/input/input.types";
 export { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
 export { QMapBoundsInput, QMapClickDetail, QMapClusterSelectDetail, QMapErrorDetail, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapMarkerVisibilityResult, QMapProvider, QMapRasterTileLoadingPolicy, QMapStatusChangeDetail, QMapViewportRect } from "./components/data-display/map/map.types";
 export { QMediaKind, QMediaLoading } from "./components/media/media/media.types";
-export { NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode } from "./components/layout/navbar/navbar.types";
+export { NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode, QNavbarNavAlign, QNavbarNavCenterWithin } from "./components/layout/navbar/navbar.types";
 export { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
 export { QProgressSize, QProgressTone, QProgressVariant } from "./components/indicators/progress/progress.types";
 export { QQuantitySelectorOrientation, QQuantitySelectorVariant } from "./components/inputs/quantity-selector/quantity-selector.types";
@@ -1191,6 +1191,16 @@ export namespace Components {
           * @default 'menu'
          */
         "mobileMode": QNavbarMobileMode;
+        /**
+          * Horizontal desktop navigation alignment.
+          * @default 'start'
+         */
+        "navAlign": QNavbarNavAlign;
+        /**
+          * Reference box for centred horizontal desktop navigation.
+          * @default 'available'
+         */
+        "navCenterWithin": QNavbarNavCenterWithin;
         /**
           * @default false
          */
@@ -4055,6 +4065,16 @@ declare namespace LocalJSX {
           * @default 'menu'
          */
         "mobileMode"?: QNavbarMobileMode;
+        /**
+          * Horizontal desktop navigation alignment.
+          * @default 'start'
+         */
+        "navAlign"?: QNavbarNavAlign;
+        /**
+          * Reference box for centred horizontal desktop navigation.
+          * @default 'available'
+         */
+        "navCenterWithin"?: QNavbarNavCenterWithin;
         "onQMenuToggle"?: (event: QNavbarCustomEvent<boolean>) => void;
         "onQSelect"?: (event: QNavbarCustomEvent<NavbarSelectDetail>) => void;
         /**
@@ -5152,6 +5172,8 @@ declare namespace LocalJSX {
         "compact": boolean;
         "transparent": boolean;
         "bordered": boolean;
+        "navAlign": QNavbarNavAlign;
+        "navCenterWithin": QNavbarNavCenterWithin;
         "mobileMode": QNavbarMobileMode;
         "mobileLabel": string;
         "ariaLabel": string | null;

@@ -7,6 +7,8 @@
     "value": { "type": "string", "default": "docs", "desc": "Active item value or href" },
     "ariaLabel": { "type": "string", "default": "", "desc": "Accessible name for both responsive navigation regions" },
     "edge": { "type": "select", "default": "top", "options": ["top", "right", "bottom", "left"], "desc": "Edge and orientation" },
+    "navAlign": { "type": "select", "default": "start", "options": ["start", "center", "end"], "desc": "Horizontal desktop navigation alignment" },
+    "navCenterWithin": { "type": "select", "default": "available", "options": ["available", "container"], "desc": "Centre between the sides or within the padded navbar" },
     "mobileMode": { "type": "select", "default": "menu", "options": ["menu", "inline"], "desc": "Mobile item behavior" },
     "sticky": { "type": "boolean", "default": false, "desc": "Pins the navbar to its edge" },
     "compact": { "type": "boolean", "default": false, "desc": "Reduces navbar height" },
@@ -20,6 +22,10 @@
     "messages-addon": { "type": "html", "default": "<span style=\"display:inline-flex;min-width:18px;height:18px;padding:0 4px;align-items:center;justify-content:center;border-radius:999px;background:#ef4444;color:white;font-size:11px;font-weight:700\">3</span>", "desc": "Example per-item add-on slot" }
   },
   "variants": [
+    { "name": "Available-space centre / unequal sides", "props": { "brand": "A longer product name", "navAlign": "center", "navCenterWithin": "available", "items": "[\"Home\",\"Docs\"]" }, "slots": { "actions": "<button>Go</button>" } },
+    { "name": "Container centre / unequal sides", "props": { "brand": "A longer product name", "navAlign": "center", "navCenterWithin": "container", "items": "[\"Home\",\"Docs\"]" }, "slots": { "actions": "<button>Go</button>" } },
+    { "name": "Optical offset +12px", "props": { "navAlign": "center", "navCenterWithin": "container", "style": "--q-navbar-nav-offset-inline:12px", "items": "[\"Home\",\"Docs\"]" }, "slots": {} },
+    { "name": "RTL optical offset +12px (left)", "props": { "dir": "rtl", "navAlign": "center", "navCenterWithin": "container", "style": "--q-navbar-nav-offset-inline:12px", "items": "[\"Home\",\"Docs\"]" }, "slots": {} },
     { "name": "Default Navbar", "props": { "brand": "WebQuark" } },
     { "name": "Compact Sticky", "props": { "brand": "Docs", "compact": true, "sticky": true } },
     { "name": "Transparent", "props": { "brand": "Landing", "transparent": true, "bordered": false } },
@@ -27,6 +33,8 @@
     { "name": "Icon Only", "props": { "brand": "Mobile", "value": "home", "mobileMode": "inline", "items": "[{\"label\":\"Home\",\"value\":\"home\",\"icon\":\"house\",\"iconOnly\":true},{\"label\":\"Messages\",\"value\":\"messages\",\"icon\":\"message-circle\",\"iconOnly\":true},{\"label\":\"Tasks\",\"value\":\"tasks\",\"icon\":\"clipboard-list\",\"iconOnly\":true}]" } }
   ],
   "edgeCases": [
+    { "name": "Narrow parent / retained custom controls", "props": { "brand": "Product", "navAlign": "center", "navCenterWithin": "container", "style": "max-width:320px", "items": "[\"Home\",\"Products\",\"About\"]" }, "slots": { "nav": "<button>Help</button>", "actions": "<button>Sign in</button>" } },
+    { "name": "Narrow parent / wrapping row", "props": { "brand": "Product", "navAlign": "center", "mobileMode": "inline", "style": "max-width:320px", "items": "[\"Home\",\"Products\",\"About\"]" }, "slots": { "actions": "<button>Go</button>" } },
     { "name": "Long Brand", "props": { "brand": "Very Long Product Name That Needs Ellipsis" } }
   ]
 }

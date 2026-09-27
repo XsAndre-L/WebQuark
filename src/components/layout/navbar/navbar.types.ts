@@ -3,6 +3,8 @@ import type { QIconLibrary, QIconLocalPath, QIconName, QIconSize } from '../../m
 export type QNavbarTarget = '_self' | '_blank' | '_parent' | '_top';
 export type QNavbarMobileMode = 'menu' | 'inline';
 export type QNavbarEdge = 'top' | 'right' | 'bottom' | 'left';
+export type QNavbarNavAlign = 'start' | 'center' | 'end';
+export type QNavbarNavCenterWithin = 'available' | 'container';
 export type QNavbarAddonPlacement =
   | 'top-start'
   | 'top-center'

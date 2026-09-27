@@ -179,24 +179,51 @@ describe('wq-switch transactions', () => {
   });
   it('creates a blank source, captures the declared release, and preserves settings on repeat setup', () => {
     const { app } = fixture();
-    unlinkSync(join(app, '.wq-switch.json'));
+    unlinkSync(join(app, '.webquark.json'));
     const pkg = manifest(app); pkg.dependencies!['@webquark/core'] = '^1.2.3';
     writeJson(join(app, 'package.json'), pkg);
     setup(app);
-    const config = json<any>(join(app, '.wq-switch.json'));
-    expect(config).toEqual({ version: 1, source: '', preferredVersion: '^1.2.3' });
+    const config = json<any>(join(app, '.webquark.json'));
+    expect(config).toEqual({ 'wq-switch': { version: 1, source: '', preferredVersion: '^1.2.3' } });
     expect(() => sourceFor(app)).toThrow('Set source');
     expect(manifest(app).scripts).toMatchObject({ 'wq-sandbox': 'wq-sandbox', 'wq-switch': 'wq-switch' });
-    config.preferredVersion = '1.2.4'; writeJson(join(app, '.wq-switch.json'), config);
+    config['wq-switch'].preferredVersion = '1.2.4'; writeJson(join(app, '.webquark.json'), config);
     setup(app);
-    expect(json<any>(join(app, '.wq-switch.json')).preferredVersion).toBe('1.2.4');
+    expect(json<any>(join(app, '.webquark.json'))['wq-switch'].preferredVersion).toBe('1.2.4');
+  });
+  it('reads legacy configuration and migrates it without losing other WebQuark settings', () => {
+    const { app, source } = fixture();
+    const previous = json<any>(join(app, '.webquark.json'))['wq-switch'];
+    writeJson(join(app, '.wq-switch.json'), previous);
+    writeJson(join(app, '.webquark.json'), { sandbox: { port: 4444 } });
+    expect(sourceFor(app)).toBe(realpathSync(source));
+    setup(app);
+    expect(json<any>(join(app, '.webquark.json'))).toEqual({ sandbox: { port: 4444 }, 'wq-switch': previous });
+    expect(existsSync(join(app, '.wq-switch.json'))).toBe(false);
+    expect(readFileSync(join(app, '.gitignore'), 'utf8')).toContain('/.webquark.json');
+    setup(app);
+    expect(json<any>(join(app, '.webquark.json')).sandbox).toEqual({ port: 4444 });
+  });
+  it('prefers the new section when both files exist without deleting the unused legacy settings', () => {
+    const { app, source } = fixture();
+    writeJson(join(app, '.wq-switch.json'), { version: 1, source: 'unused', preferredVersion: 'old' });
+    expect(sourceFor(app)).toBe(realpathSync(source));
+    setup(app);
+    expect(existsSync(join(app, '.wq-switch.json'))).toBe(true);
+  });
+  it.each([null, [], { 'wq-switch': null }, { 'wq-switch': { version: 2, source: '' } }])('rejects malformed shared configuration without overwriting it: %j', invalid => {
+    const { app } = fixture();
+    writeJson(join(app, '.webquark.json'), invalid);
+    const before = readFileSync(join(app, '.webquark.json'), 'utf8');
+    expect(() => setup(app)).toThrow('Invalid');
+    expect(readFileSync(join(app, '.webquark.json'), 'utf8')).toBe(before);
   });
   it('does not overwrite custom scripts or write a partial setup for a script conflict', () => {
     const { app } = fixture();
     const pkg = manifest(app); pkg.scripts!['wq-switch'] = 'custom-command'; writeJson(join(app, 'package.json'), pkg);
-    const config = readFileSync(join(app, '.wq-switch.json'), 'utf8');
+    const config = readFileSync(join(app, '.webquark.json'), 'utf8');
     expect(() => setup(app)).toThrow('custom wq-switch');
-    expect(readFileSync(join(app, '.wq-switch.json'), 'utf8')).toBe(config);
+    expect(readFileSync(join(app, '.webquark.json'), 'utf8')).toBe(config);
     expect(manifest(app).scripts!['wq-switch']).toBe('custom-command');
   });
   it('runs installed wq-setup and generated short scripts through Bun', () => {
