@@ -28,7 +28,7 @@ defineCustomElements();
 3. Add this markup to your application page. Any module script runs after that shared setup.
 
 ```html
-<q-dialog open dialog-title="Save changes?" message="Your profile will be updated."></q-dialog>
+<q-dialog open heading="Save changes?" message="Your profile will be updated."></q-dialog>
 ```
 
 **Result:** an open medium-width dialog with Cancel, Confirm, and Close controls.
@@ -57,7 +57,7 @@ Open from a real trigger and handle the confirmation event.
 
 ```html
 <button id="open-confirm" type="button">Review changes</button>
-<q-dialog id="confirm-dialog" dialog-title="Save changes?" message="Your profile will be updated."></q-dialog>
+<q-dialog id="confirm-dialog" heading="Save changes?" message="Your profile will be updated."></q-dialog>
 <p id="confirm-result" role="status"></p>
 <script type="module">
 await customElements.whenDefined('q-dialog');
@@ -115,14 +115,14 @@ Closing makes the wrapper inert immediately; visibility ends after transition or
 | Key | Action |
 | :--- | :--- |
 | Tab / Shift+Tab | Trap focus among visible focusable dialog descendants. |
-| Escape | Cancel when open, closeOnEsc=true, and not loading. |
+| Escape | Cancel when open, closeOnEscape=true, and not loading. |
 | Enter / Space | Activate a focused native action button. |
 
 Opening after load records the previous focused element, then focuses the first focusable control after the transition. Closing attempts to restore it. Initially-open dialogs focus content but do not record a previous trigger. Keep only one modal open: the Escape listener is window-wide.
 
 ### Labels and announcements
 
-The surface has role="dialog", aria-modal="true", tabindex="-1", and aria-hidden reflecting open. A nonblank aria-label wins; otherwise dialogTitle provides aria-labelledby. message supplies aria-describedby.
+The surface has role="dialog", aria-modal="true", tabindex="-1", and aria-hidden reflecting open. A nonblank aria-label wins; otherwise heading provides aria-labelledby. message supplies aria-describedby.
 
 When replacing the header slot, supply aria-label: the default title target is replaced. When supplying a custom body, omit message to avoid a description reference to replaced fallback content. The confirm button exposes aria-busy while loading. Custom content and action labels remain your responsibility.
 
@@ -145,14 +145,14 @@ The wrapper uses 16px gutters at a 16px root font and 100dvh height. The body sc
 
 ### Backdrops
 
-`solid` (default) draws the theme overlay; `none` leaves a transparent click layer. Unknown values normalize to solid. `closeOnOverlayClick` controls cancellation separately.
+`solid` (default) draws the theme overlay; `none` leaves a transparent click layer. Unknown values normalize to solid. `closeOnBackdropClick` controls cancellation separately.
 
 ### Custom styling
 
 Scope CSS to the host or supplied content. See the exact [CSS variables](#css-variables) and [Shadow Parts](#shadow-parts).
 
 ```html
-<q-dialog class="review-dialog" open dialog-title="Review" message="Check the details."></q-dialog>
+<q-dialog class="review-dialog" open heading="Review" message="Check the details."></q-dialog>
 <style>
   q-dialog.review-dialog { --q-dialog-width: 40rem; --q-dialog-body-padding: 24px; }
 </style>
@@ -162,6 +162,8 @@ Shared geometry and theme setup are documented in [Foundation](../foundation.md)
 
 ## API reference
 
+For new code, use `heading`, `backdrop`, `closeOnEscape`, `closeOnBackdropClick`. The deprecated aliases remain supported. Canonical properties take precedence when set; otherwise the legacy property and its default apply. Set a canonical JavaScript property to `undefined` to restore the fallback.
+
 Cross-check the [generated API](../../src/components/overlays/dialog/readme.md) and [implementation](../../src/components/overlays/dialog/dialog.tsx). Source nullability and actual rendering limitations are preserved below.
 
 ### Properties
@@ -170,14 +172,18 @@ All properties are optional and listed alphabetically.
 
 | Name | Default | Description |
 | :--- | :--- | :--- |
-| `ariaLabel` | `null` | Nonblank explicit dialog name; overrides dialogTitle association.<br>**Type:** `string \| null`. **HTML attribute:** `aria-label`. **Required:** No. |
-| `backdropEffect` | `'solid'` | solid or none; unknown values render solid.<br>**Type:** `"none" \| "solid"`. **HTML attribute:** `backdrop-effect`. **Required:** No. |
+| `ariaLabel` | `null` | Nonblank explicit dialog name; overrides heading association.<br>**Type:** `string \| null`. **HTML attribute:** `aria-label`. **Required:** No. |
+| `backdrop` | `undefined` | solid or none; unknown values render solid.<br>**Type:** `"none" \| "solid"`. **HTML attribute:** `backdrop`. **Required:** No. |
+| `backdropEffect` | `'solid'` | Deprecated alias for `backdrop`. solid or none; unknown values render solid.<br>**Type:** `"none" \| "solid"`. **HTML attribute:** `backdrop-effect`. **Required:** No. |
 | `cancelLabel` | `'Cancel'` | Default cancel-button text.<br>**Type:** `string`. **HTML attribute:** `cancel-label`. **Required:** No. |
 | `closeLabel` | `'Close dialog'` | Header close-button accessible name; no blank fallback.<br>**Type:** `string`. **HTML attribute:** `close-label`. **Required:** No. |
-| `closeOnEsc` | `true` | Allows Escape to cancel unless loading.<br>**Type:** `boolean`. **HTML attribute:** `close-on-esc`. **Required:** No. |
-| `closeOnOverlayClick` | `true` | Allows backdrop clicks to cancel unless loading.<br>**Type:** `boolean`. **HTML attribute:** `close-on-overlay-click`. **Required:** No. |
+| `closeOnBackdropClick` | `undefined` | Allows backdrop clicks to cancel unless loading.<br>**Type:** `boolean`. **HTML attribute:** `close-on-backdrop-click`. **Required:** No. |
+| `closeOnEsc` | `true` | Deprecated alias for `closeOnEscape`. Allows Escape to cancel unless loading.<br>**Type:** `boolean`. **HTML attribute:** `close-on-esc`. **Required:** No. |
+| `closeOnEscape` | `undefined` | Allows Escape to cancel unless loading.<br>**Type:** `boolean`. **HTML attribute:** `close-on-escape`. **Required:** No. |
+| `closeOnOverlayClick` | `true` | Deprecated alias for `closeOnBackdropClick`. Allows backdrop clicks to cancel unless loading.<br>**Type:** `boolean`. **HTML attribute:** `close-on-overlay-click`. **Required:** No. |
 | `confirmLabel` | `'Confirm'` | Default confirm-button text.<br>**Type:** `string`. **HTML attribute:** `confirm-label`. **Required:** No. |
-| `dialogTitle` | `undefined` | Default header title and accessible-name source.<br>**Type:** `string`. **HTML attribute:** `dialog-title`. **Required:** No. |
+| `dialogTitle` | `undefined` | Deprecated alias for `heading`. Default header title and accessible-name source.<br>**Type:** `string`. **HTML attribute:** `dialog-title`. **Required:** No. |
+| `heading` | `undefined` | Default header title and accessible-name source.<br>**Type:** `string`. **HTML attribute:** `heading`. **Required:** No. |
 | `loading` | `false` | Disables built-in actions and marks confirm busy; does not disable slotted controls.<br>**Type:** `boolean`. **HTML attribute:** `loading`. **Required:** No. |
 | `message` | `undefined` | Default body text and accessible-description source.<br>**Type:** `string`. **HTML attribute:** `message`. **Required:** No. |
 | `open` | `false` | Mutable visibility state; direct assignment does not emit qClose.<br>**Type:** `boolean`. **HTML attribute:** `open`. **Required:** No. |
@@ -191,7 +197,7 @@ All properties are optional and listed alphabetically.
 | :--- | :--- |
 | (default) | Custom body; replaces message fallback. Omit message with custom body to avoid a dangling description target. |
 | footer | Custom actions replace defaults. Application owns disabled/loading behavior. Footer is hidden when empty and both default actions are disabled. |
-| header | Custom heading replaces dialogTitle fallback. Supply aria-label when using it. |
+| header | Custom heading replaces heading fallback. Supply aria-label when using it. |
 
 ### Events
 
@@ -238,7 +244,7 @@ Defaults include the shared theme when set there; nested `var()` expressions sho
 
 | Name | Targets |
 | :--- | :--- |
-| `backdrop` | Backdrop click layer. |
+| `backdrop` | `undefined` |
 | `body` | Body region. |
 | `cancel-btn` | Default cancel button when showCancel; fallback hidden if footer is slotted. |
 | `close-btn` | Default header close button. |

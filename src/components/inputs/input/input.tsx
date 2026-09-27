@@ -48,7 +48,7 @@ export class QInput {
   @Prop({ reflect: true }) required: boolean = false;
   /** Validation error text or error-state flag. */
   @Prop({ reflect: true }) error?: string;
-  /** Validation helper text displayed when the field is in an error state. */
+  /** @deprecated Use error. Used when error is empty or unset. */
   @Prop() errorMessage?: string;
 
   @Prop({ reflect: true }) name?: string;

@@ -11,14 +11,15 @@ Numeric quantity control with increment/decrement buttons and a bounded editable
 
 ## Properties
 
-| Property  | Attribute | Description | Type                                | Default        |
-| --------- | --------- | ----------- | ----------------------------------- | -------------- |
-| `max`     | `max`     |             | `number`                            | `undefined`    |
-| `min`     | `min`     |             | `number`                            | `undefined`    |
-| `size`    | `size`    |             | `"inherit" \| "lg" \| "md" \| "sm"` | `'inherit'`    |
-| `step`    | `step`    |             | `number`                            | `1`            |
-| `value`   | `value`   |             | `number`                            | `0`            |
-| `variant` | `variant` |             | `"horizontal" \| "vertical"`        | `'horizontal'` |
+| Property      | Attribute     | Description                                                                                                     | Type                                | Default        |
+| ------------- | ------------- | --------------------------------------------------------------------------------------------------------------- | ----------------------------------- | -------------- |
+| `max`         | `max`         |                                                                                                                 | `number`                            | `undefined`    |
+| `min`         | `min`         |                                                                                                                 | `number`                            | `undefined`    |
+| `orientation` | `orientation` | Direction of the controls. Overrides variant; defaults to horizontal when both are omitted.                     | `"horizontal" \| "vertical"`        | `undefined`    |
+| `size`        | `size`        |                                                                                                                 | `"inherit" \| "lg" \| "md" \| "sm"` | `'inherit'`    |
+| `step`        | `step`        |                                                                                                                 | `number`                            | `1`            |
+| `value`       | `value`       |                                                                                                                 | `number`                            | `0`            |
+| `variant`     | `variant`     | <span style="color:red">**[DEPRECATED]**</span> Use orientation. Used only when orientation is unset.<br/><br/> | `"horizontal" \| "vertical"`        | `'horizontal'` |
 
 
 ## Events

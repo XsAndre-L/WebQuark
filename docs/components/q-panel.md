@@ -109,7 +109,7 @@ A scrollable body receives `tabindex="0"` so native keyboard scrolling is availa
 
 ### Limitations and compatibility
 
-Unknown variants retain the panel surface role but receive no matching variant border/radius styling. `noBorders` removes the outer border, not header/footer dividers. The component adds no motion.
+Unknown variants retain the panel surface role but receive no matching variant border/radius styling. `borderless` removes the outer border, not header/footer dividers. The component adds no motion.
 
 Unknown spacing tokens use a 1rem fallback unless an application defines the matching `--q-space-*` token. Invalid surface names have no defined palette fallback; use the accepted roles.
 
@@ -125,7 +125,7 @@ Select a surface, body padding, and optional border removal.
 | `surface` | Theme surface background without the bordered variant’s radius/border. |
 | `bordered` (default) | Theme surface, border, and 7px theme radius. |
 
-`no-borders` removes the outer border while preserving the selected variant’s other styling.
+`borderless` removes the outer border while preserving the selected variant’s other styling.
 
 ### Sizes
 
@@ -168,6 +168,8 @@ The header background hook also styles the footer; footer padding has its own ho
 
 ## API reference
 
+For new code, use `borderless`. The deprecated aliases remain supported. Canonical properties take precedence when set; otherwise the legacy property and its default apply. Set a canonical JavaScript property to `undefined` to restore the fallback.
+
 See the [Stencil-generated API](../../src/components/layout/panel/readme.md) and [component source](../../src/components/layout/panel/panel.tsx). The tables below include source-level types and effective rendering constraints.
 
 ### Properties
@@ -177,11 +179,12 @@ All properties are optional and are listed alphabetically. Boolean attributes us
 | Name | Default | Description |
 | :--- | :--- | :--- |
 | `ariaLabel` | `null` | Accessible section label; also derives the scrollable-body label.<br>**Type:** `string \| null`. **HTML attribute:** `aria-label`. **Required:** No. |
+| `borderless` | `undefined` | Remove the outer border only.<br>**Type:** `boolean`. **HTML attribute:** `borderless`. **Required:** No. |
 | `dividers` | `false` | Add header/footer divider borders.<br>**Type:** `boolean`. **HTML attribute:** `dividers`. **Required:** No. |
 | `footerPadding` | `undefined` | Footer spacing token; undefined inherits padding.<br>**Type:** `'none' \| 'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl' \| '2xl' \| '3xl'`. **HTML attribute:** `footer-padding`. **Required:** No. |
 | `fullHeight` | `false` | Fill the parent height; the parent must provide a height.<br>**Type:** `boolean`. **HTML attribute:** `full-height`. **Required:** No. |
 | `headerPadding` | `undefined` | Header spacing token; undefined inherits padding.<br>**Type:** `'none' \| 'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl' \| '2xl' \| '3xl'`. **HTML attribute:** `header-padding`. **Required:** No. |
-| `noBorders` | `false` | Remove the outer border only.<br>**Type:** `boolean`. **HTML attribute:** `no-borders`. **Required:** No. |
+| `noBorders` | `false` | Deprecated alias for `borderless`. Remove the outer border only.<br>**Type:** `boolean`. **HTML attribute:** `no-borders`. **Required:** No. |
 | `padding` | `'lg'` | Spacing token applied to body and, unless overridden, header/footer.<br>**Type:** `'none' \| 'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl' \| '2xl' \| '3xl'`. **HTML attribute:** `padding`. **Required:** No. |
 | `scrollable` | `false` | Enable body overflow; sticky flags additionally enable outer overflow, with the current nested-scroll limitation.<br>**Type:** `boolean`. **HTML attribute:** `scrollable`. **Required:** No. |
 | `stickyFooter` | `false` | Pin footer while the panel scrolls; requires scrollable and footer content.<br>**Type:** `boolean`. **HTML attribute:** `sticky-footer`. **Required:** No. |
@@ -231,7 +234,7 @@ Defaults below include the imported shared stylesheet; `var(...)` values follow 
 | `--q-font-family` | `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif` | font family applied to `.panel`. |
 | `--q-padding-lg` | `var(--q-space-lg, 1rem)` | Legacy header/footer padding fallback is superseded by the region padding rules; use --q-panel-header-padding and --q-panel-footer-padding. |
 | `--q-panel-bg` | `Resolved surface role (transparent for plain, panel otherwise)` | Highest-priority background override for every variant, including plain. |
-| `--q-panel-border` | `var(--q-border)` | Bordered variant outer border; noBorders overrides it. |
+| `--q-panel-border` | `var(--q-border)` | Bordered variant outer border; borderless overrides it. |
 | `--q-panel-divider` | `1px solid transparent` | Header/footer borders even without dividers when explicitly set. With dividers, default is --q-border. |
 | `--q-panel-fg` | `var(--q-fg-base, #f9fafb)` | panel fg applied to `.panel`. |
 | `--q-panel-footer-padding` | `Resolved footerPadding or padding (default 1rem)` | Footer padding; overrides footerPadding/padding. |

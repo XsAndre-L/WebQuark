@@ -44,7 +44,63 @@
       "types": "./dist/loader/index.d.ts",
       "import": "./dist/loader/index.js",
       "require": "./dist/loader/index.cjs.js"
-    }
+    },
+    "./dist/collection/components/layout/card/*.js": {
+      "types": "./dist/types/components/content/card/*.d.ts",
+      "import": "./dist/collection/components/content/card/*.js"
+    },
+    "./dist/collection/components/layout/card/*": {
+      "import": "./dist/collection/components/content/card/*"
+    },
+    "./dist/types/components/layout/card/*": "./dist/types/components/content/card/*",
+    "./dist/collection/components/layout/carousel/*.js": {
+      "types": "./dist/types/components/content/carousel/*.d.ts",
+      "import": "./dist/collection/components/content/carousel/*.js"
+    },
+    "./dist/collection/components/layout/carousel/*": {
+      "import": "./dist/collection/components/content/carousel/*"
+    },
+    "./dist/types/components/layout/carousel/*": "./dist/types/components/content/carousel/*",
+    "./dist/collection/components/layout/form/*.js": {
+      "types": "./dist/types/components/inputs/form/*.d.ts",
+      "import": "./dist/collection/components/inputs/form/*.js"
+    },
+    "./dist/collection/components/layout/form/*": {
+      "import": "./dist/collection/components/inputs/form/*"
+    },
+    "./dist/types/components/layout/form/*": "./dist/types/components/inputs/form/*",
+    "./dist/collection/components/actions/chip/*.js": {
+      "types": "./dist/types/components/data-display/chip/*.d.ts",
+      "import": "./dist/collection/components/data-display/chip/*.js"
+    },
+    "./dist/collection/components/actions/chip/*": {
+      "import": "./dist/collection/components/data-display/chip/*"
+    },
+    "./dist/types/components/actions/chip/*": "./dist/types/components/data-display/chip/*",
+    "./dist/collection/components/data-display/alert/*.js": {
+      "types": "./dist/types/components/communication/alert/*.d.ts",
+      "import": "./dist/collection/components/communication/alert/*.js"
+    },
+    "./dist/collection/components/data-display/alert/*": {
+      "import": "./dist/collection/components/communication/alert/*"
+    },
+    "./dist/types/components/data-display/alert/*": "./dist/types/components/communication/alert/*",
+    "./dist/collection/components/data-display/conversation-bubble/*.js": {
+      "types": "./dist/types/components/communication/conversation-bubble/*.d.ts",
+      "import": "./dist/collection/components/communication/conversation-bubble/*.js"
+    },
+    "./dist/collection/components/data-display/conversation-bubble/*": {
+      "import": "./dist/collection/components/communication/conversation-bubble/*"
+    },
+    "./dist/types/components/data-display/conversation-bubble/*": "./dist/types/components/communication/conversation-bubble/*",
+    "./dist/collection/components/overlays/toast/*.js": {
+      "types": "./dist/types/components/communication/toast/*.d.ts",
+      "import": "./dist/collection/components/communication/toast/*.js"
+    },
+    "./dist/collection/components/overlays/toast/*": {
+      "import": "./dist/collection/components/communication/toast/*"
+    },
+    "./dist/types/components/overlays/toast/*": "./dist/types/components/communication/toast/*"
   },
   "workspaces": [
     "packages/react",

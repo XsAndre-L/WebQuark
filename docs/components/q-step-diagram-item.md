@@ -85,7 +85,7 @@ The badge is hidden from assistive technology; status meaning must be available 
 
 ### State and interaction
 
-The application owns status changes and navigation. A q-step-diagram parent overwrites layout after loading, on parent layout changes, and on slot changes. The item does not determine whether it is first/last; use line-style="none" to remove a trailing connector.
+The application owns status changes and navigation. A q-step-diagram parent supplies its effective `orientation` after loading, on parent orientation or legacy layout changes, and on slot changes. It synchronizes both the child's `orientation` and deprecated `layout` alias. The item does not determine whether it is first/last; use line-style="none" to remove a trailing connector.
 
 All statuses emit qItemClick, including pending. Preventing the custom event does not undo any component action, and the component never navigates on its own.
 
@@ -142,6 +142,8 @@ Shared geometry and theme setup are documented in [Foundation](../foundation.md)
 
 ## API reference
 
+For new code, use `orientation`. The deprecated aliases remain supported. Canonical properties take precedence when set; otherwise the legacy property and its default apply. Set a canonical JavaScript property to `undefined` to restore the fallback.
+
 Cross-check the [generated API](../../src/components/indicators/step-diagram-item/readme.md) and [implementation](../../src/components/indicators/step-diagram-item/step-diagram-item.tsx). Source nullability and actual rendering limitations are preserved below.
 
 ### Properties
@@ -150,8 +152,9 @@ All properties are optional and listed alphabetically.
 
 | Name | Default | Description |
 | :--- | :--- | :--- |
-| `layout` | `'vertical'` | vertical or horizontal; mutable because the parent synchronizes it.<br>**Type:** `"horizontal" \| "vertical"`. **HTML attribute:** `layout`. **Required:** No. |
+| `layout` | `'vertical'` | Deprecated alias for `orientation`. vertical or horizontal; mutable because the parent synchronizes it.<br>**Type:** `"horizontal" \| "vertical"`. **HTML attribute:** `layout`. **Required:** No. |
 | `lineStyle` | `'solid'` | solid, dashed, dotted, or none. Attribute is line-style.<br>**Type:** `"dashed" \| "dotted" \| "none" \| "solid"`. **HTML attribute:** `line-style`. **Required:** No. |
+| `orientation` | `undefined` | vertical or horizontal; mutable because the parent synchronizes it.<br>**Type:** `"horizontal" \| "vertical"`. **HTML attribute:** `orientation`. **Required:** No. |
 | `status` | `'completed'` | pending, active, completed, success, warning, or danger; pending still emits activation.<br>**Type:** `"active" \| "completed" \| "danger" \| "pending" \| "success" \| "warning"`. **HTML attribute:** `status`. **Required:** No. |
 
 ### Slots

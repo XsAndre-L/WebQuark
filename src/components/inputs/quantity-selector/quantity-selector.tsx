@@ -1,7 +1,7 @@
 import type { QControlSize } from '../../../theme/tokens';
 import { Component, Prop, State, Event, EventEmitter, h, Watch } from '@stencil/core';
 
-import type { QQuantitySelectorVariant } from './quantity-selector.types';
+import type { QQuantitySelectorOrientation, QQuantitySelectorVariant } from './quantity-selector.types';
 import {
   clampQuantityValue,
   getQuantityInputCharCount,
@@ -31,6 +31,9 @@ export class QQuantitySelector {
   @Prop() step: number = 1;
 
   @Prop() size: QControlSize = 'inherit';
+  /** Direction of the controls. Overrides variant; defaults to horizontal when both are omitted. */
+  @Prop({ reflect: true }) orientation?: QQuantitySelectorOrientation;
+  /** @deprecated Use orientation. Used only when orientation is unset. */
   @Prop({ reflect: true }) variant: QQuantitySelectorVariant = 'horizontal';
 
   @Event() qChange!: EventEmitter<number>;
@@ -145,6 +148,7 @@ export class QQuantitySelector {
   // ===================== [6] RENDER (Visual Template Only) =====================
 
   render() {
+    const orientation = this.orientation ?? this.variant;
     const finiteValue = toFiniteQuantity(this.value);
     const hasFiniteValue = Number.isFinite(this.value);
     const isMinDisabled = hasFiniteValue && hasQuantityBound(this.min) && finiteValue <= this.min;
@@ -167,18 +171,19 @@ export class QQuantitySelector {
       </button>
     );
 
-    const calculatedWidth = this.variant === 'horizontal' ? this.getCalculatedWidth() : '100%';
+    const calculatedWidth = orientation === 'horizontal' ? this.getCalculatedWidth() : '100%';
 
     return (
       <div
         class={{
           'quantity-selector': true,
           [`size-${this.size}`]: true,
-          [`variant-${this.variant}`]: true,
+          [`orientation-${orientation}`]: true,
+          [`variant-${orientation}`]: true,
         }}
         onClick={this.handleClick}
       >
-        {this.variant === 'vertical' ? incBtn : decBtn}
+        {orientation === 'vertical' ? incBtn : decBtn}
         <input
           type="text"
           class="quantity-input"
@@ -196,7 +201,7 @@ export class QQuantitySelector {
           style={{ width: calculatedWidth }}
           part="input"
         />
-        {this.variant === 'vertical' ? decBtn : incBtn}
+        {orientation === 'vertical' ? decBtn : incBtn}
       </div>
     );
   }

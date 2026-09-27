@@ -53,7 +53,7 @@ Inline contextual message with opt-in announcements and controlled dismissal.
 
 ### Used by
 
- - [q-toast](../../overlays/toast)
+ - [q-toast](../toast)
 
 ### Graph
 ```mermaid

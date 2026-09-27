@@ -4,7 +4,7 @@
 
 **Component tag:** `<q-toggle>`
 
-**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Inputs → Toggle**. The examples below use this registered runtime with their own markup and data; playground presets are demonstrations, not component defaults.
+**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Forms & inputs → Toggle**. The examples below use this registered runtime with their own markup and data; playground presets are demonstrations, not component defaults.
 
 **On this page**
 

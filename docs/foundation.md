@@ -49,7 +49,7 @@ Spacing names are `none`, `xs`, `sm`, `md`, `lg`, `xl`, `2xl`, `3xl`:
 different numbers of label lines do not synchronize control baselines.
 
 ```html
-<q-dialog size="lg" dialog-title="Billing details" open>
+<q-dialog size="lg" heading="Billing details" open>
   <q-form label="Billing details" label-hidden size="md" reserve-feedback>
     <q-grid columns="2" min-item-width="16rem" gap="lg">
       <q-input data-q-span="full" label="Payer name" name="payer" required></q-input>

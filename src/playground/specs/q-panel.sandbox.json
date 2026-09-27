@@ -12,7 +12,7 @@
       "default": "bordered",
       "desc": "Panel surface styling"
     },
-    "noBorders": {
+    "borderless": {
       "type": "boolean",
       "default": false,
       "desc": "Removes the panel border while preserving other variant styling"
@@ -96,7 +96,7 @@
     {
       "name": "Borderless Panel",
       "props": {
-        "noBorders": true
+        "borderless": true
       },
       "slots": {
         "default": "Rounded panel without a border."

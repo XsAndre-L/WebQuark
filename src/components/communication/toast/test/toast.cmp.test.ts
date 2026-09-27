@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 
-import '../../../data-display/alert/alert';
+import '../../alert/alert';
 import '../toast';
 
 async function nextFrame(): Promise<void> {

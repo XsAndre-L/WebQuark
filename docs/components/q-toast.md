@@ -4,7 +4,7 @@
 
 **Component tag:** `<q-toast>`
 
-**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Overlays → Toast**.
+**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Communication → Toast**.
 
 **On this page**
 
@@ -158,7 +158,7 @@ Shared geometry and theme setup are documented in [Foundation](../foundation.md)
 
 ## API reference
 
-Cross-check the [generated API](../../src/components/overlays/toast/readme.md) and [implementation](../../src/components/overlays/toast/toast.tsx). Source nullability and actual rendering limitations are preserved below.
+Cross-check the [generated API](../../src/components/communication/toast/readme.md) and [implementation](../../src/components/communication/toast/toast.tsx). Source nullability and actual rendering limitations are preserved below.
 
 ### Properties
 

@@ -1,6 +1,6 @@
 import { Component, Event, EventEmitter, Mixin, Prop, h } from '@stencil/core';
 
-import { withActionLabel, withActionProps } from '../action.props';
+import { withActionLabel, withActionProps } from '../../actions/action.props';
 import type { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from './chip.types';
 
 /**

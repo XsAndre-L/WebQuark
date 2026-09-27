@@ -1,10 +1,10 @@
 # q-chip
 
-`q-chip` shows a compact label, selectable filter, link, or removable token.
+`q-chip` presents a status, category, or short summary in a compact label. It also supports selectable filters, links, and removable tokens.
 
 **Component tag:** `<q-chip>`
 
-**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Actions → Chip**. The examples below use this registered runtime with their own markup and data; playground presets are demonstrations, not component defaults.
+**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Data display → Chip**. The examples below use this registered runtime with their own markup and data; playground presets are demonstrations, not component defaults.
 
 **On this page**
 
@@ -49,6 +49,22 @@ defineCustomElements();
 ## Examples
 
 Use the registration above first. Each HTML block belongs in the page body; its module script runs after the element is registered. CSS in a `<style>` block belongs in the page or your application stylesheet.
+
+### Show a status and a short summary
+
+Use noninteractive chips to make a status, category, or count easy to scan.
+
+![Three noninteractive chips showing Synced, Design, and 3 tasks](./assets/q-chip-display-summary.png)
+
+```html
+<q-inline gap="sm">
+  <q-chip variant="success">Synced</q-chip>
+  <q-chip>Design</q-chip>
+  <q-chip>3 tasks</q-chip>
+</q-inline>
+```
+
+These chips render as text spans and add no tab stops. Their text carries the meaning; the success color is an additional cue. Add interaction only when the chip represents an available action.
 
 ### Toggle a filter from application state
 
@@ -156,7 +172,7 @@ Keep shared setup in [Theme variables](../theme_variables.md), [Theme tokens](..
 
 ## API reference
 
-Cross-check the [generated API](../../src/components/actions/chip/readme.md), [implementation](../../src/components/actions/chip/chip.tsx), and imported public types. The entries below preserve source defaults and runtime qualifications.
+Cross-check the [generated API](../../src/components/data-display/chip/readme.md), [implementation](../../src/components/data-display/chip/chip.tsx), and imported public types. The entries below preserve source defaults and runtime qualifications.
 
 ### Properties
 

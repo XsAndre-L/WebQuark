@@ -31,6 +31,8 @@ export class QPanel {
   @Prop() dividers: boolean = false;
   @Prop({ reflect: true }) variant: QPanelVariant = 'bordered';
   /** Removes the panel border while preserving the selected variant's other styling. */
+  @Prop({ reflect: true }) borderless?: boolean;
+  /** @deprecated Use borderless. Used only when borderless is unset. */
   @Prop({ reflect: true }) noBorders: boolean = false;
   @Prop({ reflect: true }) padding: QPanelPadding = 'lg';
   @Prop({ reflect: true }) fullHeight: boolean = false;
@@ -80,7 +82,7 @@ export class QPanel {
           'panel': true,
           'has-dividers': this.dividers,
           [`variant-${this.variant}`]: true,
-          'has-no-borders': this.noBorders,
+          'has-no-borders': this.borderless ?? this.noBorders,
           [`padding-${this.padding}`]: true,
           'is-scrollable': this.scrollable,
           'is-full-height': this.fullHeight,

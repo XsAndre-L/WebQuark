@@ -1,7 +1,7 @@
 import { Component, Prop, Element, Watch, h } from '@stencil/core';
 import { syncPropertyToSlottedChildren } from '../../../utils/dom';
 
-import type { QStepDiagramLayout } from './step-diagram.types';
+import type { QStepDiagramLayout, QStepDiagramOrientation } from './step-diagram.types';
 
 /**
  * Groups step diagram items into a vertical or horizontal sequence.
@@ -14,6 +14,9 @@ import type { QStepDiagramLayout } from './step-diagram.types';
 })
 export class QStepDiagram {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
+  /** Direction of the sequence and its items. Overrides layout; defaults to vertical when both are omitted. */
+  @Prop({ reflect: true }) orientation?: QStepDiagramOrientation;
+  /** @deprecated Use orientation. Used only when orientation is unset. */
   @Prop({ reflect: true }) layout: QStepDiagramLayout = 'vertical';
 
   /** Accessible label for the step sequence. */
@@ -23,33 +26,38 @@ export class QStepDiagram {
 
   // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
+  @Watch('orientation')
   @Watch('layout')
-  private handleLayoutChange(newLayout: QStepDiagramLayout): void {
-    this.propagateLayout(newLayout);
+  private handleOrientationChange(): void {
+    this.propagateOrientation();
   }
 
   componentDidLoad() {
-    this.handleLayoutChange(this.layout);
+    this.handleOrientationChange();
   }
 
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
   private handleSlotChange = () => {
-    this.propagateLayout(this.layout);
+    this.propagateOrientation();
   };
 
-  private propagateLayout(layoutVal: QStepDiagramLayout) {
-    syncPropertyToSlottedChildren(this.el, 'q-step-diagram-item', 'layout', layoutVal);
+  private propagateOrientation() {
+    const orientation = this.orientation ?? this.layout;
+    syncPropertyToSlottedChildren(this.el, 'q-step-diagram-item', 'orientation', orientation);
+    syncPropertyToSlottedChildren(this.el, 'q-step-diagram-item', 'layout', orientation);
   }
 
   // ===================== [6] RENDER (Visual Template Only) =====================
 
   render() {
+    const orientation = this.orientation ?? this.layout;
     return (
       <div
         class={{
           'step-diagram': true,
-          [`layout-${this.layout}`]: true,
+          [`orientation-${orientation}`]: true,
+          [`layout-${orientation}`]: true,
         }}
         role="list"
         aria-label={this.ariaLabel}

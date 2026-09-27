@@ -51,7 +51,7 @@ export function renderNavItems(options: RenderNavItemsOptions): any[] {
               }}
         >
           {item.icon && (
-            <q-icon class="nav-item__icon" name={item.icon} lib="lucide" size="sm" />
+            <q-icon class="nav-item__icon" name={item.icon} library="lucide" size="sm" />
           )}
           <span class="nav-item__label">{item.label}</span>
           {hasBadge && (

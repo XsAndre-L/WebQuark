@@ -4,7 +4,7 @@
 
 **Component tag:** `<q-card>`
 
-**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Layout → Card**. The examples below use temporary fixtures in this same registered runtime.
+**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Content → Card**. The examples below use temporary fixtures in this same registered runtime.
 
 **On this page**
 
@@ -185,7 +185,7 @@ See [CSS variables](#css-variables), [Shadow Parts](#shadow-parts), and central 
 
 ## API reference
 
-See the [Stencil-generated API](../../src/components/layout/card/readme.md) and [component source](../../src/components/layout/card/card.tsx). The tables below include source-level types and effective rendering constraints.
+See the [Stencil-generated API](../../src/components/content/card/readme.md) and [component source](../../src/components/content/card/card.tsx). The tables below include source-level types and effective rendering constraints.
 
 ### Properties
 

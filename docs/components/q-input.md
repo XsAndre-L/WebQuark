@@ -4,7 +4,7 @@
 
 **Component tag:** `<q-input>`
 
-**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Inputs → Input**. The examples below use this registered runtime with their own markup and data; playground presets are demonstrations, not component defaults.
+**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Forms & inputs → Input**. The examples below use this registered runtime with their own markup and data; playground presets are demonstrations, not component defaults.
 
 **On this page**
 
@@ -126,7 +126,7 @@ Omitted `reserveFeedback` inherits the enclosing form's setting, falling back to
 
 ### Forms
 
-With `name`, the string value participates through ElementInternals. Native form reset restores the initial value captured before first render; later updates do not redefine that initial value. Required/native type/range/step constraints and nonblank custom error text are synchronized to validity. `error` wins over `errorMessage`. Disabled controls are exempt from validity and native submission. Empty error attributes are empty strings, not Boolean error flags; whitespace can render an error style without a trimmed custom validity message.
+With `name`, the string value participates through ElementInternals. Native form reset restores the initial value captured before first render; later updates do not redefine that initial value. Required/native type/range/step constraints and nonblank custom error text are synchronized to validity. Nonempty `error` wins over the deprecated `errorMessage` alias. Disabled controls are exempt from validity and native submission. Empty error attributes are empty strings, not Boolean error flags; whitespace can render an error style without a trimmed custom validity message.
 
 ### Limitations and compatibility
 
@@ -177,6 +177,8 @@ Keep shared setup in [Theme variables](../theme_variables.md), [Theme tokens](..
 
 ## API reference
 
+For new code, use `error`. The deprecated aliases remain supported.
+
 Cross-check the [generated API](../../src/components/inputs/input/readme.md), [implementation](../../src/components/inputs/input/input.tsx), and imported public types. The entries below preserve source defaults and runtime qualifications.
 
 ### Properties
@@ -190,7 +192,7 @@ All properties are optional in the TypeScript component contract. Required conte
 | `description` | `undefined` | Supporting text; replaced by active error feedback.<br>**Type:** `string`. **HTML attribute:** `description`. **Required:** No. |
 | `disabled` | `false` | Prevents normal interaction.<br>**Type:** `boolean`. **HTML attribute:** `disabled`. **Required:** No. |
 | `error` | `undefined` | Custom error text; takes precedence over errorMessage. Empty string does not enable the error state.<br>**Type:** `string`. **HTML attribute:** `error`. **Required:** No. |
-| `errorMessage` | `undefined` | Fallback custom error message; nonblank text affects constraint validity.<br>**Type:** `string`. **HTML attribute:** `error-message`. **Required:** No. |
+| `errorMessage` | `undefined` | Deprecated alias for `error`. Fallback custom error message; nonblank text affects constraint validity.<br>**Type:** `string`. **HTML attribute:** `error-message`. **Required:** No. |
 | `label` | `undefined` | Visible native field label.<br>**Type:** `string`. **HTML attribute:** `label`. **Required:** No. |
 | `labelHidden` | `false` | Visually hides the supplied label without removing its accessible text.<br>**Type:** `boolean`. **HTML attribute:** `label-hidden`. **Required:** No. |
 | `max` | `undefined` | Native upper bound; applied after min by custom number clamping.<br>**Type:** `number`. **HTML attribute:** `max`. **Required:** No. |

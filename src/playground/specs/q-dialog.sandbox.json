@@ -7,12 +7,12 @@
     "buttonLabel": "Trigger Dialog Overlay"
   },
   "props": {
-    "closeOnEsc": {
+    "closeOnEscape": {
       "type": "boolean",
       "default": true,
       "desc": "Enables Escape key trigger close"
     },
-    "closeOnOverlayClick": {
+    "closeOnBackdropClick": {
       "type": "boolean",
       "default": true,
       "desc": "Enables backdrop clicks to trigger cancel"
@@ -27,7 +27,7 @@
       "default": true,
       "desc": "Whether to render the cancellation action button"
     },
-    "dialogTitle": {
+    "heading": {
       "type": "string",
       "default": "Perform Operations",
       "desc": "Header label for dialog"
@@ -89,7 +89,7 @@
     {
       "name": "Action Confirmation",
       "props": {
-        "dialogTitle": "Save Settings?",
+        "heading": "Save Settings?",
         "message": "Do you want to save all changes to the profile?",
         "confirmLabel": "Save Changes",
         "cancelLabel": "Keep Editing",
@@ -99,7 +99,7 @@
     {
       "name": "Processing / Loading",
       "props": {
-        "dialogTitle": "Syncing Data",
+        "heading": "Syncing Data",
         "message": "Uploading invoice reports to the database server. Please wait...",
         "loading": true,
         "open": false
@@ -108,7 +108,7 @@
     {
       "name": "Destructive / Alert style",
       "props": {
-        "dialogTitle": "Delete Database Record?",
+        "heading": "Delete Database Record?",
         "message": "Warning: Deleting this database profile will remove all scraped logs forever. This cannot be undone.",
         "confirmLabel": "Yes, Delete It",
         "open": false

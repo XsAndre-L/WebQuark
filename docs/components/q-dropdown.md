@@ -4,7 +4,7 @@
 
 **Component tag:** `<q-dropdown>`
 
-**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Inputs → Dropdown**. The examples below use this registered runtime with their own markup and data; playground presets are demonstrations, not component defaults.
+**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Forms & inputs → Dropdown**. The examples below use this registered runtime with their own markup and data; playground presets are demonstrations, not component defaults.
 
 **On this page**
 

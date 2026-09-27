@@ -39,7 +39,7 @@ export class ThemeDesigner extends HTMLElement {
             <p class="theme-designer-desc">Customize colors, dimensions, and component defaults. Overrides apply to all sandbox components.</p>
           </div>
           <button id="resetThemeBtn" class="reset-theme-btn" type="button" onClick={() => this.resetTheme()}>
-            <q-icon name="refresh-cw" lib="lucide" size="16"></q-icon>
+            <q-icon name="refresh-cw" library="lucide" size="16"></q-icon>
             <span>Reset to Default</span>
           </button>
         </div>

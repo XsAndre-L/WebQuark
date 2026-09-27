@@ -13,7 +13,7 @@ class PlaygroundEventLog extends HTMLElement {
     this.appendChild(
       <q-syntax-box variant="panel" heading="Event Dispatches Log" id="eventLogBox">
         <q-button slot="actions" variant="ghost" size="sm" id="clearLogBtn" onClick={() => this.clearLog()}>
-          <q-icon slot="icon-left" lib="local" name="trash-2" size="sm"></q-icon>
+          <q-icon slot="icon-left" library="local" name="trash-2" size="sm"></q-icon>
           <q-tooltip slot="icon-left" position="bottom" content="Clear Log"></q-tooltip>
         </q-button>
         <div id="eventLogBody" class="event-log-body">

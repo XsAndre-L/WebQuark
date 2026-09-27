@@ -150,7 +150,7 @@ Type: `Promise<string>`
 
 ### Depends on
 
-- [q-alert](../../data-display/alert)
+- [q-alert](../alert)
 
 ### Graph
 ```mermaid

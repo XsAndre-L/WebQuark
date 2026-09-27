@@ -45,6 +45,8 @@ export class QNavbar {
   /** Navigation items; strings use the same text for label and value, while objects enable links, icons, and state. */
   @Prop() items: NavbarItemInput[] | string = [];
   /** Matches either an item's value or `href`. */
+  @Prop() value?: string;
+  /** @deprecated Use value. Used only when value is unset. */
   @Prop() activeValue: string = '';
 
   @Prop({ reflect: true }) edge: QNavbarEdge = 'top';
@@ -175,7 +177,7 @@ export class QNavbar {
     if (!el || !item.icon) return;
 
     this.setIconAttribute(el, 'name', item.icon);
-    this.setIconAttribute(el, 'lib', item.iconLib || 'lucide');
+    this.setIconAttribute(el, 'library', item.iconLib || 'lucide');
     this.setIconAttribute(el, 'size', item.iconSize || 'sm');
     this.setIconAttribute(el, 'local-path', item.iconLocalPath);
   };
@@ -199,7 +201,8 @@ export class QNavbar {
   }
 
   private renderNavItem({ item, key }: IdentifiedCollectionItem<NavbarItem>) {
-    const active = item.active || (!!this.activeValue && (item.value === this.activeValue || item.href === this.activeValue));
+    const value = this.value ?? this.activeValue;
+    const active = item.active || (!!value && (item.value === value || item.href === value));
     const iconOnly = !!item.iconOnly && !!item.icon;
     const accessibleLabel = iconOnly ? item.ariaLabel || item.label : undefined;
     const addonPlacement: QNavbarAddonPlacement = item.addonPlacement || 'top-end';
@@ -214,7 +217,7 @@ export class QNavbar {
         <q-icon
           class="nav-item__icon"
           name={item.icon}
-          lib={item.iconLib || 'lucide'}
+          library={item.iconLib || 'lucide'}
           localPath={item.iconLocalPath}
           size={item.iconSize || 'sm'}
           ref={(el) => this.syncIconAttributes(el, item)}

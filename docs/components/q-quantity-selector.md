@@ -4,7 +4,7 @@
 
 **Component tag:** `<q-quantity-selector>`
 
-**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Inputs → Quantity Selector**. The examples below use this registered runtime with their own markup and data; playground presets are demonstrations, not component defaults.
+**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Forms & inputs → Quantity Selector**. The examples below use this registered runtime with their own markup and data; playground presets are demonstrations, not component defaults.
 
 **On this page**
 
@@ -71,12 +71,12 @@ Click Increment quantity once to reach the screenshot.
 
 ### Fit a stepped control into a narrow column
 
-Use the vertical variant for a compact column of increment and decrement controls.
+Use the vertical orientation for a compact column of increment and decrement controls.
 
 ![Vertical quantity selector showing 50 between plus and minus buttons](./assets/q-quantity-selector-vertical-step.png)
 
 ```html
-<q-quantity-selector variant="vertical" size="sm" min="0" max="100" step="5" value="50"></q-quantity-selector>
+<q-quantity-selector orientation="vertical" size="sm" min="0" max="100" step="5" value="50"></q-quantity-selector>
 ```
 
 ## Behavior & accessibility
@@ -109,7 +109,7 @@ Choose a horizontal or vertical layout and inherited/explicit size.
 
 ### Variants
 
-`horizontal` (default) places decrement, text, increment in a row. `vertical` places increment above text and decrement below it. Invalid variants do not get these layout rules.
+`horizontal` (default) places decrement, text, increment in a row. `vertical` places increment above text and decrement below it. Invalid orientations do not get these layout rules.
 
 ### Sizes
 
@@ -143,6 +143,8 @@ Keep shared setup in [Theme variables](../theme_variables.md), [Theme tokens](..
 
 ## API reference
 
+For new code, use `orientation`. The deprecated aliases remain supported. Canonical properties take precedence when set; otherwise the legacy property and its default apply. Set a canonical JavaScript property to `undefined` to restore the fallback.
+
 Cross-check the [generated API](../../src/components/inputs/quantity-selector/readme.md), [implementation](../../src/components/inputs/quantity-selector/quantity-selector.tsx), and imported public types. The entries below preserve source defaults and runtime qualifications.
 
 ### Properties
@@ -153,10 +155,11 @@ All properties are optional in the TypeScript component contract. Required conte
 | :--- | :--- | :--- |
 | `max` | `undefined` | Upper bound and End target; use a finite number ≥ min.<br>**Type:** `number`. **HTML attribute:** `max`. **Required:** No. |
 | `min` | `undefined` | Lower bound and Home target; use a finite number.<br>**Type:** `number`. **HTML attribute:** `min`. **Required:** No. |
+| `orientation` | `undefined` | Button arrangement; see [Variants](#variants).<br>**Type:** `'horizontal' \| 'vertical'`. **HTML attribute:** `orientation`. **Required:** No. |
 | `size` | `'inherit'` | Control geometry; inherit uses the nearest form/toolbar scope.<br>**Type:** `'inherit' \| 'sm' \| 'md' \| 'lg'`. **HTML attribute:** `size`. **Required:** No. |
 | `step` | `1` | Amount for each step; use a positive finite number.<br>**Type:** `number`. **HTML attribute:** `step`. **Required:** No. |
 | `value` | `0` | Mutable number; initial/programmatic assignments are not clamped. Nonfinite values display as 0 without mutation.<br>**Type:** `number`. **HTML attribute:** `value`. **Required:** No. |
-| `variant` | `'horizontal'` | Button arrangement; see [Variants](#variants).<br>**Type:** `'horizontal' \| 'vertical'`. **HTML attribute:** `variant`. **Required:** No. |
+| `variant` | `'horizontal'` | Deprecated alias for `orientation`. Button arrangement; see [Variants](#variants).<br>**Type:** `'horizontal' \| 'vertical'`. **HTML attribute:** `variant`. **Required:** No. |
 
 String attributes remain strings; numeric attributes are parsed as numbers, so invalid text can become `NaN`. Setting a property to `undefined` or removing a string/number attribute does not rerun its initializer. Keep values within the documented types.
 
