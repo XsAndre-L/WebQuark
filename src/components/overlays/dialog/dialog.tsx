@@ -15,7 +15,7 @@ let dialogId = 0;
 /**
  * Modal confirmation or message dialog with focus trapping and safe solid backdrops.
  * @slot - Custom dialog body content.
- * @slot header - Custom header content. Provide an accessible name when replacing `dialogTitle`.
+ * @slot header - Custom header content. Provide an accessible name when replacing `heading`.
  * @slot footer - Custom action content. Consumers own disabled/loading behavior for slotted controls.
  * @part backdrop - Backdrop click target.
  * @part modal - Dialog surface.
@@ -34,17 +34,27 @@ let dialogId = 0;
 export class QDialog {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   /** Rendered by the default dialog header. */
+  @Prop() heading?: string;
+  /** @deprecated Use heading. Used only when heading is unset. */
   @Prop() dialogTitle?: string;
-  /** Accessible name for the dialog, especially when using a custom header without dialogTitle. */
+  /** Accessible name for the dialog, especially when using a custom header without heading. */
   @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
   /** Rendered by the default dialog body. */
   @Prop() message?: string;
 
   @Prop({ reflect: true }) size: 'sm' | 'md' | 'lg' | 'full' = 'md';
   /** `solid` is CEF-safe; `none` keeps only a transparent click layer. */
+  @Prop({ reflect: true }) backdrop?: QDialogBackdropEffect;
+  /** @deprecated Use backdrop. Used only when backdrop is unset. */
   @Prop({ attribute: 'backdrop-effect', reflect: true }) backdropEffect: QDialogBackdropEffect = 'solid';
 
+  /** Allows Escape to close the dialog when not loading. Defaults to true. */
+  @Prop() closeOnEscape?: boolean;
+  /** @deprecated Use closeOnEscape. Used only when closeOnEscape is unset. */
   @Prop() closeOnEsc: boolean = true;
+  /** Allows a backdrop click to close the dialog when not loading. Defaults to true. */
+  @Prop() closeOnBackdropClick?: boolean;
+  /** @deprecated Use closeOnBackdropClick. Used only when closeOnBackdropClick is unset. */
   @Prop() closeOnOverlayClick: boolean = true;
   @Prop() showCancel: boolean = true;
   @Prop() cancelLabel: string = 'Cancel';
@@ -154,7 +164,7 @@ export class QDialog {
 
   @Listen('keydown', { target: 'window' })
   handleGlobalKeyDown(event: KeyboardEvent) {
-    if (this.open && event.key === 'Escape' && this.closeOnEsc) {
+    if (this.open && event.key === 'Escape' && (this.closeOnEscape ?? this.closeOnEsc)) {
       this.handleCancel();
     }
   }
@@ -166,7 +176,7 @@ export class QDialog {
   };
 
   private handleBackdropClick = () => {
-    if (this.closeOnOverlayClick && !this.loading) {
+    if ((this.closeOnBackdropClick ?? this.closeOnOverlayClick) && !this.loading) {
       this.handleCancel();
     }
   };
@@ -219,13 +229,13 @@ export class QDialog {
   }
 
   private getResolvedBackdropEffect(): QDialogBackdropEffect {
-    return resolveDialogBackdropEffect(this.backdropEffect);
+    return resolveDialogBackdropEffect(this.backdrop ?? this.backdropEffect);
   }
 
   // ===================== [6] RENDER (Visual Template Only) =====================
 
   render() {
-    const titleText = this.dialogTitle;
+    const titleText = this.heading ?? this.dialogTitle;
     const ariaLabel = this.ariaLabel?.trim() || undefined;
 
     const classes = {

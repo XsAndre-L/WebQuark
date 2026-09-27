@@ -4,7 +4,7 @@
 
 **Component tag:** `<q-radio-group>`
 
-**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Inputs → Radio Group**. The examples below use this registered runtime with their own markup and data; playground presets are demonstrations, not component defaults.
+**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Forms & inputs → Radio Group**. The examples below use this registered runtime with their own markup and data; playground presets are demonstrations, not component defaults.
 
 **On this page**
 
@@ -168,6 +168,8 @@ Keep shared setup in [Theme variables](../theme_variables.md), [Theme tokens](..
 
 ## API reference
 
+For new code, use `error`. The deprecated aliases remain supported.
+
 Cross-check the [generated API](../../src/components/inputs/radio-group/readme.md), [implementation](../../src/components/inputs/radio-group/radio-group.tsx), and imported public types. The entries below preserve source defaults and runtime qualifications.
 
 ### Properties
@@ -180,7 +182,7 @@ All properties are optional in the TypeScript component contract. Required conte
 | `description` | `undefined` | Supporting text replaced by active error.<br>**Type:** `string`. **HTML attribute:** `description`. **Required:** No. |
 | `disabled` | `false` | Disables every option and native form contribution.<br>**Type:** `boolean`. **HTML attribute:** `disabled`. **Required:** No. |
 | `error` | `undefined` | Custom error text; precedes errorMessage.<br>**Type:** `string`. **HTML attribute:** `error`. **Required:** No. |
-| `errorMessage` | `undefined` | Fallback custom error text.<br>**Type:** `string`. **HTML attribute:** `error-message`. **Required:** No. |
+| `errorMessage` | `undefined` | Deprecated alias for `error`. Fallback custom error text.<br>**Type:** `string`. **HTML attribute:** `error-message`. **Required:** No. |
 | `label` | `undefined` | Visible group legend.<br>**Type:** `string`. **HTML attribute:** `label`. **Required:** No. |
 | `labelHidden` | `false` | Visually hides the legend while preserving it.<br>**Type:** `boolean`. **HTML attribute:** `label-hidden`. **Required:** No. |
 | `name` | `undefined` | Native form name and inner radio-group name; omitted inner name is uniquely generated.<br>**Type:** `string`. **HTML attribute:** `name`. **Required:** No. |

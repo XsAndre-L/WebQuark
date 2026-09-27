@@ -2,7 +2,7 @@
   "name": "Quantity Selector",
   "tag": "q-quantity-selector",
   "props": {
-    "variant": {
+    "orientation": {
       "type": "select",
       "options": [
         "horizontal",
@@ -53,7 +53,7 @@
     {
       "name": "Vertical Stack",
       "props": {
-        "variant": "vertical",
+        "orientation": "vertical",
         "value": 10
       }
     },

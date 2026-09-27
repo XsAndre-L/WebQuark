@@ -39,7 +39,7 @@ Edge-aware site navigation with optional brand content, actions, and mobile menu
 
 | Property      | Attribute      | Description                                                                                                    | Type                                     | Default     |
 | ------------- | -------------- | -------------------------------------------------------------------------------------------------------------- | ---------------------------------------- | ----------- |
-| `activeValue` | `active-value` | Matches either an item's value or `href`.                                                                      | `string`                                 | `''`        |
+| `activeValue` | `active-value` | <span style="color:red">**[DEPRECATED]**</span> Use value. Used only when value is unset.<br/><br/>            | `string`                                 | `''`        |
 | `ariaLabel`   | `aria-label`   | Accessible name for the desktop and mobile navigation regions.                                                 | `string`                                 | `null`      |
 | `bordered`    | `bordered`     |                                                                                                                | `boolean`                                | `true`      |
 | `brand`       | `brand`        |                                                                                                                | `string`                                 | `undefined` |
@@ -53,6 +53,7 @@ Edge-aware site navigation with optional brand content, actions, and mobile menu
 | `mobileMode`  | `mobile-mode`  | Controls whether mobile widths collapse items into a menu or keep them inline.                                 | `"inline" \| "menu"`                     | `'menu'`    |
 | `sticky`      | `sticky`       |                                                                                                                | `boolean`                                | `false`     |
 | `transparent` | `transparent`  |                                                                                                                | `boolean`                                | `false`     |
+| `value`       | `value`        | Matches either an item's value or `href`.                                                                      | `string`                                 | `undefined` |
 
 
 ## Events

@@ -110,14 +110,14 @@ export type {
   QNavbarTarget,
 } from './components/layout/navbar/navbar.types';
 export type { QTabsOrientation, QTabsSize, QTabsVariant, TabItem, TabItemInput } from './components/layout/tabs/tabs.types';
-export { toast } from './components/overlays/toast/toast-controller';
+export { toast } from './components/communication/toast/toast-controller';
 export type {
   QToastController,
   QToastId,
   QToastOptions,
   QToastPosition,
   QToastVariant,
-} from './components/overlays/toast/toast.types';
+} from './components/communication/toast/toast.types';
 
 // Generic content component contracts (visual implementation is scaffolded).
 export type { QBannerHeight, QBannerAlignment } from './components/content/banner/banner.types';

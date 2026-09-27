@@ -99,7 +99,7 @@ Use a local asset path when registered data is not appropriate.
 ![Load a supplied local SVG asset: Use a local asset path when registered data is not appropriate.](./assets/q-icon-local-asset.png)
 
 ```html
-<q-icon lib="local" local-path="/assets/icons/" name="check" label="Saved" size="48"></q-icon>
+<q-icon library="local" local-path="/assets/icons/" name="check" label="Saved" size="48"></q-icon>
 ```
 
 ```svg
@@ -114,7 +114,7 @@ Place the SVG below at /assets/icons/check.svg in your application public assets
 
 Source priority is explicit definition, registered name, then URL fallback. Definitions are validated/cloned/frozen; registry definitions render without I/O. Strict mode blocks all URL fallback for an unregistered name and shows an error mark. Missing name/definition renders empty.
 
-Changing name, definition, lib, localPath or libVersion reloads the icon. A later SVG request wins over an earlier response. SVG loading does not block component hydration; component readiness is not image readiness. Failed loading or definition validation shows a red boxed cross and logs the error; no public load/error events are emitted. Changing fetchTimeout alone does not restart a request.
+Changing name, definition, library, localPath or libraryVersion reloads the icon. A later SVG request wins over an earlier response. SVG loading does not block component hydration; component readiness is not image readiness. Failed loading or definition validation shows a red boxed cross and logs the error; no public load/error events are emitted. Changing fetchTimeout alone does not restart a request.
 
 ### Labels and announcements
 
@@ -161,6 +161,8 @@ Shared geometry and theme setup are documented in [Foundation](../foundation.md)
 
 ## API reference
 
+For new code, use `library`, `libraryVersion`. The deprecated aliases remain supported. Canonical properties take precedence when set; otherwise the legacy property and its default apply. Set a canonical JavaScript property to `undefined` to restore the fallback.
+
 Cross-check the [generated API](../../src/components/media/icon/readme.md) and [implementation](../../src/components/media/icon/icon.tsx). Source nullability and actual rendering limitations are preserved below.
 
 ### Properties
@@ -173,9 +175,11 @@ All properties are optional and listed alphabetically.
 | `definition` | `undefined` | Trusted QIconDefinition object assigned in JavaScript; takes priority over name. See nested schema.<br>**Type:** `QIconDefinition`. **HTML attribute:** None; JavaScript property only. **Required:** No. |
 | `fetchTimeout` | `8000` | SVG fetch timeout in ms; nonfinite/nonpositive values use 8000. Does not affect binary images.<br>**Type:** `number`. **HTML attribute:** `fetch-timeout`. **Required:** No. |
 | `label` | `undefined` | Trimmed accessible image name; blank/omitted makes the icon decorative.<br>**Type:** `string`. **HTML attribute:** `label`. **Required:** No. |
-| `lib` | `'lucide'` | lucide, font-awesome/fontawesome, local, a {name} URL template, or a base URL/path.<br>**Type:** `"font-awesome" \| "fontawesome" \| "local" \| "lucide" \| string & {}`. **HTML attribute:** `lib`. **Required:** No. |
-| `libVersion` | `undefined` | Nonblank override for built-in remote library version; omitted/blank uses pinned version.<br>**Type:** `string`. **HTML attribute:** `lib-version`. **Required:** No. |
-| `localPath` | `'/assets/icons/'` | Base path for lib=local; default /assets/icons/. A slash is appended when needed.<br>**Type:** `string`. **HTML attribute:** `local-path`. **Required:** No. |
+| `lib` | `'lucide'` | Deprecated alias for `library`. lucide, font-awesome/fontawesome, local, a {name} URL template, or a base URL/path.<br>**Type:** `"font-awesome" \| "fontawesome" \| "local" \| "lucide" \| string & {}`. **HTML attribute:** `lib`. **Required:** No. |
+| `library` | `undefined` | lucide, font-awesome/fontawesome, local, a {name} URL template, or a base URL/path.<br>**Type:** `"font-awesome" \| "fontawesome" \| "local" \| "lucide" \| string & {}`. **HTML attribute:** `library`. **Required:** No. |
+| `libraryVersion` | `undefined` | Nonblank override for built-in remote library version; omitted/blank uses pinned version.<br>**Type:** `string`. **HTML attribute:** `library-version`. **Required:** No. |
+| `libVersion` | `undefined` | Deprecated alias for `libraryVersion`. Nonblank override for built-in remote library version; omitted/blank uses pinned version.<br>**Type:** `string`. **HTML attribute:** `lib-version`. **Required:** No. |
+| `localPath` | `'/assets/icons/'` | Base path for library=local; default /assets/icons/. A slash is appended when needed.<br>**Type:** `string`. **HTML attribute:** `local-path`. **Required:** No. |
 | `name` | `undefined` | Registry name or asset name. No name/definition renders empty.<br>**Type:** `string`. **HTML attribute:** `name`. **Required:** No. |
 | `size` | `'md'` | sm, md, lg, number, or CSS length string; see Sizes for coercion limitations.<br>**Type:** `"lg" \| "md" \| "sm" \| number \| string & {}`. **HTML attribute:** `size`. **Required:** No. |
 
@@ -203,7 +207,7 @@ Supported node tags: circle, clipPath, defs, ellipse, g, line, linearGradient, m
 
 #### Libraries
 
-Lucide uses lucide-static 0.416.0; Font Awesome uses fontawesome-free 6.7.2 solid icons through jsDelivr. libVersion overrides those versions. Local assets append .svg when the name contains no period. Custom templates replace the first {name}; other custom library strings become a base path plus name.
+Lucide uses lucide-static 0.416.0; Font Awesome uses fontawesome-free 6.7.2 solid icons through jsDelivr. libraryVersion overrides those versions. Local assets append .svg when the name contains no period. Custom templates replace the first {name}; other custom library strings become a base path plus name.
 
 ### Slots
 

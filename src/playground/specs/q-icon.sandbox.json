@@ -27,7 +27,7 @@
       "default": "settings",
       "desc": "The name of the icon (e.g. settings, heart, or logo.png)"
     },
-    "lib": {
+    "library": {
       "type": "select",
       "options": [
         "lucide",
@@ -48,7 +48,7 @@
     {
       "name": "Lucide Settings (Small)",
       "props": {
-        "lib": "lucide",
+        "library": "lucide",
         "name": "settings",
         "size": "sm",
         "color": "var(--q-color-primary)"
@@ -57,7 +57,7 @@
     {
       "name": "Lucide Settings (Medium)",
       "props": {
-        "lib": "lucide",
+        "library": "lucide",
         "name": "settings",
         "size": "md",
         "color": "var(--q-color-primary)"
@@ -66,7 +66,7 @@
     {
       "name": "Lucide Settings (Large)",
       "props": {
-        "lib": "lucide",
+        "library": "lucide",
         "name": "settings",
         "size": "lg",
         "color": "var(--q-color-primary)"
@@ -75,7 +75,7 @@
     {
       "name": "Lucide Heart (Large Red)",
       "props": {
-        "lib": "lucide",
+        "library": "lucide",
         "name": "heart",
         "size": "48",
         "color": "var(--q-color-danger)"
@@ -84,7 +84,7 @@
     {
       "name": "FontAwesome Heart",
       "props": {
-        "lib": "font-awesome",
+        "library": "font-awesome",
         "name": "heart",
         "size": "24",
         "color": "var(--q-color-success)"
@@ -93,7 +93,7 @@
     {
       "name": "FontAwesome Star (Gold)",
       "props": {
-        "lib": "font-awesome",
+        "library": "font-awesome",
         "name": "star",
         "size": "32",
         "color": "var(--q-color-warning)"
@@ -102,7 +102,7 @@
     {
       "name": "Local Asset SVG (Standard)",
       "props": {
-        "lib": "local",
+        "library": "local",
         "name": "checkmark",
         "size": "24",
         "color": "var(--q-color-success)"
@@ -113,14 +113,14 @@
     {
       "name": "Missing Icon Fallback",
       "props": {
-        "lib": "lucide",
+        "library": "lucide",
         "name": "non-existent-icon-name-xyz"
       }
     },
     {
       "name": "Binary Image File (.png)",
       "props": {
-        "lib": "local",
+        "library": "local",
         "name": "logo-test.png",
         "size": "64"
       }
@@ -128,7 +128,7 @@
     {
       "name": "Extremely Large Custom Size",
       "props": {
-        "lib": "lucide",
+        "library": "lucide",
         "name": "bell",
         "size": "120",
         "color": "var(--q-color-secondary)"

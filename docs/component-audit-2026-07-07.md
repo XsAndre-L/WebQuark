@@ -494,7 +494,7 @@ A well-structured, token-driven component with genuinely good keyboard accessibi
   - _Fix:_ Add one-line JSDoc above the class and each @Prop/@Event, e.g. `/** Visual/semantic state of this step; drives badge, connector and title color. */` above `status`, so readme.md's generated table is actually useful to consumers.
 - [x] **[other]** 🟢 SAFE No test/ folder at all (no _.spec.ts or _.cmp.test.ts), despite this component having real branching/interactive behavior worth covering.
   - _Why:_ The directory contains only step-diagram-item.tsx/.css/.types.ts/readme.md — no test/ folder, unlike button, chip, dialog, toggle, form, navbar, panel, input, quantity-selector, data-table, syntax-box, and link, all of which have a test/<name>.spec.ts. The component has non-trivial logic worth asserting: `handleTrigger`/`handleKeyDown` both emitting exactly one `qItemClick`, the class permutations across status/lineStyle/layout, and the componentWillLoad parent-layout inheritance path flagged above.
-  - _Fix:_ Add `test/step-diagram-item.spec.ts` using Stencil's `newSpecPage`, asserting: (1) Enter/Space/click each emit `qItemClick` exactly once, (2) the rendered host reflects `status`/`line-style`/`layout` attributes correctly, and (3) mounting inside a `<q-step-diagram layout="horizontal">` parent correctly sets the child's `layout`.
+  - _Fix:_ Add `test/step-diagram-item.spec.ts` using Stencil's `newSpecPage`, asserting: (1) Enter/Space/click each emit `qItemClick` exactly once, (2) the rendered host reflects `status`/`line-style`/`layout` attributes correctly, and (3) mounting inside a `<q-step-diagram orientation="horizontal">` parent correctly sets the child's `layout`.
 
 ### Inputs
 

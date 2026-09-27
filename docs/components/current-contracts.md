@@ -15,7 +15,7 @@ Shared [foundation rules](../foundation.md) define inherited control sizes, layo
 
 `q-alert` shows an inline contextual message with optional actions and application-controlled dismissal.
 
-- [Authored guide](./q-alert.md) · [Generated API](../../src/components/data-display/alert/readme.md)
+- [Authored guide](./q-alert.md) · [Generated API](../../src/components/communication/alert/readme.md)
 - Status: Implemented; see guide limitations.
 
 ### `q-avatar`
@@ -43,28 +43,28 @@ Shared [foundation rules](../foundation.md) define inherited control sizes, layo
 
 `q-card` groups consumer content in a raised surface with an optional header and button interaction.
 
-- [Authored guide](./q-card.md) · [Generated API](../../src/components/layout/card/readme.md)
+- [Authored guide](./q-card.md) · [Generated API](../../src/components/content/card/readme.md)
 - Status: Implemented; see guide limitations.
 
 ### `q-carousel`
 
 `q-carousel` lays out slotted slides in a horizontal scroll viewport with optional arrows and indicator buttons.
 
-- [Authored guide](./q-carousel.md) · [Generated API](../../src/components/layout/carousel/readme.md)
+- [Authored guide](./q-carousel.md) · [Generated API](../../src/components/content/carousel/readme.md)
 - Status: Implemented; dynamic item-width limitation.
 
 ### `q-chip`
 
-`q-chip` shows a compact label, selectable filter, link, or removable token.
+`q-chip` presents a status, category, or short summary, with optional selection, link, and removal behavior.
 
-- [Authored guide](./q-chip.md) · [Generated API](../../src/components/actions/chip/readme.md)
+- [Authored guide](./q-chip.md) · [Generated API](../../src/components/data-display/chip/readme.md)
 - Status: Implemented; see guide limitations.
 
 ### `q-conversation-bubble`
 
 `q-conversation-bubble` presents a conversation message with optional sender, timestamp, identity, metadata, and actions.
 
-- [Authored guide](./q-conversation-bubble.md) · [Generated API](../../src/components/data-display/conversation-bubble/readme.md)
+- [Authored guide](./q-conversation-bubble.md) · [Generated API](../../src/components/communication/conversation-bubble/readme.md)
 - Status: Implemented; see guide limitations.
 
 ### `q-data-table`
@@ -92,7 +92,7 @@ Shared [foundation rules](../foundation.md) define inherited control sizes, layo
 
 `q-form` collects and validates named controls while sharing field size and feedback spacing.
 
-- [Authored guide](./q-form.md) · [Generated API](../../src/components/layout/form/readme.md)
+- [Authored guide](./q-form.md) · [Generated API](../../src/components/inputs/form/readme.md)
 - Status: Implemented; see guide limitations.
 
 ### `q-grid`
@@ -267,7 +267,7 @@ Shared [foundation rules](../foundation.md) define inherited control sizes, layo
 
 `q-toast` hosts application notifications with queued display, timed dismissal, and a shared polite live region.
 
-- [Authored guide](./q-toast.md) · [Generated API](../../src/components/overlays/toast/readme.md)
+- [Authored guide](./q-toast.md) · [Generated API](../../src/components/communication/toast/readme.md)
 - Status: Implemented; see guide limitations.
 
 ### `q-toggle`

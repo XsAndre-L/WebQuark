@@ -6,20 +6,20 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { QAccordionMode } from "./components/data-display/accordion/accordion.types";
-import { QAlertAnnouncement, QAlertVariant } from "./components/data-display/alert/alert.types";
+import { QAlertAnnouncement, QAlertVariant } from "./components/communication/alert/alert.types";
 import { QAvatarShape, QAvatarSize } from "./components/media/avatar/avatar.types";
 import { QBannerAlignment, QBannerHeight } from "./components/content/banner/banner.types";
 import { QIconColor, QIconDefinition, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
 import { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
 import { QControlSize, QSpace, QSurface } from "./theme/tokens";
-import { QCardElevation } from "./components/layout/card/card.types";
-import { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/layout/carousel/carousel.types";
-import { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/actions/chip/chip.types";
-import { QConversationBubbleVariant } from "./components/data-display/conversation-bubble/conversation-bubble.types";
+import { QCardElevation } from "./components/content/card/card.types";
+import { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/content/carousel/carousel.types";
+import { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/data-display/chip/chip.types";
+import { QConversationBubbleVariant } from "./components/communication/conversation-bubble/conversation-bubble.types";
 import { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
 import { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
 import { DropdownOptionInput, Option, QDropdownPlacement, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
-import { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/layout/form/form.types";
+import { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/inputs/form/form.types";
 import { QInputSize, QInputType } from "./components/inputs/input/input.types";
 import { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
 import { QMapBoundsInput, QMapClickDetail, QMapClusterSelectDetail, QMapErrorDetail, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapMarkerVisibilityResult, QMapProvider, QMapRasterTileLoadingPolicy, QMapStatusChangeDetail, QMapViewportRect } from "./components/data-display/map/map.types";
@@ -27,37 +27,37 @@ import { QMediaKind, QMediaLoading } from "./components/media/media/media.types"
 import { NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode } from "./components/layout/navbar/navbar.types";
 import { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
 import { QProgressSize, QProgressTone, QProgressVariant } from "./components/indicators/progress/progress.types";
-import { QQuantitySelectorVariant } from "./components/inputs/quantity-selector/quantity-selector.types";
+import { QQuantitySelectorOrientation, QQuantitySelectorVariant } from "./components/inputs/quantity-selector/quantity-selector.types";
 import { QRadioGroupOrientation, QRadioGroupSize, RadioGroupOptionInput } from "./components/inputs/radio-group/radio-group.types";
 import { QReelLayout } from "./components/media/reel/reel.types";
 import { QScrollableEventDetail, QScrollableMode } from "./components/layout/scrollable/scrollable.types";
 import { QSectionLayout } from "./components/layout/section/section.types";
 import { QSidepanelCollapseControl, QSidepanelCollapseControlAppearance, QSidepanelCollapsedChangeDetail, QSidepanelCollapseMode, QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItemInput } from "./components/layout/sidepanel/sidepanel.types";
-import { QStepDiagramLayout } from "./components/indicators/step-diagram/step-diagram.types";
-import { QStepDiagramItemLayout, QStepDiagramItemLineStyle, QStepDiagramItemStatus } from "./components/indicators/step-diagram-item/step-diagram-item.types";
+import { QStepDiagramLayout, QStepDiagramOrientation } from "./components/indicators/step-diagram/step-diagram.types";
+import { QStepDiagramItemLayout, QStepDiagramItemLineStyle, QStepDiagramItemOrientation, QStepDiagramItemStatus } from "./components/indicators/step-diagram-item/step-diagram-item.types";
 import { QSyntaxBoxLanguage, QSyntaxBoxVariant } from "./components/data-display/syntax-box/syntax-box.types";
 import { QTabsOrientation, QTabsSize, QTabsVariant, TabItemInput } from "./components/layout/tabs/tabs.types";
 import { QTextareaResizeMode } from "./components/inputs/textarea/textarea.types";
 import { QThumbnailMaximizeDetail } from "./components/media/thumbnail/thumbnail.types";
-import { QToastId, QToastOptions, QToastPosition } from "./components/overlays/toast/toast.types";
+import { QToastId, QToastOptions, QToastPosition } from "./components/communication/toast/toast.types";
 import { QToggleSize, QToggleType } from "./components/inputs/toggle/toggle.types";
 import { QToolbarEdge } from "./components/layout/toolbar/toolbar.types";
 import { QTooltipPosition } from "./components/overlays/tooltip/tooltip.types";
 export { QAccordionMode } from "./components/data-display/accordion/accordion.types";
-export { QAlertAnnouncement, QAlertVariant } from "./components/data-display/alert/alert.types";
+export { QAlertAnnouncement, QAlertVariant } from "./components/communication/alert/alert.types";
 export { QAvatarShape, QAvatarSize } from "./components/media/avatar/avatar.types";
 export { QBannerAlignment, QBannerHeight } from "./components/content/banner/banner.types";
 export { QIconColor, QIconDefinition, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
 export { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
 export { QControlSize, QSpace, QSurface } from "./theme/tokens";
-export { QCardElevation } from "./components/layout/card/card.types";
-export { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/layout/carousel/carousel.types";
-export { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/actions/chip/chip.types";
-export { QConversationBubbleVariant } from "./components/data-display/conversation-bubble/conversation-bubble.types";
+export { QCardElevation } from "./components/content/card/card.types";
+export { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/content/carousel/carousel.types";
+export { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/data-display/chip/chip.types";
+export { QConversationBubbleVariant } from "./components/communication/conversation-bubble/conversation-bubble.types";
 export { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
 export { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
 export { DropdownOptionInput, Option, QDropdownPlacement, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
-export { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/layout/form/form.types";
+export { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/inputs/form/form.types";
 export { QInputSize, QInputType } from "./components/inputs/input/input.types";
 export { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
 export { QMapBoundsInput, QMapClickDetail, QMapClusterSelectDetail, QMapErrorDetail, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapMarkerVisibilityResult, QMapProvider, QMapRasterTileLoadingPolicy, QMapStatusChangeDetail, QMapViewportRect } from "./components/data-display/map/map.types";
@@ -65,19 +65,19 @@ export { QMediaKind, QMediaLoading } from "./components/media/media/media.types"
 export { NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode } from "./components/layout/navbar/navbar.types";
 export { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
 export { QProgressSize, QProgressTone, QProgressVariant } from "./components/indicators/progress/progress.types";
-export { QQuantitySelectorVariant } from "./components/inputs/quantity-selector/quantity-selector.types";
+export { QQuantitySelectorOrientation, QQuantitySelectorVariant } from "./components/inputs/quantity-selector/quantity-selector.types";
 export { QRadioGroupOrientation, QRadioGroupSize, RadioGroupOptionInput } from "./components/inputs/radio-group/radio-group.types";
 export { QReelLayout } from "./components/media/reel/reel.types";
 export { QScrollableEventDetail, QScrollableMode } from "./components/layout/scrollable/scrollable.types";
 export { QSectionLayout } from "./components/layout/section/section.types";
 export { QSidepanelCollapseControl, QSidepanelCollapseControlAppearance, QSidepanelCollapsedChangeDetail, QSidepanelCollapseMode, QSidepanelMode, QSidepanelSelectDetail, QSidepanelSide, QSidepanelVariant, SidepanelItemInput } from "./components/layout/sidepanel/sidepanel.types";
-export { QStepDiagramLayout } from "./components/indicators/step-diagram/step-diagram.types";
-export { QStepDiagramItemLayout, QStepDiagramItemLineStyle, QStepDiagramItemStatus } from "./components/indicators/step-diagram-item/step-diagram-item.types";
+export { QStepDiagramLayout, QStepDiagramOrientation } from "./components/indicators/step-diagram/step-diagram.types";
+export { QStepDiagramItemLayout, QStepDiagramItemLineStyle, QStepDiagramItemOrientation, QStepDiagramItemStatus } from "./components/indicators/step-diagram-item/step-diagram-item.types";
 export { QSyntaxBoxLanguage, QSyntaxBoxVariant } from "./components/data-display/syntax-box/syntax-box.types";
 export { QTabsOrientation, QTabsSize, QTabsVariant, TabItemInput } from "./components/layout/tabs/tabs.types";
 export { QTextareaResizeMode } from "./components/inputs/textarea/textarea.types";
 export { QThumbnailMaximizeDetail } from "./components/media/thumbnail/thumbnail.types";
-export { QToastId, QToastOptions, QToastPosition } from "./components/overlays/toast/toast.types";
+export { QToastId, QToastOptions, QToastPosition } from "./components/communication/toast/toast.types";
 export { QToggleSize, QToggleType } from "./components/inputs/toggle/toggle.types";
 export { QToolbarEdge } from "./components/layout/toolbar/toolbar.types";
 export { QTooltipPosition } from "./components/overlays/tooltip/tooltip.types";
@@ -487,12 +487,16 @@ export namespace Components {
      */
     interface QDialog {
         /**
-          * Accessible name for the dialog, especially when using a custom header without dialogTitle.
+          * Accessible name for the dialog, especially when using a custom header without heading.
           * @default null
          */
         "ariaLabel": string | null;
         /**
           * `solid` is CEF-safe; `none` keeps only a transparent click layer.
+         */
+        "backdrop"?: QDialogBackdropEffect;
+        /**
+          * @deprecated Use backdrop. Used only when backdrop is unset.
           * @default 'solid'
          */
         "backdropEffect": QDialogBackdropEffect;
@@ -514,10 +518,20 @@ export namespace Components {
          */
         "closeLabel": string;
         /**
+          * Allows a backdrop click to close the dialog when not loading. Defaults to true.
+         */
+        "closeOnBackdropClick"?: boolean;
+        /**
+          * @deprecated Use closeOnEscape. Used only when closeOnEscape is unset.
           * @default true
          */
         "closeOnEsc": boolean;
         /**
+          * Allows Escape to close the dialog when not loading. Defaults to true.
+         */
+        "closeOnEscape"?: boolean;
+        /**
+          * @deprecated Use closeOnBackdropClick. Used only when closeOnBackdropClick is unset.
           * @default true
          */
         "closeOnOverlayClick": boolean;
@@ -530,9 +544,13 @@ export namespace Components {
          */
         "confirmLabel": string;
         /**
-          * Rendered by the default dialog header.
+          * @deprecated Use heading. Used only when heading is unset.
          */
         "dialogTitle"?: string;
+        /**
+          * Rendered by the default dialog header.
+         */
+        "heading"?: string;
         /**
           * Disables dialog actions and marks the confirm button busy.
           * @default false
@@ -757,16 +775,24 @@ export namespace Components {
          */
         "label"?: string;
         /**
-          * Supports built-in libraries, local assets, and custom URL templates.
+          * @deprecated Use library. Used only when library is unset.
           * @default 'lucide'
          */
         "lib": QIconLibrary;
         /**
-          * Overrides the version of built-in remote libraries.
+          * @deprecated Use libraryVersion. Used only when libraryVersion is unset.
          */
         "libVersion"?: string;
         /**
-          * Base path used when `lib="local"`.
+          * Supports built-in libraries, local assets, and custom URL templates.
+         */
+        "library"?: QIconLibrary;
+        /**
+          * Overrides the version of built-in remote libraries.
+         */
+        "libraryVersion"?: string;
+        /**
+          * Base path used when `library="local"`.
           * @default '/assets/icons/'
          */
         "localPath": QIconLocalPath;
@@ -836,7 +862,7 @@ export namespace Components {
          */
         "error"?: string;
         /**
-          * Validation helper text displayed when the field is in an error state.
+          * @deprecated Use error. Used when error is empty or unset.
          */
         "errorMessage"?: string;
         /**
@@ -930,7 +956,7 @@ export namespace Components {
          */
         "underline": QLinkUnderline;
         /**
-          * Compatibility alias used when `href` is unset.
+          * @deprecated Use href. Used when href is empty or unset.
          */
         "url"?: string;
         /**
@@ -1118,7 +1144,7 @@ export namespace Components {
      */
     interface QNavbar {
         /**
-          * Matches either an item's value or `href`.
+          * @deprecated Use value. Used only when value is unset.
           * @default ''
          */
         "activeValue": string;
@@ -1173,6 +1199,10 @@ export namespace Components {
           * @default false
          */
         "transparent": boolean;
+        /**
+          * Matches either an item's value or `href`.
+         */
+        "value"?: string;
     }
     /**
      * Controlled pagination for client-side or server-side collections.
@@ -1223,6 +1253,10 @@ export namespace Components {
          */
         "ariaLabel": string | null;
         /**
+          * Removes the panel border while preserving the selected variant's other styling.
+         */
+        "borderless"?: boolean;
+        /**
           * @default false
          */
         "dividers": boolean;
@@ -1233,7 +1267,7 @@ export namespace Components {
         "fullHeight": boolean;
         "headerPadding"?: QSpace;
         /**
-          * Removes the panel border while preserving the selected variant's other styling.
+          * @deprecated Use borderless. Used only when borderless is unset.
           * @default false
          */
         "noBorders": boolean;
@@ -1313,6 +1347,10 @@ export namespace Components {
         "max"?: number;
         "min"?: number;
         /**
+          * Direction of the controls. Overrides variant; defaults to horizontal when both are omitted.
+         */
+        "orientation"?: QQuantitySelectorOrientation;
+        /**
           * @default 'inherit'
          */
         "size": QControlSize;
@@ -1325,6 +1363,7 @@ export namespace Components {
          */
         "value": number;
         /**
+          * @deprecated Use orientation. Used only when orientation is unset.
           * @default 'horizontal'
          */
         "variant": QQuantitySelectorVariant;
@@ -1355,7 +1394,7 @@ export namespace Components {
          */
         "error"?: string;
         /**
-          * Validation helper text displayed when the group is in an error state.
+          * @deprecated Use error. Used when error is empty or unset.
          */
         "errorMessage"?: string;
         /**
@@ -1486,7 +1525,7 @@ export namespace Components {
          */
         "collapseControl": QSidepanelCollapseControl;
         /**
-          * `edge-tab` is intended for `collapse-control="edge"`.
+          * @deprecated Use collapseControlStyle. Used only when collapseControlStyle is unset.
           * @default 'icon-button'
          */
         "collapseControlAppearance": QSidepanelCollapseControlAppearance;
@@ -1495,6 +1534,10 @@ export namespace Components {
           * @default ''
          */
         "collapseControlPosition": string;
+        /**
+          * `edge-tab` is intended for `collapse-control="edge"`.
+         */
+        "collapseControlStyle"?: QSidepanelCollapseControlAppearance;
         /**
           * Accessible label for the built-in collapse control.
           * @default 'Toggle sidebar'
@@ -1516,6 +1559,15 @@ export namespace Components {
          */
         "collapsible": boolean;
         /**
+          * Seeds navigation group expansion before user interaction. Defaults to true.
+         */
+        "defaultGroupsExpanded"?: boolean;
+        /**
+          * Drawer width or height, depending on `side`.
+         */
+        "drawerSize"?: string;
+        /**
+          * @deprecated Use defaultGroupsExpanded. Used only when defaultGroupsExpanded is unset.
           * @default true
          */
         "expanded": boolean;
@@ -1535,7 +1587,7 @@ export namespace Components {
          */
         "open": boolean;
         /**
-          * Drawer width or height, depending on `side`.
+          * @deprecated Use drawerSize. Used only when drawerSize is unset.
           * @default '320px'
          */
         "panelSize": string;
@@ -1577,16 +1629,21 @@ export namespace Components {
          */
         "ariaLabel": string | null;
         /**
+          * @deprecated Use orientation. Used only when orientation is unset.
           * @default 'vertical'
          */
         "layout": QStepDiagramLayout;
+        /**
+          * Direction of the sequence and its items. Overrides layout; defaults to vertical when both are omitted.
+         */
+        "orientation"?: QStepDiagramOrientation;
     }
     /**
      * Interactive step item for q-step-diagram sequences.
      */
     interface QStepDiagramItem {
         /**
-          * Inherited from `q-step-diagram`.
+          * @deprecated Use orientation. Used only when orientation is unset.
           * @default 'vertical'
          */
         "layout": QStepDiagramItemLayout;
@@ -1594,6 +1651,10 @@ export namespace Components {
           * @default 'solid'
          */
         "lineStyle": QStepDiagramItemLineStyle;
+        /**
+          * Direction of the step. A q-step-diagram parent supplies its orientation; standalone default is vertical.
+         */
+        "orientation"?: QStepDiagramItemOrientation;
         /**
           * @default 'completed'
          */
@@ -1739,7 +1800,7 @@ export namespace Components {
          */
         "error"?: string;
         /**
-          * Validation helper text displayed when the field is in an error state.
+          * @deprecated Use error. Used when error is empty or unset.
          */
         "errorMessage"?: string;
         /**
@@ -3260,12 +3321,16 @@ declare namespace LocalJSX {
      */
     interface QDialog {
         /**
-          * Accessible name for the dialog, especially when using a custom header without dialogTitle.
+          * Accessible name for the dialog, especially when using a custom header without heading.
           * @default null
          */
         "ariaLabel"?: string | null;
         /**
           * `solid` is CEF-safe; `none` keeps only a transparent click layer.
+         */
+        "backdrop"?: QDialogBackdropEffect;
+        /**
+          * @deprecated Use backdrop. Used only when backdrop is unset.
           * @default 'solid'
          */
         "backdropEffect"?: QDialogBackdropEffect;
@@ -3279,10 +3344,20 @@ declare namespace LocalJSX {
          */
         "closeLabel"?: string;
         /**
+          * Allows a backdrop click to close the dialog when not loading. Defaults to true.
+         */
+        "closeOnBackdropClick"?: boolean;
+        /**
+          * @deprecated Use closeOnEscape. Used only when closeOnEscape is unset.
           * @default true
          */
         "closeOnEsc"?: boolean;
         /**
+          * Allows Escape to close the dialog when not loading. Defaults to true.
+         */
+        "closeOnEscape"?: boolean;
+        /**
+          * @deprecated Use closeOnBackdropClick. Used only when closeOnBackdropClick is unset.
           * @default true
          */
         "closeOnOverlayClick"?: boolean;
@@ -3291,9 +3366,13 @@ declare namespace LocalJSX {
          */
         "confirmLabel"?: string;
         /**
-          * Rendered by the default dialog header.
+          * @deprecated Use heading. Used only when heading is unset.
          */
         "dialogTitle"?: string;
+        /**
+          * Rendered by the default dialog header.
+         */
+        "heading"?: string;
         /**
           * Disables dialog actions and marks the confirm button busy.
           * @default false
@@ -3535,16 +3614,24 @@ declare namespace LocalJSX {
          */
         "label"?: string;
         /**
-          * Supports built-in libraries, local assets, and custom URL templates.
+          * @deprecated Use library. Used only when library is unset.
           * @default 'lucide'
          */
         "lib"?: QIconLibrary;
         /**
-          * Overrides the version of built-in remote libraries.
+          * @deprecated Use libraryVersion. Used only when libraryVersion is unset.
          */
         "libVersion"?: string;
         /**
-          * Base path used when `lib="local"`.
+          * Supports built-in libraries, local assets, and custom URL templates.
+         */
+        "library"?: QIconLibrary;
+        /**
+          * Overrides the version of built-in remote libraries.
+         */
+        "libraryVersion"?: string;
+        /**
+          * Base path used when `library="local"`.
           * @default '/assets/icons/'
          */
         "localPath"?: QIconLocalPath;
@@ -3606,7 +3693,7 @@ declare namespace LocalJSX {
          */
         "error"?: string;
         /**
-          * Validation helper text displayed when the field is in an error state.
+          * @deprecated Use error. Used when error is empty or unset.
          */
         "errorMessage"?: string;
         /**
@@ -3713,7 +3800,7 @@ declare namespace LocalJSX {
          */
         "underline"?: QLinkUnderline;
         /**
-          * Compatibility alias used when `href` is unset.
+          * @deprecated Use href. Used when href is empty or unset.
          */
         "url"?: string;
         /**
@@ -3921,7 +4008,7 @@ declare namespace LocalJSX {
      */
     interface QNavbar {
         /**
-          * Matches either an item's value or `href`.
+          * @deprecated Use value. Used only when value is unset.
           * @default ''
          */
         "activeValue"?: string;
@@ -3978,6 +4065,10 @@ declare namespace LocalJSX {
           * @default false
          */
         "transparent"?: boolean;
+        /**
+          * Matches either an item's value or `href`.
+         */
+        "value"?: string;
     }
     /**
      * Controlled pagination for client-side or server-side collections.
@@ -4032,6 +4123,10 @@ declare namespace LocalJSX {
          */
         "ariaLabel"?: string | null;
         /**
+          * Removes the panel border while preserving the selected variant's other styling.
+         */
+        "borderless"?: boolean;
+        /**
           * @default false
          */
         "dividers"?: boolean;
@@ -4042,7 +4137,7 @@ declare namespace LocalJSX {
         "fullHeight"?: boolean;
         "headerPadding"?: QSpace;
         /**
-          * Removes the panel border while preserving the selected variant's other styling.
+          * @deprecated Use borderless. Used only when borderless is unset.
           * @default false
          */
         "noBorders"?: boolean;
@@ -4129,6 +4224,10 @@ declare namespace LocalJSX {
         "onQClick"?: (event: QQuantitySelectorCustomEvent<MouseEvent>) => void;
         "onQFocus"?: (event: QQuantitySelectorCustomEvent<FocusEvent>) => void;
         /**
+          * Direction of the controls. Overrides variant; defaults to horizontal when both are omitted.
+         */
+        "orientation"?: QQuantitySelectorOrientation;
+        /**
           * @default 'inherit'
          */
         "size"?: QControlSize;
@@ -4141,6 +4240,7 @@ declare namespace LocalJSX {
          */
         "value"?: number;
         /**
+          * @deprecated Use orientation. Used only when orientation is unset.
           * @default 'horizontal'
          */
         "variant"?: QQuantitySelectorVariant;
@@ -4167,7 +4267,7 @@ declare namespace LocalJSX {
          */
         "error"?: string;
         /**
-          * Validation helper text displayed when the group is in an error state.
+          * @deprecated Use error. Used when error is empty or unset.
          */
         "errorMessage"?: string;
         /**
@@ -4301,7 +4401,7 @@ declare namespace LocalJSX {
          */
         "collapseControl"?: QSidepanelCollapseControl;
         /**
-          * `edge-tab` is intended for `collapse-control="edge"`.
+          * @deprecated Use collapseControlStyle. Used only when collapseControlStyle is unset.
           * @default 'icon-button'
          */
         "collapseControlAppearance"?: QSidepanelCollapseControlAppearance;
@@ -4310,6 +4410,10 @@ declare namespace LocalJSX {
           * @default ''
          */
         "collapseControlPosition"?: string;
+        /**
+          * `edge-tab` is intended for `collapse-control="edge"`.
+         */
+        "collapseControlStyle"?: QSidepanelCollapseControlAppearance;
         /**
           * Accessible label for the built-in collapse control.
           * @default 'Toggle sidebar'
@@ -4331,6 +4435,15 @@ declare namespace LocalJSX {
          */
         "collapsible"?: boolean;
         /**
+          * Seeds navigation group expansion before user interaction. Defaults to true.
+         */
+        "defaultGroupsExpanded"?: boolean;
+        /**
+          * Drawer width or height, depending on `side`.
+         */
+        "drawerSize"?: string;
+        /**
+          * @deprecated Use defaultGroupsExpanded. Used only when defaultGroupsExpanded is unset.
           * @default true
          */
         "expanded"?: boolean;
@@ -4362,7 +4475,7 @@ declare namespace LocalJSX {
          */
         "open"?: boolean;
         /**
-          * Drawer width or height, depending on `side`.
+          * @deprecated Use drawerSize. Used only when drawerSize is unset.
           * @default '320px'
          */
         "panelSize"?: string;
@@ -4404,16 +4517,21 @@ declare namespace LocalJSX {
          */
         "ariaLabel"?: string | null;
         /**
+          * @deprecated Use orientation. Used only when orientation is unset.
           * @default 'vertical'
          */
         "layout"?: QStepDiagramLayout;
+        /**
+          * Direction of the sequence and its items. Overrides layout; defaults to vertical when both are omitted.
+         */
+        "orientation"?: QStepDiagramOrientation;
     }
     /**
      * Interactive step item for q-step-diagram sequences.
      */
     interface QStepDiagramItem {
         /**
-          * Inherited from `q-step-diagram`.
+          * @deprecated Use orientation. Used only when orientation is unset.
           * @default 'vertical'
          */
         "layout"?: QStepDiagramItemLayout;
@@ -4425,6 +4543,10 @@ declare namespace LocalJSX {
           * Emitted when the focusable step content is clicked or activated with Enter/Space.
          */
         "onQItemClick"?: (event: QStepDiagramItemCustomEvent<void>) => void;
+        /**
+          * Direction of the step. A q-step-diagram parent supplies its orientation; standalone default is vertical.
+         */
+        "orientation"?: QStepDiagramItemOrientation;
         /**
           * @default 'completed'
          */
@@ -4563,7 +4685,7 @@ declare namespace LocalJSX {
          */
         "error"?: string;
         /**
-          * Validation helper text displayed when the field is in an error state.
+          * @deprecated Use error. Used when error is empty or unset.
          */
         "errorMessage"?: string;
         /**
@@ -4794,10 +4916,6 @@ declare namespace LocalJSX {
         "height": QBannerHeight;
         "alignment": QBannerAlignment;
     }
-    interface QBannerAttributes {
-        "height": QBannerHeight;
-        "alignment": QBannerAlignment;
-    }
     interface QButtonAttributes {
         "disabled": boolean;
         "href": string;
@@ -4874,12 +4992,16 @@ declare namespace LocalJSX {
         "loading": boolean;
     }
     interface QDialogAttributes {
+        "heading": string;
         "dialogTitle": string;
         "ariaLabel": string | null;
         "message": string;
         "size": 'sm' | 'md' | 'lg' | 'full';
+        "backdrop": QDialogBackdropEffect;
         "backdropEffect": QDialogBackdropEffect;
+        "closeOnEscape": boolean;
         "closeOnEsc": boolean;
+        "closeOnBackdropClick": boolean;
         "closeOnOverlayClick": boolean;
         "showCancel": boolean;
         "cancelLabel": string;
@@ -4934,8 +5056,10 @@ declare namespace LocalJSX {
     }
     interface QIconAttributes {
         "name": QIconName;
+        "library": QIconLibrary;
         "lib": QIconLibrary;
         "localPath": QIconLocalPath;
+        "libraryVersion": string;
         "libVersion": string;
         "fetchTimeout": number;
         "size": string;
@@ -5021,6 +5145,7 @@ declare namespace LocalJSX {
         "logoAlt": string;
         "brandHref": string;
         "items": NavbarItemInput[] | string;
+        "value": string;
         "activeValue": string;
         "edge": QNavbarEdge;
         "sticky": boolean;
@@ -5046,6 +5171,7 @@ declare namespace LocalJSX {
         "footerPadding": QSpace;
         "dividers": boolean;
         "variant": QPanelVariant;
+        "borderless": boolean;
         "noBorders": boolean;
         "padding": QPanelPadding;
         "fullHeight": boolean;
@@ -5070,6 +5196,7 @@ declare namespace LocalJSX {
         "max": number;
         "step": number;
         "size": QControlSize;
+        "orientation": QQuantitySelectorOrientation;
         "variant": QQuantitySelectorVariant;
     }
     interface QRadioGroupAttributes {
@@ -5109,14 +5236,17 @@ declare namespace LocalJSX {
         "variant": QSidepanelVariant;
         "open": boolean;
         "side": QSidepanelSide;
+        "drawerSize": string;
         "panelSize": string;
         "value": string;
         "mode": QSidepanelMode;
+        "defaultGroupsExpanded": boolean;
         "expanded": boolean;
         "accordion": boolean;
         "collapsible": boolean;
         "collapsed": boolean;
         "collapseControl": QSidepanelCollapseControl;
+        "collapseControlStyle": QSidepanelCollapseControlAppearance;
         "collapseControlAppearance": QSidepanelCollapseControlAppearance;
         "collapseControlPosition": string;
         "collapseMode": QSidepanelCollapseMode;
@@ -5128,11 +5258,13 @@ declare namespace LocalJSX {
         "align": 'stretch' | 'start' | 'center' | 'end';
     }
     interface QStepDiagramAttributes {
+        "orientation": QStepDiagramOrientation;
         "layout": QStepDiagramLayout;
         "ariaLabel": string | null;
     }
     interface QStepDiagramItemAttributes {
         "lineStyle": QStepDiagramItemLineStyle;
+        "orientation": QStepDiagramItemOrientation;
         "layout": QStepDiagramItemLayout;
         "status": QStepDiagramItemStatus;
     }

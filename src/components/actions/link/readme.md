@@ -11,20 +11,20 @@ Inline link with disabled handling, external-link affordances, and optional icon
 
 ## Properties
 
-| Property    | Attribute   | Description                                                                  | Type                                           | Default     |
-| ----------- | ----------- | ---------------------------------------------------------------------------- | ---------------------------------------------- | ----------- |
-| `disabled`  | `disabled`  | Prevents activation, navigation, and secondary actions such as removal.      | `boolean`                                      | `false`     |
-| `download`  | `download`  | Enables native download behavior when the component operates as a link.      | `string`                                       | `undefined` |
-| `external`  | `external`  | Shows an external-link cue and supplies a safe default `rel`.                | `boolean`                                      | `false`     |
-| `href`      | `href`      | Destination used when the component operates as a link.                      | `string`                                       | `undefined` |
-| `label`     | `label`     | Text used when slotted content cannot supply the component's required label. | `string`                                       | `undefined` |
-| `mailto`    | `mailto`    | Generates a `mailto:` URL when `href` and `url` are unset.                   | `string`                                       | `undefined` |
-| `rel`       | `rel`       | Defaults to `noopener noreferrer` when `target="_blank"`.                    | `string`                                       | `undefined` |
-| `target`    | `target`    |                                                                              | `"_blank" \| "_parent" \| "_self" \| "_top"`   | `undefined` |
-| `tel`       | `tel`       | Generates a `tel:` URL when higher-priority destinations are unset.          | `string`                                       | `undefined` |
-| `underline` | `underline` |                                                                              | `"always" \| "hover" \| "none"`                | `'hover'`   |
-| `url`       | `url`       | Compatibility alias used when `href` is unset.                               | `string`                                       | `undefined` |
-| `variant`   | `variant`   |                                                                              | `"accent" \| "danger" \| "default" \| "muted"` | `'default'` |
+| Property    | Attribute   | Description                                                                                           | Type                                           | Default     |
+| ----------- | ----------- | ----------------------------------------------------------------------------------------------------- | ---------------------------------------------- | ----------- |
+| `disabled`  | `disabled`  | Prevents activation, navigation, and secondary actions such as removal.                               | `boolean`                                      | `false`     |
+| `download`  | `download`  | Enables native download behavior when the component operates as a link.                               | `string`                                       | `undefined` |
+| `external`  | `external`  | Shows an external-link cue and supplies a safe default `rel`.                                         | `boolean`                                      | `false`     |
+| `href`      | `href`      | Destination used when the component operates as a link.                                               | `string`                                       | `undefined` |
+| `label`     | `label`     | Text used when slotted content cannot supply the component's required label.                          | `string`                                       | `undefined` |
+| `mailto`    | `mailto`    | Generates a `mailto:` URL when `href` and `url` are unset.                                            | `string`                                       | `undefined` |
+| `rel`       | `rel`       | Defaults to `noopener noreferrer` when `target="_blank"`.                                             | `string`                                       | `undefined` |
+| `target`    | `target`    |                                                                                                       | `"_blank" \| "_parent" \| "_self" \| "_top"`   | `undefined` |
+| `tel`       | `tel`       | Generates a `tel:` URL when higher-priority destinations are unset.                                   | `string`                                       | `undefined` |
+| `underline` | `underline` |                                                                                                       | `"always" \| "hover" \| "none"`                | `'hover'`   |
+| `url`       | `url`       | <span style="color:red">**[DEPRECATED]**</span> Use href. Used when href is empty or unset.<br/><br/> | `string`                                       | `undefined` |
+| `variant`   | `variant`   |                                                                                                       | `"accent" \| "danger" \| "default" \| "muted"` | `'default'` |
 
 
 ## Events

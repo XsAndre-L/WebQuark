@@ -4,7 +4,7 @@
 
 **Component tag:** `<q-form>`
 
-**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Layout → Form**. The examples below use this registered runtime with their own markup and data; playground presets are demonstrations, not component defaults.
+**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Forms & inputs → Form**. The examples below use this registered runtime with their own markup and data; playground presets are demonstrations, not component defaults.
 
 **On this page**
 
@@ -189,7 +189,7 @@ Keep shared setup in [Theme variables](../theme_variables.md), [Theme tokens](..
 
 ## API reference
 
-Cross-check the [generated API](../../src/components/layout/form/readme.md), [implementation](../../src/components/layout/form/form.tsx), and imported public types. The entries below preserve source defaults and runtime qualifications.
+Cross-check the [generated API](../../src/components/inputs/form/readme.md), [implementation](../../src/components/inputs/form/form.tsx), and imported public types. The entries below preserve source defaults and runtime qualifications.
 
 ### Properties
 

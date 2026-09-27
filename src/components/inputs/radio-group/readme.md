@@ -11,22 +11,22 @@ Form-associated single-selection radio group with a connected segmented presenta
 
 ## Properties
 
-| Property          | Attribute          | Description                                                           | Type                                         | Default        |
-| ----------------- | ------------------ | --------------------------------------------------------------------- | -------------------------------------------- | -------------- |
-| `ariaLabel`       | `aria-label`       | Accessible group name used when no visible label is supplied.         | `string`                                     | `null`         |
-| `description`     | `description`      | Supporting text, replaced by an active error.                         | `string`                                     | `undefined`    |
-| `disabled`        | `disabled`         |                                                                       | `boolean`                                    | `false`        |
-| `error`           | `error`            | Validation error text or error-state flag.                            | `string`                                     | `undefined`    |
-| `errorMessage`    | `error-message`    | Validation helper text displayed when the group is in an error state. | `string`                                     | `undefined`    |
-| `label`           | `label`            |                                                                       | `string`                                     | `undefined`    |
-| `labelHidden`     | `label-hidden`     | Keep the label accessible without displaying it.                      | `boolean`                                    | `false`        |
-| `name`            | `name`             |                                                                       | `string`                                     | `undefined`    |
-| `options`         | `options`          | Options to render; strings use the same text for label and value.     | `RadioGroupOptionInput[] \| string`          | `[]`           |
-| `orientation`     | `orientation`      | `responsive` stacks the connected options below 680px.                | `"horizontal" \| "responsive" \| "vertical"` | `'responsive'` |
-| `required`        | `required`         |                                                                       | `boolean`                                    | `false`        |
-| `reserveFeedback` | `reserve-feedback` | Omitted inherits the enclosing form; false cancels reservation.       | `boolean`                                    | `undefined`    |
-| `size`            | `size`             |                                                                       | `"inherit" \| "lg" \| "md" \| "sm"`          | `'inherit'`    |
-| `value`           | `value`            |                                                                       | `string`                                     | `''`           |
+| Property          | Attribute          | Description                                                                                             | Type                                         | Default        |
+| ----------------- | ------------------ | ------------------------------------------------------------------------------------------------------- | -------------------------------------------- | -------------- |
+| `ariaLabel`       | `aria-label`       | Accessible group name used when no visible label is supplied.                                           | `string`                                     | `null`         |
+| `description`     | `description`      | Supporting text, replaced by an active error.                                                           | `string`                                     | `undefined`    |
+| `disabled`        | `disabled`         |                                                                                                         | `boolean`                                    | `false`        |
+| `error`           | `error`            | Validation error text or error-state flag.                                                              | `string`                                     | `undefined`    |
+| `errorMessage`    | `error-message`    | <span style="color:red">**[DEPRECATED]**</span> Use error. Used when error is empty or unset.<br/><br/> | `string`                                     | `undefined`    |
+| `label`           | `label`            |                                                                                                         | `string`                                     | `undefined`    |
+| `labelHidden`     | `label-hidden`     | Keep the label accessible without displaying it.                                                        | `boolean`                                    | `false`        |
+| `name`            | `name`             |                                                                                                         | `string`                                     | `undefined`    |
+| `options`         | `options`          | Options to render; strings use the same text for label and value.                                       | `RadioGroupOptionInput[] \| string`          | `[]`           |
+| `orientation`     | `orientation`      | `responsive` stacks the connected options below 680px.                                                  | `"horizontal" \| "responsive" \| "vertical"` | `'responsive'` |
+| `required`        | `required`         |                                                                                                         | `boolean`                                    | `false`        |
+| `reserveFeedback` | `reserve-feedback` | Omitted inherits the enclosing form; false cancels reservation.                                         | `boolean`                                    | `undefined`    |
+| `size`            | `size`             |                                                                                                         | `"inherit" \| "lg" \| "md" \| "sm"`          | `'inherit'`    |
+| `value`           | `value`            |                                                                                                         | `string`                                     | `''`           |
 
 
 ## Events

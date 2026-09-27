@@ -155,7 +155,7 @@ Shared geometry and theme setup are documented in [Foundation](../foundation.md)
 
 ## API reference
 
-Cross-check the [generated API](../../src/components/data-display/alert/readme.md) and [implementation](../../src/components/data-display/alert/alert.tsx). Source nullability and actual rendering limitations are preserved below.
+Cross-check the [generated API](../../src/components/communication/alert/readme.md) and [implementation](../../src/components/communication/alert/alert.tsx). Source nullability and actual rendering limitations are preserved below.
 
 ### Properties
 

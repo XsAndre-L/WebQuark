@@ -136,7 +136,7 @@ export class QTabs {
                 <q-icon
                   class="tab__icon"
                   name={item.icon}
-                  lib="lucide"
+                  library="lucide"
                   size={this.size}
                   aria-hidden="true"
                 />

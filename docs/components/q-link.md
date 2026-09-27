@@ -81,7 +81,7 @@ The default rel is noopener noreferrer; the image shows the cue before navigatio
 
 ### State and interaction
 
-The first truthy destination wins: `href` → `url` → `mailto` prefixed with `mailto:` → `tel` prefixed with `tel:`. Empty strings fall through; whitespace is not trimmed. With no destination, click is blocked and `qClick` is not emitted. Disabling removes the native destination/target/rel/download and sets `aria-disabled="true"`, `tabindex="-1"`.
+The first truthy destination wins: `href` → deprecated `url` → `mailto` prefixed with `mailto:` → `tel` prefixed with `tel:`. Empty strings fall through; whitespace is not trimmed. With no destination, click is blocked and `qClick` is not emitted. Disabling removes the native destination/target/rel/download and sets `aria-disabled="true"`, `tabindex="-1"`.
 
 `external` supplies a cue and a safe default rel; it does not open a new tab. Use `target="_blank"` for that behavior. Explicit nonempty `rel` overrides the default `noopener noreferrer`.
 
@@ -134,6 +134,8 @@ Keep shared setup in [Theme variables](../theme_variables.md), [Theme tokens](..
 
 ## API reference
 
+For new code, use `href`. The deprecated aliases remain supported.
+
 Cross-check the [generated API](../../src/components/actions/link/readme.md), [implementation](../../src/components/actions/link/link.tsx), and imported public types. The entries below preserve source defaults and runtime qualifications.
 
 ### Properties
@@ -147,12 +149,12 @@ All properties are optional in the TypeScript component contract. Required conte
 | `external` | `false` | Shows an external-link cue and supplies a safe default `rel`.<br>**Type:** `boolean`. **HTML attribute:** `external`. **Required:** No. |
 | `href` | `undefined` | Destination used when the component operates as a link.<br>**Type:** `string`. **HTML attribute:** `href`. **Required:** No. |
 | `label` | `undefined` | Fallback text when the default slot is empty.<br>**Type:** `string`. **HTML attribute:** `label`. **Required:** No. |
-| `mailto` | `undefined` | Generates a `mailto:` URL when `href` and `url` are unset.<br>**Type:** `string`. **HTML attribute:** `mailto`. **Required:** No. |
+| `mailto` | `undefined` | Generates a `mailto:` URL when `href` and its deprecated `url` alias are unset.<br>**Type:** `string`. **HTML attribute:** `mailto`. **Required:** No. |
 | `rel` | `undefined` | Explicit native rel; otherwise external or _blank supplies noopener noreferrer.<br>**Type:** `string`. **HTML attribute:** `rel`. **Required:** No. |
 | `target` | `undefined` | Native anchor browsing context. _blank also adds the new-tab cue.<br>**Type:** `'_self' \| '_blank' \| '_parent' \| '_top'`. **HTML attribute:** `target`. **Required:** No. |
 | `tel` | `undefined` | Generates a `tel:` URL when higher-priority destinations are unset.<br>**Type:** `string`. **HTML attribute:** `tel`. **Required:** No. |
 | `underline` | `'hover'` | When the underline appears; see [Underlines](#underlines).<br>**Type:** `'hover' \| 'always' \| 'none'`. **HTML attribute:** `underline`. **Required:** No. |
-| `url` | `undefined` | Compatibility alias used when `href` is unset.<br>**Type:** `string`. **HTML attribute:** `url`. **Required:** No. |
+| `url` | `undefined` | Deprecated alias for `href`. Compatibility alias used when `href` is unset.<br>**Type:** `string`. **HTML attribute:** `url`. **Required:** No. |
 | `variant` | `'default'` | Visual color; see [Variants](#variants).<br>**Type:** `'default' \| 'muted' \| 'accent' \| 'danger'`. **HTML attribute:** `variant`. **Required:** No. |
 
 Boolean attributes use Stencil coercion: presence/empty string is true, the literal string `"false"` is false, and removing the attribute supplies false rather than restoring a true or undefined initializer. Prefer explicit JavaScript `true`/`false` for updates; an optional Boolean can be reset to `undefined` through its property to recover inheritance/detection. String attributes remain strings; numeric attributes are parsed as numbers, so invalid text can become `NaN`. Setting a property to `undefined` or removing a string/number attribute does not rerun its initializer. Keep values within the documented types.

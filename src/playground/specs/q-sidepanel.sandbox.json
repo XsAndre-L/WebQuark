@@ -37,7 +37,7 @@
       "default": "flat",
       "desc": "Item display mode: flat list, collapsible groups, or deep tree (nav mode only)"
     },
-    "panelSize": {
+    "drawerSize": {
       "type": "string",
       "default": "320px",
       "desc": "Panel dimension — width or height depending on side (drawer mode only)"
@@ -52,7 +52,7 @@
       "default": false,
       "desc": "If true, opening one group auto-collapses sibling groups (nav mode only)"
     },
-    "expanded": {
+    "defaultGroupsExpanded": {
       "type": "boolean",
       "default": true,
       "desc": "Whether all parent groups start expanded (nav mode only)"
@@ -87,7 +87,7 @@
         "variant": "drawer",
         "open": false,
         "side": "right",
-        "panelSize": "320px"
+        "drawerSize": "320px"
       }
     },
     {
@@ -96,7 +96,7 @@
         "variant": "drawer",
         "open": false,
         "side": "left",
-        "panelSize": "320px"
+        "drawerSize": "320px"
       }
     },
     {
@@ -105,7 +105,7 @@
         "variant": "drawer",
         "open": false,
         "side": "top",
-        "panelSize": "200px"
+        "drawerSize": "200px"
       }
     },
     {
@@ -114,7 +114,7 @@
         "variant": "drawer",
         "open": false,
         "side": "bottom",
-        "panelSize": "250px"
+        "drawerSize": "250px"
       }
     },
     {
@@ -123,7 +123,7 @@
         "variant": "drawer",
         "open": false,
         "side": "right",
-        "panelSize": "550px"
+        "drawerSize": "550px"
       }
     }
   ],

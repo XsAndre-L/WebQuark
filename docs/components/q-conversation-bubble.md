@@ -4,7 +4,7 @@
 
 **Component tag:** `<q-conversation-bubble>`
 
-**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Data Display → Conversation Bubble**.
+**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Communication → Conversation Bubble**.
 
 **On this page**
 
@@ -127,7 +127,7 @@ Shared geometry and theme setup are documented in [Foundation](../foundation.md)
 
 ## API reference
 
-Cross-check the [generated API](../../src/components/data-display/conversation-bubble/readme.md) and [implementation](../../src/components/data-display/conversation-bubble/conversation-bubble.tsx). Source nullability and actual rendering limitations are preserved below.
+Cross-check the [generated API](../../src/components/communication/conversation-bubble/readme.md) and [implementation](../../src/components/communication/conversation-bubble/conversation-bubble.tsx). Source nullability and actual rendering limitations are preserved below.
 
 ### Properties
 

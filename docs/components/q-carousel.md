@@ -4,7 +4,7 @@
 
 **Component tag:** `<q-carousel>`
 
-**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Layout → Carousel**. The examples below use temporary fixtures in this same registered runtime.
+**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Content → Carousel**. The examples below use temporary fixtures in this same registered runtime.
 
 **On this page**
 
@@ -151,7 +151,7 @@ The component sets item width/flex and snap variables inline during slot synchro
 
 ## API reference
 
-See the [Stencil-generated API](../../src/components/layout/carousel/readme.md) and [component source](../../src/components/layout/carousel/carousel.tsx). The tables below include source-level types and effective rendering constraints.
+See the [Stencil-generated API](../../src/components/content/carousel/readme.md) and [component source](../../src/components/content/carousel/carousel.tsx). The tables below include source-level types and effective rendering constraints.
 
 ### Properties
 

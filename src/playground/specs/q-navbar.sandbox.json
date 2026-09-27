@@ -4,7 +4,7 @@
   "props": {
     "brand": { "type": "string", "default": "WebQuark", "desc": "Brand text" },
     "brandHref": { "type": "string", "default": "/", "desc": "Brand link target" },
-    "activeValue": { "type": "string", "default": "docs", "desc": "Active item value or href" },
+    "value": { "type": "string", "default": "docs", "desc": "Active item value or href" },
     "ariaLabel": { "type": "string", "default": "", "desc": "Accessible name for both responsive navigation regions" },
     "edge": { "type": "select", "default": "top", "options": ["top", "right", "bottom", "left"], "desc": "Edge and orientation" },
     "mobileMode": { "type": "select", "default": "menu", "options": ["menu", "inline"], "desc": "Mobile item behavior" },
@@ -23,8 +23,8 @@
     { "name": "Default Navbar", "props": { "brand": "WebQuark" } },
     { "name": "Compact Sticky", "props": { "brand": "Docs", "compact": true, "sticky": true } },
     { "name": "Transparent", "props": { "brand": "Landing", "transparent": true, "bordered": false } },
-    { "name": "Bottom Navigation", "props": { "brand": "", "edge": "bottom", "activeValue": "home", "mobileMode": "inline", "items": "[{\"label\":\"Home\",\"value\":\"home\",\"icon\":\"house\",\"iconOnly\":true},{\"label\":\"Messages\",\"value\":\"messages\",\"icon\":\"message-circle\",\"iconOnly\":true,\"addonSlot\":\"messages-addon\",\"addonPlacement\":\"top-end\"},{\"label\":\"Tasks\",\"value\":\"tasks\",\"icon\":\"clipboard-list\",\"iconOnly\":true}]" } },
-    { "name": "Icon Only", "props": { "brand": "Mobile", "activeValue": "home", "mobileMode": "inline", "items": "[{\"label\":\"Home\",\"value\":\"home\",\"icon\":\"house\",\"iconOnly\":true},{\"label\":\"Messages\",\"value\":\"messages\",\"icon\":\"message-circle\",\"iconOnly\":true},{\"label\":\"Tasks\",\"value\":\"tasks\",\"icon\":\"clipboard-list\",\"iconOnly\":true}]" } }
+    { "name": "Bottom Navigation", "props": { "brand": "", "edge": "bottom", "value": "home", "mobileMode": "inline", "items": "[{\"label\":\"Home\",\"value\":\"home\",\"icon\":\"house\",\"iconOnly\":true},{\"label\":\"Messages\",\"value\":\"messages\",\"icon\":\"message-circle\",\"iconOnly\":true,\"addonSlot\":\"messages-addon\",\"addonPlacement\":\"top-end\"},{\"label\":\"Tasks\",\"value\":\"tasks\",\"icon\":\"clipboard-list\",\"iconOnly\":true}]" } },
+    { "name": "Icon Only", "props": { "brand": "Mobile", "value": "home", "mobileMode": "inline", "items": "[{\"label\":\"Home\",\"value\":\"home\",\"icon\":\"house\",\"iconOnly\":true},{\"label\":\"Messages\",\"value\":\"messages\",\"icon\":\"message-circle\",\"iconOnly\":true},{\"label\":\"Tasks\",\"value\":\"tasks\",\"icon\":\"clipboard-list\",\"iconOnly\":true}]" } }
   ],
   "edgeCases": [
     { "name": "Long Brand", "props": { "brand": "Very Long Product Name That Needs Ellipsis" } }

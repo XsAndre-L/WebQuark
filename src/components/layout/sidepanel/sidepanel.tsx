@@ -82,6 +82,8 @@ export class QSidepanel {
   @Prop({ reflect: true, mutable: true }) open: boolean = false;
   @Prop({ reflect: true }) side: QSidepanelSide = 'right';
   /** Drawer width or height, depending on `side`. */
+  @Prop() drawerSize?: string;
+  /** @deprecated Use drawerSize. Used only when drawerSize is unset. */
   @Prop() panelSize: string = '320px';
 
   // ── Nav-mode props ────────────────────────────────────────────────────────
@@ -91,6 +93,9 @@ export class QSidepanel {
   @Prop({ reflect: true }) value: string = '';
   /** Displays items as a flat list, one-level groups, or a deep tree. */
   @Prop() mode: QSidepanelMode = 'flat';
+  /** Seeds navigation group expansion before user interaction. Defaults to true. */
+  @Prop() defaultGroupsExpanded?: boolean;
+  /** @deprecated Use defaultGroupsExpanded. Used only when defaultGroupsExpanded is unset. */
   @Prop() expanded: boolean = true;
   /** Opening one group collapses its siblings. */
   @Prop() accordion: boolean = false;
@@ -102,6 +107,8 @@ export class QSidepanel {
   /** `none` delegates the collapse control and `collapsed` state to the consumer. */
   @Prop() collapseControl: QSidepanelCollapseControl = 'none';
   /** `edge-tab` is intended for `collapse-control="edge"`. */
+  @Prop({ reflect: true }) collapseControlStyle?: QSidepanelCollapseControlAppearance;
+  /** @deprecated Use collapseControlStyle. Used only when collapseControlStyle is unset. */
   @Prop({ reflect: true }) collapseControlAppearance: QSidepanelCollapseControlAppearance = 'icon-button';
   /** Measured from the top on vertical sides and left on horizontal sides. */
   @Prop() collapseControlPosition: string = '';
@@ -152,7 +159,7 @@ export class QSidepanel {
 
     // Nav mode
     this.normalizedItems = getSidepanelItems(this.items);
-    if (this.expanded) {
+    if (this.defaultGroupsExpanded ?? this.expanded) {
       seedExpandedGroups(this.normalizedItems, this.expandedGroups);
     }
   }
@@ -185,7 +192,7 @@ export class QSidepanel {
   handleItemsChange() {
     this.normalizedItems = getSidepanelItems(this.items);
 
-    if (this.expanded && !this.hasUserToggledGroups) {
+    if ((this.defaultGroupsExpanded ?? this.expanded) && !this.hasUserToggledGroups) {
       const newSet = new Set<string>();
       seedExpandedGroups(this.normalizedItems, newSet);
       this.expandedGroups = newSet;
@@ -316,7 +323,7 @@ export class QSidepanel {
   }
 
   private getCollapseIconName(): string {
-    return this.collapseControlAppearance === 'edge-tab'
+    return (this.collapseControlStyle ?? this.collapseControlAppearance) === 'edge-tab'
       ? this.getEdgeTabCollapseIconName()
       : this.getIconButtonCollapseIconName();
   }
@@ -339,7 +346,7 @@ export class QSidepanel {
   private renderCollapseControl(placement: QSidepanelCollapseControl) {
     const collapseControlLabel = this.getCollapseControlLabel();
     const iconSlotName = this.collapsed ? 'expand-icon' : 'collapse-icon';
-    const isEdgeTab = placement === 'edge' && this.collapseControlAppearance === 'edge-tab';
+    const isEdgeTab = placement === 'edge' && (this.collapseControlStyle ?? this.collapseControlAppearance) === 'edge-tab';
     const controlStyle = this.collapseControlPosition.trim()
       ? { '--q-sidepanel-collapse-control-position': this.collapseControlPosition.trim() }
       : undefined;
@@ -380,7 +387,7 @@ export class QSidepanel {
 
   render() {
     const customSizeStyle = {
-      '--q-panel-width': this.panelSize,
+      '--q-panel-width': this.drawerSize ?? this.panelSize,
     };
     const ariaLabel = this.ariaLabel?.trim() || undefined;
 

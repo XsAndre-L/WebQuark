@@ -35,50 +35,66 @@ Put property type, HTML attribute, accepted values and requiredness with each en
 
 Keep explanations short, preserve meaningful constraints, and link related sections. Each guide must be checked against source, runnable examples, readable screenshots, local links, and independent review. A completed guide does not establish production readiness or platform certification.
 
+## Categories
+
+Choose a component's primary category by the situation in which developers usually use it. Optional interaction and rendering technique do not determine its category. Each public component has one primary category; the playground lists the subset with permanent presets.
+
+| Category | Main use |
+| :--- | :--- |
+| Actions | Triggering an action or following a destination. |
+| Communication | Receiving a message from the application or another participant: inline alerts, conversation messages, and toast notifications. |
+| Content | Presenting a piece or browsable collection of content, such as a banner, card, or carousel. |
+| Data display | Reading records, values, categories, or compact summaries. Chips can display information with optional selection, removal, or link behavior. |
+| Forms & inputs | Entering, collecting, validating, and submitting information. The category key and source directory remain `inputs`. |
+| Indicators | Understanding progress or position in a process. |
+| Layout | Organizing workspace regions, controls, and related views. |
+| Media | Presenting images, icons, identities, and media galleries. |
+| Overlays | Showing a temporary dialog or contextual description. |
+
 ## Component index
 
 | Component | Category | Authored guide | Generated API |
 | :--- | :--- | :--- | :--- |
-| `q-accordion` | data-display | [Guide](./q-accordion.md) | [API](../../src/components/data-display/accordion/readme.md) |
-| `q-alert` | data-display | [Guide](./q-alert.md) | [API](../../src/components/data-display/alert/readme.md) |
-| `q-avatar` | media | [Guide](./q-avatar.md) | [API](../../src/components/media/avatar/readme.md) |
-| `q-banner` | content | [Guide](./q-banner.md) | [API](../../src/components/content/banner/readme.md) |
-| `q-button` | actions | [Guide](./q-button.md) | [API](../../src/components/actions/button/readme.md) |
-| `q-card` | layout | [Guide](./q-card.md) | [API](../../src/components/layout/card/readme.md) |
-| `q-carousel` | layout | [Guide](./q-carousel.md) | [API](../../src/components/layout/carousel/readme.md) |
-| `q-chip` | actions | [Guide](./q-chip.md) | [API](../../src/components/actions/chip/readme.md) |
-| `q-conversation-bubble` | data-display | [Guide](./q-conversation-bubble.md) | [API](../../src/components/data-display/conversation-bubble/readme.md) |
-| `q-data-table` | data-display | [Guide](./q-data-table.md) | [API](../../src/components/data-display/data-table/readme.md) |
-| `q-dialog` | overlays | [Guide](./q-dialog.md) | [API](../../src/components/overlays/dialog/readme.md) |
-| `q-dropdown` | inputs | [Guide](./q-dropdown.md) | [API](../../src/components/inputs/dropdown/readme.md) |
-| `q-form` | layout | [Guide](./q-form.md) | [API](../../src/components/layout/form/readme.md) |
-| `q-grid` | layout | [Guide](./q-grid.md) | [API](../../src/components/layout/grid/readme.md) |
-| `q-icon` | media | [Guide](./q-icon.md) | [API](../../src/components/media/icon/readme.md) |
-| `q-inline` | layout | [Guide](./q-inline.md) | [API](../../src/components/layout/inline/readme.md) |
-| `q-input` | inputs | [Guide](./q-input.md) | [API](../../src/components/inputs/input/readme.md) |
-| `q-link` | actions | [Guide](./q-link.md) | [API](../../src/components/actions/link/readme.md) |
-| `q-map` | data-display | [Guide](./q-map.md) | [API](../../src/components/data-display/map/readme.md) |
-| `q-media` | media | [Guide](./q-media.md) | [API](../../src/components/media/media/readme.md) |
-| `q-navbar` | layout | [Guide](./q-navbar.md) | [API](../../src/components/layout/navbar/readme.md) |
-| `q-pagination` | data-display | [Guide](./q-pagination.md) | [API](../../src/components/data-display/pagination/readme.md) |
-| `q-panel` | layout | [Guide](./q-panel.md) | [API](../../src/components/layout/panel/readme.md) |
-| `q-progress` | indicators | [Guide](./q-progress.md) | [API](../../src/components/indicators/progress/readme.md) |
-| `q-quantity-selector` | inputs | [Guide](./q-quantity-selector.md) | [API](../../src/components/inputs/quantity-selector/readme.md) |
-| `q-radio-group` | inputs | [Guide](./q-radio-group.md) | [API](../../src/components/inputs/radio-group/readme.md) |
-| `q-reel` | media | [Guide](./q-reel.md) | [API](../../src/components/media/reel/readme.md) |
-| `q-scrollable` | layout | [Guide](./q-scrollable.md) | [API](../../src/components/layout/scrollable/readme.md) |
-| `q-section` | layout | [Guide](./q-section.md) | [API](../../src/components/layout/section/readme.md) |
-| `q-sidepanel` | layout | [Guide](./q-sidepanel.md) | [API](../../src/components/layout/sidepanel/readme.md) |
-| `q-stack` | layout | [Guide](./q-stack.md) | [API](../../src/components/layout/stack/readme.md) |
-| `q-step-diagram` | indicators | [Guide](./q-step-diagram.md) | [API](../../src/components/indicators/step-diagram/readme.md) |
-| `q-step-diagram-item` | indicators | [Guide](./q-step-diagram-item.md) | [API](../../src/components/indicators/step-diagram-item/readme.md) |
-| `q-syntax-box` | data-display | [Guide](./q-syntax-box.md) | [API](../../src/components/data-display/syntax-box/readme.md) |
-| `q-tabs` | layout | [Guide](./q-tabs.md) | [API](../../src/components/layout/tabs/readme.md) |
-| `q-textarea` | inputs | [Guide](./q-textarea.md) | [API](../../src/components/inputs/textarea/readme.md) |
-| `q-thumbnail` | media | [Guide](./q-thumbnail.md) | [API](../../src/components/media/thumbnail/readme.md) |
-| `q-toast` | overlays | [Guide](./q-toast.md) | [API](../../src/components/overlays/toast/readme.md) |
-| `q-toggle` | inputs | [Guide](./q-toggle.md) | [API](../../src/components/inputs/toggle/readme.md) |
-| `q-toolbar` | layout | [Guide](./q-toolbar.md) | [API](../../src/components/layout/toolbar/readme.md) |
-| `q-tooltip` | overlays | [Guide](./q-tooltip.md) | [API](../../src/components/overlays/tooltip/readme.md) |
+| `q-accordion` | Data display | [Guide](./q-accordion.md) | [API](../../src/components/data-display/accordion/readme.md) |
+| `q-alert` | Communication | [Guide](./q-alert.md) | [API](../../src/components/communication/alert/readme.md) |
+| `q-avatar` | Media | [Guide](./q-avatar.md) | [API](../../src/components/media/avatar/readme.md) |
+| `q-banner` | Content | [Guide](./q-banner.md) | [API](../../src/components/content/banner/readme.md) |
+| `q-button` | Actions | [Guide](./q-button.md) | [API](../../src/components/actions/button/readme.md) |
+| `q-card` | Content | [Guide](./q-card.md) | [API](../../src/components/content/card/readme.md) |
+| `q-carousel` | Content | [Guide](./q-carousel.md) | [API](../../src/components/content/carousel/readme.md) |
+| `q-chip` | Data display | [Guide](./q-chip.md) | [API](../../src/components/data-display/chip/readme.md) |
+| `q-conversation-bubble` | Communication | [Guide](./q-conversation-bubble.md) | [API](../../src/components/communication/conversation-bubble/readme.md) |
+| `q-data-table` | Data display | [Guide](./q-data-table.md) | [API](../../src/components/data-display/data-table/readme.md) |
+| `q-dialog` | Overlays | [Guide](./q-dialog.md) | [API](../../src/components/overlays/dialog/readme.md) |
+| `q-dropdown` | Forms & inputs | [Guide](./q-dropdown.md) | [API](../../src/components/inputs/dropdown/readme.md) |
+| `q-form` | Forms & inputs | [Guide](./q-form.md) | [API](../../src/components/inputs/form/readme.md) |
+| `q-grid` | Layout | [Guide](./q-grid.md) | [API](../../src/components/layout/grid/readme.md) |
+| `q-icon` | Media | [Guide](./q-icon.md) | [API](../../src/components/media/icon/readme.md) |
+| `q-inline` | Layout | [Guide](./q-inline.md) | [API](../../src/components/layout/inline/readme.md) |
+| `q-input` | Forms & inputs | [Guide](./q-input.md) | [API](../../src/components/inputs/input/readme.md) |
+| `q-link` | Actions | [Guide](./q-link.md) | [API](../../src/components/actions/link/readme.md) |
+| `q-map` | Data display | [Guide](./q-map.md) | [API](../../src/components/data-display/map/readme.md) |
+| `q-media` | Media | [Guide](./q-media.md) | [API](../../src/components/media/media/readme.md) |
+| `q-navbar` | Layout | [Guide](./q-navbar.md) | [API](../../src/components/layout/navbar/readme.md) |
+| `q-pagination` | Data display | [Guide](./q-pagination.md) | [API](../../src/components/data-display/pagination/readme.md) |
+| `q-panel` | Layout | [Guide](./q-panel.md) | [API](../../src/components/layout/panel/readme.md) |
+| `q-progress` | Indicators | [Guide](./q-progress.md) | [API](../../src/components/indicators/progress/readme.md) |
+| `q-quantity-selector` | Forms & inputs | [Guide](./q-quantity-selector.md) | [API](../../src/components/inputs/quantity-selector/readme.md) |
+| `q-radio-group` | Forms & inputs | [Guide](./q-radio-group.md) | [API](../../src/components/inputs/radio-group/readme.md) |
+| `q-reel` | Media | [Guide](./q-reel.md) | [API](../../src/components/media/reel/readme.md) |
+| `q-scrollable` | Layout | [Guide](./q-scrollable.md) | [API](../../src/components/layout/scrollable/readme.md) |
+| `q-section` | Layout | [Guide](./q-section.md) | [API](../../src/components/layout/section/readme.md) |
+| `q-sidepanel` | Layout | [Guide](./q-sidepanel.md) | [API](../../src/components/layout/sidepanel/readme.md) |
+| `q-stack` | Layout | [Guide](./q-stack.md) | [API](../../src/components/layout/stack/readme.md) |
+| `q-step-diagram` | Indicators | [Guide](./q-step-diagram.md) | [API](../../src/components/indicators/step-diagram/readme.md) |
+| `q-step-diagram-item` | Indicators | [Guide](./q-step-diagram-item.md) | [API](../../src/components/indicators/step-diagram-item/readme.md) |
+| `q-syntax-box` | Data display | [Guide](./q-syntax-box.md) | [API](../../src/components/data-display/syntax-box/readme.md) |
+| `q-tabs` | Layout | [Guide](./q-tabs.md) | [API](../../src/components/layout/tabs/readme.md) |
+| `q-textarea` | Forms & inputs | [Guide](./q-textarea.md) | [API](../../src/components/inputs/textarea/readme.md) |
+| `q-thumbnail` | Media | [Guide](./q-thumbnail.md) | [API](../../src/components/media/thumbnail/readme.md) |
+| `q-toast` | Communication | [Guide](./q-toast.md) | [API](../../src/components/communication/toast/readme.md) |
+| `q-toggle` | Forms & inputs | [Guide](./q-toggle.md) | [API](../../src/components/inputs/toggle/readme.md) |
+| `q-toolbar` | Layout | [Guide](./q-toolbar.md) | [API](../../src/components/layout/toolbar/readme.md) |
+| `q-tooltip` | Overlays | [Guide](./q-tooltip.md) | [API](../../src/components/overlays/tooltip/readme.md) |
 
 See [implementation status](../components.md), [compact contracts](./current-contracts.md), and [theme setup](../theme_variables.md).

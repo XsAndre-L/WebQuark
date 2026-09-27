@@ -95,7 +95,7 @@ A persistent panel includes an edge control that can hide and reopen it.
 ```html
 <div style="height:240px;padding-left:40px">
   <q-sidepanel variant="panel" side="right" collapsible collapse-mode="hidden"
-    collapse-control="edge" collapse-control-appearance="edge-tab" aria-label="Inspector">
+    collapse-control="edge" collapse-control-style="edge-tab" aria-label="Inspector">
     <strong slot="header">Inspector</strong>
     <p>Select a project to inspect its details.</p>
     <span slot="footer">All changes saved</span>
@@ -113,7 +113,7 @@ A settings drawer overlays the page and provides a Done action.
 
 ```html
 <button id="open-settings" type="button">Open settings</button>
-<q-sidepanel id="settings-drawer" variant="drawer" side="right" panel-size="320px" aria-label="Workspace settings">
+<q-sidepanel id="settings-drawer" variant="drawer" side="right" drawer-size="320px" aria-label="Workspace settings">
   <h3 slot="header">Workspace settings</h3>
   <p>Review your workspace preferences.</p>
   <button id="close-settings" slot="footer" type="button">Done</button>
@@ -142,7 +142,7 @@ Click Open settings to reach the screenshot. Done sets open=false directly; back
 
 Navigation accepts JavaScript arrays only. String entries are trimmed and blank entries dropped; object items require string label/value. Nested children normalize recursively. Replace the array after editing. Keep values unique at each level (and group values unique throughout the tree) for stable item identity and group state.
 
-`expanded` seeds all groups during initialization and during items replacements before any user group toggle. Updating expanded alone does not open/close current groups. After a user toggle, replacements preserve surviving group values. `accordion` closes siblings when opening a group; it does not force only one group open on initialization. alwaysExpanded parents remain open. The declared `mode` values flat/grouped/tree are currently unused by rendering: children produce nesting in all three.
+`defaultGroupsExpanded` seeds all groups during initialization and during items replacements before any user group toggle. Updating defaultGroupsExpanded alone does not open/close current groups. After a user toggle, replacements preserve surviving group values. `accordion` closes siblings when opening a group; it does not force only one group open on initialization. alwaysExpanded parents remain open. The declared `mode` values flat/grouped/tree are currently unused by rendering: children produce nesting in all three.
 
 Rail collapse hides nav labels/chevrons and preserves icon items (text-only leaves can look blank). Always-expanded headings disappear in the rail. Panel rail only narrows/clips its content; it does not create icons. Hidden collapse hides content. In panel mode, use an edge control or external trigger for hidden collapse: header/footer controls sit inside the hidden inert content and cannot reopen it. In nav mode built-in controls remain outside aria-hidden content wrappers.
 
@@ -166,7 +166,7 @@ The sidepanel has no form value. Built-in collapse controls use type=button; app
 
 ### Limitations and compatibility
 
-Left/right drawers become bottom sheets at viewport widths ≤600px with height clamp(280px, panelSize, 80vh); top/bottom drawers retain their edges. No component-specific reduced-motion override exists. The drawer transition declaration combines a timing function with --q-transition-normal (which already contains one), so the default computed transform transition can be zero; set --q-panel-transition-duration to a duration-only value for a valid animated transition. Unknown variants fall through to drawer rendering, while reflected host selectors may not match; use supported values. Unknown sides have no positioning rule.
+Left/right drawers become bottom sheets at viewport widths ≤600px with height clamp(280px, drawerSize, 80vh); top/bottom drawers retain their edges. No component-specific reduced-motion override exists. The drawer transition declaration combines a timing function with --q-transition-normal (which already contains one), so the default computed transform transition can be zero; set --q-panel-transition-duration to a duration-only value for a valid animated transition. Unknown variants fall through to drawer rendering, while reflected host selectors may not match; use supported values. Unknown sides have no positioning rule.
 
 ## Styling
 
@@ -184,7 +184,7 @@ Collapse requires collapsible. rail (default) retains a 65px strip; hidden defau
 
 ### Sizes
 
-Nav width defaults to 264px; persistent panel width to 320px. Their height is 100% and needs a parent height. drawer panelSize defaults to 320px and becomes width for left/right or height for top/bottom. It does not size persistent panels; use their CSS hooks. side defaults right. A persistent panel’s side changes borders/control placement, not its horizontal flow direction or its width-based collapse.
+Nav width defaults to 264px; persistent panel width to 320px. Their height is 100% and needs a parent height. The effective `drawerSize` defaults to 320px and becomes width for left/right or height for top/bottom. It does not size persistent panels; use their CSS hooks. side defaults right. A persistent panel’s side changes borders/control placement, not its horizontal flow direction or its width-based collapse.
 
 The edge-tab defaults to 24×52px; horizontal sides swap the dimensions. collapseControlPosition sets an inline offset variable used by panel edge controls and nav left/right edge-tabs; nav icon-button edge placement remains fixed.
 
@@ -199,9 +199,11 @@ The edge-tab defaults to 24×52px; horizontal sides swap the dimensions. collaps
 </style>
 ```
 
---q-sidepanel-* hooks precede their --q-panel-* aliases where the table notes a fallback. The drawer sets --q-panel-width inline from panelSize, so a host width variable does not override it. See [CSS variables](#css-variables), [Shadow Parts](#shadow-parts), and [theme setup](../theme_variables.md).
+--q-sidepanel-* hooks precede their --q-panel-* aliases where the table notes a fallback. The drawer sets --q-panel-width inline from drawerSize, so a host width variable does not override it. See [CSS variables](#css-variables), [Shadow Parts](#shadow-parts), and [theme setup](../theme_variables.md).
 
 ## API reference
+
+For new code, use `drawerSize`, `defaultGroupsExpanded`, `collapseControlStyle`. The deprecated aliases remain supported. Canonical properties take precedence when set; otherwise the legacy property and its default apply. Set a canonical JavaScript property to `undefined` to restore the fallback.
 
 See the [Stencil-generated API](../../src/components/layout/sidepanel/readme.md) and [component source](../../src/components/layout/sidepanel/sidepanel.tsx). The tables below include source-level types and effective rendering constraints.
 
@@ -214,17 +216,20 @@ All properties are optional and are listed alphabetically. Boolean attributes us
 | `accordion` | `false` | Close sibling groups when opening another; initial expansion is unaffected.<br>**Type:** `boolean`. **HTML attribute:** `accordion`. **Required:** No. |
 | `ariaLabel` | `null` | Names navigation, region, or dialog; drawer needs an explicit meaningful label.<br>**Type:** `string \| null`. **HTML attribute:** `aria-label`. **Required:** No. |
 | `collapseControl` | `'none'` | Built-in collapse control placement; none delegates to application.<br>**Type:** `'none' \| 'header' \| 'footer' \| 'edge'`. **HTML attribute:** `collapse-control`. **Required:** No. |
-| `collapseControlAppearance` | `'icon-button'` | Control appearance; edge-tab requires edge placement for the tab shape.<br>**Type:** `'icon-button' \| 'edge-tab'`. **HTML attribute:** `collapse-control-appearance`. **Required:** No. |
+| `collapseControlAppearance` | `'icon-button'` | Deprecated alias for `collapseControlStyle`. Control appearance; edge-tab requires edge placement for the tab shape.<br>**Type:** `'icon-button' \| 'edge-tab'`. **HTML attribute:** `collapse-control-appearance`. **Required:** No. |
 | `collapseControlPosition` | `''` | CSS offset string; blank uses appearance-specific defaults. See placement limitations.<br>**Type:** `string`. **HTML attribute:** `collapse-control-position`. **Required:** No. |
+| `collapseControlStyle` | `undefined` | Control appearance; edge-tab requires edge placement for the tab shape.<br>**Type:** `'icon-button' \| 'edge-tab'`. **HTML attribute:** `collapse-control-style`. **Required:** No. |
 | `collapsed` | `false` | Mutable collapse state for nav/panel when collapsible.<br>**Type:** `boolean`. **HTML attribute:** `collapsed`. **Required:** No. |
 | `collapseLabel` | `'Toggle sidebar'` | Accessible collapse-control name; default/blank becomes dynamic.<br>**Type:** `string`. **HTML attribute:** `collapse-label`. **Required:** No. |
 | `collapseMode` | `'rail'` | rail narrows; hidden hides to configured near-zero width.<br>**Type:** `'rail' \| 'hidden'`. **HTML attribute:** `collapse-mode`. **Required:** No. |
 | `collapsible` | `false` | Enable nav/panel collapse behavior.<br>**Type:** `boolean`. **HTML attribute:** `collapsible`. **Required:** No. |
-| `expanded` | `true` | Seed nav group expansion initially; not a controlled group-state property.<br>**Type:** `boolean`. **HTML attribute:** `expanded`. **Required:** No. |
+| `defaultGroupsExpanded` | `undefined` | Seed nav group expansion initially; not a controlled group-state property.<br>**Type:** `boolean`. **HTML attribute:** `default-groups-expanded`. **Required:** No. |
+| `drawerSize` | `undefined` | CSS drawer width/height; persistent sizes use hooks.<br>**Type:** `string`. **HTML attribute:** `drawer-size`. **Required:** No. |
+| `expanded` | `true` | Deprecated alias for `defaultGroupsExpanded`. Seed nav group expansion initially; not a controlled group-state property.<br>**Type:** `boolean`. **HTML attribute:** `expanded`. **Required:** No. |
 | `items` | `[]` | JavaScript array of strings or nested SidepanelItem objects; no JSON attribute parsing.<br>**Type:** `SidepanelItemInput[]`. **HTML attribute:** `none; JavaScript property only`. **Required:** No. |
 | `mode` | `'flat'` | Declared flat/grouped/tree configuration; currently does not alter rendering.<br>**Type:** `'flat' \| 'grouped' \| 'tree'`. **HTML attribute:** `mode`. **Required:** No. |
 | `open` | `false` | Mutable drawer visibility; ignored in other variants.<br>**Type:** `boolean`. **HTML attribute:** `open`. **Required:** No. |
-| `panelSize` | `'320px'` | CSS drawer width/height; persistent sizes use hooks.<br>**Type:** `string`. **HTML attribute:** `panel-size`. **Required:** No. |
+| `panelSize` | `'320px'` | Deprecated alias for `drawerSize`. CSS drawer width/height; persistent sizes use hooks.<br>**Type:** `string`. **HTML attribute:** `panel-size`. **Required:** No. |
 | `side` | `'right'` | Drawer edge and persistent border/control direction.<br>**Type:** `'left' \| 'right' \| 'top' \| 'bottom'`. **HTML attribute:** `side`. **Required:** No. |
 | `value` | `''` | Application-owned active leaf value.<br>**Type:** `string`. **HTML attribute:** `value`. **Required:** No. |
 | `variant` | `'nav'` | Choose nav, panel, or drawer.<br>**Type:** `'drawer' \| 'nav' \| 'panel'`. **HTML attribute:** `variant`. **Required:** No. |
@@ -295,7 +300,7 @@ Defaults below include the imported shared stylesheet; `var(...)` values follow 
 | `--q-panel-border` | `var(--q-border)` | Drawer/persistent fallback border alias; --q-sidepanel-border takes precedence where used. Also directly controls drawer header and mobile top border. |
 | `--q-panel-shadow` | `var(--q-shadow-high, 0 16px 32px rgba(0,0,0,0.12))` | Drawer shadow fallback; --q-sidepanel-shadow takes precedence and is set by shared theme. |
 | `--q-panel-transition-duration` | `var(--q-transition-normal, 250ms ease)` | Drawer opacity/transform duration. Use duration only, such as 250ms; default shared shorthand can invalidate transition. |
-| `--q-panel-width` | `Drawer: panelSize inline (320px); persistent fallback: 320px` | Drawer inline sizing from panelSize overrides host inheritance. Fallback alias for persistent width when --q-sidepanel-panel-width is unset. |
+| `--q-panel-width` | `Drawer: drawerSize inline (320px); persistent fallback: 320px` | Drawer inline sizing from drawerSize overrides host inheritance. Fallback alias for persistent width when --q-sidepanel-panel-width is unset. |
 | `--q-shadow-high` | `0 16px 32px rgba(0, 0, 0, 0.45)` | shadow high applied to `.sidepanel-drawer`. |
 | `--q-sidepanel-bg` | `var(--q-bg-surface-1)` | All variants’ background; overrides --q-panel-bg where both appear. |
 | `--q-sidepanel-border` | `var(--q-border)` | Drawer/persistent edge border; nav outer border uses --q-border-color instead. |

@@ -75,7 +75,7 @@ Listen to the child event and ignore pending steps in application logic.
 ![Respond to a selected step: Listen to the child event and ignore pending steps in application logic.](./assets/q-step-diagram-handle-step.png)
 
 ```html
-<q-step-diagram id="setup" layout="horizontal" aria-label="Account setup">
+<q-step-diagram id="setup" orientation="horizontal" aria-label="Account setup">
   <q-step-diagram-item status="completed"><span slot="title">Create account</span>Profile saved</q-step-diagram-item>
   <q-step-diagram-item status="active"><span slot="title">Verify email</span>Check your inbox</q-step-diagram-item>
   <q-step-diagram-item status="pending" line-style="none"><span slot="title">Finish</span>Waiting for verification</q-step-diagram-item>
@@ -96,7 +96,7 @@ The screenshot follows Create account. qItemClick belongs to the child, not this
 
 ### State and interaction
 
-After load, whenever layout changes, and when the slot changes, the parent writes its layout to matching slotted q-step-diagram-item children. Assign child statuses separately. For predictable propagation use direct children; changes inside a nested wrapper do not necessarily trigger the parent slotchange.
+After load, whenever orientation changes, and when the slot changes, the parent writes its orientation to matching slotted q-step-diagram-item children. Assign child statuses separately. For predictable propagation use direct children; changes inside a nested wrapper do not necessarily trigger the parent slotchange.
 
 There is no current-step property, completion calculation, built-in navigation, or connector trimming. Set `line-style="none"` on the last child when no trailing line is wanted.
 
@@ -116,7 +116,7 @@ This is a presentational sequence, not a router or form wizard. Horizontal layou
 
 ### Layouts
 
-| layout | Result |
+| orientation | Result |
 | :--- | :--- |
 | `vertical` (default) | Column of steps |
 | `horizontal` | Row with horizontal overflow scrolling |
@@ -144,6 +144,8 @@ Shared geometry and theme setup are documented in [Foundation](../foundation.md)
 
 ## API reference
 
+For new code, use `orientation`. The deprecated aliases remain supported. Canonical properties take precedence when set; otherwise the legacy property and its default apply. Set a canonical JavaScript property to `undefined` to restore the fallback.
+
 Cross-check the [generated API](../../src/components/indicators/step-diagram/readme.md) and [implementation](../../src/components/indicators/step-diagram/step-diagram.tsx). Source nullability and actual rendering limitations are preserved below.
 
 ### Properties
@@ -153,7 +155,8 @@ All properties are optional and listed alphabetically.
 | Name | Default | Description |
 | :--- | :--- | :--- |
 | `ariaLabel` | `'Steps'` | Accessible list name. Default Steps; empty/null values do not fall back.<br>**Type:** `string \| null`. **HTML attribute:** `aria-label`. **Required:** No. |
-| `layout` | `'vertical'` | vertical or horizontal; synchronized into child layout properties.<br>**Type:** `"horizontal" \| "vertical"`. **HTML attribute:** `layout`. **Required:** No. |
+| `layout` | `'vertical'` | Deprecated alias for `orientation`. vertical or horizontal; synchronized into child layout properties.<br>**Type:** `"horizontal" \| "vertical"`. **HTML attribute:** `layout`. **Required:** No. |
+| `orientation` | `undefined` | vertical or horizontal; synchronized into child orientation properties.<br>**Type:** `"horizontal" \| "vertical"`. **HTML attribute:** `orientation`. **Required:** No. |
 
 ### Slots
 

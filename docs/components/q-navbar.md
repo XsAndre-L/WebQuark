@@ -30,7 +30,7 @@ defineCustomElements();
 
 ```html
 <q-navbar brand="Workspace" brand-href="#home" aria-label="Main sections"
-  items='["Overview","Projects"]' active-value="Overview"></q-navbar>
+  items='["Overview","Projects"]' value="Overview"></q-navbar>
 ```
 
 **Result:** a brand link and two navigation buttons; Overview is marked current. Add a qSelect handler to update selection.
@@ -44,7 +44,7 @@ defineCustomElements();
 | [Size](#sizes) | Regular or compact | Regular |
 | [Surface](#variants) | Opaque/transparent, border toggle | Opaque, bordered |
 | [Mobile](#state-and-interaction) | menu or inline | menu at ≤720px |
-| [Selection](#state-and-interaction) | activeValue or item.active | No current item |
+| [Selection](#state-and-interaction) | value or item.active | No current item |
 
 **With no properties:** `<q-navbar></q-navbar>` renders an empty brand link to `/`, empty navigation/action regions, and a bordered surface. At ≤720px the menu toggle is visible. Supply brand text or brand-slot content so the link has a name, plus navigation content.
 
@@ -61,7 +61,7 @@ A navbar shows a selected section and a message-count add-on.
 ![A navbar shows a selected section and a message-count add-on](./assets/q-navbar-selection.png)
 
 ```html
-<q-navbar id="project-nav" brand="Workspace" brand-href="#home" active-value="overview" aria-label="Project sections">
+<q-navbar id="project-nav" brand="Workspace" brand-href="#home" value="overview" aria-label="Project sections">
   <span slot="messages-count" style="background:#2563eb;color:white;border-radius:12px;padding:2px 6px;font-size:12px">3</span>
 </q-navbar>
 <p id="nav-status" role="status">Overview selected</p>
@@ -74,13 +74,13 @@ A navbar shows a selected section and a message-count add-on.
     { label: 'Archive', value: 'archive', disabled: true }
   ];
   nav.addEventListener('qSelect', event => {
-    nav.activeValue = event.detail.value;
+    nav.value = event.detail.value;
     document.querySelector('#nav-status').textContent = event.detail.label + ' selected';
   });
 </script>
 ```
 
-Click Messages to reach the screenshot. The handler owns activeValue and the status text.
+Click Messages to reach the screenshot. The handler owns value and the status text.
 
 ### Expose actions on a narrow screen
 
@@ -89,7 +89,7 @@ A mobile navbar reveals navigation and a separate mobile action slot.
 ![A mobile navbar reveals navigation and a separate mobile action slot](./assets/q-navbar-mobile.png)
 
 ```html
-<q-navbar id="project-nav" brand="Workspace" brand-href="#home" active-value="overview" aria-label="Project sections">
+<q-navbar id="project-nav" brand="Workspace" brand-href="#home" value="overview" aria-label="Project sections">
   <button slot="mobile-actions" type="button">New project</button>
   <span slot="messages-count" style="background:#2563eb;color:white;border-radius:12px;padding:2px 6px;font-size:12px">3</span>
 </q-navbar>
@@ -103,7 +103,7 @@ A mobile navbar reveals navigation and a separate mobile action slot.
     { label: 'Archive', value: 'archive', disabled: true }
   ];
   nav.addEventListener('qSelect', event => {
-    nav.activeValue = event.detail.value;
+    nav.value = event.detail.value;
     document.querySelector('#nav-status').textContent = event.detail.label + ' selected';
   });
 </script>
@@ -115,7 +115,7 @@ Use a viewport at or below 720px and activate Menu. The screenshot shows the ope
 
 ### State and interaction
 
-The application owns `activeValue`; item clicks emit qSelect but do not set it. An item is current when its active flag is true or its value/href matches nonempty activeValue. Multiple active flags may yield multiple current items. Linked items retain native navigation; for client routing preventDefault on `detail.originalEvent` and route in the application.
+The application owns `value`; item clicks emit qSelect but do not set it. An item is current when its active flag is true or its value/href matches nonempty value. Multiple active flags may yield multiple current items. Linked items retain native navigation; for client routing preventDefault on `detail.originalEvent` and route in the application.
 
 Menu state is internal. On top/bottom edges at viewport widths ≤720px, menu mode hides desktop items until the toggle opens them and hides the custom `nav` slot even while open; provide `mobile-nav` for that content. It also exposes supplied mobile slots. Clicking a generated item, clicking outside, or pressing Escape closes the menu. Custom slotted links do not automatically close it. Inline mode keeps generated/custom desktop navigation inline and hides the menu button/panel; desktop actions are still hidden at mobile widths. Left/right edges remain vertical without this mobile collapse.
 
@@ -164,6 +164,8 @@ See [CSS variables](#css-variables), [Shadow Parts](#shadow-parts), and [theme s
 
 ## API reference
 
+For new code, use `value`. The deprecated aliases remain supported. Canonical properties take precedence when set; otherwise the legacy property and its default apply. Set a canonical JavaScript property to `undefined` to restore the fallback.
+
 See the [Stencil-generated API](../../src/components/layout/navbar/readme.md) and [component source](../../src/components/layout/navbar/navbar.tsx). The tables below include source-level types and effective rendering constraints.
 
 ### Properties
@@ -172,7 +174,7 @@ All properties are optional and are listed alphabetically. Boolean attributes us
 
 | Name | Default | Description |
 | :--- | :--- | :--- |
-| `activeValue` | `''` | Current item value or href; application-owned.<br>**Type:** `string`. **HTML attribute:** `active-value`. **Required:** No. |
+| `activeValue` | `''` | Deprecated alias for `value`. Current item value or href; application-owned.<br>**Type:** `string`. **HTML attribute:** `active-value`. **Required:** No. |
 | `ariaLabel` | `null` | Accessible name for both nav regions; blank uses separate default names.<br>**Type:** `string \| null`. **HTML attribute:** `aria-label`. **Required:** No. |
 | `bordered` | `true` | Add inward-facing border.<br>**Type:** `boolean`. **HTML attribute:** `bordered`. **Required:** No. |
 | `brand` | `undefined` | Visible fallback brand text; undefined renders none.<br>**Type:** `string`. **HTML attribute:** `brand`. **Required:** No. |
@@ -186,6 +188,7 @@ All properties are optional and are listed alphabetically. Boolean attributes us
 | `mobileMode` | `'menu'` | menu collapses horizontal navigation below 721px; inline retains it.<br>**Type:** `'menu' \| 'inline'`. **HTML attribute:** `mobile-mode`. **Required:** No. |
 | `sticky` | `false` | Use CSS sticky positioning.<br>**Type:** `boolean`. **HTML attribute:** `sticky`. **Required:** No. |
 | `transparent` | `false` | Remove the navbar background.<br>**Type:** `boolean`. **HTML attribute:** `transparent`. **Required:** No. |
+| `value` | `undefined` | Current item value or href; application-owned.<br>**Type:** `string`. **HTML attribute:** `value`. **Required:** No. |
 
 #### NavbarItemInput and NavbarItem
 
@@ -198,7 +201,7 @@ A string supplies trimmed label and value. An object supports:
 | href | Optional string; makes an anchor instead of button. |
 | target | Optional `_self \| _blank \| _parent \| _top`; _blank adds noopener noreferrer. |
 | disabled | Optional boolean, default false. |
-| active | Optional boolean, default false; adds aria-current=page independently of activeValue. |
+| active | Optional boolean, default false; adds aria-current=page independently of value. |
 | icon | Optional string; q-icon name. |
 | iconLib | Optional string; default lucide. Supports lucide, font-awesome/fontawesome, local, and q-icon custom library handling. |
 | iconSize | Optional sm/md/lg, number, or string; default sm. See q-icon for CSS/numeric sizing. |
