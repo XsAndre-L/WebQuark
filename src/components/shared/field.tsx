@@ -1,7 +1,7 @@
 import { h } from '@stencil/core';
 
 export function feedbackStyle(reserve: boolean | undefined): Record<string, string> {
-  return { '--_q-feedback-min': reserve === undefined ? 'var(--q-context-feedback-min, 0px)' : reserve ? '1rem' : '0px' };
+  return { '--_q-feedback-min': reserve === undefined ? 'var(--q-context-feedback-min, calc(var(--_q-context-feedback-reserve, 0) * var(--q-field-text-line, 1rem)))' : reserve ? 'var(--q-field-text-line, 1rem)' : '0px' };
 }
 
 /** Kept in the control's own shadow root so describedby never crosses a boundary. */

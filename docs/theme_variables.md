@@ -1,5 +1,7 @@
 # WebQuark theme setup and composition
 
+For compact or roomier sizing, see [Design presets](./design-presets.md). Select `data-wq-preset="compact"` or `data-wq-preset="comfortable"` independently of the colour theme; omitted keeps current compact defaults.
+
 Use the [generated theme-token reference](./theme-tokens.md) for current names and default values, and [Foundation](./foundation.md) for the rules that make related components fit together.
 
 ## Load the theme
@@ -55,7 +57,7 @@ The form supplies shared sizing; the button changes only its local corners. Expl
 
 ## Maintain theme definitions
 
-Edit `src/theme/tokens.ts` and run `bun run theme:generate`. The build also runs this generator. Do not hand-edit generated `tokens.css`, `control.css`, or `docs/theme-tokens.md`.
+Edit `src/theme/tokens.ts` and run `bun run theme:generate`. The build also runs this generator. Do not hand-edit generated `tokens.css`, `behaviors/control-sizing.css`, or `docs/theme-tokens.md`.
 
 Optional component overrides intentionally remain unset at the root where defaults would mask inherited geometry or scoped palette fallbacks. Shared tokens and local overrides have different responsibilities.
 

@@ -14,6 +14,7 @@ export const config: Config = {
       type: 'dist',
       esmLoaderPath: 'loader',
       empty: true,
+      copy: [{ src: 'theme/behaviors/native-content.css', dest: 'native-content.css' }],
     },
     {
       type: 'dist-custom-elements',
@@ -32,6 +33,8 @@ export const config: Config = {
       indexHtml: 'playground/index.html',
       copy: [
         { src: 'playground/index.html', dest: 'index.html' },
+        { src: 'playground/presets.html', dest: 'presets.html' },
+        { src: 'theme/behaviors/native-content.css', dest: 'native-content.css' },
         { src: 'playground/logo.svg', dest: 'logo.svg' },
         { src: 'playground/playground.css', dest: 'playground.css' },
         { src: 'playground/playground.bundled.js', dest: 'playground.js' },

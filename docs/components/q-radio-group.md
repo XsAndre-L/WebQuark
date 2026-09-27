@@ -162,7 +162,7 @@ Use the [CSS variables](#css-variables) or [Shadow Parts](#shadow-parts) for sup
 </style>
 ```
 
-Component radius precedes shared field radius and control radius. Option min-height and padding hooks precede shared dimensions. The inline option-count variable is recalculated from options and controls equal columns; a host value does not replace it. Field-label and feedback styles come from shared field.css.
+Component radius precedes shared field radius and control radius. Option min-height and padding hooks precede shared dimensions. The inline option-count variable is recalculated from options and controls equal columns; a host value does not replace it. Field-label and feedback styles come from shared field-feedback.css.
 
 Keep shared setup in [Theme variables](../theme_variables.md), [Theme tokens](../theme-tokens.md), and the [sizing, spacing and surface foundation](../foundation.md).
 

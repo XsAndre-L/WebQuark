@@ -81,11 +81,22 @@ export class MapMarkerController {
   private readonly clusterIndex = new MapMarkerClusterIndex();
   private visibleItems = new Map<string, MapMarkerViewportItem>();
   private pendingFocusMarkerKey?: string;
+  private markerResizeObserver?: ResizeObserver;
+  private collisionFrame?: number;
 
   private readonly handleViewportChange = () => this.reconcile();
 
   constructor(private readonly options: MapMarkerControllerOptions) {
     options.map.on('moveend zoomend', this.handleViewportChange);
+    if (typeof ResizeObserver !== 'undefined') {
+      this.markerResizeObserver = new ResizeObserver(() => {
+        if (this.collisionFrame !== undefined) return;
+        this.collisionFrame = requestAnimationFrame(() => {
+          this.collisionFrame = undefined;
+          this.syncCollisionOffsets([...this.visibleItems.values()]);
+        });
+      });
+    }
   }
 
   sync(markers: QMapMarkerInput): void {
@@ -130,6 +141,9 @@ export class MapMarkerController {
   }
 
   destroy(): void {
+    this.markerResizeObserver?.disconnect();
+    if (this.collisionFrame !== undefined) cancelAnimationFrame(this.collisionFrame);
+    this.collisionFrame = undefined;
     this.options.map.off('moveend zoomend', this.handleViewportChange);
     for (const key of [...this.layers.keys()]) this.remove(key);
     this.visibleItems.clear();
@@ -209,6 +223,8 @@ export class MapMarkerController {
       zIndexOffset: this.getZIndexOffset(item),
     });
     layer.addTo(this.options.map);
+    const positionElement = layer.getElement();
+    if (positionElement) this.markerResizeObserver?.observe(positionElement);
     const element = layer.getElement();
     if (!element) {
       layer.remove();
@@ -485,6 +501,8 @@ export class MapMarkerController {
   private remove(key: string): void {
     const record = this.layers.get(key);
     if (!record) return;
+    const positionElement = record.layer.getElement();
+    if (positionElement) this.markerResizeObserver?.unobserve(positionElement);
     record.element.removeEventListener('click', record.click);
     record.element.removeEventListener('keydown', record.keydown);
     this.unbindCallout(record);

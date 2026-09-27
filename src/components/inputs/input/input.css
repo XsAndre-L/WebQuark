@@ -1,4 +1,4 @@
-@import '../../../theme/control.css';
+@import '../../../theme/behaviors/control-sizing.css';
 :host {
   display: block;
   width: 100%;
@@ -223,4 +223,4 @@ input.input-box[type="color"]::-moz-color-swatch {
 .input-wrapper .prefix-container, .input-wrapper .suffix-container { padding-inline: var(--_q-control-padding); }
 .input-wrapper .clear-btn svg, .input-wrapper .password-toggle-btn svg { width: var(--_q-control-icon); height: var(--_q-control-icon); }
 
-@import '../../../theme/field.css';
+@import '../../../theme/behaviors/field-feedback.css';

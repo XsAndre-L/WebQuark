@@ -7,6 +7,8 @@ A premium, glassmorphic Web Component library compiled with **StencilJS**. Desig
 
 ## 🚀 Quick Start (Using Components)
 
+**Design presets:** use `data-wq-preset="comfortable"` for website typography, spacing and controls. Omit it for existing compact defaults. See [the preset guide](docs/design-presets.md) and [complete values](docs/design-presets-tokens.md).
+
 ### 1. Install Library
 ```bash
 bun add @webquark/core

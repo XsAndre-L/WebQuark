@@ -6,16 +6,23 @@ Start with **tokens.ts** for shared dimensions and grouped theme defaults.
 | --- | --- |
 | `tokens.ts` | Spacing, control sizes, colors, typography, surfaces, shadows, and component defaults, including light/dark values |
 | `tokens.css` | Generated defaults; do not edit directly |
-| `control.css` | Generated explicit/inherited control sizing rules |
-| `field.css` | Shared field styling |
+| `token-presets.css` | Generated compact/comfortable preset values |
+| `behaviors/control-sizing.css` | Generated explicit/inherited control sizing rules |
+| `behaviors/field-feedback.css` | Shared labels, help text, errors and reserved feedback space |
+| `behaviors/native-content.css` | Optional native typography and content spacing |
 | `theme.css` | Stylesheet entry point |
+
+`behaviors/` contains reusable CSS functionality that components or native
+content opt into. Component imports include sizing and field feedback in their
+shadow roots; applications can import `@webquark/core/native-content.css` for
+native content. The public package import stays independent of the source layout.
 
 Run `bun run theme:generate` after editing the catalog. The build also runs it.
 The generator updates CSS and `docs/theme-tokens.md`. The playground theme
 designer reads the same catalog.
 
-Optional component overrides remain defined at their point of use and unset at
-the root, so inherited values keep working. Private `--_q-*` variables are not
+Component settings supplied by presets are listed in `docs/design-presets-tokens.md`.
+Other optional overrides remain unset at the root. Private `--_q-*` variables are not
 consumer API. The field rendering helper lives in `components/shared/field.tsx`.
 
 Consumers continue to import `@webquark/core/dist/webquark/webquark.css` and

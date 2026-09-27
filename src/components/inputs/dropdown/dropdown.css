@@ -1,4 +1,4 @@
-@import '../../../theme/control.css';
+@import '../../../theme/behaviors/control-sizing.css';
 :host {
   display: block;
   width: 100%;
@@ -123,7 +123,7 @@
 
 /* Options Items */
 .menu-item {
-  padding: 10px 14px;
+  padding: var(--q-dropdown-option-padding, 10px 14px);
   cursor: pointer;
   box-sizing: border-box;
 
@@ -317,4 +317,4 @@
 .dropdown-menu { background: var(--q-dropdown-menu-bg, var(--q-bg-floating, var(--q-bg-surface-4, #2c3a58))); }
 .dropdown-trigger[aria-invalid='true'] { border-color: var(--q-color-danger, #f87171); }
 
-@import '../../../theme/field.css';
+@import '../../../theme/behaviors/field-feedback.css';
