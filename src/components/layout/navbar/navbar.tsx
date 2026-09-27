@@ -88,7 +88,7 @@ export class QNavbar {
   private resizeObserver?: ResizeObserver;
   private mutationObserver?: MutationObserver;
   private frame = 0;
-  private focusAfterRender?: HTMLElement;
+  private focusAfterRender?: HTMLElement | 'navigation';
   private desktopFocus?: HTMLElement;
 
   // ========================= [3] LIFECYCLE & WATCHERS ==========================
@@ -118,7 +118,7 @@ export class QNavbar {
   componentDidRender() {
     if (this.focusAfterRender) {
       const target = this.focusAfterRender;
-      (target.checkVisibility() && !target.matches(':disabled, [aria-disabled="true"]') ? target : this.firstNavigationControl()).focus();
+      (target !== 'navigation' && this.canReceiveFocus(target) ? target : this.firstNavigationControl()).focus();
       this.focusAfterRender = undefined;
     }
     this.scheduleMeasure();
@@ -128,13 +128,12 @@ export class QNavbar {
   protected mobileModeChanged() {
     if (!this.collision) return;
     const root = this.el.shadowRoot!;
-    const focused = root.activeElement || document.activeElement;
+    const { focused, owned, inBrand, inMobileSlot } = this.focusContext();
     this.setMenuOpen(false);
-    if (this.mobileMode === 'inline' && focused === root.querySelector('.menu-button')) {
-      this.focusAfterRender = this.desktopFocus || this.firstNavigationControl();
-    } else if (this.mobileMode === 'menu' && focused &&
-      (root.querySelector('.desktop-nav')!.contains(focused) || this.el.contains(focused))) {
-      this.desktopFocus = focused as HTMLElement;
+    if (this.mobileMode === 'inline' && owned && (focused === root.querySelector('.menu-button') || inMobileSlot)) {
+      this.focusAfterRender = this.desktopFocus || 'navigation';
+    } else if (this.mobileMode === 'menu' && focused && owned && !inBrand) {
+      this.desktopFocus = focused;
       this.focusAfterRender = root.querySelector<HTMLElement>('.menu-button')!;
     }
   }
@@ -200,20 +199,7 @@ export class QNavbar {
       }
     }
     if (next === this.collision) return;
-    let focused = (root!.activeElement || document.activeElement) as HTMLElement | null;
-    while (focused?.shadowRoot?.activeElement) focused = focused.shadowRoot.activeElement as HTMLElement;
-    let owner: Node | null = focused;
-    let inBrand = false;
-    let inMobileSlot = false;
-    while (owner && owner !== this.el) {
-      if (owner.nodeType === Node.ELEMENT_NODE) {
-        const element = owner as HTMLElement;
-        inBrand ||= element.matches('.brand-link, [slot="brand"]');
-        inMobileSlot ||= element.matches('[slot="mobile-nav"], [slot="mobile-actions"]');
-      }
-      owner = owner.parentNode || (owner instanceof ShadowRoot ? owner.host : null);
-    }
-    const owned = owner === this.el;
+    const { focused, owned, inBrand, inMobileSlot } = this.focusContext();
     const toggle = root!.querySelector<HTMLElement>('.menu-button')!;
     if (next && this.mobileMode === 'menu' && owned && !inBrand) {
       this.desktopFocus = focused!;
@@ -226,7 +212,7 @@ export class QNavbar {
       if (owned) {
         const desktopControl = focused !== toggle && !inMobileSlot ? focused : this.desktopFocus;
         this.focusAfterRender = window.innerWidth <= 720 && this.mobileMode === 'menu' ? toggle :
-          desktopControl?.isConnected ? desktopControl : this.firstNavigationControl();
+          desktopControl?.isConnected ? desktopControl : 'navigation';
       }
       this.desktopFocus = undefined;
     }
@@ -257,14 +243,50 @@ export class QNavbar {
   }
 
   private firstNavigationControl(): HTMLElement {
-    const selector = 'a[href]:not([aria-disabled="true"]), button:not(:disabled), [tabindex]:not([tabindex="-1"]):not([aria-disabled="true"])';
-    const generated = this.el.shadowRoot!.querySelector('.desktop-nav')!.querySelector<HTMLElement>(selector);
-    if (generated) return generated;
-    for (const node of Array.from(this.el.querySelectorAll<HTMLElement>(':scope > [slot="nav"]'))) {
-      const control = node.matches(selector) ? node : node.querySelector<HTMLElement>(selector);
-      if (control) return control;
+    // Search the rendered tree, including assigned slots and custom controls' open shadows.
+    // Resolve this after rendering so the restored desktop controls are visible.
+    const find = (node: Element): HTMLElement | undefined => {
+      if (node instanceof HTMLElement && node.tabIndex >= 0 && this.canReceiveFocus(node)) return node;
+      const assigned = node instanceof HTMLSlotElement ? node.assignedElements({ flatten: true }) : [];
+      const children = node instanceof HTMLSlotElement && assigned.length ? assigned : Array.from(node.shadowRoot?.children || node.children);
+      for (const child of children) {
+        const control = find(child);
+        if (control) return control;
+      }
+      return undefined;
+    };
+    return find(this.el.shadowRoot!.querySelector('.desktop-nav')!) || this.el.shadowRoot!.querySelector<HTMLElement>('.brand-link')!;
+  }
+
+  private canReceiveFocus(element: HTMLElement): boolean {
+    if (!element.isConnected || !element.checkVisibility() || getComputedStyle(element).visibility !== 'visible') return false;
+    let node: Node | null = element;
+    while (node && node !== this.el) {
+      if (node instanceof HTMLElement && node.matches(':disabled, [disabled], [aria-disabled="true"], [inert], [aria-hidden="true"]')) return false;
+      node = this.composedParent(node);
     }
-    return this.el.shadowRoot!.querySelector<HTMLElement>('.brand-link')!;
+    return true;
+  }
+
+  private composedParent(node: Node): Node | null {
+    return node instanceof HTMLElement && node.assignedSlot ? node.assignedSlot :
+      node.parentNode || (node instanceof ShadowRoot ? node.host : null);
+  }
+
+  private focusContext() {
+    let focused = (this.el.shadowRoot?.activeElement || document.activeElement) as HTMLElement | null;
+    while (focused?.shadowRoot?.activeElement) focused = focused.shadowRoot.activeElement as HTMLElement;
+    let owner: Node | null = focused;
+    let inBrand = false;
+    let inMobileSlot = false;
+    while (owner && owner !== this.el) {
+      if (owner instanceof HTMLElement) {
+        inBrand ||= owner.matches('.brand-link, [slot="brand"]');
+        inMobileSlot ||= owner.matches('[slot="mobile-nav"], [slot="mobile-actions"]');
+      }
+      owner = this.composedParent(owner);
+    }
+    return { focused, owned: owner === this.el, inBrand, inMobileSlot };
   }
 
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================

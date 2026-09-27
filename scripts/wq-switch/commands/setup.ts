@@ -1,6 +1,6 @@
-import { appendFileSync, existsSync, readFileSync, unlinkSync } from 'node:fs';
+import { appendFileSync, existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { configName, legacyConfigName, readWebQuarkConfig, readSwitchConfig, manifest, selectedPackages, validateSource, writeJson, type SwitchConfig } from '../config';
+import { configName, readWebQuarkConfig, readSwitchConfig, manifest, selectedPackages, validateSource, writeJson, type SwitchConfig } from '../config';
 import { readState } from '../state';
 
 export function setup(root: string, source?: string): void {
@@ -26,7 +26,5 @@ export function setup(root: string, source?: string): void {
   const current = existsSync(ignore) ? readFileSync(ignore, 'utf8') : '';
   const missing = ['/.webquark.json', '/.wq-switch/', '/node_modules/'].filter(line => !current.split(/\r?\n/).includes(line));
   if (missing.length) appendFileSync(ignore, '\n# Local WebQuark development\n' + missing.join('\n') + '\n');
-  const legacy = join(root, legacyConfigName);
-  if (!Object.hasOwn(document, 'wq-switch') && existsSync(legacy)) unlinkSync(legacy);
   console.log(`Created/updated .webquark.json and package scripts.\nPreferred release: ${config.preferredVersion}\n${config.source ? `Source: ${config.source}\nNext: bun run wq-switch local` : 'Next: fill in wq-switch.source in .webquark.json before switching locally.'}\nSandbox: bun run wq-sandbox\nStatus: bun run wq-switch status`);
 }
