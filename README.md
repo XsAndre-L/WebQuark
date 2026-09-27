@@ -25,7 +25,7 @@ defineCustomElements();
 
 ### 3. Use in HTML
 ```html
-<q-card interactive elevation="medium">
+<q-card elevation="medium">
   <div slot="header">Hello WebQuark</div>
   <q-button variant="primary">Click Me</q-button>
 </q-card>
@@ -45,12 +45,11 @@ webquark/ (Root)
  │    └── unreal_compatibility.md ◄─ CEF Off-Screen Rendering layout guidelines
  ├── src/                   ◄── Source files
  │    ├── components/       ◄── Custom Web Components
- │    │    └── q-[name]/
- │    │         ├── q-[name].tsx ◄── Component logic & render template (TSX)
- │    │         ├── q-[name].css ◄── Local stylesheet
+ │    │    └── [category]/[name]/
+ │    │         ├── [name].tsx ◄── Component logic & render template (TSX)
+ │    │         ├── [name].css ◄── Local stylesheet
  │    │         └── readme.md    ◄── Auto-generated API details (props, slots, events)
- │    └── global/
- │         └── global.css   ◄── Global design tokens & visual system variables
+ │    └── theme/            ◄── Token catalog, generated defaults, and shared styles
  └── readme.md              ◄── This file
 ```
 
@@ -59,9 +58,9 @@ webquark/ (Root)
 ## 📚 Documentation
 
 * [Component index and documentation standard](docs/components/README.md)
-* [Current public contracts for all 26 components](docs/components/current-contracts.md)
+* [Current public contracts](docs/components/current-contracts.md)
 * [Component implementation status](docs/components.md)
-* [Theme variables](docs/theme_variables.md)
+* [Theme setup](docs/theme_variables.md), [generated tokens](docs/theme-tokens.md), and [component composition](docs/foundation.md)
 * [Unreal Engine / CEF compatibility](docs/unreal_compatibility.md)
 * [Full UX, DX, accessibility, and optimization audit (2026-07-11)](docs/component-audit-2026-07-11.md)
 
@@ -69,11 +68,27 @@ Generated API references live beside each component implementation under `src/co
 
 ---
 
+## Local package switching
+
+Run `bun run wq-setup` in a consuming project to generate `.wq-switch.json` and
+the `wq-sandbox`/`wq-switch` package scripts. Fill in the config's `source` path,
+then run `bun run wq-switch local`. The switcher builds core, React, and Angular and
+activates only the packages that project uses. Run `bun run wq-switch npm` to
+restore the original installed packages. See [the switcher guide](scripts/wq-switch/README.md).
+
 ## 🧪 WebQuark Component Sandbox
 
 WebQuark includes a built-in interactive sandbox playground where you can preview components, inspect their layout behaviors, and test theme design variables in real-time.
 
-To launch the sandbox:
+From a project with `@webquark/core` installed, launch the packaged sandbox:
+
+```bash
+bun run wq-sandbox
+```
+
+Open [http://localhost:3333](http://localhost:3333). This shows the installed package's sandbox.
+
+To develop the sandbox in the WebQuark repository:
 1. Navigate to the WebQuark root directory.
 2. Start the playground server:
    ```bash

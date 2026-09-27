@@ -11,11 +11,12 @@ Interactive step item for q-step-diagram sequences.
 
 ## Properties
 
-| Property    | Attribute    | Description                      | Type                                                                         | Default       |
-| ----------- | ------------ | -------------------------------- | ---------------------------------------------------------------------------- | ------------- |
-| `layout`    | `layout`     | Inherited from `q-step-diagram`. | `"horizontal" \| "vertical"`                                                 | `'vertical'`  |
-| `lineStyle` | `line-style` |                                  | `"dashed" \| "dotted" \| "none" \| "solid"`                                  | `'solid'`     |
-| `status`    | `status`     |                                  | `"active" \| "completed" \| "danger" \| "pending" \| "success" \| "warning"` | `'completed'` |
+| Property      | Attribute     | Description                                                                                                     | Type                                                                         | Default       |
+| ------------- | ------------- | --------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------- |
+| `layout`      | `layout`      | <span style="color:red">**[DEPRECATED]**</span> Use orientation. Used only when orientation is unset.<br/><br/> | `"horizontal" \| "vertical"`                                                 | `'vertical'`  |
+| `lineStyle`   | `line-style`  |                                                                                                                 | `"dashed" \| "dotted" \| "none" \| "solid"`                                  | `'solid'`     |
+| `orientation` | `orientation` | Direction of the step. A q-step-diagram parent supplies its orientation; standalone default is vertical.        | `"horizontal" \| "vertical"`                                                 | `undefined`   |
+| `status`      | `status`      |                                                                                                                 | `"active" \| "completed" \| "danger" \| "pending" \| "success" \| "warning"` | `'completed'` |
 
 
 ## Events

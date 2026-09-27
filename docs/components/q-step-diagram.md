@@ -1,161 +1,183 @@
-# 🧩 Component Specification: `q-step-diagram`
+# q-step-diagram
 
-> Contract note: see [Current public contracts](./current-contracts.md#q-step-diagram), the [generated API](../../src/components/indicators/step-diagram/readme.md), and the separate [q-step-diagram-item guide](./q-step-diagram-item.md). Generated API wins if an older design note below differs.
+`q-step-diagram` arranges interactive step items into a vertical or horizontal sequence.
 
-The `<q-step-diagram>` component acts as a generic connected-path progress flow diagram. It displays chronological activity logs, sequential configuration steps (wizards), or project milestones. It supports both vertical and horizontal layouts, dynamic line styles, and semantic state colors, rendering smoothly in Unreal Engine's Off-Screen Rendering (OSR) browser mode.
+**Component tag:** `<q-step-diagram>`
 
----
+**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Indicators → Step Diagram**.
 
-## 1. Component API (Properties & Attributes)
+**On this page**
 
-### A. Parent Container: `<q-step-diagram>`
+- [Quick start](#quick-start)
+- [Examples](#examples)
+- [Behavior & accessibility](#behavior--accessibility)
+- [Styling](#styling)
+- [API reference](#api-reference)
 
-| Property | Attribute | Type | Default | Description |
-| :--- | :--- | :--- | :--- | :--- |
-| `layout` | `layout` | `"vertical" \| "horizontal"` | `'vertical'` | The direction of the progress flow path. |
+## Quick start
 
-### B. Child Item: `<q-step-diagram-item>`
+1. Follow the central [installation instructions](../../README.md#1-install-library).
+2. In your application entry file, register WebQuark. This assumes a bundler that resolves package imports and CSS imports.
 
-| Property | Attribute | Type | Default | Description |
-| :--- | :--- | :--- | :--- | :--- |
-| `status` | `status` | `"pending" \| "active" \| "completed" \| "success" \| "warning" \| "danger"` | `'completed'` | The semantic status of the step. Updates the colors of the node circle and the trailing path line. |
-| `lineStyle` | `line-style` | `"solid" \| "dashed" \| "dotted" \| "none"` | `'solid'` | The stroke style of the path line leading to the next step. |
-| `layout` | `layout` | `"vertical" \| "horizontal"` | `'vertical'` | Inherited layout direction (propagated from parent `<q-step-diagram>`). |
+```javascript
+import '@webquark/core/dist/webquark/webquark.css';
+import { defineCustomElements } from '@webquark/core/loader';
+defineCustomElements();
+```
 
----
+3. Add this markup to your application page. Any module script runs after that shared setup.
 
-## 2. Slots (on `<q-step-diagram-item>`)
-
-*   `badge`: Custom marker displayed inside the node circle (e.g. step numbers `1`, `2`, `3`, checkmark icons, or glowing dots).
-*   `title`: Header section for timestamps, dates, or milestone headings.
-*   `default` (unnamed): Core content container for step descriptions, logs, or nested cards.
-
----
-
-## 3. Events (on `<q-step-diagram-item>`)
-
-*   `qItemClick`: Emitted when the step content card is clicked.
-
----
-
-## 4. Visual Variants
-
-The component uses parent-child attribute propagation to support multiple layout configurations:
-
-### Variant A: Layout Alignment (`layout`)
-*   **Vertical Flow (`layout="vertical"`)**: Standard chronological timeline. The connecting line runs vertically down the left side, and content boxes align on the right.
-*   **Horizontal Flow (`layout="horizontal"`)**: Stepper wizard format. The connecting line runs horizontally across the top, and content boxes align below the nodes.
-
-### Variant B: Line Connections (`lineStyle`)
-*   **Solid**: Standard completed or active paths.
-*   **Dashed / Dotted**: Future/pending paths or optional intermediate steps.
-*   **None**: Removes the connecting line. Best used for the final step in a sequence.
-
-### Variant C: Semantic Node Statuses (`status`)
-*   **`completed` / `success`**: Represents a completed milestone. Node is filled with `--q-color-success` (green) and text color shifts to dark base.
-*   **`active`**: Represents the current task. Node is highlighted with `--q-color-primary` (electric blue) and features a hardware-safe pulsating animation.
-*   **`pending`**: Represents future tasks. Node is styled with a light border and transparent background.
-*   **`warning` / `danger`**: Represents warnings or failed steps. Node is highlighted in orange or red (`--q-color-danger`).
-
----
-
-## 5. Typography & Font Styles
-
-*   **Global Font Stack**: Inherits `--q-font-family` (e.g., system font).
-*   **Step Title (Title Slot)**:
-    *   Font size: `--q-font-size-sm` (e.g., `0.875rem` / `14px`).
-    *   Font weight: `--q-font-weight-bold` (e.g., `700`).
-    *   Color: `--q-color-primary` (defaults to `#60a5fa`).
-*   **Body Content (Default Slot)**:
-    *   Font size: `--q-font-size-base` (e.g., `1rem` / `16px`).
-    *   Font weight: `--q-font-weight-normal` (e.g., `400`).
-    *   Color: `--q-fg-base` (defaults to `#f9fafb`).
-    *   Line-height: `1.5`.
-
----
-
-## 6. CSS Variable Mapping
-
-Below is the complete list of styling tokens mapped to the component's internal CSS:
-
-| Variable Name | Default Value | Purpose |
-| :--- | :--- | :--- |
-| `--q-step-diag-line` | `2px solid var(--q-border-color)` | Shorthand styling for the connecting path line. |
-| `--q-step-diag-border` | `var(--q-border, 1px solid var(--q-border-color))` | Border outline style for step content boxes. |
-| `--q-step-diag-icon-size`| `32px` | Height and width of the circle badge node. |
-| `--q-step-diag-item-gap` | `24px` | Spacing gap separating adjacent steps. |
-| `--q-color-success` | `#34d399` | Green status fill color. |
-| `--q-color-primary` | `#60a5fa` | Blue accent color for active items. |
-| `--q-color-danger` | `#ef4444` | Red status fill color. |
-| `--q-border-color` | `#4b5563` | Fallback border line color. |
-| `--q-radius-lg` | `12px` | Border radius rounding of step content boxes. |
-| `--q-padding-md` | `16px` | Content box internal padding. |
-| `--q-transition-normal` | `250ms ease` | Timing of line/status animations. |
-
----
-
-## 7. Implementation source
-
-The implementation is intentionally not duplicated in this guide. Use the generated API linked at the top of the page for the canonical public contract and the component's TypeScript source for implementation details. This avoids stale source snapshots in authored documentation.
-
----
-
-## 8. Unreal Engine / Webview Compatibility Notes
-
-*   **OSR Safe Pulse Animation**: Active steps use a pseudo-element (`::after`) to render a pulsating halo indicator. To prevent CPU lag and frame rate drops inside Unreal Engine CEF OSR, this pulse animation is optimized using GPU-accelerated 2D transforms (`transform: scale()`) and opacity properties (`@keyframes active-pulse-gpu { 0% { transform: scale(0.95); opacity: 0.8; } 100% { transform: scale(1.35); opacity: 0; } }`) rather than costly box-shadow transitions or SVG filter updates.
-*   **Accessibility Hierarchy**: Keyboard focus is bound strictly to the content box (`.step-content`, `tabindex="0"`), while the decorative badge is hidden from accessibility trees (`aria-hidden="true"`). This avoids focus duplication bugs that can cause keyboard navigation lockups in game UIs.
-*   **2D Hover Animations**: Content hover translations rely on standard 2D offsets (`transform: translateY(-2px)`), avoiding z-fighting or clipping errors on offscreen canvas surfaces.
-
----
-
-## 9. Developer Guidelines & Examples
-
-### Vertical Activity Timeline
 ```html
-<q-step-diagram layout="vertical">
-  <q-step-diagram-item status="completed">
-    <span slot="badge">✓</span>
-    <span slot="title">Project Created</span>
-    <p>Repository initialized and basic branch policies configured.</p>
-  </q-step-diagram-item>
-  
-  <q-step-diagram-item status="active">
-    <span slot="badge">⚡</span>
-    <span slot="title">Unit Testing</span>
-    <p>Running automated quality testing suites across components.</p>
-  </q-step-diagram-item>
-
-  <q-step-diagram-item status="pending" line-style="none">
-    <span slot="badge">○</span>
-    <span slot="title">Production Release</span>
-    <p>Deploy artifacts to cloud staging targets.</p>
-  </q-step-diagram-item>
+<q-step-diagram aria-label="Account setup">
+  <q-step-diagram-item status="completed"><span slot="title">Create account</span>Profile saved</q-step-diagram-item>
+  <q-step-diagram-item status="active"><span slot="title">Verify email</span>Check your inbox</q-step-diagram-item>
+  <q-step-diagram-item status="pending" line-style="none"><span slot="title">Finish</span>Waiting for verification</q-step-diagram-item>
 </q-step-diagram>
 ```
 
-### Horizontal Wizard Steps (Interactive)
+**Result:** a vertical three-step account setup sequence.
+
+### At a glance
+
+| Capability | Options | Default |
+| :--- | :--- | :--- |
+| [Layout](#layouts) | vertical, horizontal | vertical |
+| [Items](#slots) | q-step-diagram-item children | None |
+| [Accessible name](#labels-and-announcements) | aria-label | Steps |
+| [State ownership](#state-and-interaction) | Application owns statuses and activation | Child layout synchronized |
+
+**With no properties:** An empty list named “Steps” renders with no steps. Supply q-step-diagram-item children; the parent does not create them or track completion.
+
+## Examples
+
+These examples share the [Quick start registration](#quick-start). Screenshots show the real registered component in a temporary preview fixture using the existing playground runtime. They do not imply extra permanent playground presets.
+
+### Present a setup sequence
+
+Supply explicit statuses and remove the connector after the final item.
+
+![Present a setup sequence: Supply explicit statuses and remove the connector after the final item.](./assets/q-step-diagram-show-sequence.png)
+
 ```html
-<q-step-diagram layout="horizontal" id="wizard-stepper">
-  <q-step-diagram-item id="step-1" status="active">
-    <span slot="badge">1</span>
-    <span slot="title">Account Details</span>
-  </q-step-diagram-item>
-  <q-step-diagram-item id="step-2" status="pending">
-    <span slot="badge">2</span>
-    <span slot="title">Security Config</span>
-  </q-step-diagram-item>
-  <q-step-diagram-item id="step-3" status="pending" line-style="none">
-    <span slot="badge">3</span>
-    <span slot="title">All Done</span>
-  </q-step-diagram-item>
+<q-step-diagram aria-label="Account setup">
+  <q-step-diagram-item status="completed"><span slot="title">Create account</span>Profile saved</q-step-diagram-item>
+  <q-step-diagram-item status="active"><span slot="title">Verify email</span>Check your inbox</q-step-diagram-item>
+  <q-step-diagram-item status="pending" line-style="none"><span slot="title">Finish</span>Waiting for verification</q-step-diagram-item>
 </q-step-diagram>
+```
 
-<script>
-  const step1 = document.getElementById('step-1');
-  const step2 = document.getElementById('step-2');
+Active-step pulsing is captured as a still image. The parent does not advance steps or hide the last connector automatically.
 
-  step1.addEventListener('qItemClick', () => {
-    console.log('User clicked step 1!');
-  });
+### Respond to a selected step
+
+Listen to the child event and ignore pending steps in application logic.
+
+![Respond to a selected step: Listen to the child event and ignore pending steps in application logic.](./assets/q-step-diagram-handle-step.png)
+
+```html
+<q-step-diagram id="setup" orientation="horizontal" aria-label="Account setup">
+  <q-step-diagram-item status="completed"><span slot="title">Create account</span>Profile saved</q-step-diagram-item>
+  <q-step-diagram-item status="active"><span slot="title">Verify email</span>Check your inbox</q-step-diagram-item>
+  <q-step-diagram-item status="pending" line-style="none"><span slot="title">Finish</span>Waiting for verification</q-step-diagram-item>
+</q-step-diagram>
+<p id="step-result" role="status">Select an available step.</p>
+<script type="module">
+document.querySelector('#setup').addEventListener('qItemClick', (event) => {
+  const item = event.target;
+  if (item.status === 'pending') return;
+  document.querySelector('#step-result').textContent = 'Selected: ' + item.querySelector('[slot=title]').textContent;
+});
 </script>
 ```
+
+The screenshot follows Create account. qItemClick belongs to the child, not this parent; pending children still emit it.
+
+## Behavior & accessibility
+
+### State and interaction
+
+After load, whenever orientation changes, and when the slot changes, the parent writes its orientation to matching slotted q-step-diagram-item children. Assign child statuses separately. For predictable propagation use direct children; changes inside a nested wrapper do not necessarily trigger the parent slotchange.
+
+There is no current-step property, completion calculation, built-in navigation, or connector trimming. Set `line-style="none"` on the last child when no trailing line is wanted.
+
+### Keyboard and focus
+
+The parent adds no keyboard handlers. Its [step items](./q-step-diagram-item.md#keyboard-and-focus) each provide a tab stop and Enter/Space activation; there is no roving focus or arrow-key navigation.
+
+### Labels and announcements
+
+The internal container has `role="list"` with aria-label defaulting to “Steps”. Empty or null labels have no generated fallback. The current children expose buttons rather than listitem roles, so this is not a complete semantic list hierarchy. Status and task meaning should also appear in visible item content.
+
+### Limitations and compatibility
+
+This is a presentational sequence, not a router or form wizard. Horizontal layout scrolls on overflow; the component does not switch orientation responsively. Child active pulses have no built-in reduced-motion override.
+
+## Styling
+
+### Layouts
+
+| orientation | Result |
+| :--- | :--- |
+| `vertical` (default) | Column of steps |
+| `horizontal` | Row with horizontal overflow scrolling |
+
+Use supported values: an unknown layout leaves the flex default row and is propagated unchanged to children, whose orientation rules then do not match.
+
+### Custom styling
+
+Scope CSS to the host or supplied content. See the exact [CSS variables](#css-variables) and [Shadow Parts](#shadow-parts).
+
+```html
+<q-step-diagram class="compact-steps" aria-label="Account setup">
+  <q-step-diagram-item status="completed"><span slot="title">Create account</span>Profile saved</q-step-diagram-item>
+  <q-step-diagram-item status="active"><span slot="title">Verify email</span>Check your inbox</q-step-diagram-item>
+  <q-step-diagram-item status="pending" line-style="none"><span slot="title">Finish</span>Waiting for verification</q-step-diagram-item>
+</q-step-diagram>
+<style>
+  q-step-diagram.compact-steps { --q-step-diag-item-gap: 12px; }
+</style>
+```
+
+The parent declares no component-specific CSS variables or Shadow Parts. The example customizes an inherited [child spacing hook](./q-step-diagram-item.md#css-variables).
+
+Shared geometry and theme setup are documented in [Foundation](../foundation.md) and [theme tokens](../theme-tokens.md).
+
+## API reference
+
+For new code, use `orientation`. The deprecated aliases remain supported. Canonical properties take precedence when set; otherwise the legacy property and its default apply. Set a canonical JavaScript property to `undefined` to restore the fallback.
+
+Cross-check the [generated API](../../src/components/indicators/step-diagram/readme.md) and [implementation](../../src/components/indicators/step-diagram/step-diagram.tsx). Source nullability and actual rendering limitations are preserved below.
+
+### Properties
+
+All properties are optional and listed alphabetically.
+
+| Name | Default | Description |
+| :--- | :--- | :--- |
+| `ariaLabel` | `'Steps'` | Accessible list name. Default Steps; empty/null values do not fall back.<br>**Type:** `string \| null`. **HTML attribute:** `aria-label`. **Required:** No. |
+| `layout` | `'vertical'` | Deprecated alias for `orientation`. vertical or horizontal; synchronized into child layout properties.<br>**Type:** `"horizontal" \| "vertical"`. **HTML attribute:** `layout`. **Required:** No. |
+| `orientation` | `undefined` | vertical or horizontal; synchronized into child orientation properties.<br>**Type:** `"horizontal" \| "vertical"`. **HTML attribute:** `orientation`. **Required:** No. |
+
+### Slots
+
+| Name | Description |
+| :--- | :--- |
+| (default) | q-step-diagram-item children; no fallback. Use direct children for predictable layout synchronization. |
+
+### Events
+
+This component emits no public events.
+
+### Methods
+
+This component exposes no public methods.
+
+### Styling hooks
+
+#### CSS variables
+
+This component declares no component-specific CSS variables. Shared inherited values are documented in the [shared variable reference](../theme_variables.md).
+
+#### Shadow Parts
+
+This component exposes no Shadow Parts.

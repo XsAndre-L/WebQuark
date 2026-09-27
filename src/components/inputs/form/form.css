@@ -1,0 +1,52 @@
+﻿:host {
+  display: block;
+  box-sizing: border-box;
+}
+
+.form-shell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--q-form-gap, var(--q-space-xl, 1.5rem));
+  width: 100%;
+  color: var(--q-form-fg, var(--q-fg-base, #172033));
+  font-family: var(--q-font-family, inherit);
+}
+
+.form-header.is-hidden,
+.form-actions.is-hidden {
+  display: none;
+}
+
+.form-title {
+  margin: 0;
+  color: var(--q-form-title-color, var(--q-fg-base, #172033));
+  font-size: var(--q-form-title-size, var(--q-font-size-lg, 1rem));
+  font-weight: var(--q-font-weight-bold, 600);
+  line-height: 1.3;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--q-form-gap, var(--q-space-xl, 1.5rem));
+  width: 100%;
+  margin: 0;
+}
+
+.form-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--q-form-field-gap, 12px);
+  min-width: 0;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--q-form-action-gap, var(--q-space-sm, .5rem));
+  padding-top: var(--q-form-actions-padding-top, 4px);
+}
+
+@import '../../../theme/field.css';

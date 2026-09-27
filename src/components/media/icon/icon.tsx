@@ -25,16 +25,20 @@ export class QIcon {
 
   /** Icon name or local asset filename. */
   @Prop() name?: QIconName;
-  /** Trusted compile-time icon data. Takes precedence over `name` and never performs I/O. */
-  @Prop() definition?: QIconDefinition;
   /** Supports built-in libraries, local assets, and custom URL templates. */
+  @Prop() library?: QIconLibrary;
+  /** @deprecated Use library. Used only when library is unset. */
   @Prop() lib: QIconLibrary = 'lucide';
-  /** Base path used when `lib="local"`. */
+  /** Base path used when `library="local"`. */
   @Prop() localPath: QIconLocalPath = '/assets/icons/';
   /** Overrides the version of built-in remote libraries. */
+  @Prop() libraryVersion?: string;
+  /** @deprecated Use libraryVersion. Used only when libraryVersion is unset. */
   @Prop() libVersion?: string;
   /** SVG fetch timeout in milliseconds. */
   @Prop() fetchTimeout: number = DEFAULT_FETCH_TIMEOUT_MS;
+  /** Trusted compile-time icon data. Takes precedence over `name` and never performs I/O. */
+  @Prop() definition?: QIconDefinition;
 
   /** Accepts a preset, pixel number, or CSS size. */
   @Prop() size: QIconSize = 'md';
@@ -56,8 +60,10 @@ export class QIcon {
   @Watch('name')
   @Watch('definition')
   @Watch('lib')
+  @Watch('library')
   @Watch('localPath')
   @Watch('libVersion')
+  @Watch('libraryVersion')
   watchHandler() {
     void this.loadIcon();
   }
@@ -162,9 +168,9 @@ export class QIcon {
 
     const url = resolveIconUrl({
       name: this.name,
-      library: this.lib,
+      library: this.library ?? this.lib,
       localPath: this.localPath,
-      libraryVersion: this.libVersion,
+      libraryVersion: this.libraryVersion ?? this.libVersion,
     });
 
     if (isBinaryIconUrl(url)) {

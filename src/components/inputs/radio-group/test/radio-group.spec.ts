@@ -102,7 +102,7 @@ describe('q-radio-group', () => {
 
     expect(fieldset.getAttribute('aria-label')).toBe('Sign-in fields');
     expect(fieldset.getAttribute('aria-invalid')).toBe('true');
-    expect(element.shadowRoot.querySelector('[part="error-msg"]')?.textContent).toBe('Choose a sign-in mode');
+    expect(element.shadowRoot.querySelector('[part~="error-msg"]')?.textContent).toBe('Choose a sign-in mode');
     element.remove();
   });
 });

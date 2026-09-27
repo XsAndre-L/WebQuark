@@ -1,14 +1,12 @@
+@import '../../../theme/control.css';
 :host {
-  --q-radio-group-bg: var(--q-field-bg, var(--q-bg-surface-2, #374151));
+  --q-radio-group-bg: var(--q-field-bg, var(--q-bg-field, var(--q-bg-surface-3, #22304d)));
   --q-radio-group-border: var(--q-border, 1px solid var(--q-border-color, #4b5563));
-  --q-radio-group-radius: var(--q-field-radius, var(--q-radius-md, 7px));
   --q-radio-group-selected-bg: rgba(96, 165, 250, 0.12);
   --q-radio-group-selected-bg: color-mix(in srgb, var(--q-color-primary, #60a5fa) 12%, var(--q-radio-group-bg));
   --q-radio-group-selected-color: var(--q-color-primary, #60a5fa);
   --q-radio-group-focus-ring: var(--q-focus-ring, 2px solid var(--q-color-primary, #60a5fa));
   --q-radio-group-error-color: var(--q-color-danger, #f87171);
-  --q-radio-group-option-min-height: 38px;
-  --q-radio-group-option-padding: 6px 8px;
 
   display: block;
   min-width: 0;
@@ -41,7 +39,7 @@ legend {
   box-sizing: border-box;
   overflow: hidden;
   border: var(--q-radio-group-border);
-  border-radius: var(--q-radio-group-radius);
+  border-radius: var(--q-radio-group-radius, var(--q-field-radius, var(--_q-control-radius)));
   background: var(--q-radio-group-bg);
 }
 
@@ -124,31 +122,6 @@ input {
   opacity: 0.6;
 }
 
-.size-sm {
-  --q-radio-group-option-min-height: 30px;
-  --q-radio-group-option-padding: 0 6px;
-}
-
-.size-sm .options {
-  min-height: 32px;
-  height: 32px;
-}
-
-.size-sm .option {
-  height: 100%;
-  min-height: 30px;
-  font-size: var(--q-font-size-sm, 0.75rem);
-}
-
-.size-lg {
-  --q-radio-group-option-min-height: 44px;
-  --q-radio-group-option-padding: 9px 12px;
-}
-
-.size-lg .option {
-  font-size: var(--q-font-size-lg, 1rem);
-}
-
 .orientation-vertical .options {
   grid-template-columns: 1fr;
 }
@@ -175,3 +148,10 @@ input {
     border-inline-start: 0;
   }
 }
+
+/* Shared foundation geometry. */
+.radio-group { --_q-field-error-color: var(--q-radio-group-error-color, var(--q-color-danger, #f87171)); }
+.radio-group .options { min-height: var(--_q-control-height); height: auto; }
+.radio-group .option { min-height: calc(var(--q-radio-group-option-min-height, var(--_q-control-height)) - 2px); height: auto; padding: var(--q-radio-group-option-padding, 0 var(--_q-control-padding)); font-size: var(--_q-control-font); line-height: var(--_q-control-line); overflow-wrap: anywhere; }
+
+@import '../../../theme/field.css';

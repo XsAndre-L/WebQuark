@@ -44,7 +44,63 @@
       "types": "./dist/loader/index.d.ts",
       "import": "./dist/loader/index.js",
       "require": "./dist/loader/index.cjs.js"
-    }
+    },
+    "./dist/collection/components/layout/card/*.js": {
+      "types": "./dist/types/components/content/card/*.d.ts",
+      "import": "./dist/collection/components/content/card/*.js"
+    },
+    "./dist/collection/components/layout/card/*": {
+      "import": "./dist/collection/components/content/card/*"
+    },
+    "./dist/types/components/layout/card/*": "./dist/types/components/content/card/*",
+    "./dist/collection/components/layout/carousel/*.js": {
+      "types": "./dist/types/components/content/carousel/*.d.ts",
+      "import": "./dist/collection/components/content/carousel/*.js"
+    },
+    "./dist/collection/components/layout/carousel/*": {
+      "import": "./dist/collection/components/content/carousel/*"
+    },
+    "./dist/types/components/layout/carousel/*": "./dist/types/components/content/carousel/*",
+    "./dist/collection/components/layout/form/*.js": {
+      "types": "./dist/types/components/inputs/form/*.d.ts",
+      "import": "./dist/collection/components/inputs/form/*.js"
+    },
+    "./dist/collection/components/layout/form/*": {
+      "import": "./dist/collection/components/inputs/form/*"
+    },
+    "./dist/types/components/layout/form/*": "./dist/types/components/inputs/form/*",
+    "./dist/collection/components/actions/chip/*.js": {
+      "types": "./dist/types/components/data-display/chip/*.d.ts",
+      "import": "./dist/collection/components/data-display/chip/*.js"
+    },
+    "./dist/collection/components/actions/chip/*": {
+      "import": "./dist/collection/components/data-display/chip/*"
+    },
+    "./dist/types/components/actions/chip/*": "./dist/types/components/data-display/chip/*",
+    "./dist/collection/components/data-display/alert/*.js": {
+      "types": "./dist/types/components/communication/alert/*.d.ts",
+      "import": "./dist/collection/components/communication/alert/*.js"
+    },
+    "./dist/collection/components/data-display/alert/*": {
+      "import": "./dist/collection/components/communication/alert/*"
+    },
+    "./dist/types/components/data-display/alert/*": "./dist/types/components/communication/alert/*",
+    "./dist/collection/components/data-display/conversation-bubble/*.js": {
+      "types": "./dist/types/components/communication/conversation-bubble/*.d.ts",
+      "import": "./dist/collection/components/communication/conversation-bubble/*.js"
+    },
+    "./dist/collection/components/data-display/conversation-bubble/*": {
+      "import": "./dist/collection/components/communication/conversation-bubble/*"
+    },
+    "./dist/types/components/data-display/conversation-bubble/*": "./dist/types/components/communication/conversation-bubble/*",
+    "./dist/collection/components/overlays/toast/*.js": {
+      "types": "./dist/types/components/communication/toast/*.d.ts",
+      "import": "./dist/collection/components/communication/toast/*.js"
+    },
+    "./dist/collection/components/overlays/toast/*": {
+      "import": "./dist/collection/components/communication/toast/*"
+    },
+    "./dist/types/components/overlays/toast/*": "./dist/types/components/communication/toast/*"
   },
   "workspaces": [
     "packages/react",
@@ -58,7 +114,9 @@
     "postcss": "8.5.26"
   },
   "bin": {
-    "webquark-sandbox": "./scripts/webquark-serve.js"
+    "wq-sandbox": "./scripts/webquark-serve.js",
+    "wq-switch": "./scripts/wq-switch/dist/index.js",
+    "wq-setup": "./scripts/wq-switch/dist/setup.js"
   },
   "repository": {
     "type": "git",
@@ -66,13 +124,18 @@
   },
   "files": [
     "dist/",
-    "scripts/webquark-serve.js"
+    "scripts/webquark-serve.js",
+    "scripts/wq-switch/dist/index.js",
+    "scripts/wq-switch/dist/setup.js",
+    "scripts/wq-switch/README.md"
   ],
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "build": "bun build src/playground/playground.ts --outfile=src/playground/playground.bundled.js --loader .html:text --loader .css:text && bun build scripts/webquark-serve.ts --outfile=scripts/webquark-serve.js --target=node --format=cjs && stencil build",
+    "theme:generate": "bun scripts/generate-theme.ts",
+    "switch:build": "tsc -p scripts/wq-switch/tsconfig.json && bun build scripts/wq-switch/index.ts scripts/wq-switch/setup.ts --outdir=scripts/wq-switch/dist --target=node --format=cjs",
+    "build": "bun run switch:build && bun run theme:generate && bun build src/playground/playground.ts --outfile=src/playground/playground.bundled.js --loader .html:text --loader .css:text && bun build scripts/webquark-serve.ts --outfile=scripts/webquark-serve.js --target=node --format=cjs && stencil build",
     "start": "bun run scripts/start-playground.ts",
     "dev": "bun run start",
     "test": "stencil-test --prod",

@@ -23,7 +23,7 @@ export class QLink extends Mixin(withActionProps, withActionLabel) {
   @Prop({ reflect: true }) variant: QLinkVariant = 'default';
   @Prop({ reflect: true }) underline: QLinkUnderline = 'hover';
 
-  /** Compatibility alias used when `href` is unset. */
+  /** @deprecated Use href. Used when href is empty or unset. */
   @Prop() url?: string;
   /** Generates a `mailto:` URL when `href` and `url` are unset. */
   @Prop() mailto?: string;

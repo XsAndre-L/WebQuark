@@ -16,9 +16,11 @@ interface SidebarNavItem {
 
 const CATEGORY_LABELS: Record<string, string> = {
   actions: 'Actions',
-  'data-display': 'Data Display',
+  communication: 'Communication',
+  content: 'Content',
+  'data-display': 'Data display',
+  inputs: 'Forms & inputs',
   indicators: 'Indicators',
-  inputs: 'Inputs',
   layout: 'Layout',
   media: 'Media',
   overlays: 'Overlays',
@@ -55,7 +57,7 @@ class PlaygroundSidebar extends HTMLElement {
             type="button"
             onClick={() => activeComponent.set('global-styling')}
           >
-            <q-icon name="globe" lib="lucide" size="16"></q-icon>
+            <q-icon name="globe" library="lucide" size="16"></q-icon>
             <span>Global Styling</span>
           </button>
         </div>

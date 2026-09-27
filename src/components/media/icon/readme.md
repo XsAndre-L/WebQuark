@@ -38,17 +38,19 @@ Synchronous registered icon renderer with optional backwards-compatible URL load
 
 ## Properties
 
-| Property       | Attribute       | Description                                                                             | Type                                                                    | Default            |
-| -------------- | --------------- | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- | ------------------ |
-| `color`        | `color`         |                                                                                         | `"currentColor" \| string & {}`                                         | `'currentColor'`   |
-| `definition`   | --              | Trusted compile-time icon data. Takes precedence over `name` and never performs I/O.    | `QIconDefinition`                                                       | `undefined`        |
-| `fetchTimeout` | `fetch-timeout` | SVG fetch timeout in milliseconds.                                                      | `number`                                                                | `8000`             |
-| `label`        | `label`         | Meaningful icons require a label; unlabeled icons are hidden from assistive technology. | `string`                                                                | `undefined`        |
-| `lib`          | `lib`           | Supports built-in libraries, local assets, and custom URL templates.                    | `"font-awesome" \| "fontawesome" \| "local" \| "lucide" \| string & {}` | `'lucide'`         |
-| `libVersion`   | `lib-version`   | Overrides the version of built-in remote libraries.                                     | `string`                                                                | `undefined`        |
-| `localPath`    | `local-path`    | Base path used when `lib="local"`.                                                      | `string`                                                                | `'/assets/icons/'` |
-| `name`         | `name`          | Icon name or local asset filename.                                                      | `string`                                                                | `undefined`        |
-| `size`         | `size`          | Accepts a preset, pixel number, or CSS size.                                            | `"lg" \| "md" \| "sm" \| number \| string & {}`                         | `'md'`             |
+| Property         | Attribute         | Description                                                                                                           | Type                                                                    | Default            |
+| ---------------- | ----------------- | --------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- | ------------------ |
+| `color`          | `color`           |                                                                                                                       | `"currentColor" \| string & {}`                                         | `'currentColor'`   |
+| `definition`     | --                | Trusted compile-time icon data. Takes precedence over `name` and never performs I/O.                                  | `QIconDefinition`                                                       | `undefined`        |
+| `fetchTimeout`   | `fetch-timeout`   | SVG fetch timeout in milliseconds.                                                                                    | `number`                                                                | `8000`             |
+| `label`          | `label`           | Meaningful icons require a label; unlabeled icons are hidden from assistive technology.                               | `string`                                                                | `undefined`        |
+| `lib`            | `lib`             | <span style="color:red">**[DEPRECATED]**</span> Use library. Used only when library is unset.<br/><br/>               | `"font-awesome" \| "fontawesome" \| "local" \| "lucide" \| string & {}` | `'lucide'`         |
+| `libVersion`     | `lib-version`     | <span style="color:red">**[DEPRECATED]**</span> Use libraryVersion. Used only when libraryVersion is unset.<br/><br/> | `string`                                                                | `undefined`        |
+| `library`        | `library`         | Supports built-in libraries, local assets, and custom URL templates.                                                  | `"font-awesome" \| "fontawesome" \| "local" \| "lucide" \| string & {}` | `undefined`        |
+| `libraryVersion` | `library-version` | Overrides the version of built-in remote libraries.                                                                   | `string`                                                                | `undefined`        |
+| `localPath`      | `local-path`      | Base path used when `library="local"`.                                                                                | `string`                                                                | `'/assets/icons/'` |
+| `name`           | `name`            | Icon name or local asset filename.                                                                                    | `string`                                                                | `undefined`        |
+| `size`           | `size`            | Accepts a preset, pixel number, or CSS size.                                                                          | `"lg" \| "md" \| "sm" \| number \| string & {}`                         | `'md'`             |
 
 
 ## Shadow Parts

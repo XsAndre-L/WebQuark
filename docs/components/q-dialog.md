@@ -1,171 +1,254 @@
-# 🧩 Component Specification: `q-dialog`
+# q-dialog
 
-> Contract note: see [Current public contracts](./current-contracts.md#q-dialog) and the [generated API](../../src/components/overlays/dialog/readme.md) for the complete current surface. Generated API wins if an older design note below differs.
+`q-dialog` shows a modal message or confirmation surface with default actions and replaceable content regions.
 
-The `<q-dialog>` is a customizable modal dialog component. It handles overlays, keyboard tab trapping, focus management, confirmation states, and responsive entry animations. To ensure compatibility with Unreal Engine's Webview plugins, it avoids native `<dialog>` constructs in favor of robust custom Shadow DOM containers.
+**Component tag:** `<q-dialog>`
 
----
+**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Overlays → Dialog**.
 
-## 1. Component API (Properties & Attributes)
+**On this page**
 
-| Property | Attribute | Type | Default | Description |
-| :--- | :--- | :--- | :--- | :--- |
-| `open` | `open` | `boolean` | `false` | Controls the open/close state of the dialog (reflected, mutable). |
-| `dialogTitle` | `dialog-title` | `string` | `undefined` | Header title string displayed in the default header slot. |
-| `ariaLabel` | `aria-label` | `string` | `undefined` | Explicit dialog name, useful with a custom header; it takes precedence over `dialogTitle` for naming. |
-| `message` | `message` | `string` | `undefined` | Body message string displayed in the default body slot. |
-| `closeOnEsc` | `close-on-esc` | `boolean` | `true` | When `true`, pressing the `Escape` key automatically cancels and closes the dialog. |
-| `closeOnOverlayClick`| `close-on-overlay-click` | `boolean` | `true` | When `true`, clicking the backdrop overlay cancels and closes the dialog. |
-| `backdropEffect` | `backdrop-effect` | `'solid' \| 'none'` | `'solid'` | Controls the backdrop rendering mode. Solid is Unreal/CEF-safe by default. |
-| `loading` | `loading` | `boolean` | `false` | When `true`, disables buttons and overlays a loading spinner on the confirm button. |
-| `confirmLabel` | `confirm-label` | `string` | `'Confirm'` | Text label for the confirmation button. |
-| `cancelLabel` | `cancel-label` | `string` | `'Cancel'` | Text label for the cancellation button. |
-| `showCancel` | `show-cancel` | `boolean` | `true` | When `false`, hides the cancellation button in the default footer. |
-| `showConfirm` | `show-confirm` | `boolean` | `true` | When `false`, hides the confirmation button in the default footer. |
+- [Quick start](#quick-start)
+- [Examples](#examples)
+- [Behavior & accessibility](#behavior--accessibility)
+- [Styling](#styling)
+- [API reference](#api-reference)
+
+## Quick start
+
+1. Follow the central [installation instructions](../../README.md#1-install-library).
+2. In your application entry file, register WebQuark. This assumes a bundler that resolves package imports and CSS imports.
+
+```javascript
+import '@webquark/core/dist/webquark/webquark.css';
+import { defineCustomElements } from '@webquark/core/loader';
+defineCustomElements();
+```
+
+3. Add this markup to your application page. Any module script runs after that shared setup.
+
+```html
+<q-dialog open heading="Save changes?" message="Your profile will be updated."></q-dialog>
+```
+
+**Result:** an open medium-width dialog with Cancel, Confirm, and Close controls.
+
+### At a glance
+
+| Capability | Options | Default |
+| :--- | :--- | :--- |
+| [Visibility](#state-and-interaction) | open property, show()/close() | Closed |
+| [Actions](#events) | Confirm, cancel, close and loading | Default actions shown |
+| [Width](#sizes) | sm, md, lg, full | md (36rem) |
+| [Backdrop](#backdrops) | solid or none | solid |
+| [Content](#slots) | Title/message or header/body/footer slots | Empty title/body |
+
+**With no properties:** A closed, inert dialog wrapper renders with no visible UI. Supply a title or aria-label before opening. Playground open/title/message values are demo presets.
+
+## Examples
+
+These examples share the [Quick start registration](#quick-start). Screenshots show the real registered component in a temporary preview fixture using the existing playground runtime. They do not imply extra permanent playground presets.
+
+### Open and handle a confirmation
+
+Open from a real trigger and handle the confirmation event.
+
+![Open and handle a confirmation: Open from a real trigger and handle the confirmation event.](./assets/q-dialog-confirm-action.png)
+
+```html
+<button id="open-confirm" type="button">Review changes</button>
+<q-dialog id="confirm-dialog" heading="Save changes?" message="Your profile will be updated."></q-dialog>
+<p id="confirm-result" role="status"></p>
+<script type="module">
+await customElements.whenDefined('q-dialog');
+const dialog = document.querySelector('#confirm-dialog');
+document.querySelector('#open-confirm').addEventListener('click', () => dialog.show());
+dialog.addEventListener('qConfirm', () => { document.querySelector('#confirm-result').textContent = 'Changes confirmed.'; });
+</script>
+```
+
+The screenshot follows Review changes, before confirmation, and is cropped to the dialog surface; the opening button and result message are outside the crop. Confirm emits qConfirm then closes and emits qClose; it does not wait for an asynchronous listener.
+
+### Control an asynchronous action
+
+Use a custom footer when the application needs to keep the dialog open during work.
+
+![Control an asynchronous action: Use a custom footer when the application needs to keep the dialog open during work.](./assets/q-dialog-custom-actions.png)
+
+```html
+<q-dialog id="saving-dialog" open aria-label="Save profile" size="sm">
+  <span slot="header">Save profile</span>
+  <p>Save the current profile changes.</p>
+  <button slot="footer" id="save-profile" type="button">Save profile</button>
+</q-dialog>
+<script type="module">
+await customElements.whenDefined('q-dialog');
+const dialog = document.querySelector('#saving-dialog');
+const save = document.querySelector('#save-profile');
+save.addEventListener('click', async () => {
+  dialog.loading = true;
+  save.disabled = true;
+  save.textContent = 'Saving…';
+  await new Promise(resolve => setTimeout(resolve, 1500));
+  dialog.loading = false;
+  await dialog.close();
+  save.disabled = false;
+  save.textContent = 'Save profile';
+});
+</script>
+```
+
+The screenshot shows the initial open state. The timer simulates work; replace it with application work and handle errors. loading does not disable slotted controls, so this handler disables its own button.
+
+## Behavior & accessibility
+
+### State and interaction
+
+`open` is mutable. show() sets it true; close() sets it false and emits qClose even if already closed. Setting open=false directly closes without qClose. Confirm/cancel emit their respective event, set open=false, then emit qClose. The header close button emits only qClose. Event cancellation is not checked.
+
+Loading disables default buttons and blocks confirm/cancel, Escape, and backdrop actions. Public close() still works. Custom footer controls remain application-owned. Remove a boolean attribute or assign false for false-default properties; for true-default controls such as showCancel use the JavaScript property false (or Stencil’s explicit attribute value "false").
+
+Closing makes the wrapper inert immediately; visibility ends after transition or its timeout fallback. Methods resolve after requesting the state change, not after the visual transition.
+
+### Keyboard and focus
+
+| Key | Action |
+| :--- | :--- |
+| Tab / Shift+Tab | Trap focus among visible focusable dialog descendants. |
+| Escape | Cancel when open, closeOnEscape=true, and not loading. |
+| Enter / Space | Activate a focused native action button. |
+
+Opening after load records the previous focused element, then focuses the first focusable control after the transition. Closing attempts to restore it. Initially-open dialogs focus content but do not record a previous trigger. Keep only one modal open: the Escape listener is window-wide.
+
+### Labels and announcements
+
+The surface has role="dialog", aria-modal="true", tabindex="-1", and aria-hidden reflecting open. A nonblank aria-label wins; otherwise heading provides aria-labelledby. message supplies aria-describedby.
+
+When replacing the header slot, supply aria-label: the default title target is replaced. When supplying a custom body, omit message to avoid a description reference to replaced fallback content. The confirm button exposes aria-busy while loading. Custom content and action labels remain your responsibility.
+
+### Limitations and compatibility
+
+The dialog does not make the rest of the document inert or lock page scrolling. Default confirm/cancel cannot be held open by preventDefault or an async event listener. Transitions and the loading spinner have no reduced-motion override. No browser/CEF conformance is inferred from these DOM features.
+
+## Styling
+
+### Sizes
+
+| size | Maximum width |
+| :--- | :--- |
+| `sm` | 24rem |
+| `md` (default) | 36rem |
+| `lg` | 48rem |
+| `full` | Available viewport width inside gutters |
+
+The wrapper uses 16px gutters at a 16px root font and 100dvh height. The body scrolls while header/footer remain fixed within the surface. --q-dialog-width overrides sm/md/lg; full removes max-width and ignores that hook. Unknown sizes use the medium rule.
+
+### Backdrops
+
+`solid` (default) draws the theme overlay; `none` leaves a transparent click layer. Unknown values normalize to solid. `closeOnBackdropClick` controls cancellation separately.
+
+### Custom styling
+
+Scope CSS to the host or supplied content. See the exact [CSS variables](#css-variables) and [Shadow Parts](#shadow-parts).
+
+```html
+<q-dialog class="review-dialog" open heading="Review" message="Check the details."></q-dialog>
+<style>
+  q-dialog.review-dialog { --q-dialog-width: 40rem; --q-dialog-body-padding: 24px; }
+</style>
+```
+
+Shared geometry and theme setup are documented in [Foundation](../foundation.md) and [theme tokens](../theme-tokens.md).
+
+## API reference
+
+For new code, use `heading`, `backdrop`, `closeOnEscape`, `closeOnBackdropClick`. The deprecated aliases remain supported. Canonical properties take precedence when set; otherwise the legacy property and its default apply. Set a canonical JavaScript property to `undefined` to restore the fallback.
+
+Cross-check the [generated API](../../src/components/overlays/dialog/readme.md) and [implementation](../../src/components/overlays/dialog/dialog.tsx). Source nullability and actual rendering limitations are preserved below.
+
+### Properties
+
+All properties are optional and listed alphabetically.
+
+| Name | Default | Description |
+| :--- | :--- | :--- |
+| `ariaLabel` | `null` | Nonblank explicit dialog name; overrides heading association.<br>**Type:** `string \| null`. **HTML attribute:** `aria-label`. **Required:** No. |
+| `backdrop` | `undefined` | solid or none; unknown values render solid.<br>**Type:** `"none" \| "solid"`. **HTML attribute:** `backdrop`. **Required:** No. |
+| `backdropEffect` | `'solid'` | Deprecated alias for `backdrop`. solid or none; unknown values render solid.<br>**Type:** `"none" \| "solid"`. **HTML attribute:** `backdrop-effect`. **Required:** No. |
+| `cancelLabel` | `'Cancel'` | Default cancel-button text.<br>**Type:** `string`. **HTML attribute:** `cancel-label`. **Required:** No. |
+| `closeLabel` | `'Close dialog'` | Header close-button accessible name; no blank fallback.<br>**Type:** `string`. **HTML attribute:** `close-label`. **Required:** No. |
+| `closeOnBackdropClick` | `undefined` | Allows backdrop clicks to cancel unless loading.<br>**Type:** `boolean`. **HTML attribute:** `close-on-backdrop-click`. **Required:** No. |
+| `closeOnEsc` | `true` | Deprecated alias for `closeOnEscape`. Allows Escape to cancel unless loading.<br>**Type:** `boolean`. **HTML attribute:** `close-on-esc`. **Required:** No. |
+| `closeOnEscape` | `undefined` | Allows Escape to cancel unless loading.<br>**Type:** `boolean`. **HTML attribute:** `close-on-escape`. **Required:** No. |
+| `closeOnOverlayClick` | `true` | Deprecated alias for `closeOnBackdropClick`. Allows backdrop clicks to cancel unless loading.<br>**Type:** `boolean`. **HTML attribute:** `close-on-overlay-click`. **Required:** No. |
+| `confirmLabel` | `'Confirm'` | Default confirm-button text.<br>**Type:** `string`. **HTML attribute:** `confirm-label`. **Required:** No. |
+| `dialogTitle` | `undefined` | Deprecated alias for `heading`. Default header title and accessible-name source.<br>**Type:** `string`. **HTML attribute:** `dialog-title`. **Required:** No. |
+| `heading` | `undefined` | Default header title and accessible-name source.<br>**Type:** `string`. **HTML attribute:** `heading`. **Required:** No. |
+| `loading` | `false` | Disables built-in actions and marks confirm busy; does not disable slotted controls.<br>**Type:** `boolean`. **HTML attribute:** `loading`. **Required:** No. |
+| `message` | `undefined` | Default body text and accessible-description source.<br>**Type:** `string`. **HTML attribute:** `message`. **Required:** No. |
+| `open` | `false` | Mutable visibility state; direct assignment does not emit qClose.<br>**Type:** `boolean`. **HTML attribute:** `open`. **Required:** No. |
+| `showCancel` | `true` | Renders the default Cancel button.<br>**Type:** `boolean`. **HTML attribute:** `show-cancel`. **Required:** No. |
+| `showConfirm` | `true` | Renders the default Confirm button.<br>**Type:** `boolean`. **HTML attribute:** `show-confirm`. **Required:** No. |
+| `size` | `'md'` | sm, md, lg, or full; controls maximum surface width.<br>**Type:** `"full" \| "lg" \| "md" \| "sm"`. **HTML attribute:** `size`. **Required:** No. |
+
+### Slots
+
+| Name | Description |
+| :--- | :--- |
+| (default) | Custom body; replaces message fallback. Omit message with custom body to avoid a dangling description target. |
+| footer | Custom actions replace defaults. Application owns disabled/loading behavior. Footer is hidden when empty and both default actions are disabled. |
+| header | Custom heading replaces heading fallback. Supply aria-label when using it. |
+
+### Events
+
+| Name | When it fires | Payload |
+| :--- | :--- | :--- |
+| `qCancel` | Cancel action, enabled Escape, or enabled backdrop click; followed by qClose. | `CustomEvent<void>` |
+| `qClose` | close(), confirm/cancel, or header close action; not direct open assignment. | `CustomEvent<void>` |
+| `qConfirm` | Confirm action when not loading; followed by qClose. | `CustomEvent<void>` |
+
+These events bubble, cross shadow boundaries (composed), and are cancelable. The implementation does not check preventDefault(); cancellation does not stop the documented state changes.
 
 ### Methods
 
-*   `show() => Promise<void>`: Programmatically opens the dialog.
-*   `close() => Promise<void>`: Programmatically closes the dialog.
-*   `confirm() => Promise<void>`: Programmatically triggers the confirmation action.
-*   `cancel() => Promise<void>`: Programmatically triggers the cancellation action.
+Wait for `customElements.whenDefined('q-dialog')` before calling element methods.
 
----
-
-## 2. Slots
-
-*   `header`: Custom header layout (hides the default close button and title if populated).
-*   `default` (unnamed): Core body content slot. If empty, falls back to rendering the `message` property.
-*   `footer`: Custom action actions layout (hides default Cancel/Confirm buttons if populated).
-
----
-
-## 3. Events
-
-*   `qConfirm`: Emitted when the user commits the dialog action (clicks Confirm).
-*   `qCancel`: Emitted when the user rejects the dialog action (clicks Cancel, backdrop, or presses Esc).
-*   `qClose`: Emitted immediately after the dialog has closed.
-
----
-
-## 4. Visual Variants
-
-The dialog transitions between visual configurations:
-
-### Variant A: Transition States (`open`)
-*   **Closed State**: The wrapper is set to `visibility: hidden` and `pointer-events: none`. The backdrop has `opacity: 0` and the modal content box rests scaled down and shifted (`transform: scale(0.92) translateY(16px)`).
-*   **Open State**: Wrapper transitions to `visibility: visible` and `pointer-events: auto`. The backdrop fades to full opacity and the modal box translates smoothly to `transform: scale(1) translateY(0)`.
-
-### Variant B: Confirm Loading State (`loading="true"`)
-*   Temporarily disables click triggers on Cancel, Confirm, and Close buttons.
-*   Converts the Confirm button label into a rotating SVG spinner (`.spinner-el`) and locks the focus trap.
-
----
-
-## 5. Typography & Font Styles
-
-*   **Global Font Stack**: Inherits `--q-font-family` (e.g., system font).
-*   **Title (`.dialog-title`)**:
-    *   Font size: `--q-font-size-lg` (e.g., `1.1rem` / `18px`).
-    *   Font weight: `--q-font-weight-bold` (e.g., `600`).
-    *   Color: `--q-fg-base` (defaults to `#f9fafb`).
-*   **Message (`.dialog-message` / `.dialog-body`)**:
-    *   Font size: `--q-font-size-base` (e.g., `0.9rem` / `14px`).
-    *   Color: `--q-fg-base` (defaults to `#f9fafb`).
-    *   Line-height: `1.5`.
-
----
-
-## 6. CSS Variable Mapping
-
-Below is the complete list of styling tokens mapped to the component's internal CSS:
-
-| Variable Name | Default Value | Purpose |
+| Signature | Purpose | Returns |
 | :--- | :--- | :--- |
-| `--q-bg-overlay` | `rgba(0, 0, 0, 0.85)` | Backdrop mask background color. |
-| `--q-bg-surface-1` | `#1f2937` | Background color for header, footer, and close button hover. |
-| `--q-bg-base` | `#111827` | Background color for default body content. |
-| `--q-border` | `1px solid var(--q-border-color, #374151)` | Outline border style for modal panels. |
-| `--q-border-color` | `#374151` | Default border line color. |
-| `--q-radius-lg` | `11px` | Corner rounding of the modal dialog box. |
-| `--q-radius-md` | `7px` | Corner rounding of Cancel/Confirm action buttons. |
-| `--q-radius-sm` | `4px` | Corner rounding of the close button. |
-| `--q-shadow-high` | `0 16px 32px rgba(0, 0, 0, 0.45)` | Depth shadow under the modal container. |
-| `--q-color-primary` | `#60a5fa` | Main branding color (Confirm button fill, Close button border). |
-| `--q-color-primary-hover`| `#93c5fd` | Hover background fill of confirm button. |
-| `--q-padding-lg` | `16px` | Vertical/horizontal padding inside header, body, and footer panels. |
-| `--q-transition-normal` | `250ms cubic-bezier(0.4, 0, 0.2, 1)`| Speed of backdrop fade and scale transformations. |
-| `--q-transition-fast` | `150ms ease` | Speed of hover and button state changes. |
+| `cancel(): Promise<void>` | Emit cancel then close unless loading. | `Promise<void>` |
+| `close(): Promise<void>` | Close and emit qClose, including while loading. | `Promise<void>` |
+| `confirm(): Promise<void>` | Emit confirm then close unless loading. | `Promise<void>` |
+| `show(): Promise<void>` | Set open=true. | `Promise<void>` |
 
----
+### Styling hooks
 
-## 7. Implementation source
+#### CSS variables
 
-The implementation is intentionally not duplicated in this guide. Use the generated API linked at the top of the page for the canonical public contract and the component's TypeScript source for implementation details. This avoids stale source snapshots in authored documentation.
+Defaults include the shared theme when set there; nested `var()` expressions show CSS fallbacks. Shared palette/typography tokens and fallback aliases are listed in the [shared variable reference](../theme_variables.md). Internal `--_q-*` variables are not public hooks.
 
----
+| Name | Default | Controls |
+| :--- | :--- | :--- |
+| `--q-dialog-backdrop-bg` | `var(--q-bg-overlay, rgba(0, 0, 0, 0.85))` | Base declaration is overridden by solid/none rules; use --q-dialog-backdrop-solid-bg for solid mode. |
+| `--q-dialog-backdrop-solid-bg` | `var(--q-bg-overlay, rgba(0, 0, 0, 0.85))` | backdrop solid background. |
+| `--q-dialog-bg` | `var(--q-bg-floating, var(--q-bg-surface-4, #2c3a58))` | background. |
+| `--q-dialog-body-bg` | `transparent` | body background. |
+| `--q-dialog-body-padding` | `var(--q-space-lg, 1rem)` | body padding. |
+| `--q-dialog-footer-bg` | `transparent` | footer background. |
+| `--q-dialog-footer-padding` | `var(--q-space-lg, 1rem)` | footer padding. |
+| `--q-dialog-gutter` | `var(--q-space-lg, 1rem)` | gutter. |
+| `--q-dialog-header-bg` | `transparent` | header background. |
+| `--q-dialog-header-padding` | `var(--q-space-lg, 1rem)` | header padding. |
+| `--q-dialog-width` | `36rem (md); 24rem sm; 48rem lg` | Maximum width for sm/md/lg only; full overrides max-width with none. |
 
-## 8. Unreal Engine / Webview Compatibility Notes
+#### Shadow Parts
 
-*   **No Native `<dialog>` Element**: Standard HTML `<dialog>` elements suffer from centering overlays, bounds calculations, and click handling glitches in OSR, frequently causing rendering lockups or black screens. `<q-dialog>` constructs a custom Shadow DOM overlay with standard absolute `div` layers.
-*   **Backdrop Effect Control**: `backdrop-effect="solid"` is the default and uses a high-opacity color without `backdrop-filter`. `backdrop-effect="none"` keeps the invisible click layer but removes visual dimming.
-*   **WAI-ARIA Focus Loop Bridge**: Employs built-in tab trapping that handles focus restrictions inside the active modal container. This ensures key inputs correct register on CEF interfaces without keyboard bridge focus failures.
-
----
-
-## 9. Developer Guidelines & Examples
-
-### Standard Alert Modal
-```html
-<q-dialog 
-  id="alert-dialog" 
-  dialog-title="Warning Alert" 
-  message="Are you sure you want to discard your unsaved work?"
-  confirm-label="Discard"
-></q-dialog>
-
-<q-button id="trigger-btn">Discard Changes</q-button>
-
-<script>
-  const dialog = document.getElementById('alert-dialog');
-
-  document.getElementById('trigger-btn').addEventListener('click', () => {
-    dialog.open = true;
-  });
-
-  dialog.addEventListener('qConfirm', () => {
-    console.log('User discarded modifications!');
-  });
-</script>
-```
-
-### Unreal/CEF Safe Modal
-```html
-<q-dialog
-  backdrop-effect="solid"
-  dialog-title="Confirm Action"
-  message="This modal uses a solid overlay instead of backdrop blur."
-></q-dialog>
-```
-### Async Confirm Action Modal (Loader Integration)
-```html
-<q-dialog 
-  id="async-dialog" 
-  dialog-title="Execute Update" 
-  message="Download updates for components."
-></q-dialog>
-
-<script>
-  const dialog = document.getElementById('async-dialog');
-  dialog.addEventListener('qConfirm', async (e) => {
-    dialog.loading = true;
-    
-    // Simulate server commit
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    dialog.loading = false;
-    dialog.open = false; // programmatically close after done
-  });
-</script>
-```
-
+| Name | Targets |
+| :--- | :--- |
+| `backdrop` | `undefined` |
+| `body` | Body region. |
+| `cancel-btn` | Default cancel button when showCancel; fallback hidden if footer is slotted. |
+| `close-btn` | Default header close button. |
+| `confirm-btn` | Default confirm button when showConfirm; fallback hidden if footer is slotted. |
+| `footer` | Footer region, hidden when no default actions or slotted content. |
+| `header` | Header region. |
+| `modal` | Dialog surface. |

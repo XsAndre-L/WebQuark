@@ -1,5 +1,7 @@
 # Component Roadmap Review
 
+This review predates the property naming cleanup. For current navbar usage, use `value`; the `activeValue` references below describe the original API, which remains supported as a deprecated alias. See the [current navbar API](../components/q-navbar.md#api-reference).
+
 ## Summary Recommendation
 
 Keep all four proposed components (`q-link`, `q-panel`, `q-navbar`, `q-form`) — all four already exist as full implementations (not stubs), and on inspection none of them duplicate an existing component without a clear, distinct responsibility. The redundancy concerns in the brief don't hold up against the actual source:
@@ -23,7 +25,7 @@ The actual risk in this codebase isn't naming overlap, it's **consistency debt**
 ### q-panel
 
 - **Decision:** Keep. Clearly distinct from `q-card`.
-- **Why:** `q-card` (`src/components/layout/card/card.tsx`) is a decorative elevation primitive: `elevation`/`lift`/`glass`, two regions (`header`, default body), no scroll or sticky behavior. `q-panel` (`src/components/layout/panel/panel.tsx`) is a flat structural region: `variant: 'plain' | 'surface' | 'bordered'` (no elevation concept at all), three regions (`header`, body, `footer`), `scrollable`, `fullHeight`, `stickyHeader`, `stickyFooter`. One answers "how should this surface look," the other answers "how should this region of the layout behave." Genuinely non-overlapping.
+- **Why:** `q-card` (`src/components/content/card/card.tsx`) is a decorative elevation primitive: `elevation`/`lift`/`glass`, two regions (`header`, default body), no scroll or sticky behavior. `q-panel` (`src/components/layout/panel/panel.tsx`) is a flat structural region: `variant: 'plain' | 'surface' | 'bordered'` (no elevation concept at all), three regions (`header`, body, `footer`), `scrollable`, `fullHeight`, `stickyHeader`, `stickyFooter`. One answers "how should this surface look," the other answers "how should this region of the layout behave." Genuinely non-overlapping.
 - **Smallest API:** `variant`, `padding`, `scrollable`, `fullHeight`, `stickyHeader`, `stickyFooter`, `ariaLabel`; slots `header` / default / `footer`. Already minimal — no changes needed to the surface itself.
 - **Changes:** None required. Worth calling out as the **reference implementation** for empty-slot collapsing: `panel.tsx:20-33` uses `@State() hasHeader/hasFooter` + `getSlottedElements()` (`src/utils/dom.ts`) + `onSlotchange` to toggle an `is-hidden` class — this is the correct pattern. (See Current Mistakes/Risks — `q-sidepanel` fakes the same behavior with a `:empty` CSS selector that can never match, and should be backported to this pattern.)
 

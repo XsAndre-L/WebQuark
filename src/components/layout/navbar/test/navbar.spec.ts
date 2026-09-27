@@ -118,7 +118,8 @@ describe('q-navbar', () => {
     const icon = el.shadowRoot.querySelector('.desktop-nav .nav-item q-icon') as HTMLElement;
     expect(icon).toBeTruthy();
     expect(icon.getAttribute('name')).toBe('house');
-    expect(icon.getAttribute('lib')).toBe('lucide');
+    expect(icon.getAttribute('library')).toBe('lucide');
+    expect(icon.hasAttribute('lib')).toBe(false);
     expect(icon.getAttribute('size')).toBe('26');
   });
 

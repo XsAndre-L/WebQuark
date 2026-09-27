@@ -51,6 +51,26 @@
       "type": "string",
       "default": "",
       "desc": "Swaps borders to red warning styles and shows error message"
+    },
+    "size": {
+      "type": "select",
+      "default": "inherit",
+      "options": [
+        "inherit",
+        "sm",
+        "md",
+        "lg"
+      ],
+      "desc": "Control size; inherit follows the nearest form or toolbar"
+    },
+    "labelHidden": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Keep the label accessible without displaying it"
+    },
+    "reserveFeedback": {
+      "type": "boolean",
+      "desc": "Reserve one feedback line; omit to inherit"
     }
   },
   "slots": {},

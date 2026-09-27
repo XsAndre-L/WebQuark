@@ -11,20 +11,24 @@ Form-associated textarea with optional auto-grow behavior and validation messagi
 
 ## Properties
 
-| Property       | Attribute       | Description                                                                                  | Type                            | Default     |
-| -------------- | --------------- | -------------------------------------------------------------------------------------------- | ------------------------------- | ----------- |
-| `ariaLabel`    | `aria-label`    | Accessible name for the native textarea when a visible label is not used.                    | `string`                        | `null`      |
-| `autoGrow`     | `auto-grow`     | Grows with content when `resizeMode` is `auto`.                                              | `boolean`                       | `true`      |
-| `disabled`     | `disabled`      |                                                                                              | `boolean`                       | `false`     |
-| `error`        | `error`         | Validation error text or error-state flag.                                                   | `string`                        | `undefined` |
-| `errorMessage` | `error-message` | Validation helper text displayed when the field is in an error state.                        | `string`                        | `undefined` |
-| `label`        | `label`         |                                                                                              | `string`                        | `undefined` |
-| `name`         | `name`          |                                                                                              | `string`                        | `undefined` |
-| `placeholder`  | `placeholder`   |                                                                                              | `string`                        | `""`        |
-| `required`     | `required`      |                                                                                              | `boolean`                       | `false`     |
-| `resizeMode`   | `resize-mode`   | Resize behavior: auto grows to content, manual allows vertical drag, fixed locks the height. | `"auto" \| "fixed" \| "manual"` | `'auto'`    |
-| `rows`         | `rows`          |                                                                                              | `number`                        | `3`         |
-| `value`        | `value`         |                                                                                              | `string`                        | `""`        |
+| Property          | Attribute          | Description                                                                                             | Type                                | Default     |
+| ----------------- | ------------------ | ------------------------------------------------------------------------------------------------------- | ----------------------------------- | ----------- |
+| `ariaLabel`       | `aria-label`       | Accessible name for the native textarea when a visible label is not used.                               | `string`                            | `null`      |
+| `autoGrow`        | `auto-grow`        | Grows with content when `resizeMode` is `auto`.                                                         | `boolean`                           | `true`      |
+| `description`     | `description`      | Supporting text, replaced by an active error.                                                           | `string`                            | `undefined` |
+| `disabled`        | `disabled`         |                                                                                                         | `boolean`                           | `false`     |
+| `error`           | `error`            | Validation error text or error-state flag.                                                              | `string`                            | `undefined` |
+| `errorMessage`    | `error-message`    | <span style="color:red">**[DEPRECATED]**</span> Use error. Used when error is empty or unset.<br/><br/> | `string`                            | `undefined` |
+| `label`           | `label`            |                                                                                                         | `string`                            | `undefined` |
+| `labelHidden`     | `label-hidden`     | Keep the label accessible without displaying it.                                                        | `boolean`                           | `false`     |
+| `name`            | `name`             |                                                                                                         | `string`                            | `undefined` |
+| `placeholder`     | `placeholder`      |                                                                                                         | `string`                            | `""`        |
+| `required`        | `required`         |                                                                                                         | `boolean`                           | `false`     |
+| `reserveFeedback` | `reserve-feedback` | Omitted inherits the enclosing form; false cancels reservation.                                         | `boolean`                           | `undefined` |
+| `resizeMode`      | `resize-mode`      | Resize behavior: auto grows to content, manual allows vertical drag, fixed locks the height.            | `"auto" \| "fixed" \| "manual"`     | `'auto'`    |
+| `rows`            | `rows`             |                                                                                                         | `number`                            | `3`         |
+| `size`            | `size`             |                                                                                                         | `"inherit" \| "lg" \| "md" \| "sm"` | `'inherit'` |
+| `value`           | `value`            |                                                                                                         | `string`                            | `""`        |
 
 
 ## Events

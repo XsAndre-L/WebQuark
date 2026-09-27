@@ -2,7 +2,7 @@
   "name": "Quantity Selector",
   "tag": "q-quantity-selector",
   "props": {
-    "variant": {
+    "orientation": {
       "type": "select",
       "options": [
         "horizontal",
@@ -30,6 +30,17 @@
       "type": "number",
       "default": 0,
       "desc": "The current quantity value"
+    },
+    "size": {
+      "type": "select",
+      "default": "inherit",
+      "options": [
+        "inherit",
+        "sm",
+        "md",
+        "lg"
+      ],
+      "desc": "Control size; inherit follows the nearest form or toolbar"
     }
   },
   "variants": [
@@ -42,7 +53,7 @@
     {
       "name": "Vertical Stack",
       "props": {
-        "variant": "vertical",
+        "orientation": "vertical",
         "value": 10
       }
     },

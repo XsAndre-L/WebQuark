@@ -4,13 +4,14 @@
   "props": {
     "size": {
       "type": "select",
+      "default": "inherit",
       "options": [
+        "inherit",
         "sm",
         "md",
         "lg"
       ],
-      "default": "md",
-      "desc": "Dropdown and trigger font display sizing"
+      "desc": "Control size; inherit follows the nearest form or toolbar"
     },
     "searchable": {
       "type": "boolean",
@@ -41,6 +42,15 @@
       "type": "boolean",
       "default": false,
       "desc": "Locks dropdown menu and styles disabled look"
+    },
+    "labelHidden": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Keep the label accessible without displaying it"
+    },
+    "reserveFeedback": {
+      "type": "boolean",
+      "desc": "Reserve one feedback line; omit to inherit"
     }
   },
   "slots": {},

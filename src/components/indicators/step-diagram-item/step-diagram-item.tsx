@@ -1,6 +1,6 @@
 import { Component, Prop, h, Event, EventEmitter } from '@stencil/core';
 
-import type { QStepDiagramItemLayout, QStepDiagramItemLineStyle, QStepDiagramItemStatus } from './step-diagram-item.types';
+import type { QStepDiagramItemLayout, QStepDiagramItemOrientation, QStepDiagramItemLineStyle, QStepDiagramItemStatus } from './step-diagram-item.types';
 import { isStepDiagramItemActivationKey } from './step-diagram-item.utils';
 
 /**
@@ -22,7 +22,9 @@ import { isStepDiagramItemActivationKey } from './step-diagram-item.utils';
 export class QStepDiagramItem {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Prop({ reflect: true }) lineStyle: QStepDiagramItemLineStyle = 'solid';
-  /** Inherited from `q-step-diagram`. */
+  /** Direction of the step. A q-step-diagram parent supplies its orientation; standalone default is vertical. */
+  @Prop({ reflect: true, mutable: true }) orientation?: QStepDiagramItemOrientation;
+  /** @deprecated Use orientation. Used only when orientation is unset. */
   @Prop({ reflect: true, mutable: true }) layout: QStepDiagramItemLayout = 'vertical';
 
   @Prop({ reflect: true }) status: QStepDiagramItemStatus = 'completed';
@@ -48,8 +50,9 @@ export class QStepDiagramItem {
   // ===================== [6] RENDER (Visual Template Only) =====================
 
   render() {
+    const orientation = this.orientation ?? this.layout;
     return (
-      <div class="step-item">
+      <div class={{ 'step-item': true, [`orientation-${orientation}`]: true }}>
         {/* Visual Line Path and Node Circle - decorative */}
         <div class="step-line-container">
           <div class="step-badge" aria-hidden="true" part="badge">

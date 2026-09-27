@@ -3,6 +3,7 @@ import { theme, effect } from '../../state';
 import './token-section';
 import css from './theme-designer.css';
 import { TokenItem } from './token-row';
+import { dimensionTokens, themeGroups } from '../../../theme/tokens';
 
 export interface TokenCategory {
   category: string;
@@ -11,41 +12,18 @@ export interface TokenCategory {
 
 const THEME_TOKENS: TokenCategory[] = [
   {
-    category: 'Brand & Status Colors',
-    tokens: [
-      { name: '--q-color-primary', label: 'Primary Color', type: 'color', desc: 'Main brand/accent color' },
-      { name: '--q-color-primary-hover', label: 'Primary Hover', type: 'color', desc: 'Hover state for primary actions' },
-      { name: '--q-color-secondary', label: 'Secondary Color', type: 'color', desc: 'Secondary/muted accent color' },
-      { name: '--q-color-success', label: 'Success Color', type: 'color', desc: 'Success indicator' },
-      { name: '--q-color-warning', label: 'Warning Color', type: 'color', desc: 'Warning indicator' },
-      { name: '--q-color-danger', label: 'Danger Color', type: 'color', desc: 'Danger/Error indicator' }
-    ]
+    category: 'Spacing & Control Sizing',
+    tokens: dimensionTokens.map(token => ({ ...token, type: 'dimension', min: 0, max: 64, desc: token.name })),
   },
-  {
-    category: 'Surfaces & Backgrounds',
-    tokens: [
-      { name: '--q-bg-base', label: 'Base Background', type: 'color', desc: 'Lowest canvas background' },
-      { name: '--q-bg-surface-1', label: 'Surface 1', type: 'color', desc: 'Sidebar / primary panels' },
-      { name: '--q-bg-surface-2', label: 'Surface 2', type: 'color', desc: 'Cards / nested panels' },
-      { name: '--q-bg-surface-3', label: 'Surface 3', type: 'color', desc: 'Popovers / raised controls' },
-      { name: '--q-bg-surface-4', label: 'Surface 4', type: 'color', desc: 'Strong raised surfaces' },
-      { name: '--q-bg-surface-5', label: 'Surface 5', type: 'color', desc: 'Highest contrast neutral surface' }
-    ]
-  },
-  {
-    category: 'Borders & Outlines',
-    tokens: [
-      { name: '--q-border-color', label: 'Border Color', type: 'color', desc: 'Subtle container border' }
-    ]
-  },
-  {
-    category: 'Border Radii',
-    tokens: [
-      { name: '--q-radius-sm', label: 'Small Radius', type: 'radius', min: 0, max: 40, desc: 'Badges and small components' },
-      { name: '--q-radius-md', label: 'Medium Radius', type: 'radius', min: 0, max: 40, desc: 'Buttons, inputs, thumbnails' },
-      { name: '--q-radius-lg', label: 'Large Radius', type: 'radius', min: 0, max: 40, desc: 'Cards, dropdown menus, panels' }
-    ]
-  }
+  ...themeGroups.map(group => ({
+    category: group.category,
+    tokens: group.tokens.map(token => ({
+      name: token.name,
+      label: token.name.replace('--q-', '').replaceAll('-', ' '),
+      type: /^#[0-9a-f]{6}$/i.test(token.value) ? 'color' as const : token.name.startsWith('--q-radius-') ? 'radius' as const : 'text' as const,
+      desc: token.name,
+    })),
+  })),
 ];
 
 export class ThemeDesigner extends HTMLElement {
@@ -57,11 +35,11 @@ export class ThemeDesigner extends HTMLElement {
       <div class="theme-designer-container">
         <div class="theme-designer-header">
           <div style="flex: 1">
-            <h2 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--q-fg-base)">Global Styling Designer</h2>
-            <p class="theme-designer-desc">Customize global brand tokens and spacing variables. Overrides apply instantly to all sandbox components.</p>
+            <h2 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--q-fg-base)">Theme Designer</h2>
+            <p class="theme-designer-desc">Customize colors, dimensions, and component defaults. Overrides apply to all sandbox components.</p>
           </div>
           <button id="resetThemeBtn" class="reset-theme-btn" type="button" onClick={() => this.resetTheme()}>
-            <q-icon name="refresh-cw" lib="lucide" size="16"></q-icon>
+            <q-icon name="refresh-cw" library="lucide" size="16"></q-icon>
             <span>Reset to Default</span>
           </button>
         </div>

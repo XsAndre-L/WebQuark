@@ -1,0 +1,60 @@
+{
+  "name": "Inline",
+  "tag": "q-inline",
+  "props": {
+    "gap": {
+      "type": "select",
+      "default": "sm",
+      "options": [
+        "none",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl",
+        "2xl",
+        "3xl"
+      ]
+    },
+    "justify": {
+      "type": "select",
+      "default": "start",
+      "options": [
+        "start",
+        "center",
+        "end",
+        "between"
+      ]
+    },
+    "wrap": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "slots": {
+    "default": {
+      "type": "html",
+      "default": "<q-button>Save changes</q-button><q-button variant=\"ghost\">Cancel</q-button>",
+      "desc": "Layout children"
+    }
+  },
+  "variants": [
+    {
+      "name": "Default",
+      "props": {}
+    },
+    {
+      "name": "Generous spacing",
+      "props": {
+        "gap": "xl"
+      }
+    }
+  ],
+  "edgeCases": [
+    {
+      "name": "Long content",
+      "slots": {},
+      "slot": "<q-card>Long content that can wrap as the available width decreases.</q-card><q-card>Another item</q-card>"
+    }
+  ]
+}

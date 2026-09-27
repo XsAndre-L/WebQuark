@@ -32,7 +32,7 @@ export class QButton extends Mixin(withActionProps) {
   @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
 
   @Prop() variant: QButtonVariant = 'primary';
-  @Prop() size: QButtonSize = 'md';
+  @Prop() size: QButtonSize = 'inherit';
   /** The `circle` shape uses a fixed-size circular presentation. */
   @Prop({ reflect: true }) shape: QButtonShape = 'default';
   @Prop({ reflect: true }) layout: QButtonLayout = 'inline';
@@ -184,7 +184,7 @@ export class QButton extends Mixin(withActionProps) {
       this.loading && <div class="btn-spinner" part="spinner" />,
       <span class="btn-content-wrap" style={{ visibility: this.loading ? 'hidden' : 'visible' }}>
         <slot name="icon-left" onSlotchange={this.handleSlotChange}>
-          {shortcutIcon && <q-icon name={shortcutIcon} size={this.size} part="icon" />}
+          {shortcutIcon && <q-icon name={shortcutIcon} size="var(--_q-control-icon)" part="icon" />}
         </slot>
         <span class={{ 'btn-label': true, 'has-default-slot-icon': hasDefaultSlotIcon }}>
           <slot onSlotchange={this.handleSlotChange} />
