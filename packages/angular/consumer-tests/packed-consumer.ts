@@ -6,6 +6,7 @@ import {
   QButton,
   QDropdown,
   QInput,
+  QNavbar,
   QPagination,
   QToggle,
   SelectValueAccessor,
@@ -23,6 +24,7 @@ import {
     QButton,
     QDropdown,
     QInput,
+    QNavbar,
     QPagination,
     QToggle,
     BooleanValueAccessor,
@@ -30,6 +32,7 @@ import {
     TextValueAccessor,
   ],
   template: `
+    <q-navbar navAlign="center" navCenterWithin="container" [sticky]="true" />
     <q-input label="Name" [formControl]="name" />
     <q-dropdown
       label="Status"

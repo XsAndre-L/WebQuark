@@ -70,11 +70,28 @@ Generated API references live beside each component implementation under `src/co
 
 ## Local package switching
 
-Run `bun run wq-setup` in a consuming project to generate `.wq-switch.json` and
-the `wq-sandbox`/`wq-switch` package scripts. Fill in the config's `source` path,
-then run `bun run wq-switch local`. The switcher builds core, React, and Angular and
+Run `bun run wq-setup` in a consuming project to generate `.webquark.json` and
+the `wq-sandbox`/`wq-switch` package scripts. Fill in `source` inside the `"wq-switch"` section:
+
+```json
+{
+  "wq-switch": {
+    "version": 1,
+    "source": "D:\\Dev\\PurelyIT\\WebQuark",
+    "preferredVersion": "1.1.0-dev.6"
+  }
+}
+```
+
+`preferredVersion` records your installed release preference; setup preserves an
+existing value. It does not select or download a release.
+
+Then run `bun run wq-switch local`. The switcher builds core, React, and Angular and
 activates only the packages that project uses. Run `bun run wq-switch npm` to
 restore the original installed packages. See [the switcher guide](scripts/wq-switch/README.md).
+
+Follow the [dev.6 setup steps](scripts/wq-switch/README.md#setting-up-dev6)
+after the matching packages have been published.
 
 ## 🧪 WebQuark Component Sandbox
 

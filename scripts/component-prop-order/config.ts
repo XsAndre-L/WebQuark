@@ -291,6 +291,8 @@ export const DEFAULT_PROP_ORDER_CONFIG: PropOrderConfig = {
   classifications: DEFAULT_CLASSIFICATIONS,
   overrides: [
     { scope: 'q-grid', prop: 'columns', group: 'appearance-layout' },
+    { scope: 'q-navbar', prop: 'navAlign', group: 'appearance-layout' },
+    { scope: 'q-navbar', prop: 'navCenterWithin', group: 'appearance-layout' },
     { scope: 'q-icon', prop: 'name', group: 'content-data-identity' },
     { scope: 'q-icon', prop: 'label', group: 'accessibility' },
     { scope: 'q-scrollable', prop: 'target', group: 'configuration-constraints' },

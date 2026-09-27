@@ -1,4 +1,4 @@
-import { Component, Element, Event, EventEmitter, Prop, State, h } from '@stencil/core';
+import { Component, Element, Event, EventEmitter, Prop, State, Watch, h } from '@stencil/core';
 import { identifyItems, type IdentifiedCollectionItem } from '../../../utils/collection-identity';
 import type {
   NavbarItem,
@@ -7,6 +7,8 @@ import type {
   QNavbarAddonPlacement,
   QNavbarEdge,
   QNavbarMobileMode,
+  QNavbarNavAlign,
+  QNavbarNavCenterWithin,
 } from './navbar.types';
 import { getNavbarItems } from './navbar.utils';
 
@@ -54,6 +56,10 @@ export class QNavbar {
   @Prop({ reflect: true }) compact: boolean = false;
   @Prop({ reflect: true }) transparent: boolean = false;
   @Prop({ reflect: true }) bordered: boolean = true;
+  /** Horizontal desktop navigation alignment. */
+  @Prop({ reflect: true }) navAlign: QNavbarNavAlign = 'start';
+  /** Reference box for centred horizontal desktop navigation. */
+  @Prop({ reflect: true }) navCenterWithin: QNavbarNavCenterWithin = 'available';
 
   /** Controls whether mobile widths collapse items into a menu or keep them inline. */
   @Prop({ reflect: true }) mobileMode: QNavbarMobileMode = 'menu';
@@ -71,16 +77,216 @@ export class QNavbar {
 
   @State() menuOpen: boolean = false;
   @State() hasMobileContent: boolean = false;
+  @State() collision: boolean = false;
+  @State() hasMobileNav: boolean = false;
+  @State() hasMobileActions: boolean = false;
 
   private readonly instanceId = ++navbarIds;
   private readonly primaryNavId = `q-navbar-primary-nav-${this.instanceId}`;
   private readonly mobilePanelId = `q-navbar-mobile-panel-${this.instanceId}`;
   private dismissListenersActive = false;
+  private resizeObserver?: ResizeObserver;
+  private mutationObserver?: MutationObserver;
+  private frame = 0;
+  private focusAfterRender?: HTMLElement | 'navigation';
+  private desktopFocus?: HTMLElement;
 
   // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
+  connectedCallback() {
+    if (typeof window === 'undefined') return;
+    this.resizeObserver = new ResizeObserver(this.scheduleMeasure);
+    this.resizeObserver.observe(this.el);
+    this.mutationObserver = new MutationObserver(this.refreshObservedContent);
+    this.mutationObserver.observe(this.el, { subtree: true, childList: true, characterData: true, attributes: true });
+    this.el.addEventListener('load', this.scheduleMeasure, true);
+    window.addEventListener('resize', this.scheduleMeasure);
+    document.fonts?.addEventListener('loadingdone', this.scheduleMeasure);
+    void document.fonts?.ready.then(() => this.scheduleMeasure());
+    this.el.shadowRoot?.addEventListener('slotchange', this.refreshObservedContent);
+    this.el.shadowRoot?.addEventListener('load', this.scheduleMeasure, true);
+    if (this.el.shadowRoot) this.refreshObservedContent();
+    this.scheduleMeasure();
+  }
+
+  componentDidLoad() {
+    this.el.shadowRoot?.addEventListener('slotchange', this.refreshObservedContent);
+    this.el.shadowRoot?.addEventListener('load', this.scheduleMeasure, true);
+    this.refreshObservedContent();
+  }
+
+  componentDidRender() {
+    if (this.focusAfterRender) {
+      const target = this.focusAfterRender;
+      (target !== 'navigation' && this.canReceiveFocus(target) ? target : this.firstNavigationControl()).focus();
+      this.focusAfterRender = undefined;
+    }
+    this.scheduleMeasure();
+  }
+
+  @Watch('mobileMode')
+  protected mobileModeChanged() {
+    if (!this.collision) return;
+    const root = this.el.shadowRoot!;
+    const { focused, owned, inBrand, inMobileSlot } = this.focusContext();
+    this.setMenuOpen(false);
+    if (this.mobileMode === 'inline' && owned && (focused === root.querySelector('.menu-button') || inMobileSlot)) {
+      this.focusAfterRender = this.desktopFocus || 'navigation';
+    } else if (this.mobileMode === 'menu' && focused && owned && !inBrand) {
+      this.desktopFocus = focused;
+      this.focusAfterRender = root.querySelector<HTMLElement>('.menu-button')!;
+    }
+  }
+
   disconnectedCallback() {
     this.removeMenuDismissListeners();
+    this.resizeObserver?.disconnect();
+    this.mutationObserver?.disconnect();
+    cancelAnimationFrame(this.frame);
+    this.frame = 0;
+    this.el.removeEventListener('load', this.scheduleMeasure, true);
+    this.el.shadowRoot?.removeEventListener('slotchange', this.refreshObservedContent);
+    this.el.shadowRoot?.removeEventListener('load', this.scheduleMeasure, true);
+    window.removeEventListener('resize', this.scheduleMeasure);
+    document.fonts?.removeEventListener('loadingdone', this.scheduleMeasure);
+  }
+
+  private refreshObservedContent = () => {
+    this.handleMobileSlotChange();
+    this.resizeObserver?.disconnect();
+    this.resizeObserver?.observe(this.el);
+    for (const node of [...Array.from(this.el.querySelectorAll('*')), ...Array.from(this.el.shadowRoot?.querySelectorAll('img, .brand-link, .desktop-actions, .nav-item-shell') || [])]) {
+      this.resizeObserver?.observe(node);
+    }
+    this.scheduleMeasure();
+  };
+
+  private scheduleMeasure = () => {
+    if (!this.el.isConnected || this.frame) return;
+    this.frame = requestAnimationFrame(() => {
+      this.frame = 0;
+      this.measureLayout();
+    });
+  };
+
+  /** Measure the original nodes synchronously; no cloned controls or hidden-width guesses. */
+  private measureLayout() {
+    const root = this.el.shadowRoot;
+    const bar = root?.querySelector<HTMLElement>('.navbar');
+    if (!bar) return;
+    const enabled = window.innerWidth > 720 && this.navAlign === 'center' && (this.edge === 'top' || this.edge === 'bottom');
+    let next = false;
+    if (enabled) {
+      const row = root!.querySelector<HTMLElement>('.navbar-row')!;
+      const nav = root!.querySelector<HTMLElement>('.desktop-nav')!;
+      bar.classList.add('is-measuring');
+      try {
+        const style = getComputedStyle(row);
+        const available = row.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+        const gap = parseFloat(style.columnGap) || 0;
+        const brand = this.visualWidth(root!.querySelector<HTMLElement>('.brand-link')!);
+        const actions = this.visualWidth(root!.querySelector<HTMLElement>('.desktop-actions')!);
+        const navRect = nav.getBoundingClientRect();
+        const bounds = this.visualBounds(nav);
+        // Symmetric overflow allowance keeps the actual navigation group centred.
+        const navigation = navRect.width + 2 * Math.max(0, navRect.left - bounds.left, bounds.right - navRect.right);
+        const offset = Math.abs(parseFloat(getComputedStyle(nav).insetInlineStart) || 0);
+        const sides = this.navCenterWithin === 'container' ? 2 * Math.max(brand, actions) : brand + actions;
+        const spare = available - (sides + 2 * gap + navigation + 2 * offset);
+        next = spare < (this.collision ? 8 : 0);
+      } finally {
+        bar.classList.remove('is-measuring');
+      }
+    }
+    if (next === this.collision) return;
+    const { focused, owned, inBrand, inMobileSlot } = this.focusContext();
+    const toggle = root!.querySelector<HTMLElement>('.menu-button')!;
+    if (next && this.mobileMode === 'menu' && owned && !inBrand) {
+      this.desktopFocus = focused!;
+      // Expose the toggle before the render hides the focused desktop control.
+      bar.classList.add('is-collapsed');
+      toggle.focus();
+      this.focusAfterRender = toggle;
+    } else if (!next && this.collision) {
+      this.setMenuOpen(false);
+      if (owned) {
+        const desktopControl = focused !== toggle && !inMobileSlot ? focused : this.desktopFocus;
+        this.focusAfterRender = window.innerWidth <= 720 && this.mobileMode === 'menu' ? toggle :
+          desktopControl?.isConnected ? desktopControl : 'navigation';
+      }
+      this.desktopFocus = undefined;
+    }
+    this.collision = next;
+  }
+
+  private visualBounds(element: Element): { left: number; right: number } {
+    const rect = element.getBoundingClientRect();
+    let left = rect.left;
+    let right = rect.right;
+    const visit = (node: Element) => {
+      if (getComputedStyle(node).display === 'none') return;
+      const box = node.getBoundingClientRect();
+      if (box.width && getComputedStyle(node).visibility !== 'hidden') {
+        left = Math.min(left, box.left);
+        right = Math.max(right, box.right);
+      }
+      const children = node instanceof HTMLSlotElement ? node.assignedElements({ flatten: true }) : Array.from(node.shadowRoot?.children || node.children);
+      for (const child of children) visit(child);
+    };
+    visit(element);
+    return { left, right };
+  }
+
+  private visualWidth(element: Element): number {
+    const bounds = this.visualBounds(element);
+    return bounds.right - bounds.left;
+  }
+
+  private firstNavigationControl(): HTMLElement {
+    // Search the rendered tree, including assigned slots and custom controls' open shadows.
+    // Resolve this after rendering so the restored desktop controls are visible.
+    const find = (node: Element): HTMLElement | undefined => {
+      if (node instanceof HTMLElement && node.tabIndex >= 0 && this.canReceiveFocus(node)) return node;
+      const assigned = node instanceof HTMLSlotElement ? node.assignedElements({ flatten: true }) : [];
+      const children = node instanceof HTMLSlotElement && assigned.length ? assigned : Array.from(node.shadowRoot?.children || node.children);
+      for (const child of children) {
+        const control = find(child);
+        if (control) return control;
+      }
+      return undefined;
+    };
+    return find(this.el.shadowRoot!.querySelector('.desktop-nav')!) || this.el.shadowRoot!.querySelector<HTMLElement>('.brand-link')!;
+  }
+
+  private canReceiveFocus(element: HTMLElement): boolean {
+    if (!element.isConnected || !element.checkVisibility() || getComputedStyle(element).visibility !== 'visible') return false;
+    let node: Node | null = element;
+    while (node && node !== this.el) {
+      if (node instanceof HTMLElement && node.matches(':disabled, [disabled], [aria-disabled="true"], [inert], [aria-hidden="true"]')) return false;
+      node = this.composedParent(node);
+    }
+    return true;
+  }
+
+  private composedParent(node: Node): Node | null {
+    return node instanceof HTMLElement && node.assignedSlot ? node.assignedSlot :
+      node.parentNode || (node instanceof ShadowRoot ? node.host : null);
+  }
+
+  private focusContext() {
+    let focused = (this.el.shadowRoot?.activeElement || document.activeElement) as HTMLElement | null;
+    while (focused?.shadowRoot?.activeElement) focused = focused.shadowRoot.activeElement as HTMLElement;
+    let owner: Node | null = focused;
+    let inBrand = false;
+    let inMobileSlot = false;
+    while (owner && owner !== this.el) {
+      if (owner instanceof HTMLElement) {
+        inBrand ||= owner.matches('.brand-link, [slot="brand"]');
+        inMobileSlot ||= owner.matches('[slot="mobile-nav"], [slot="mobile-actions"]');
+      }
+      owner = this.composedParent(owner);
+    }
+    return { focused, owned: owner === this.el, inBrand, inMobileSlot };
   }
 
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
@@ -129,6 +335,7 @@ export class QNavbar {
   private handleDocumentKeyDown = (ev: KeyboardEvent) => {
     if (ev.key === 'Escape') {
       this.handleMenuClose();
+      if (this.collision) this.el.shadowRoot?.querySelector<HTMLElement>('.menu-button')?.focus();
     }
   };
 
@@ -158,7 +365,9 @@ export class QNavbar {
   };
 
   private handleMobileSlotChange = () => {
-    this.hasMobileContent = !!this.el.querySelector('[slot="mobile-nav"], [slot="mobile-actions"]');
+    this.hasMobileNav = !!this.el.querySelector(':scope > [slot="mobile-nav"]');
+    this.hasMobileActions = !!this.el.querySelector(':scope > [slot="mobile-actions"]');
+    this.hasMobileContent = this.hasMobileNav || this.hasMobileActions;
   };
 
   private setIconAttribute(el: HTMLElement, name: string, value?: string | number) {
@@ -292,6 +501,9 @@ export class QNavbar {
           'is-compact': this.compact,
           'is-transparent': this.transparent,
           'is-bordered': this.bordered,
+          'is-collapsed': this.collision,
+          'has-mobile-nav': this.hasMobileNav,
+          'has-mobile-actions': this.hasMobileActions,
         }}
         part="navbar"
       >

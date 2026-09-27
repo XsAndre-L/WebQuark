@@ -463,3 +463,122 @@
     display: none;
   }
 }
+
+/* Alignment is deliberately isolated from the legacy viewport and vertical layouts. */
+@media (min-width: 720.01px) {
+  :host(:is([edge='top'], [edge='bottom'])[nav-align='end']) .desktop-nav {
+    justify-content: flex-end;
+  }
+
+  :host(:is([edge='top'], [edge='bottom'])[nav-align='center']) .navbar:not(.is-collapsed) .desktop-nav {
+    justify-content: center;
+    position: relative;
+    inset-inline-start: var(--q-navbar-nav-offset-inline, 0px);
+  }
+
+  :host(:is([edge='top'], [edge='bottom'])[nav-align='center'][nav-center-within='container']) .navbar:not(.is-collapsed) .navbar-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) max-content minmax(0, 1fr);
+  }
+
+  :host(:is([edge='top'], [edge='bottom'])[nav-align='center']) .navbar:not(.is-collapsed) .brand-link {
+    justify-self: start;
+    flex-shrink: 0;
+  }
+
+  .is-collapsed .navbar-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .is-collapsed .desktop-nav {
+    order: 3;
+    flex: 1 0 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+    inset-inline-start: auto;
+  }
+
+  :host([mobile-mode='menu']) .is-collapsed .desktop-nav,
+  :host([mobile-mode='menu']) .is-collapsed .desktop-actions {
+    display: none;
+    order: 3;
+    flex: 1 0 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  :host([mobile-mode='menu']) .is-collapsed.is-open .desktop-nav,
+  :host([mobile-mode='menu']) .is-collapsed.is-open:not(.has-mobile-actions) .desktop-actions {
+    display: flex;
+  }
+
+  :host([mobile-mode='menu']) .is-collapsed.has-mobile-nav slot[name='nav'] {
+    display: none;
+  }
+
+  :host([mobile-mode='menu']) .is-collapsed .nav-item-shell,
+  :host([mobile-mode='menu']) .is-collapsed .nav-item {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  :host([mobile-mode='menu']) .is-collapsed .menu-button {
+    display: inline-flex;
+    flex-shrink: 0;
+  }
+
+  :host([mobile-mode='menu']) .is-collapsed.is-open .mobile-panel.has-content {
+    display: block;
+    padding: var(--q-navbar-mobile-panel-padding, 8px 16px 16px);
+  }
+
+  .is-collapsed .mobile-nav,
+  .is-collapsed .mobile-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  :host([edge='bottom'][mobile-mode='menu']) .is-collapsed {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+
+  :host([edge='bottom'][mobile-mode='menu']) .is-collapsed .desktop-nav,
+  :host([edge='bottom'][mobile-mode='menu']) .is-collapsed .desktop-actions {
+    order: -1;
+  }
+
+  /* Read intrinsic desktop dimensions on the original nodes, then restore before paint. */
+  :host .navbar.is-measuring .navbar-row {
+    display: flex;
+    flex-wrap: nowrap;
+  }
+
+  :host .navbar.is-measuring :is(.brand-link, .desktop-nav, .desktop-actions) {
+    display: flex;
+    flex: 0 0 auto;
+    width: max-content;
+    max-width: none;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    order: 0;
+    align-items: center;
+  }
+
+  :host .navbar.is-measuring .desktop-nav {
+    position: relative;
+    inset-inline-start: var(--q-navbar-nav-offset-inline, 0px);
+  }
+
+  :host .navbar.is-measuring .desktop-nav slot[name='nav'] {
+    display: contents;
+  }
+
+  :host .navbar.is-measuring :is(.nav-item-shell, .nav-item) {
+    width: var(--q-navbar-item-width, max-content);
+    flex-shrink: 0;
+  }
+}
