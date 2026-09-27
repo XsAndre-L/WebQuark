@@ -6,7 +6,6 @@ export type PackageName = typeof names[number];
 export interface SwitchConfig { version: 1; source: string; preferredVersion?: string; }
 export interface WebQuarkConfig { 'wq-switch'?: SwitchConfig; [key: string]: unknown; }
 export const configName = '.webquark.json';
-export const legacyConfigName = '.wq-switch.json';
 
 export function readWebQuarkConfig(root: string): WebQuarkConfig {
   const file = join(root, configName);
@@ -18,8 +17,7 @@ export function readWebQuarkConfig(root: string): WebQuarkConfig {
 
 export function readSwitchConfig(root: string): SwitchConfig | undefined {
   const document = readWebQuarkConfig(root);
-  const legacy = join(root, legacyConfigName);
-  const value = Object.hasOwn(document, 'wq-switch') ? document['wq-switch'] : existsSync(legacy) ? json<SwitchConfig>(legacy) : undefined;
+  const value = document['wq-switch'];
   if (value === undefined) return undefined;
   if (!value || typeof value !== 'object' || Array.isArray(value) || value.version !== 1 || typeof value.source !== 'string' ||
       (value.preferredVersion !== undefined && typeof value.preferredVersion !== 'string')) {

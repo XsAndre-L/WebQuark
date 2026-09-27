@@ -2,8 +2,12 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { page } from 'vitest/browser';
 
 import '../navbar';
+// Use the production button: the source test transformer cannot compile its Stencil mixin.
+import { defineCustomElement as defineButton } from '../../../../../dist/components/q-button';
 import type { QNavbar } from '../navbar';
 import navbarCss from '../navbar.css?inline';
+
+defineButton();
 
 async function nextFrame(): Promise<void> {
   await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
@@ -269,6 +273,61 @@ describe('q-navbar alignment and collision geometry', () => {
     el.mobileMode = 'menu';
     await settle();
     expect(el.shadowRoot!.activeElement).toBe(part(el, '.menu-button'));
+  });
+
+  it('recovers focus inside custom controls, skipping hidden, disabled and inert choices', async () => {
+    const el = await aligned(300, `<span slot="brand" style="display:block;width:100px">Brand</span>
+      <div slot="nav" style="width:250px">
+        <button style="display:none">Hidden</button>
+        <button style="visibility:hidden">Invisible</button>
+        <q-button disabled>Disabled custom control</q-button>
+        <div inert><button>Inert control</button></div>
+        <q-button id="enabled-navigation">Desktop control</q-button>
+      </div>
+      <button slot="mobile-nav">Mobile control</button>`);
+    el.items = [];
+    await settle();
+    expect(collapsed(el)).toBe(true);
+    part(el, '.menu-button').click();
+    await settle();
+    (el.querySelector('[slot="mobile-nav"]') as HTMLElement).focus();
+    el.style.width = '900px';
+    await settle();
+    const control = el.querySelector<HTMLElement>('#enabled-navigation')!;
+    expect(document.activeElement).toBe(control);
+    expect(control.shadowRoot!.activeElement).toBe(control.shadowRoot!.querySelector('button'));
+  });
+
+  it('recovers mobile-slot focus and preserves custom control focus across mode changes', async () => {
+    const el = await aligned(300, '<span slot="brand" style="width:100px">Brand</span><q-button slot="nav" style="width:250px">Desktop</q-button><button slot="mobile-nav">Mobile</button>');
+    el.items = [];
+    await settle();
+    part(el, '.menu-button').click();
+    await settle();
+    (el.querySelector('[slot="mobile-nav"]') as HTMLElement).focus();
+    el.mobileMode = 'inline';
+    await settle();
+    const control = el.querySelector('q-button')!;
+    const button = control.shadowRoot!.querySelector('button')!;
+    expect(control.shadowRoot!.activeElement).toBe(button);
+    el.mobileMode = 'menu';
+    await settle();
+    expect(el.shadowRoot!.activeElement).toBe(part(el, '.menu-button'));
+    el.mobileMode = 'inline';
+    await settle();
+    expect(control.shadowRoot!.activeElement).toBe(button);
+  });
+
+  it('preserves brand focus when changing from inline to menu', async () => {
+    const el = await aligned(300);
+    el.mobileMode = 'inline';
+    await settle();
+    const brand = el.querySelector<HTMLElement>('[slot="brand"]')!;
+    brand.tabIndex = 0;
+    brand.focus();
+    el.mobileMode = 'menu';
+    await settle();
+    expect(document.activeElement).toBe(brand);
   });
 });
 

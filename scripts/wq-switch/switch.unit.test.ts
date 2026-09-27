@@ -191,25 +191,16 @@ describe('wq-switch transactions', () => {
     setup(app);
     expect(json<any>(join(app, '.webquark.json'))['wq-switch'].preferredVersion).toBe('1.2.4');
   });
-  it('reads legacy configuration and migrates it without losing other WebQuark settings', () => {
+  it('adds switcher settings without losing other WebQuark settings', () => {
     const { app, source } = fixture();
     const previous = json<any>(join(app, '.webquark.json'))['wq-switch'];
-    writeJson(join(app, '.wq-switch.json'), previous);
     writeJson(join(app, '.webquark.json'), { sandbox: { port: 4444 } });
-    expect(sourceFor(app)).toBe(realpathSync(source));
-    setup(app);
+    expect(() => sourceFor(app)).toThrow('First run');
+    setup(app, source);
     expect(json<any>(join(app, '.webquark.json'))).toEqual({ sandbox: { port: 4444 }, 'wq-switch': previous });
-    expect(existsSync(join(app, '.wq-switch.json'))).toBe(false);
     expect(readFileSync(join(app, '.gitignore'), 'utf8')).toContain('/.webquark.json');
     setup(app);
     expect(json<any>(join(app, '.webquark.json')).sandbox).toEqual({ port: 4444 });
-  });
-  it('prefers the new section when both files exist without deleting the unused legacy settings', () => {
-    const { app, source } = fixture();
-    writeJson(join(app, '.wq-switch.json'), { version: 1, source: 'unused', preferredVersion: 'old' });
-    expect(sourceFor(app)).toBe(realpathSync(source));
-    setup(app);
-    expect(existsSync(join(app, '.wq-switch.json'))).toBe(true);
   });
   it.each([null, [], { 'wq-switch': null }, { 'wq-switch': { version: 2, source: '' } }])('rejects malformed shared configuration without overwriting it: %j', invalid => {
     const { app } = fixture();

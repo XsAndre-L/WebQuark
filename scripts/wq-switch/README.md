@@ -18,7 +18,7 @@ consumer's `@webquark/core` dependency in package.json):
   "wq-switch": {
     "version": 1,
     "source": "",
-    "preferredVersion": "1.1.0-dev.5"
+    "preferredVersion": "1.1.0-dev.6"
   }
 }
 ```
@@ -29,12 +29,37 @@ The exact dependency specifier is preserved, including a range when one is used.
 `preferredVersion` records your release preference; `npm` still restores the saved
 installation and does not download a different version.
 
-The shared configuration file is `.webquark.json`. Setup preserves other top-level
-sections. Older `.wq-switch.json` files remain readable by the updated CLI; running
-setup migrates their settings into `"wq-switch"` and removes the migrated file.
-If both files already contain switcher settings, the new section wins and the old
-file is left untouched. Published older CLIs need updating before using the new
-format. The `.wq-switch/` snapshot directory is unchanged.
+The only supported configuration file is `.webquark.json`, with settings inside
+`"wq-switch"`. Setup preserves other top-level sections. The `.wq-switch/`
+directory holds runtime snapshots and is separate from configuration.
+
+## Setting up dev.6
+
+After `1.1.0-dev.6` is published, run these steps inside the consuming app:
+
+1. Stop its development server. If already using a local switcher setup, run
+   `bun run wq-switch npm` **before installing packages**, so the saved npm
+   installation is restored safely. For a fresh setup, proceed to installation.
+2. Install matching versions. For an Angular app:
+   ```powershell
+   bun add --exact @webquark/core@1.1.0-dev.6 @webquark/angular@1.1.0-dev.6
+   ```
+   React apps use `@webquark/react` instead of `@webquark/angular`.
+3. Run the setup command:
+   ```powershell
+   bun run wq-setup --source "D:\Dev\PurelyIT\WebQuark"
+   ```
+   This creates or updates `.webquark.json` with settings under `"wq-switch"`.
+   Other sections are preserved. An existing `preferredVersion`
+   remains unchanged; it is a recorded preference, not the active package version.
+4. Optionally run `bun run wq-switch local` to use the physical checkout.
+   Otherwise, continue using the installed npm release. Restart the app's dev server.
+
+Dev.6 also adds navbar alignment. Existing layouts keep their defaults; opt in
+with `navAlign="center" navCenterWithin="container"` in Angular/React, or
+`nav-align="center" nav-center-within="container"` in HTML. See the
+[navbar guide](../../src/components/layout/navbar/readme.md#navigation-alignment)
+for optical offsets, responsive behaviour, and custom-slot fallbacks.
 
 Setup also adds these scripts without changing dependency versions or lockfiles:
 
@@ -114,9 +139,3 @@ the five command handlers. `dist/index.js` is generated and not maintained.
 
 Validation: `bun run switch:build` followed by
 `bunx vitest run --project tooling scripts/wq-switch/switch.unit.test.ts`.
-
-Verified during implementation: all 41 tooling tests (14 switcher cases), the
-complete three-package build, a temporary Angular strict-template consumer
-through local/restore, real React server rendering through staged packages, and
-the executable from an extracted offline npm tarball. A full Next.js application
-build was not run. WebAppStack's package connections were not modified.
