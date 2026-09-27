@@ -27,6 +27,7 @@ class PlaygroundHeader extends HTMLElement {
           <div class="logo-text">WebQuark</div>
         </div>
         <div class="header-actions">
+          <a href="./presets.html">Design presets</a>
           <q-button id="themeToggle" variant="ghost" onClick={() => this.toggleTheme()}>
             <q-icon id="themeIcon" slot="icon-left" name="sun"></q-icon>
           </q-button>

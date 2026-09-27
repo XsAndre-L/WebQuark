@@ -298,7 +298,7 @@ export class QForm {
     const formAriaLabel = this.ariaLabel?.trim() || (this.label && this.hasHeaderSlot ? this.label : undefined);
 
     return (
-      <Host style={{ ...controlScope(this.size), '--q-context-feedback-min': this.reserveFeedback === undefined ? '' : this.reserveFeedback ? '1rem' : '0px' }}>
+      <Host style={{ ...controlScope(this.size), '--q-context-feedback-min': this.reserveFeedback === undefined ? '' : 'initial', '--_q-context-feedback-reserve': this.reserveFeedback === undefined ? '' : this.reserveFeedback ? '1' : '0' }}>
       <div class="form-shell">
         <div class={{ 'form-header': true, 'is-hidden': !hasHeaderContent, 'q-label-hidden': this.labelHidden }} part="header">
           <slot name="header" ref={(el) => (this.headerSlot = el as HTMLSlotElement)} onSlotchange={this.handleHeaderSlotChange}>

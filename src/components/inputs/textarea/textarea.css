@@ -1,4 +1,4 @@
-@import '../../../theme/control.css';
+@import '../../../theme/behaviors/control-sizing.css';
 :host {
   display: block;
   width: 100%;
@@ -102,4 +102,4 @@
 /* Shared foundation geometry. */
 .textarea-wrapper .textarea-box { min-height: var(--_q-control-height); padding: var(--q-input-padding, var(--q-field-padding, var(--q-space-sm, .5rem) var(--_q-control-padding))); font-size: var(--_q-control-font); line-height: var(--_q-control-line); background: var(--q-input-bg, var(--q-field-bg, var(--q-bg-field, var(--q-bg-surface-3, #22304d)))); }
 
-@import '../../../theme/field.css';
+@import '../../../theme/behaviors/field-feedback.css';

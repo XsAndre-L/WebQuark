@@ -136,7 +136,7 @@
   overflow-y: auto;
   font-size: var(--q-font-size-base, 0.9rem);
   color: var(--q-fg-base, #f9fafb);
-  line-height: 1.5;
+  line-height: var(--q-text-body-line-height, 1.5);
   background: var(--q-bg-base, #111827);
   flex: 1;
 }

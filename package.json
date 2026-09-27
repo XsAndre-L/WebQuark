@@ -36,6 +36,7 @@
       "default": "./dist/components/*.js"
     },
     "./dist/webquark/webquark.css": "./dist/webquark/webquark.css",
+    "./native-content.css": "./dist/webquark/native-content.css",
     "./dist/*": {
       "import": "./dist/*",
       "types": "./dist/*.d.ts"

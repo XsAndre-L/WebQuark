@@ -6,13 +6,13 @@
 }
 
 :host([edge='top']) {
-  --q-toolbar-edge-padding: max(0px, env(safe-area-inset-top, 0px)) 24px 0;
-  --q-toolbar-edge-compact-padding: max(0px, env(safe-area-inset-top, 0px)) 16px 0;
+  --q-toolbar-edge-padding: max(0px, env(safe-area-inset-top, 0px)) var(--q-bar-edge-padding, 24px) 0;
+  --q-toolbar-edge-compact-padding: max(0px, env(safe-area-inset-top, 0px)) var(--q-bar-edge-compact-padding, 16px) 0;
 }
 
 :host([edge='bottom']) {
-  --q-toolbar-edge-padding: 0 24px max(0px, env(safe-area-inset-bottom, 0px));
-  --q-toolbar-edge-compact-padding: 0 16px max(0px, env(safe-area-inset-bottom, 0px));
+  --q-toolbar-edge-padding: 0 var(--q-bar-edge-padding, 24px) max(0px, env(safe-area-inset-bottom, 0px));
+  --q-toolbar-edge-compact-padding: 0 var(--q-bar-edge-compact-padding, 16px) max(0px, env(safe-area-inset-bottom, 0px));
 }
 
 :host([edge='left']),
@@ -22,12 +22,12 @@
 }
 
 :host([edge='left']) {
-  --q-toolbar-edge-padding: 16px 16px 16px max(16px, env(safe-area-inset-left, 0px));
+  --q-toolbar-edge-padding: var(--q-bar-edge-compact-padding, 16px) var(--q-bar-edge-compact-padding, 16px) var(--q-bar-edge-compact-padding, 16px) max(var(--q-bar-edge-compact-padding, 16px), env(safe-area-inset-left, 0px));
   --q-toolbar-edge-compact-padding: 12px 12px 12px max(12px, env(safe-area-inset-left, 0px));
 }
 
 :host([edge='right']) {
-  --q-toolbar-edge-padding: 16px max(16px, env(safe-area-inset-right, 0px)) 16px 16px;
+  --q-toolbar-edge-padding: var(--q-bar-edge-compact-padding, 16px) max(var(--q-bar-edge-compact-padding, 16px), env(safe-area-inset-right, 0px)) var(--q-bar-edge-compact-padding, 16px) var(--q-bar-edge-compact-padding, 16px);
   --q-toolbar-edge-compact-padding: 12px max(12px, env(safe-area-inset-right, 0px)) 12px 12px;
 }
 

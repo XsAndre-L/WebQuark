@@ -1,6 +1,6 @@
 # Theme tokens
 
-Generated from `src/theme/tokens.ts`. Dimensions use rem; default root size is 16px. Optional component overrides remain unset and are documented with each component.
+Generated from `src/theme/tokens.ts`. Dimensions use rem; default root size is 16px. See [design preset values](design-presets-tokens.md) for component settings supplied by presets. Other optional overrides remain unset and are documented with each component.
 
 ## Spacing & Control Sizing
 
