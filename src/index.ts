@@ -107,6 +107,8 @@ export type {
   QNavbarAddonPlacement,
   QNavbarEdge,
   QNavbarMobileMode,
+  QNavbarNavAlign,
+  QNavbarNavCenterWithin,
   QNavbarTarget,
 } from './components/layout/navbar/navbar.types';
 export type { QTabsOrientation, QTabsSize, QTabsVariant, TabItem, TabItemInput } from './components/layout/tabs/tabs.types';

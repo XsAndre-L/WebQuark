@@ -70,7 +70,7 @@ Generated API references live beside each component implementation under `src/co
 
 ## Local package switching
 
-Run `bun run wq-setup` in a consuming project to generate `.wq-switch.json` and
+Run `bun run wq-setup` in a consuming project to generate `.webquark.json` and
 the `wq-sandbox`/`wq-switch` package scripts. Fill in the config's `source` path,
 then run `bun run wq-switch local`. The switcher builds core, React, and Angular and
 activates only the packages that project uses. Run `bun run wq-switch npm` to

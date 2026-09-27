@@ -27,7 +27,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc && bun run verify:consumer",
+    "verify:consumer": "tsc -p consumer-tests/tsconfig.json"
   },
   "dependencies": {
     "@stencil/react-output-target": "^1.5.3"
