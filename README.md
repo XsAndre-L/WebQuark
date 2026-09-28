@@ -73,7 +73,7 @@ Generated API references live beside each component implementation under `src/co
 ## Local package switching
 
 Run `bun run wq-setup` in a consuming project to generate `.webquark.json` and
-the `wq-sandbox`/`wq-switch` package scripts. Fill in `source` inside the `"wq-switch"` section:
+the `wq-sandbox`/`wq-switch`/`wq-check` package scripts. Fill in `source` inside the `"wq-switch"` section:
 
 ```json
 {

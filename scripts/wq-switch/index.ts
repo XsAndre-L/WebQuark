@@ -6,6 +6,7 @@ import { build } from './commands/build';
 import { local } from './commands/local';
 import { npm } from './commands/npm';
 import { status } from './commands/status';
+import { check } from './commands/check';
 
 const help = `wq-switch — run inside the consuming project
 
@@ -13,14 +14,16 @@ const help = `wq-switch — run inside the consuming project
   local                  Build all packages and activate local snapshots
   build                  Build all packages; refresh snapshots if already local
   npm                    Restore original installed packages (no upgrade)
+  check                  Verify the native-content.css export before bundling
   status                 Inspect actual package connections
 `;
 async function main(): Promise<void> {
   const [command, ...args] = process.argv.slice(2);
   if (!command || command === '--help' || command === '-h') { console.log(help); return; }
-  if (!['setup', 'local', 'build', 'npm', 'status'].includes(command)) throw new Error(`Unknown command: ${command}\n${help}`);
+  if (!['setup', 'local', 'build', 'npm', 'status', 'check'].includes(command)) throw new Error(`Unknown command: ${command}\n${help}`);
   if (command === 'setup' ? args.length !== 0 && (args.length !== 2 || args[0] !== '--source') : args.length !== 0) throw new Error(help);
   const root = consumerRoot();
+  if (command === 'check') { check(root); return; }
   if (command === 'status') { status(root); return; }
   await locked(`consumer:${root}`, async () => {
     recover(root);

@@ -879,7 +879,7 @@ export const semanticPresetTokens: Record<string, Record<QPreset, string>> = {
   '--q-text-small-line-height': { compact: '1.5', comfortable: '1.5' },
   '--q-heading-display-size': { compact: 'var(--q-font-size-lg)', comfortable: 'clamp(2.5rem, 1.75rem + 3vw, 4rem)' },
   '--q-heading-display-line-height': { compact: '1.3', comfortable: '1.1' },
-  '--q-heading-1-size': { compact: 'var(--q-font-size-lg)', comfortable: 'clamp(2rem, 1.5rem + 2vw, 3rem)' },
+  '--q-heading-1-size': { compact: 'var(--q-font-size-lg)', comfortable: 'clamp(27px, 1.5rem + 2vw, 36px)' },
   '--q-heading-2-size': { compact: 'var(--q-font-size-lg)', comfortable: 'clamp(1.75rem, 1.375rem + 1.5vw, 2.5rem)' },
   '--q-heading-3-size': { compact: 'var(--q-font-size-lg)', comfortable: 'clamp(1.5rem, 1.25rem + 1vw, 2rem)' },
   '--q-heading-4-size': { compact: 'var(--q-font-size-lg)', comfortable: '1.375rem' },

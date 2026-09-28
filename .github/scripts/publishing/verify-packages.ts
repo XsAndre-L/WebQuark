@@ -69,6 +69,10 @@ function verifyManifest(directory: string, coreVersion: string): void {
     }
   }
 
+  if (manifest.name === '@webquark/core' && manifest.exports?.['./native-content.css'] !== './dist/webquark/native-content.css') {
+    throw new Error('@webquark/core must export ./native-content.css to ./dist/webquark/native-content.css');
+  }
+
   for (const entry of entryPaths(manifest)) {
     assertFile(resolve(directory, entry), manifest.name + ' package entry ' + entry);
   }
@@ -90,9 +94,9 @@ function verifyTarball(directory: string): void {
     throw new Error('npm pack returned no package summary for ' + directory);
   }
 
-  for (const entry of Object.values(readPackage(directory).bin ?? {})) {
-    if (typeof entry === 'string' && !summary.files.some(file => file.path === entry.replace(/^\.\//, ''))) {
-      throw new Error('Packed executable missing: ' + entry);
+  for (const entry of entryPaths(readPackage(directory))) {
+    if (!summary.files.some(file => file.path === entry.replace(/^\.\//, ''))) {
+      throw new Error('Packed package entry missing: ' + entry);
     }
   }
 
