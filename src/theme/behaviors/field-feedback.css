@@ -14,9 +14,9 @@
   display: block;
   min-block-size: var(--_q-feedback-min, var(--q-context-feedback-min, 0px));
   font-family: var(--q-font-family, inherit);
-  font-size: var(--q-field-feedback-font, .75rem);
+  font-size: var(--q-field-feedback-font, var(--q-field-text-size, .75rem));
   font-weight: 400;
-  line-height: 1rem;
+  line-height: var(--q-field-text-line, 1rem);
   color: var(--q-fg-muted, #9ca3af);
   overflow-wrap: anywhere;
   margin: min(var(--q-space-xs, .25rem), var(--_q-feedback-min, var(--q-context-feedback-min, 0px))) 0 0;
@@ -25,9 +25,9 @@
 .q-field-feedback.error-msg { color: var(--_q-field-error-color, var(--q-color-danger, #f87171)); }
 [part='label']:not(.q-label-hidden) {
   font-family: var(--q-font-family, inherit);
-  font-size: var(--q-field-label-font, .75rem);
+  font-size: var(--q-field-label-font, var(--q-field-text-size, .75rem));
   font-weight: 600;
-  line-height: 1rem;
+  line-height: var(--q-field-text-line, 1rem);
   margin-bottom: var(--q-space-xs, .25rem);
   overflow-wrap: anywhere;
 }

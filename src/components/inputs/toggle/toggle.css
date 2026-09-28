@@ -1,4 +1,4 @@
-@import '../../../theme/control.css';
+@import '../../../theme/behaviors/control-sizing.css';
 :host {
   /* Toggle Switch Dimensions */
 
@@ -176,7 +176,7 @@
 .toggle-wrapper { min-height: var(--_q-control-height); gap: var(--q-space-sm, .5rem); }
 .toggle-wrapper:is(.size-sm, .size-md, .size-lg, .size-inherit) .toggle-label-text { font-size: var(--_q-control-font); line-height: var(--_q-control-line); margin-bottom: 0; }
 
-@import '../../../theme/field.css';
+@import '../../../theme/behaviors/field-feedback.css';
 
 .toggle-wrapper { --_q-switch-width: var(--q-toggle-switch-width, var(--q-toggle-width, calc(var(--_q-control-icon) * 2.75))); --_q-switch-height: var(--q-toggle-switch-height, var(--q-toggle-height, calc(var(--_q-control-icon) * 1.5))); --_q-thumb-size: var(--q-toggle-thumb-size, var(--q-toggle-size, calc(var(--_q-control-icon) * 1.125))); }
 .switch-track { width: var(--_q-switch-width); height: var(--_q-switch-height); }

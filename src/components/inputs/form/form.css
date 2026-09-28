@@ -1,4 +1,4 @@
-﻿:host {
+:host {
   display: block;
   box-sizing: border-box;
 }
@@ -49,4 +49,4 @@ form {
   padding-top: var(--q-form-actions-padding-top, 4px);
 }
 
-@import '../../../theme/field.css';
+@import '../../../theme/behaviors/field-feedback.css';

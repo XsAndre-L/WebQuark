@@ -11,6 +11,7 @@ import type {
   QMapViewportRect,
 } from '../map.types';
 import mapStyles from '../map.css?inline';
+import presets from '../../../../theme/token-presets.css?raw';
 import '../map';
 
 let pendingGoogleScript: HTMLScriptElement | undefined;
@@ -88,6 +89,32 @@ describe('q-map in Chromium', () => {
     restoreHeadAppend?.();
     Reflect.deleteProperty(window, 'google');
     document.body.replaceChildren();
+  });
+
+  it('updates marker collision offsets when a stationary map changes preset', async () => {
+    const style = document.createElement('style');
+    style.textContent = presets;
+    document.body.append(style);
+    const element = document.createElement('q-map');
+    element.style.cssText = 'width:480px;height:320px';
+    element.markers = [
+      { id: 'a', latitude: 0, longitude: 0, label: 'First' },
+      { id: 'b', latitude: 0, longitude: 0, label: 'Second' },
+    ];
+    const ready = waitForReady(element);
+    document.body.append(element);
+    await ready;
+    const local = document.createElement('style');
+    local.textContent = mapStyles;
+    element.shadowRoot!.prepend(local);
+    const marker = element.shadowRoot!.querySelector<HTMLElement>('[part~="marker"]')!;
+    await expect.poll(() => marker.style.translate).not.toBe('');
+    const original = marker.style.translate;
+    element.dataset.wqPreset = 'comfortable';
+    await expect.poll(() => marker.style.translate).not.toBe(original);
+    expect(marker.getBoundingClientRect().width).toBe(24);
+    element.dataset.wqPreset = 'compact';
+    await expect.poll(() => marker.style.translate).toBe(original);
   });
 
   it('renders accessible configuration state and reports lifecycle transitions', async () => {

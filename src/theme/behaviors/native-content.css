@@ -1,0 +1,24 @@
+/* Optional native content styles. Import after webquark.css and opt in with .q-prose. */
+:where(.q-prose, .q-prose [data-wq-preset]) {
+  font-family: var(--q-font-family);
+  font-size: var(--q-text-body-size, var(--q-font-size-base, .9rem));
+  font-weight: var(--q-font-weight-normal, 400);
+  line-height: var(--q-text-body-line-height, 1.5);
+}
+:where(.q-prose) :where(h1, h2, h3, h4, h5, h6, .q-display) {
+  font-family: var(--q-font-family);
+  font-weight: var(--q-font-weight-bold, 600);
+  margin-block: 0 var(--q-content-heading-gap, 1rem);
+  overflow-wrap: anywhere;
+}
+:where(.q-prose) :where(h1) { font-size: var(--q-heading-1-size, 1rem); line-height: var(--q-heading-1-line-height, 1.3); }
+:where(.q-prose) :where(h2) { font-size: var(--q-heading-2-size, 1rem); line-height: var(--q-heading-2-line-height, 1.3); }
+:where(.q-prose) :where(h3) { font-size: var(--q-heading-3-size, 1rem); line-height: var(--q-heading-3-line-height, 1.3); }
+:where(.q-prose) :where(h4) { font-size: var(--q-heading-4-size, 1rem); line-height: var(--q-heading-4-line-height, 1.3); }
+:where(.q-prose) :where(h5) { font-size: var(--q-heading-5-size, 1rem); line-height: var(--q-heading-5-line-height, 1.3); }
+:where(.q-prose) :where(h6) { font-size: var(--q-heading-6-size, 1rem); line-height: var(--q-heading-6-line-height, 1.3); }
+:where(.q-prose) :where(.q-display) { font-size: var(--q-heading-display-size, 1rem); line-height: var(--q-heading-display-line-height, 1.3); }
+:where(.q-prose) :where(p, ul, ol) { margin-block: 0 var(--q-content-paragraph-gap, 1rem); }
+:where(.q-prose) :where(small) { font-size: var(--q-text-small-size, .7rem); line-height: var(--q-text-small-line-height, 1.5); }
+:where(.q-content-section) { padding: var(--q-content-padding, 1rem); }
+:where(.q-content-section + .q-content-section) { margin-block-start: var(--q-content-section-gap, 2rem); }

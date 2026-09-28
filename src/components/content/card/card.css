@@ -89,7 +89,7 @@
   font-family: var(--q-font-family, inherit);
   font-size: var(--q-font-size-base, 0.9rem);
   font-weight: var(--q-font-weight-normal, 400);
-  line-height: 1.5;
+  line-height: var(--q-text-body-line-height, 1.5);
 }
 
 /* Region padding is local and cannot alter descendants' spacing tokens. */

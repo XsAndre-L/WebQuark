@@ -8,6 +8,7 @@ export const controls = {
 export type QSpace = keyof typeof spaces;
 export type QSize = keyof typeof controls;
 export type QControlSize = QSize | 'inherit';
+export type QPreset = 'compact' | 'comfortable';
 export type QSurface = 'canvas' | 'panel' | 'card' | 'field' | 'floating' | 'transparent';
 export const rem = (pixels: number): string => `${pixels / 16}rem`;
 export const dimensionTokens = [
@@ -23,10 +24,13 @@ export function spaceValue(value: QSpace): string {
 
 /** Only scope owners publish context metrics; leaf controls never change them. */
 export function controlScope(size: QControlSize): Record<string, string> {
-  return Object.fromEntries(Object.keys(controls.md).map(metric => [
-    `--q-context-control-${metric}`,
-    size === 'inherit' ? '' : `var(--q-control-${metric}-${size}, ${rem(controls[size]?.[metric as keyof typeof controls.md] ?? controls.md[metric as keyof typeof controls.md])})`,
-  ]));
+  // Carry size intent, rather than resolved lengths, through nested preset boundaries.
+  return { ...Object.fromEntries(Object.keys(controls).map(key => [
+    `--_q-context-size-${key}`,
+    size === 'inherit' ? '' : size === key ? '1' : '0',
+  ])), ...Object.fromEntries(Object.keys(controls.md).map(metric => [
+    `--q-context-control-${metric}`, size === 'inherit' ? '' : 'initial',
+  ])) };
 }
 
 /** Resolve roles at the component, not at :root, to respect scoped palettes. */
@@ -836,3 +840,127 @@ export const themeGroups: { category: string; tokens: ThemeToken[] }[] = [
     ]
   }
 ];
+
+/** Comfortable overrides for the existing density tokens. Compact values stay in their canonical catalog above. */
+export const comfortablePreset = {
+  '--q-space-none': '0rem', '--q-space-xs': '0.375rem', '--q-space-sm': '0.75rem',
+  '--q-space-md': '1rem', '--q-space-lg': '1.5rem', '--q-space-xl': '2rem',
+  '--q-space-2xl': '3rem', '--q-space-3xl': '4rem',
+  '--q-control-height-sm': '2.25rem', '--q-control-font-sm': '0.875rem',
+  '--q-control-line-sm': '1.25rem', '--q-control-padding-sm': '0.75rem', '--q-control-icon-sm': '1rem',
+  '--q-control-height-md': '2.75rem', '--q-control-font-md': '1rem',
+  '--q-control-line-md': '1.5rem', '--q-control-padding-md': '1rem', '--q-control-icon-md': '1.25rem',
+  '--q-control-height-lg': '3.25rem', '--q-control-font-lg': '1.125rem',
+  '--q-control-line-lg': '1.75rem', '--q-control-padding-lg': '1.25rem', '--q-control-icon-lg': '1.5rem',
+  '--q-font-size-sm': '0.875rem', '--q-font-size-base': '1.125rem', '--q-font-size-lg': '1.5rem',
+  '--q-padding-sm': 'var(--q-space-sm, .75rem)', '--q-padding-md': 'var(--q-space-md, 1rem)',
+  '--q-padding-lg': 'var(--q-space-lg, 1.5rem)',
+  '--q-step-diag-icon-size': '40px', '--q-step-diag-item-gap': '32px', '--q-reel-gap': '24px',
+  '--q-avatar-size-sm': '32px', '--q-avatar-size-md': '48px', '--q-avatar-size-lg': '64px',
+  '--q-carousel-gap': '24px', '--q-carousel-padding': '32px 24px', '--q-carousel-arrow-size': '44px',
+  '--q-carousel-indicator-gap': '12px', '--q-carousel-indicator-size': '8px',
+  '--q-progress-linear-height-sm': '6px', '--q-progress-linear-height-md': '8px', '--q-progress-linear-height-lg': '10px',
+  '--q-progress-circular-size-sm': '80px', '--q-progress-circular-size-md': '144px', '--q-progress-circular-size-lg': '200px',
+  '--q-progress-circular-stroke-width-sm': '8px', '--q-progress-circular-stroke-width-md': '10px', '--q-progress-circular-stroke-width-lg': '12px',
+  '--q-btn-icon-padding-sm': '6px', '--q-btn-icon-padding-md': '8px', '--q-btn-icon-padding-lg': '12px',
+  '--q-chip-padding-sm': '6px 12px', '--q-chip-padding-md': '8px 16px', '--q-chip-padding-lg': '10px 20px',
+  '--q-chip-height-sm': '32px', '--q-chip-height-md': '40px', '--q-chip-height-lg': '48px',
+  '--q-sidepanel-panel-padding': 'var(--q-padding-lg)',
+  '--q-sidepanel-panel-header-padding': 'var(--q-padding-lg)', '--q-sidepanel-panel-footer-padding': 'var(--q-padding-lg)',
+  '--q-map-marker-size': '24px', '--q-map-marker-size-small': '20px',
+  '--q-map-marker-size-medium': 'var(--q-map-marker-size)', '--q-map-marker-size-large': '28px',
+} as const satisfies Record<`--q-${string}`, string>;
+
+/** New reading roles. Compact preserves the existing native-client text conventions. */
+export const semanticPresetTokens: Record<string, Record<QPreset, string>> = {
+  '--q-text-body-size': { compact: 'var(--q-font-size-base)', comfortable: 'var(--q-font-size-base)' },
+  '--q-text-body-line-height': { compact: '1.5', comfortable: '1.6' },
+  '--q-text-small-size': { compact: 'var(--q-font-size-sm)', comfortable: 'var(--q-font-size-sm)' },
+  '--q-text-small-line-height': { compact: '1.5', comfortable: '1.5' },
+  '--q-heading-display-size': { compact: 'var(--q-font-size-lg)', comfortable: 'clamp(2.5rem, 1.75rem + 3vw, 4rem)' },
+  '--q-heading-display-line-height': { compact: '1.3', comfortable: '1.1' },
+  '--q-heading-1-size': { compact: 'var(--q-font-size-lg)', comfortable: 'clamp(27px, 1.5rem + 2vw, 36px)' },
+  '--q-heading-2-size': { compact: 'var(--q-font-size-lg)', comfortable: 'clamp(1.75rem, 1.375rem + 1.5vw, 2.5rem)' },
+  '--q-heading-3-size': { compact: 'var(--q-font-size-lg)', comfortable: 'clamp(1.5rem, 1.25rem + 1vw, 2rem)' },
+  '--q-heading-4-size': { compact: 'var(--q-font-size-lg)', comfortable: '1.375rem' },
+  '--q-heading-5-size': { compact: 'var(--q-font-size-lg)', comfortable: '1.25rem' },
+  '--q-heading-6-size': { compact: 'var(--q-font-size-lg)', comfortable: '1.125rem' },
+  ...Object.fromEntries([1, 2, 3, 4, 5, 6].map(level => [
+    `--q-heading-${level}-line-height`, { compact: '1.3', comfortable: level <= 2 ? '1.2' : '1.3' },
+  ])),
+  '--q-content-paragraph-gap': { compact: 'var(--q-padding-lg)', comfortable: '1.5rem' },
+  '--q-content-heading-gap': { compact: 'var(--q-padding-lg)', comfortable: '1.5rem' },
+  '--q-content-section-gap': { compact: 'var(--q-space-2xl)', comfortable: 'clamp(3rem, 2rem + 4vw, 6rem)' },
+  '--q-content-padding': { compact: 'var(--q-padding-lg)', comfortable: 'clamp(1.5rem, 1rem + 2vw, 3rem)' },
+  '--q-field-text-size': { compact: '.75rem', comfortable: '.875rem' },
+  '--q-field-text-line': { compact: '1rem', comfortable: '1.25rem' },
+};
+
+// Internal size defaults keep generic and size-specific tab overrides independent.
+export const internalPresetTokens: Record<string, Record<QPreset, string>> = {
+  '--_q-preset-tabs-height-sm': { compact: '34px', comfortable: '40px' },
+  '--_q-preset-tabs-height-md': { compact: '42px', comfortable: '48px' },
+  '--_q-preset-tabs-height-lg': { compact: '50px', comfortable: '56px' },
+  '--_q-preset-tabs-padding-sm': { compact: '6px 10px', comfortable: '8px 14px' },
+  '--_q-preset-tabs-padding-md': { compact: '9px 16px', comfortable: '12px 20px' },
+  '--_q-preset-tabs-padding-lg': { compact: '14px 18px', comfortable: '16px 24px' },
+};
+
+export const componentPresetTokens: Record<string, Record<QPreset, string>> = {
+  '--q-toolbar-height': { compact: '0px', comfortable: '72px' },
+  '--q-toolbar-compact-height': { compact: '0px', comfortable: '60px' },
+  '--q-font-size-xs': { compact: '0.7rem', comfortable: '0.8125rem' },
+  '--q-font-size-2xs': { compact: '0.625rem', comfortable: '0.75rem' },
+  '--q-btn-circle-size': { compact: '120px', comfortable: '144px' },
+  '--q-btn-circle-padding': { compact: '12px', comfortable: '16px' },
+  '--q-table-toolbar-padding-block': { compact: '12px', comfortable: '16px' },
+  '--q-table-toolbar-padding-inline': { compact: '16px', comfortable: '24px' },
+  '--q-bar-edge-padding': { compact: '24px', comfortable: '32px' },
+  '--q-bar-edge-compact-padding': { compact: '16px', comfortable: '24px' },
+  '--q-table-cell-padding-block': { compact: '4.5px', comfortable: '10px' },
+  '--q-table-cell-padding-inline': { compact: '8px', comfortable: '14px' },
+  '--q-dropdown-option-padding': { compact: '10px 14px', comfortable: '12px 18px' },
+  '--q-tooltip-padding': { compact: '6px 10px', comfortable: '8px 14px' },
+  '--q-syntax-padding': { compact: '16px', comfortable: '24px' },
+  '--q-syntax-compact-padding': { compact: '10px', comfortable: '16px' },
+  '--q-syntax-header-padding': { compact: '4px 16px', comfortable: '8px 24px' },
+  '--q-sidepanel-nav-font': { compact: '0.875rem', comfortable: '1rem' },
+  '--q-sidepanel-nav-small-font': { compact: '0.75rem', comfortable: '0.875rem' },
+  '--q-sidepanel-nav-badge-font': { compact: '0.65rem', comfortable: '0.75rem' },
+  '--q-navbar-item-height': { compact: '36px', comfortable: '44px' },
+  '--q-navbar-gap': { compact: '20px', comfortable: '28px' },
+  '--q-navbar-height': { compact: '64px', comfortable: '72px' },
+  '--q-navbar-compact-height': { compact: '52px', comfortable: '60px' },
+  '--q-navbar-logo-size': { compact: '32px', comfortable: '40px' },
+  '--q-navbar-brand-size': { compact: '1rem', comfortable: '1.25rem' },
+  '--q-navbar-nav-gap': { compact: '6px', comfortable: '10px' },
+  '--q-navbar-action-gap': { compact: '8px', comfortable: '12px' },
+  '--q-navbar-item-gap': { compact: '8px', comfortable: '12px' },
+  '--q-navbar-item-padding': { compact: '7px 10px', comfortable: '10px 14px' },
+  '--q-navbar-item-size': { compact: '0.9rem', comfortable: '1rem' },
+  '--q-navbar-item-icon-only-size': { compact: '40px', comfortable: '44px' },
+  '--q-navbar-item-icon-only-padding': { compact: '8px', comfortable: '10px' },
+  '--q-navbar-mobile-panel-padding': { compact: '8px 16px 16px', comfortable: '12px 24px 24px' },
+  '--q-avatar-font-size': { compact: '0.8rem', comfortable: '1rem' },
+  '--q-avatar-font-size-sm': { compact: '0.65rem', comfortable: '0.75rem' },
+  '--q-avatar-font-size-lg': { compact: '1rem', comfortable: '1.25rem' },
+  '--q-conversation-gap': { compact: '10px', comfortable: '16px' },
+  '--q-conversation-header-gap': { compact: '4px', comfortable: '6px' },
+  '--q-conversation-header-inset': { compact: '4px', comfortable: '6px' },
+  '--q-conversation-padding': { compact: '11px 13px', comfortable: '16px 20px' },
+  '--q-conversation-footer-gap': { compact: '10px', comfortable: '16px' },
+  '--q-conversation-footer-margin': { compact: '6px', comfortable: '10px' },
+  '--q-conversation-meta-gap': { compact: '6px', comfortable: '10px' },
+  '--q-conversation-compact-padding': { compact: '7px 10px', comfortable: '10px 14px' },
+  '--q-alert-padding': { compact: '12px 14px', comfortable: '16px 20px' },
+  '--q-alert-gap': { compact: '10px', comfortable: '16px' },
+  '--q-alert-actions-gap': { compact: '8px', comfortable: '12px' },
+  '--q-pagination-button-height': { compact: '30px', comfortable: '44px' },
+  '--q-pagination-button-padding': { compact: '5px 8px', comfortable: '8px 12px' },
+};
+
+export const presetTokens = Object.entries(comfortablePreset).map<{ name: string; compact: string; comfortable: string }>(([name, comfortable]) => {
+  const token = [...dimensionTokens, ...themeGroups.flatMap(group => group.tokens)].find(token => token.name === name);
+  if (!token) throw new Error(`Preset token has no compact default: ${name}`);
+  return { name, compact: token.value, comfortable };
+}).concat(Object.entries({ ...semanticPresetTokens, ...componentPresetTokens }).map(([name, values]) => ({ name, ...values })));

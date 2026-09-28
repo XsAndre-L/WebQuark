@@ -1,4 +1,4 @@
-@import '../../../theme/control.css';
+@import '../../../theme/behaviors/control-sizing.css';
 :host {
   display: inline-block;
   box-sizing: border-box;

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WebQuark design presets</title>
+  <script type="module" src="./build/webquark.esm.js"></script>
+  <link rel="stylesheet" href="./build/webquark.css">
+  <link rel="stylesheet" href="./native-content.css">
+  <style>
+    body { margin: 0; padding: 24px; background: var(--q-bg-base); color: var(--q-fg-base); font-family: var(--q-font-family); }
+    .controls { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
+    .comparison { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 24px; }
+    article { min-width: 0; border: var(--q-border); border-radius: var(--q-radius-lg); }
+    q-input, q-card, q-form { margin-block: var(--q-space-md); }
+    a { color: var(--q-color-primary); }
+  </style>
+</head>
+<body>
+  <nav class="controls">
+    <a href="./">Component playground</a>
+    <label>Colour <select id="theme"><option>dark</option><option>light</option></select></label>
+    <label>Direction <select id="direction"><option>ltr</option><option>rtl</option></select></label>
+    <label>Right preset <select id="preset"><option>comfortable</option><option>compact</option></select></label>
+  </nav>
+  <div class="comparison">
+    <article class="q-prose q-content-section" data-wq-preset="compact">
+      <small>COMPACT — existing defaults</small><h1>Work with clarity</h1>
+      <p>Compact text, controls and spacing for everyday application work.</p>
+      <q-form size="md" reserve-feedback><q-input label="Project" placeholder="Project name"></q-input><q-button size="sm">Small</q-button> <q-button>Medium</q-button> <q-button size="lg">Large</q-button></q-form>
+      <q-card><span slot="header">Card title</span>Compact card padding and body text.</q-card>
+    </article>
+    <article id="preview" class="q-prose q-content-section" data-wq-preset="comfortable">
+      <small>COMFORTABLE — balanced reading</small><h1>Give your ideas room</h1>
+      <p>Readable text, responsive headings and comfortable controls for a public website.</p>
+      <q-form size="md" reserve-feedback><q-input label="Email" placeholder="you@example.com"></q-input><q-button size="sm">Small</q-button> <q-button>Medium</q-button> <q-button size="lg">Large</q-button></q-form>
+      <q-card><span slot="header">Card title</span>Comfortable card padding and body text.</q-card>
+      <aside data-wq-preset="compact"><h2>Nested compact section</h2><q-input label="Filter"></q-input><q-button>Apply</q-button></aside>
+    </article>
+  </div>
+  <script>
+    document.querySelector('#theme').onchange = event => document.documentElement.dataset.theme = event.target.value;
+    document.querySelector('#direction').onchange = event => document.documentElement.dir = event.target.value;
+    document.querySelector('#preset').onchange = event => document.querySelector('#preview').dataset.wqPreset = event.target.value;
+  </script>
+</body>
+</html>

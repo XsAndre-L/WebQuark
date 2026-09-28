@@ -54,7 +54,7 @@
   background: var(--q-bg-surface-3, #1e293b);
   color: var(--q-fg-base);
   border: 1px solid var(--q-border-color, rgba(255, 255, 255, 0.08));
-  padding: 6px 10px;
+  padding: var(--q-tooltip-padding, 6px 10px);
   border-radius: var(--q-radius-sm, 4px);
   font-family: var(--q-font-family, system-ui, -apple-system, sans-serif);
   font-size: var(--q-font-size-sm);

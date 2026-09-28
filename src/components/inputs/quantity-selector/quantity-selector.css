@@ -1,4 +1,4 @@
-@import '../../../theme/control.css';
+@import '../../../theme/behaviors/control-sizing.css';
 :host {
   /* Dimensions */
   --q-quantity-selector-width-vertical: 50px;
