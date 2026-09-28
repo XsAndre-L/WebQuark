@@ -10,7 +10,7 @@ export function setup(root: string, source?: string): void {
   const document = readWebQuarkConfig(root);
   const previous = readSwitchConfig(root);
   const pkg = manifest(root);
-  const scripts = { 'wq-sandbox': 'wq-sandbox', 'wq-switch': 'wq-switch' };
+  const scripts = { 'wq-sandbox': 'wq-sandbox', 'wq-switch': 'wq-switch', 'wq-check': 'wq-switch check' };
   for (const [name, command] of Object.entries(scripts)) {
     if (pkg.scripts?.[name] && pkg.scripts[name] !== command) throw new Error(`package.json already has a custom ${name} script. Rename it before running setup; no files were changed.`);
   }

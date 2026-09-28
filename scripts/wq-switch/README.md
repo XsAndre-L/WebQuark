@@ -67,7 +67,8 @@ Setup also adds these scripts without changing dependency versions or lockfiles:
 {
   "scripts": {
     "wq-sandbox": "wq-sandbox",
-    "wq-switch": "wq-switch"
+    "wq-switch": "wq-switch",
+    "wq-check": "wq-switch check"
   }
 }
 ```
@@ -83,6 +84,7 @@ names before writing anything. `wq-switch setup` remains an equivalent alias.
 | `local` | Builds core, React, and Angular; activates snapshots of only the packages declared by the consumer |
 | `build` | Always builds all three; refreshes snapshots when this consumer is already local |
 | `npm` | Restores the exact previous package entries; does not download or upgrade packages |
+| `check` | Verifies the native-content.css export and file; prints setup guidance if missing |
 | `status` | Reports actual connections, missing artifacts, mixed installs, and pending recovery |
 
 Restart the consumer development server after switching or refreshing. The CLI
@@ -139,3 +141,9 @@ the five command handlers. `dist/index.js` is generated and not maintained.
 
 Validation: `bun run switch:build` followed by
 `bunx vitest run --project tooling scripts/wq-switch/switch.unit.test.ts`.
+
+### Catch missing stylesheet exports before bundling
+
+Setup adds a `wq-check` script. Run `bun run wq-check`, or prefix your dev/build commands with `bun run wq-check &&`, to verify that the installed core exports `@webquark/core/native-content.css` and its built file exists. The diagnostic directs local consumers to `bun run wq-setup --source "<path-to-WebQuark>"` followed by `bun run wq-switch local`. Setup alone does not replace an older published package. A complete published package needs no local checkout.
+
+The check cannot intercept Angular's errors automatically: it must run before the bundler. Older CLI releases do not include this command.

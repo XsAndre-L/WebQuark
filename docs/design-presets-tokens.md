@@ -75,7 +75,7 @@ Generated from `src/theme/tokens.ts`. Compact preserves existing defaults; new s
 | `--q-text-small-line-height` | `1.5` | `1.5` |
 | `--q-heading-display-size` | `var(--q-font-size-lg)` | `clamp(2.5rem, 1.75rem + 3vw, 4rem)` |
 | `--q-heading-display-line-height` | `1.3` | `1.1` |
-| `--q-heading-1-size` | `var(--q-font-size-lg)` | `clamp(2rem, 1.5rem + 2vw, 3rem)` |
+| `--q-heading-1-size` | `var(--q-font-size-lg)` | `clamp(27px, 1.5rem + 2vw, 36px)` |
 | `--q-heading-2-size` | `var(--q-font-size-lg)` | `clamp(1.75rem, 1.375rem + 1.5vw, 2.5rem)` |
 | `--q-heading-3-size` | `var(--q-font-size-lg)` | `clamp(1.5rem, 1.25rem + 1vw, 2rem)` |
 | `--q-heading-4-size` | `var(--q-font-size-lg)` | `1.375rem` |
