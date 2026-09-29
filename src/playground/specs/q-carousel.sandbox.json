@@ -32,6 +32,21 @@
       "type": "boolean",
       "default": false,
       "desc": "Loops and wraps items infinitely"
+    },
+    "transition": {
+      "type": "select",
+      "options": [
+        "slide",
+        "crossfade",
+        "instant"
+      ],
+      "default": "slide",
+      "desc": "Slide selection animation"
+    },
+    "transitionDuration": {
+      "type": "number",
+      "default": 500,
+      "desc": "Crossfade duration in milliseconds"
     }
   },
   "slots": {

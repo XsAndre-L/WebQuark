@@ -170,6 +170,8 @@ export const DEFAULT_CLASSIFICATIONS: readonly ClassificationEntry[] = [
       'preventDefault',
       'removable',
       'repeat',
+      'transition',
+      'transitionDuration',
       'resizeMode',
       'rowActions',
       'rowClickable',
@@ -369,6 +371,7 @@ export const DEFAULT_PROP_ORDER_CONFIG: PropOrderConfig = {
     { id: 'textarea-label', scope: 'q-textarea', props: ['label', 'ariaLabel'] },
     { id: 'textarea-sizing', scope: 'q-textarea', props: ['rows', 'autoGrow', 'resizeMode'] },
     { id: 'textarea-error', scope: 'q-textarea', props: ['error', 'errorMessage'] },
+    { id: 'carousel-transition', scope: 'q-carousel', props: ['transition', 'transitionDuration'] },
     { id: 'carousel-sizing', scope: 'q-carousel', props: ['snapAlignment', 'itemWidth'] },
     {
       id: 'carousel-controls',

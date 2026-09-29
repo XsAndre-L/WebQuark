@@ -13,7 +13,7 @@ import { QIconColor, QIconDefinition, QIconLibrary, QIconLocalPath, QIconName, Q
 import { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
 import { QControlSize, QSpace, QSurface } from "./theme/tokens";
 import { QCardElevation } from "./components/content/card/card.types";
-import { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/content/carousel/carousel.types";
+import { QCarouselSlideChangeDetail, QCarouselSnapAlignment, QCarouselTransition } from "./components/content/carousel/carousel.types";
 import { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/data-display/chip/chip.types";
 import { QConversationBubbleVariant } from "./components/communication/conversation-bubble/conversation-bubble.types";
 import { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
@@ -51,7 +51,7 @@ export { QIconColor, QIconDefinition, QIconLibrary, QIconLocalPath, QIconName, Q
 export { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
 export { QControlSize, QSpace, QSurface } from "./theme/tokens";
 export { QCardElevation } from "./components/content/card/card.types";
-export { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/content/carousel/carousel.types";
+export { QCarouselSlideChangeDetail, QCarouselSnapAlignment, QCarouselTransition } from "./components/content/carousel/carousel.types";
 export { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/data-display/chip/chip.types";
 export { QConversationBubbleVariant } from "./components/communication/conversation-bubble/conversation-bubble.types";
 export { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
@@ -270,7 +270,7 @@ export namespace Components {
         "surface"?: QSurface;
     }
     /**
-     * A horizontal carousel viewport with optional arrow and dot navigation.
+     * A carousel with sliding, crossfade or instant transitions and shared navigation.
      */
     interface QCarousel {
         /**
@@ -300,6 +300,16 @@ export namespace Components {
           * @default 'start'
          */
         "snapAlignment": QCarouselSnapAlignment;
+        /**
+          * Animation used when selecting a slide. Overlay modes show one full-width item.
+          * @default 'slide'
+         */
+        "transition": QCarouselTransition;
+        /**
+          * Crossfade duration in milliseconds; native sliding keeps browser-controlled timing.
+          * @default 500
+         */
+        "transitionDuration": number;
         /**
           * Recalculates slide offsets, scroll bounds, and navigation states.
          */
@@ -2216,7 +2226,7 @@ declare global {
         "qSlideChange": QCarouselSlideChangeDetail;
     }
     /**
-     * A horizontal carousel viewport with optional arrow and dot navigation.
+     * A carousel with sliding, crossfade or instant transitions and shared navigation.
      */
     interface HTMLQCarouselElement extends Components.QCarousel, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQCarouselElementEventMap>(type: K, listener: (this: HTMLQCarouselElement, ev: QCarouselCustomEvent<HTMLQCarouselElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -3103,7 +3113,7 @@ declare namespace LocalJSX {
         "surface"?: QSurface;
     }
     /**
-     * A horizontal carousel viewport with optional arrow and dot navigation.
+     * A carousel with sliding, crossfade or instant transitions and shared navigation.
      */
     interface QCarousel {
         /**
@@ -3130,6 +3140,16 @@ declare namespace LocalJSX {
           * @default 'start'
          */
         "snapAlignment"?: QCarouselSnapAlignment;
+        /**
+          * Animation used when selecting a slide. Overlay modes show one full-width item.
+          * @default 'slide'
+         */
+        "transition"?: QCarouselTransition;
+        /**
+          * Crossfade duration in milliseconds; native sliding keeps browser-controlled timing.
+          * @default 500
+         */
+        "transitionDuration"?: number;
     }
     /**
      * Compact label, link, filter, or removable token.
@@ -4970,6 +4990,8 @@ declare namespace LocalJSX {
         "showArrows": boolean;
         "showIndicators": boolean;
         "repeat": boolean;
+        "transition": QCarouselTransition;
+        "transitionDuration": number;
     }
     interface QChipAttributes {
         "label": string;
@@ -5445,7 +5467,7 @@ declare module "@stencil/core" {
              */
             "q-card": LocalJSX.IntrinsicElements["q-card"] & JSXBase.HTMLAttributes<HTMLQCardElement>;
             /**
-             * A horizontal carousel viewport with optional arrow and dot navigation.
+             * A carousel with sliding, crossfade or instant transitions and shared navigation.
              */
             "q-carousel": LocalJSX.IntrinsicElements["q-carousel"] & JSXBase.HTMLAttributes<HTMLQCarouselElement>;
             /**

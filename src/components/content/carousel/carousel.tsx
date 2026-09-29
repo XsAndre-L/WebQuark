@@ -1,10 +1,11 @@
-import { Component, Prop, Element, Event, EventEmitter, State, Method, h } from '@stencil/core';
+import { Component, Prop, Element, Event, EventEmitter, State, Method, Watch, h } from '@stencil/core';
+import { CarouselSlideState } from './internals/slide-state';
 import { getSlottedElements } from '../../../utils/dom';
-import type { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from './carousel.types';
+import type { QCarouselSlideChangeDetail, QCarouselSnapAlignment, QCarouselTransition } from './carousel.types';
 import { getCarouselEdgeState, getCarouselMetrics, getClosestCarouselIndex, resolveCarouselTargetIndex } from './internals/metrics';
 
 /**
- * A horizontal carousel viewport with optional arrow and dot navigation.
+ * A carousel with sliding, crossfade or instant transitions and shared navigation.
  *
  * @slot - Carousel slide content.
  */
@@ -24,6 +25,10 @@ export class QCarousel {
   @Prop({ reflect: true }) showIndicators: boolean = false;
   /** Wraps arrow and programmatic navigation at either end. */
   @Prop({ reflect: true }) repeat: boolean = false;
+  /** Animation used when selecting a slide. Overlay modes show one full-width item. */
+  @Prop({ reflect: true }) transition: QCarouselTransition = 'slide';
+  /** Crossfade duration in milliseconds; native sliding keeps browser-controlled timing. */
+  @Prop() transitionDuration: number = 500;
 
   @State() activeIndex: number = 0;
   @State() maxIndex: number = 0;
@@ -35,11 +40,19 @@ export class QCarousel {
 
   @Element() el!: HTMLElement;
 
+  private slideState = new CarouselSlideState();
+  private touchStart?: { id: number; x: number; y: number };
+
+  private get stacked(): boolean {
+    return this.transition === 'crossfade' || this.transition === 'instant';
+  }
+
   private scrollContainer?: HTMLDivElement;
 
   // ========================= [2] INTERNAL STATE & REFS =========================
 
   private resizeObserver?: ResizeObserver;
+  private restoreSlideIndex?: number;
   private itemOffsets: number[] = [];
   private itemWidths: number[] = [];
   private containerWidth: number = 0;
@@ -55,16 +68,40 @@ export class QCarousel {
 
   // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
+  @Watch('transition')
+  protected transitionChanged() {
+    this.programmaticScrollToken += 1;
+    this.clearProgrammaticScroll();
+    this.isProgrammaticScroll = false;
+    this.touchStart = undefined;
+    if (this.scrollRafId) cancelAnimationFrame(this.scrollRafId);
+    this.scrollRafId = undefined;
+    if (!this.stacked) {
+      this.slideState.restore();
+      this.restoreSlideIndex = this.activeIndex;
+    }
+    if (this.scrollContainer) this.scrollContainer.scrollLeft = 0;
+    this.scheduleCalculateLimits();
+  }
+
+  connectedCallback() {
+    if (this.scrollContainer) this.setScrollContainerRef(this.scrollContainer);
+  }
+
   disconnectedCallback() {
+    this.slideState.restore();
+    this.touchStart = undefined;
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
       this.resizeObserver = undefined;
     }
     if (this.rafId) {
       cancelAnimationFrame(this.rafId);
+      this.rafId = undefined;
     }
     if (this.scrollRafId) {
       cancelAnimationFrame(this.scrollRafId);
+      this.scrollRafId = undefined;
     }
     this.programmaticScrollToken += 1;
     this.clearProgrammaticScroll();
@@ -110,7 +147,7 @@ export class QCarousel {
   private handleSlotChange = () => {
     this.updateCachedChildren();
     this.updateItemStyles();
-    this.scheduleCalculateLimits();
+    this.calculateLimits();
   };
 
   private updateCachedChildren() {
@@ -150,6 +187,13 @@ export class QCarousel {
   private calculateLimits = () => {
     if (!this.scrollContainer) return;
 
+    if (this.stacked) {
+      this.maxIndex = Math.max(0, this.cachedChildren.length - 1);
+      this.isScrollable = this.cachedChildren.length > 1;
+      this.selectStacked(Math.min(this.activeIndex, this.maxIndex));
+      return;
+    }
+
     const metrics = getCarouselMetrics(this.scrollContainer, this.cachedChildren);
     this.itemOffsets = metrics.itemOffsets;
     this.itemWidths = metrics.itemWidths;
@@ -158,6 +202,11 @@ export class QCarousel {
     this.isScrollable = metrics.isScrollable;
     this.maxIndex = metrics.maxIndex;
 
+    if (this.restoreSlideIndex !== undefined) {
+      const index = Math.min(this.restoreSlideIndex, this.maxIndex);
+      this.scrollContainer.scrollTo({ left: this.itemOffsets[index] ?? 0, behavior: 'instant' });
+      this.restoreSlideIndex = undefined;
+    }
     const scrollLeft = this.scrollContainer.scrollLeft;
     this.updateEdgeState(scrollLeft);
     this.handleScroll();
@@ -176,14 +225,14 @@ export class QCarousel {
   }
 
   private handleScroll = () => {
-    if (!this.scrollContainer || this.itemOffsets.length === 0) return;
+    if (this.stacked || !this.scrollContainer || this.itemOffsets.length === 0) return;
     if (this.isProgrammaticScroll) return;
 
     if (this.scrollRafId) return;
 
     this.scrollRafId = requestAnimationFrame(() => {
       this.scrollRafId = undefined;
-      if (!this.scrollContainer || this.itemOffsets.length === 0 || this.isProgrammaticScroll) return;
+      if (this.stacked || !this.scrollContainer || this.itemOffsets.length === 0 || this.isProgrammaticScroll) return;
 
       const scrollLeft = this.scrollContainer.scrollLeft;
       this.updateEdgeState(scrollLeft);
@@ -220,7 +269,23 @@ export class QCarousel {
     }
   }
 
+  private selectStacked(index: number) {
+    const changed = this.activeIndex !== index;
+    this.activeIndex = index;
+    this.isAtStart = index === 0;
+    this.isAtEnd = index === this.maxIndex;
+    this.slideState.update(this.cachedChildren, index, this.scrollContainer);
+    if (changed && this.cachedChildren[index]) {
+      this.qSlideChange.emit({ index, element: this.cachedChildren[index] });
+    }
+  }
+
   private scrollToIndex(index: number) {
+    if (this.stacked) {
+      const target = resolveCarouselTargetIndex(index, this.maxIndex, this.repeat);
+      if (target !== undefined && this.cachedChildren[target]) this.selectStacked(target);
+      return;
+    }
     if (!this.scrollContainer || this.itemOffsets.length === 0 || this.maxIndex <= 0) return;
 
     const targetIndex = resolveCarouselTargetIndex(index, this.maxIndex, this.repeat);
@@ -299,6 +364,37 @@ export class QCarousel {
     }
   };
 
+  private isInteractiveEvent(event: Event): boolean {
+    return event.composedPath().some(node => node instanceof HTMLElement &&
+      node.matches('button, a, input, select, textarea, video, audio, [contenteditable]:not([contenteditable="false"])'));
+  }
+
+  private handleKeyDown = (event: KeyboardEvent) => {
+    if (!this.stacked || this.isInteractiveEvent(event) || event.defaultPrevented) return;
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+    event.preventDefault();
+    event.stopPropagation();
+    this.scrollToIndex(this.activeIndex + (event.key === 'ArrowRight' ? 1 : -1));
+  };
+
+  private handlePointerDown = (event: PointerEvent) => {
+    if (!this.stacked || !event.isPrimary || event.pointerType === 'mouse' || this.isInteractiveEvent(event)) return;
+    this.touchStart = { id: event.pointerId, x: event.clientX, y: event.clientY };
+  };
+
+  private handlePointerUp = (event: PointerEvent) => {
+    const start = this.touchStart;
+    this.touchStart = undefined;
+    if (!this.stacked || !start || start.id !== event.pointerId) return;
+    const dx = event.clientX - start.x;
+    const dy = event.clientY - start.y;
+    if (Math.abs(dx) >= 48 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      this.scrollToIndex(this.activeIndex + (dx < 0 ? 1 : -1));
+    }
+  };
+
+  private handlePointerCancel = () => { this.touchStart = undefined; };
+
   // ===================== [6] RENDER (Visual Template Only) =====================
 
   render() {
@@ -326,12 +422,18 @@ export class QCarousel {
         <div
           class={{
             'carousel-viewport': true,
+            'is-stacked': this.stacked,
             [`snap-${this.snapAlignment}`]: this.snapAlignment !== 'none'
           }}
           role="group"
           aria-roledescription="carousel"
           tabindex="0"
           aria-label="Carousel content"
+          style={{ '--q-carousel-transition-duration': `${Number.isFinite(this.transitionDuration) ? Math.max(0, this.transitionDuration) : 500}ms` }}
+          onKeyDown={this.handleKeyDown}
+          onPointerDown={this.handlePointerDown}
+          onPointerUp={this.handlePointerUp}
+          onPointerCancel={this.handlePointerCancel}
           onScroll={this.handleScroll}
           ref={this.setScrollContainerRef}
         >
