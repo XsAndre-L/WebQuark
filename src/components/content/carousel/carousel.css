@@ -166,3 +166,38 @@
   opacity: 1;
   width: calc(var(--q-carousel-indicator-size, 6px) * 2.5);
 }
+
+/* Overlay modes retain every slide in layout and use the tallest slide's height. */
+.carousel-viewport.is-stacked {
+  display: grid;
+  overflow: hidden;
+  gap: 0;
+  scroll-snap-type: none;
+  touch-action: pan-y pinch-zoom;
+  isolation: isolate;
+}
+
+:host([transition='crossfade']) ::slotted(*),
+:host([transition='instant']) ::slotted(*) {
+  grid-area: 1 / 1;
+  width: 100%;
+  min-width: 0;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+:host([transition='crossfade']) ::slotted(*) {
+  transition: opacity var(--q-carousel-transition-duration, 500ms) ease-in-out;
+}
+
+:host([transition='crossfade']) ::slotted([data-q-carousel-active='true']),
+:host([transition='instant']) ::slotted([data-q-carousel-active='true']) {
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host([transition='crossfade']) ::slotted(*) { transition: none; }
+}
