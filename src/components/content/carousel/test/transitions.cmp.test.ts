@@ -134,3 +134,30 @@ it.each(['open', 'closed'] as const)('preserves focus when nested inside an %s s
   await el.slideTo(2);
   expect(root.activeElement).toBe(outside);
 });
+
+it('groups extra controls below dots without treating the named slot as a slide', async () => {
+  const el = await create();
+  const counter = document.createElement('p');
+  counter.slot = 'controls-extra';
+  counter.textContent = '1 / 3';
+  el.append(counter);
+  await frame();
+  const controls = el.shadowRoot!.querySelector('[part="controls"]') as HTMLElement;
+  const slot = controls.querySelector('slot') as HTMLSlotElement;
+  expect(slot.assignedElements()).toEqual([counter]);
+  expect(el.shadowRoot!.querySelectorAll('.indicator-dot')).toHaveLength(3);
+  expect(counter.inert).toBe(false);
+  for (const transition of ['slide', 'crossfade', 'instant'] as const) {
+    el.transition = transition;
+    await frame();
+    expect(getComputedStyle(counter).opacity).toBe('1');
+    expect(getComputedStyle(counter).pointerEvents).not.toBe('none');
+  }
+  expect(counter.hasAttribute('data-q-carousel-active')).toBe(false);
+  el.showIndicators = false;
+  await frame();
+  expect(controls.hidden).toBe(false);
+  counter.remove();
+  await frame();
+  expect(controls.hidden).toBe(true);
+});

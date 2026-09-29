@@ -8,6 +8,8 @@ import { getCarouselEdgeState, getCarouselMetrics, getClosestCarouselIndex, reso
  * A carousel with sliding, crossfade or instant transitions and shared navigation.
  *
  * @slot - Carousel slide content.
+ * @slot controls-extra - Additional content below the slide indicators.
+ * @part controls - Container shared by indicators and additional controls.
  */
 @Component({
   tag: 'q-carousel',
@@ -30,6 +32,7 @@ export class QCarousel {
   /** Crossfade duration in milliseconds; native sliding keeps browser-controlled timing. */
   @Prop() transitionDuration: number = 500;
 
+  @State() hasExtraControls: boolean = false;
   @State() activeIndex: number = 0;
   @State() maxIndex: number = 0;
   @State() isScrollable: boolean = false;
@@ -395,6 +398,11 @@ export class QCarousel {
 
   private handlePointerCancel = () => { this.touchStart = undefined; };
 
+  private handleExtraControlsChange = (event: Event) => {
+    const slot = event.target as HTMLSlotElement;
+    this.hasExtraControls = slot.assignedElements().length > 0;
+  };
+
   // ===================== [6] RENDER (Visual Template Only) =====================
 
   render() {
@@ -455,20 +463,27 @@ export class QCarousel {
         )}
 
         {/* Carousel indicator dots */}
-        {this.showIndicators && this.isScrollable && this.maxIndex > 0 && (
-          <div class="carousel-indicators" aria-label="Carousel slide controls" onKeyDown={this.handleIndicatorKeyDown}>
-            {Array.from({ length: this.maxIndex + 1 }).map((_, idx) => (
-              <button
-                class={{ 'indicator-dot': true, 'is-active': idx === this.activeIndex }}
-                aria-current={idx === this.activeIndex ? 'true' : undefined}
-                onClick={() => this.scrollToIndex(idx)}
-                aria-label={`Go to slide ${idx + 1}`}
-                type="button"
-                tabindex={idx === this.activeIndex ? 0 : -1}
-              />
-            ))}
-          </div>
-        )}
+        <div
+          class="carousel-controls"
+          part="controls"
+          hidden={!(this.showIndicators && this.isScrollable && this.maxIndex > 0) && !this.hasExtraControls}
+        >
+          {this.showIndicators && this.isScrollable && this.maxIndex > 0 && (
+            <div class="carousel-indicators" aria-label="Carousel slide controls" onKeyDown={this.handleIndicatorKeyDown}>
+              {Array.from({ length: this.maxIndex + 1 }).map((_, idx) => (
+                <button
+                  class={{ 'indicator-dot': true, 'is-active': idx === this.activeIndex }}
+                  aria-current={idx === this.activeIndex ? 'true' : undefined}
+                  onClick={() => this.scrollToIndex(idx)}
+                  aria-label={`Go to slide ${idx + 1}`}
+                  type="button"
+                  tabindex={idx === this.activeIndex ? 0 : -1}
+                />
+              ))}
+            </div>
+          )}
+          <slot name="controls-extra" onSlotchange={this.handleExtraControlsChange} />
+        </div>
       </div>
     );
   }

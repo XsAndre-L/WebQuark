@@ -5177,9 +5177,9 @@ declare namespace LocalJSX {
     }
     interface QMediaAttributes {
         "src": string;
-        "alt": string;
         "kind": QMediaKind;
         "loading": QMediaLoading;
+        "alt": string;
     }
     interface QNavbarAttributes {
         "brand": string;

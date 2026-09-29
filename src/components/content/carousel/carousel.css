@@ -5,7 +5,7 @@
   position: relative;
 }
 
-::slotted(*) {
+::slotted(:not([slot='controls-extra'])) {
   box-sizing: border-box;
   flex: var(--q-carousel-item-flex, 0 0 auto);
   width: var(--q-carousel-item-width, auto);
@@ -122,17 +122,31 @@
   height: 20px;
 }
 
+/* Keep additional content with the native indicators; consumers can style the part. */
+.carousel-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--q-carousel-controls-gap, 0px);
+}
+
+.carousel-controls[hidden] {
+  display: none;
+}
+
 /* Indicator dots track */
 .carousel-indicators {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   gap: var(--q-carousel-indicator-gap, 8px);
-  margin-top: 16px;
+  margin-top: var(--q-carousel-indicator-margin-top, 16px);
   width: 100%;
 }
 
 .indicator-dot {
+  flex-shrink: 0;
   padding: 0;
   width: var(--q-carousel-indicator-size, 6px);
   height: var(--q-carousel-indicator-size, 6px);
@@ -177,8 +191,8 @@
   isolation: isolate;
 }
 
-:host([transition='crossfade']) ::slotted(*),
-:host([transition='instant']) ::slotted(*) {
+:host([transition='crossfade']) ::slotted(:not([slot='controls-extra'])),
+:host([transition='instant']) ::slotted(:not([slot='controls-extra'])) {
   grid-area: 1 / 1;
   width: 100%;
   min-width: 0;
@@ -187,7 +201,7 @@
   z-index: 0;
 }
 
-:host([transition='crossfade']) ::slotted(*) {
+:host([transition='crossfade']) ::slotted(:not([slot='controls-extra'])) {
   transition: opacity var(--q-carousel-transition-duration, 500ms) ease-in-out;
 }
 
@@ -199,5 +213,5 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :host([transition='crossfade']) ::slotted(*) { transition: none; }
+  :host([transition='crossfade']) ::slotted(:not([slot='controls-extra'])) { transition: none; }
 }

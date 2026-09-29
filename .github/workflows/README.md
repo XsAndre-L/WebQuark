@@ -5,7 +5,7 @@ WebQuark has one pull-request verification workflow and one publishing workflow.
 ## The developer flow
 
 1. Work on a feature branch and open a pull request into `dev`.
-2. The pull-request workflow builds all three packages and runs the focused tooling and unit suites.
+2. The pull-request workflow checks prop policy, builds all three packages, runs tooling/unit suites, then runs the carousel transition suite in Chromium, Firefox and WebKit.
 3. Merge the pull request into `dev`.
 4. The deploy workflow reads `.github/release.json`, finds the next available npm sequence, verifies the prepared packages, and publishes them together as `1.1.0-dev.1` only after every release check passes.
 5. The next merge into `dev` becomes `1.1.0-dev.2`, then `dev.3`, and so on.
@@ -33,7 +33,7 @@ A numeric prerelease identifier cannot contain a leading zero. The valid form is
 
 | Event | Result | npm dist-tag | Environment |
 |---|---|---|---|
-| Pull request into `dev` or `main` | Build plus tooling and unit tests | None | None |
+| Pull request into `dev` or `main` | Prop policy, build, tooling/unit and carousel browser tests | None | None |
 | Merge/push to `dev` | Next automatic `-dev.N` version | `dev` | `dev` |
 | Merge/push to `main` | Stable `nextVersion` | `latest` | `prod` |
 
@@ -49,7 +49,7 @@ npm install @webquark/core@latest @webquark/react@latest @webquark/angular@lates
 The release logic lives under `.github/scripts/publishing/`:
 
 - The root `packages:build` package script builds core, React, and Angular without running tests.
-- The root `pr:verify` package script builds the packages and adds tooling and unit tests; the pull-request workflow calls it for every targeted pull request.
+- The root `pr:verify` package script checks prop policy before building packages and running tooling and unit tests; the pull-request workflow calls it for every targeted pull request.
 - `prepare-release.ts` validates `.github/release.json`, calculates `-dev.N`, and aligns all package versions.
 - `verify-packages.ts` provides the complete release verification and is the publish workflow's final gate.
 - `publish-packages.ts` packs first, publishes in core/React/Angular order, prevents overwriting different npm contents, and applies the requested npm dist-tag.
@@ -102,3 +102,12 @@ gh variable set WEBQUARK_DEV_PIPELINE_ENABLED --body true
 ```
 
 To make dev publishing dormant again, set `WEBQUARK_DEV_PIPELINE_ENABLED` back to `false`.
+
+## Focused carousel browser checks
+
+After `pr:verify` has built the production loader, CI installs the browser binaries
+from the lockfile-pinned Playwright version and runs `bun run test:carousel:browsers`.
+The dedicated `carousel-browsers` Vitest project includes only the transition
+regression file; the existing all-component browser project remains Chromium-only.
+No second package build is needed. WebKit engine coverage is not proof of Safari
+on physical Apple hardware; physical touch-device checks remain separate.

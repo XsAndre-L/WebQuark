@@ -9,9 +9,11 @@ import type { QMediaKind, QMediaLoading } from './media.types';
 @Component({ tag: 'q-media', styleUrl: 'media.css', shadow: true })
 export class QMedia {
   @Prop() src: string = '';
-  @Prop() alt: string = '';
   @Prop({ reflect: true }) kind: QMediaKind = 'image';
+
   @Prop() loading: QMediaLoading = 'lazy';
+
+  @Prop() alt: string = '';
 
   render() {
     return <Host><slot /><slot name="fallback" /></Host>;
