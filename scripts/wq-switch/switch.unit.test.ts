@@ -6,6 +6,7 @@ import { spawnSync } from 'node:child_process';
 import { setup } from './commands/setup';
 import { build } from './commands/build';
 import { status } from './commands/status';
+import { check } from './commands/check';
 import { stage, installed } from './packages';
 import { activate, hasJournal, home, link, linkTarget, locked, readState, recover, restore, within } from './state';
 import { json, manifest, sourceFor, writeJson } from './config';
@@ -235,4 +236,46 @@ describe('wq-switch transactions', () => {
     expect(run(['run', 'wq-switch', 'status'])).toContain('Mode: NPM / UNMANAGED');
     expect(run(['run', 'wq-sandbox'])).toContain('sandbox launcher reached');
   }, 30000);
+});
+
+
+describe('local preflight diagnostics', () => {
+  it('reports actual snapshot version separately from preference without writing files', () => {
+    const { app, source } = fixture();
+    writeJson(join(source, 'package.json'), {
+      ...manifest(source), version: '2.0.0',
+      exports: { './native-content.css': './dist/webquark/native-content.css' },
+    });
+    put(join(source, 'dist/webquark/native-content.css'), 'body {}');
+    activate(app, stage(app, source));
+    const before = readFileSync(join(home(app), 'state.json'), 'utf8');
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {});
+    check(app);
+    const output = log.mock.calls.flat().join('\n');
+    expect(output).toContain('Mode: LOCAL');
+    expect(output).toContain('Preferred release: 1.0.0');
+    expect(output).toContain('@webquark/core@2.0.0');
+    expect(output).toContain('not a live source link');
+    expect(output).toContain('restart the consumer dev server');
+    expect(readFileSync(join(home(app), 'state.json'), 'utf8')).toBe(before);
+    expect(process.exitCode ?? 0).toBe(0);
+  });
+
+  it('reports a mixed installation even when the core stylesheet resolves', () => {
+    const { app, source } = fixture();
+    writeJson(join(source, 'package.json'), {
+      ...manifest(source), exports: { './native-content.css': './dist/webquark/native-content.css' },
+    });
+    put(join(source, 'dist/webquark/native-content.css'), 'body {}');
+    const state = stage(app, source);
+    activate(app, state);
+    const wrapper = state.entries.find(entry => entry.name === '@webquark/angular')!;
+    unlinkSync(wrapper.slot);
+    pkg(wrapper.slot, '@webquark/angular');
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {});
+    check(app);
+    expect(log.mock.calls.flat().join('\n')).toContain('Mode: MIXED');
+    expect(process.exitCode).toBe(1);
+    expect(linkTarget(state.entries[0].slot)).toBe(state.entries[0].target);
+  });
 });

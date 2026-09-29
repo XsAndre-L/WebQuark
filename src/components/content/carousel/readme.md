@@ -74,9 +74,17 @@ Type: `Promise<void>`
 
 ## Slots
 
-| Slot | Description             |
-| ---- | ----------------------- |
-|      | Carousel slide content. |
+| Slot               | Description                                    |
+| ------------------ | ---------------------------------------------- |
+|                    | Carousel slide content.                        |
+| `"controls-extra"` | Additional content below the slide indicators. |
+
+
+## Shadow Parts
+
+| Part         | Description                                             |
+| ------------ | ------------------------------------------------------- |
+| `"controls"` | Container shared by indicators and additional controls. |
 
 
 ----------------------------------------------

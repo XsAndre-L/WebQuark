@@ -1,6 +1,8 @@
 import { createRequire } from 'node:module';
 import { statSync } from 'node:fs';
 import { join } from 'node:path';
+import { status } from './status';
+import { hasJournal, readState } from '../state';
 
 /** Resolve from the consumer so this also checks the installed package's exports map. */
 export function check(root: string): void {
@@ -17,4 +19,6 @@ export function check(root: string): void {
     );
   }
   console.log('WebQuark native-content.css export and file are available.');
+  // Reuse the status command's local-state checks; published installs need no setup.
+  if (readState(root) || hasJournal(root)) status(root);
 }

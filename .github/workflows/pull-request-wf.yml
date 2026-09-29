@@ -47,3 +47,9 @@ jobs:
 
       - name: Build and run focused tests
         run: bun run pr:verify
+
+      - name: Install carousel test browsers
+        run: bunx playwright install --with-deps chromium firefox webkit
+
+      - name: Check carousel transitions across browser engines
+        run: bun run test:carousel:browsers

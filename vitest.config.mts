@@ -23,6 +23,20 @@ export default defineVitestConfig({
       },
       {
         plugins: [stencilVitestPlugin()],
+        optimizeDeps: { include: ['@stencil/core/internal/client', 'leaflet'] },
+        test: {
+          name: 'carousel-browsers',
+          include: ['src/components/content/carousel/test/transitions.cmp.test.ts'],
+          browser: {
+            enabled: true,
+            provider: playwright(),
+            headless: true,
+            instances: [{ browser: 'chromium' }, { browser: 'firefox' }, { browser: 'webkit' }],
+          },
+        },
+      },
+      {
+        plugins: [stencilVitestPlugin()],
         optimizeDeps: {
           include: ['@stencil/core/internal/client', 'leaflet'],
         },
