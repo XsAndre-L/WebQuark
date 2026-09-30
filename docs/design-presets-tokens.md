@@ -76,9 +76,9 @@ Generated from `src/theme/tokens.ts`. Compact preserves existing defaults; new s
 | `--q-heading-display-size` | `var(--q-font-size-lg)` | `clamp(2.5rem, 1.75rem + 3vw, 4rem)` |
 | `--q-heading-display-line-height` | `1.3` | `1.1` |
 | `--q-heading-1-size` | `var(--q-font-size-lg)` | `clamp(27px, 1.5rem + 2vw, 36px)` |
-| `--q-heading-2-size` | `var(--q-font-size-lg)` | `clamp(1.75rem, 1.375rem + 1.5vw, 2.5rem)` |
-| `--q-heading-3-size` | `var(--q-font-size-lg)` | `clamp(1.5rem, 1.25rem + 1vw, 2rem)` |
-| `--q-heading-4-size` | `var(--q-font-size-lg)` | `1.375rem` |
+| `--q-heading-2-size` | `var(--q-font-size-lg)` | `clamp(1.4rem, 1.1rem + 1.2vw, 2rem)` |
+| `--q-heading-3-size` | `var(--q-font-size-lg)` | `clamp(1.265625rem, 1.0546875rem + 0.84375vw, 1.6875rem)` |
+| `--q-heading-4-size` | `var(--q-font-size-lg)` | `1.25rem` |
 | `--q-heading-5-size` | `var(--q-font-size-lg)` | `1.25rem` |
 | `--q-heading-6-size` | `var(--q-font-size-lg)` | `1.125rem` |
 | `--q-heading-1-line-height` | `1.3` | `1.2` |
