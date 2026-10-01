@@ -8,8 +8,9 @@ import { build } from './commands/build';
 import { status } from './commands/status';
 import { check } from './commands/check';
 import { stage, installed } from './packages';
-import { activate, hasJournal, home, link, linkTarget, locked, readState, recover, restore, within } from './state';
+import { activate, hasJournal, link, linkTarget, locked, readState, recover, restore, within } from './state';
 import { json, manifest, sourceFor, writeJson } from './config';
+import { projectPaths } from './paths';
 
 const temporary: string[] = [];
 afterEach(() => {
@@ -66,6 +67,8 @@ describe('wq-switch transactions', () => {
       const before = readFileSync(join(app, 'package.json'), 'utf8');
       const original = installed('@webquark/core', app);
       const first = stage(app, source); activate(app, first);
+      expect(within(projectPaths(app).packages, first.generation)).toBe(true);
+      expect(existsSync(projectPaths(app).state)).toBe(true);
       expect(installed(framework, installed(`@webquark/${wrapper}`, app))).toBe(installed(framework, app));
       expect(installed('@webquark/core', installed(`@webquark/${wrapper}`, app))).toBe(installed('@webquark/core', app));
       const second = stage(app, source); activate(app, second);
@@ -132,7 +135,7 @@ describe('wq-switch transactions', () => {
     const previous = stage(app, source); activate(app, previous);
     const next = stage(app, source);
     const operations = next.entries.map(e => ({ slot: e.slot, before: previous.entries.find(old => old.name === e.name)!.target, after: e.target }));
-    writeJson(join(home(app), 'journal.json'), { previous, next, operations });
+    writeJson(projectPaths(app).journal, { previous, next, operations });
     unlinkSync(next.entries[0].slot); link(next.entries[0].target, next.entries[0].slot);
     recover(app);
     expect(installed('@webquark/core', app)).toBe(previous.entries[0].target);
@@ -142,7 +145,7 @@ describe('wq-switch transactions', () => {
     const { app, source } = fixture();
     const next = stage(app, source);
     const operations = next.entries.map(e => ({ slot: e.slot, before: null, after: e.target, move: e.backup }));
-    writeJson(join(home(app), 'journal.json'), { previous: null, next, operations });
+    writeJson(projectPaths(app).journal, { previous: null, next, operations });
     renameSync(next.entries[0].slot, next.entries[0].backup);
     recover(app);
     expect(hasJournal(app)).toBe(false);
@@ -153,7 +156,7 @@ describe('wq-switch transactions', () => {
     const { app, source } = fixture();
     const previous = stage(app, source); activate(app, previous);
     const operations = previous.entries.map(e => ({ slot: e.slot, before: e.target, after: null }));
-    writeJson(join(home(app), 'journal.json'), { previous, next: null, operations });
+    writeJson(projectPaths(app).journal, { previous, next: null, operations });
     const first = previous.entries[0]; unlinkSync(first.slot); renameSync(first.backup, first.slot);
     recover(app);
     expect(installed('@webquark/core', app)).toBe(first.target);
@@ -180,42 +183,42 @@ describe('wq-switch transactions', () => {
   });
   it('creates a blank source, captures the declared release, and preserves settings on repeat setup', () => {
     const { app } = fixture();
-    unlinkSync(join(app, '.webquark.json'));
+    unlinkSync(projectPaths(app).config);
     const pkg = manifest(app); pkg.dependencies!['@webquark/core'] = '^1.2.3';
     writeJson(join(app, 'package.json'), pkg);
     setup(app);
-    const config = json<any>(join(app, '.webquark.json'));
+    const config = json<any>(projectPaths(app).config);
     expect(config).toEqual({ 'wq-switch': { version: 1, source: '', preferredVersion: '^1.2.3' } });
     expect(() => sourceFor(app)).toThrow('Set source');
     expect(manifest(app).scripts).toMatchObject({ 'wq-sandbox': 'wq-sandbox', 'wq-switch': 'wq-switch' });
-    config['wq-switch'].preferredVersion = '1.2.4'; writeJson(join(app, '.webquark.json'), config);
+    config['wq-switch'].preferredVersion = '1.2.4'; writeJson(projectPaths(app).config, config);
     setup(app);
-    expect(json<any>(join(app, '.webquark.json'))['wq-switch'].preferredVersion).toBe('1.2.4');
+    expect(json<any>(projectPaths(app).config)['wq-switch'].preferredVersion).toBe('1.2.4');
   });
   it('adds switcher settings without losing other WebQuark settings', () => {
     const { app, source } = fixture();
-    const previous = json<any>(join(app, '.webquark.json'))['wq-switch'];
-    writeJson(join(app, '.webquark.json'), { sandbox: { port: 4444 } });
+    const previous = json<any>(projectPaths(app).config)['wq-switch'];
+    writeJson(projectPaths(app).config, { sandbox: { port: 4444 } });
     expect(() => sourceFor(app)).toThrow('First run');
     setup(app, source);
-    expect(json<any>(join(app, '.webquark.json'))).toEqual({ sandbox: { port: 4444 }, 'wq-switch': previous });
-    expect(readFileSync(join(app, '.gitignore'), 'utf8')).toContain('/.webquark.json');
+    expect(json<any>(projectPaths(app).config)).toEqual({ sandbox: { port: 4444 }, 'wq-switch': previous });
+    expect(readFileSync(join(app, '.gitignore'), 'utf8')).toContain('/.webquark/');
     setup(app);
-    expect(json<any>(join(app, '.webquark.json')).sandbox).toEqual({ port: 4444 });
+    expect(json<any>(projectPaths(app).config).sandbox).toEqual({ port: 4444 });
   });
   it.each([null, [], { 'wq-switch': null }, { 'wq-switch': { version: 2, source: '' } }])('rejects malformed shared configuration without overwriting it: %j', invalid => {
     const { app } = fixture();
-    writeJson(join(app, '.webquark.json'), invalid);
-    const before = readFileSync(join(app, '.webquark.json'), 'utf8');
+    writeJson(projectPaths(app).config, invalid);
+    const before = readFileSync(projectPaths(app).config, 'utf8');
     expect(() => setup(app)).toThrow('Invalid');
-    expect(readFileSync(join(app, '.webquark.json'), 'utf8')).toBe(before);
+    expect(readFileSync(projectPaths(app).config, 'utf8')).toBe(before);
   });
   it('does not overwrite custom scripts or write a partial setup for a script conflict', () => {
     const { app } = fixture();
     const pkg = manifest(app); pkg.scripts!['wq-switch'] = 'custom-command'; writeJson(join(app, 'package.json'), pkg);
-    const config = readFileSync(join(app, '.webquark.json'), 'utf8');
+    const config = readFileSync(projectPaths(app).config, 'utf8');
     expect(() => setup(app)).toThrow('custom wq-switch');
-    expect(readFileSync(join(app, '.webquark.json'), 'utf8')).toBe(config);
+    expect(readFileSync(projectPaths(app).config, 'utf8')).toBe(config);
     expect(manifest(app).scripts!['wq-switch']).toBe('custom-command');
   });
   it('runs installed wq-setup and generated short scripts through Bun', () => {
@@ -233,11 +236,53 @@ describe('wq-switch transactions', () => {
     };
     run(['install', '--ignore-scripts', '--no-save']);
     run(['run', 'wq-setup']);
+    expect(existsSync(projectPaths(app).config)).toBe(true);
     expect(run(['run', 'wq-switch', 'status'])).toContain('Mode: NPM / UNMANAGED');
     expect(run(['run', 'wq-sandbox'])).toContain('sandbox launcher reached');
   }, 30000);
 });
 
+describe('WebQuark consumer paths', () => {
+  it('creates a single ignored configuration directory and resolves source from the consumer root', () => {
+    const { app, source } = fixture();
+    const paths = projectPaths(app);
+    expect(paths.config).toBe(join(app, '.webquark', '.webquark.json'));
+    expect(paths.packages).toBe(join(app, '.webquark', 'generated', 'packages'));
+    expect(paths.state).toBe(join(app, '.webquark', 'state', 'state.json'));
+    expect(paths.journal).toBe(join(app, '.webquark', 'state', 'journal.json'));
+    expect(readFileSync(join(app, '.gitignore'), 'utf8')).toContain('/.webquark/');
+    const document = {
+      sandbox: { port: 4444 },
+      'wq-switch': { version: 1, source: relative(app, source), preferredVersion: '^9.1.0' },
+    };
+    writeJson(paths.config, document);
+    setup(app);
+    expect(json(paths.config)).toEqual(document);
+    expect(sourceFor(app)).toBe(source);
+  });
+
+  it('rejects snapshot state outside generated packages before changing connections', () => {
+    const { app, source } = fixture();
+    const state = stage(app, source);
+    activate(app, state);
+    const target = state.entries[0].target;
+    state.generation = source;
+    writeJson(projectPaths(app).state, state);
+    expect(() => restore(app)).toThrow('Invalid switch generation path');
+    expect(linkTarget(state.entries[0].slot)).toBe(target);
+  });
+
+  it('rejects targets outside their snapshot generation before changing connections', () => {
+    const { app, source } = fixture();
+    const state = stage(app, source);
+    activate(app, state);
+    const target = state.entries[0].target;
+    state.entries[0].target = source;
+    writeJson(projectPaths(app).state, state);
+    expect(() => restore(app)).toThrow('Invalid switch state paths');
+    expect(linkTarget(state.entries[0].slot)).toBe(target);
+  });
+});
 
 describe('local preflight diagnostics', () => {
   it('reports actual snapshot version separately from preference without writing files', () => {
@@ -248,7 +293,7 @@ describe('local preflight diagnostics', () => {
     });
     put(join(source, 'dist/webquark/native-content.css'), 'body {}');
     activate(app, stage(app, source));
-    const before = readFileSync(join(home(app), 'state.json'), 'utf8');
+    const before = readFileSync(projectPaths(app).state, 'utf8');
     const log = vi.spyOn(console, 'log').mockImplementation(() => {});
     check(app);
     const output = log.mock.calls.flat().join('\n');
@@ -257,7 +302,7 @@ describe('local preflight diagnostics', () => {
     expect(output).toContain('@webquark/core@2.0.0');
     expect(output).toContain('not a live source link');
     expect(output).toContain('restart the consumer dev server');
-    expect(readFileSync(join(home(app), 'state.json'), 'utf8')).toBe(before);
+    expect(readFileSync(projectPaths(app).state, 'utf8')).toBe(before);
     expect(process.exitCode ?? 0).toBe(0);
   });
 
