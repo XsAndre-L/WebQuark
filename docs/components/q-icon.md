@@ -108,6 +108,19 @@ Use a local asset path when registered data is not appropriate.
 
 Place the SVG below at /assets/icons/check.svg in your application public assets. This fetches an SVG in non-strict mode.
 
+### Load an image with a query and fragment
+
+Use a raster asset URL without losing cache parameters or its fragment.
+
+![Local PNG rendered by q-icon from a query-bearing image URL.](./assets/q-icon-query-asset.png)
+
+```html
+<q-icon library="local" local-path="/assets/icons/"
+  name="check-preview.png?v=2#preview" label="Saved" size="64"></q-icon>
+```
+
+Copy the supplied [preview PNG](../../src/assets/icons/check-preview.png) to `/assets/icons/check-preview.png` in your application's public assets. The pathname selects the native image renderer; the complete URL is retained. This example uses the same Quick start registration and requires non-strict URL loading. The image keeps its original color.
+
 ## Behavior & accessibility
 
 ### State and interaction
@@ -122,7 +135,13 @@ A nonblank trimmed label sets role="img", aria-label, and aria-hidden="false" on
 
 ### Limitations and compatibility
 
-Remote SVG requests depend on network/CORS. SVG sanitization removes certain unsafe markup; use trusted assets and do not treat it as a guarantee for arbitrary untrusted files. fetchTimeout applies only to fetched SVG when AbortController is available, not binary image loading. Binary URLs are recognized only when they end in png/jpg/jpeg/webp/gif/ico; query strings can prevent recognition.
+Remote SVG requests depend on network/CORS and a streaming response. Fetched XML and registered definitions use the same strict SVG policy. Supported nodes are paths, circles, ellipses, lines, rectangles, polygons, polylines, groups, defs, gradients/stops, masks, clip paths, symbols and local use references. Geometry, bounded presentation attributes, and inert data/ARIA attributes are supported. Inline styles, event attributes, navigation, animation, foreign content and external SVG resources are rejected. References must resolve within that icon, without cycles or excessive expansion. Malformed XML, unsupported namespaces/content, or unavailable browser XML parsing produce the existing error fallback; no regex recovery is used. Unqualified SVG XML is normalized to the SVG namespace.
+
+IDs, including a root SVG ID, must be nonempty, valid local-fragment identifiers and unique within the icon. A root ID is retained, but resource references may target only supported child elements; references to the SVG root are rejected to prevent recursive root expansion.
+
+Each icon permits at most 512 SVG child elements, depth 16, 64 attributes per element, 64 KiB per attribute, 128 KiB total attribute values, and 4096 nodes after local-reference expansion (depth 32). Fetched SVG is capped at 128 KiB of UTF-8 response bytes; an oversized declared or streamed body is canceled. Registered icons remain synchronous and perform no I/O or DOM parsing. Non-browser module import remains supported; fetched inline SVG fails closed without DOMParser/XMLSerializer. Installed Chrome coverage does not establish CEF certification.
+
+Icon URLs support HTTP(S), file/blob assets, relative paths and SVG image data URLs, subject to the browser's loading permissions. Other schemes are rejected before loading. Binary assets are classified from the URL pathname, case-insensitively, for png/jpg/jpeg/webp/gif/ico; the original query and fragment remain intact. For example, after placing your PNG at `/assets/icons/logo.PNG`, `<q-icon library="local" name="logo.PNG?v=2#preview" label="Logo"></q-icon>` loads that complete URL as an image. Local names without an extension infer `.svg` before query/fragment, so `name="check?v=2#mark"` loads `/assets/icons/check.svg?v=2#mark`. fetchTimeout applies to fetched SVG when AbortController is available, not binary image loading.
 
 ## Styling
 
@@ -222,6 +241,8 @@ This component emits no public events.
 This component exposes no public methods.
 
 #### Registry and configuration
+
+Registered child-node attributes may include the own enumerable string `key` metadata supplied by `@lucide/icons`. It is discarded before SVG validation/rendering and still counts against attribute and UTF-8 byte budgets. Function/accessor metadata is rejected. This exception does not apply to root SVG attributes or fetched XML: `key` remains unsupported there, and all emitted SVG attributes use the strict allowlist.
 
 These are package utilities, not methods on an element. Import them from `@webquark/core`.
 

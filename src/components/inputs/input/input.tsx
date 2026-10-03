@@ -1,5 +1,7 @@
+import { isFieldDisabled, syncFieldHost, syncNativeAttribute } from '../../../utils/form-field-state';
+import { registerFormField } from '../../../utils/form-field-adapter';
 import { fieldFeedback, feedbackStyle } from '../../shared/field';
-import { Component, Prop, State, Event, EventEmitter, Method, AttachInternals, Watch, h } from '@stencil/core';
+import { Component, Prop, State, Event, EventEmitter, Method, Element, AttachInternals, Watch, h } from '@stencil/core';
 
 import { syncNativeControlValidity } from '../../../utils/form-control-validity';
 import type { QInputSize, QInputType } from './input.types';
@@ -26,6 +28,8 @@ import { hasAssignedSlotContent } from './input.utils';
 })
 export class QInput {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
+  @Element() el!: HTMLElement;
+
   @Prop({ mutable: true }) value: string = "";
   @Prop() placeholder: string = "";
   @Prop() label?: string;
@@ -80,15 +84,32 @@ export class QInput {
 
   // ========================= [2] INTERNAL STATE & REFS =========================
 
+  @State() private disabledState = false;
+
+  private get isDisabled(): boolean {
+    return isFieldDisabled(this.el, this.disabled);
+  }
+
   private initialValue: string = "";
 
   // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
   @Watch('value')
-  watchValue(newValue: string) {
-    if (this.internals && typeof this.internals.setFormValue === 'function') {
-      this.internals.setFormValue(newValue);
-    }
+  watchValue() {
+    this.syncValidity();
+  }
+
+  @Watch('disabled')
+  @Watch('required')
+  @Watch('name')
+  @Watch('error')
+  @Watch('errorMessage')
+  @Watch('type')
+  @Watch('min')
+  @Watch('max')
+  @Watch('step')
+  watchConstraints() {
+    this.syncValidity();
   }
 
   componentWillLoad() {
@@ -98,15 +119,34 @@ export class QInput {
     }
   }
 
+  formDisabledCallback() {
+    this.syncValidity();
+  }
+
+  componentDidLoad() {
+    registerFormField(this.el, {
+      kind: 'text',
+      owner: () => this.internals?.form ?? null,
+      active: () => true,
+      value: () => this.value,
+      assign: value => { this.value = value as string; },
+      reconcile: () => {
+        if (this.inputEl && this.inputEl.value !== this.value) this.inputEl.value = this.value;
+        this.internals?.setFormValue?.(this.value);
+        this.syncValidity();
+      },
+      reset: () => this.formResetCallback(),
+      validate: report => report ? this.internals?.reportValidity?.() ?? true : this.internals?.checkValidity?.() ?? true,
+    });
+  }
+
   componentDidRender() {
     this.syncValidity();
   }
 
   formResetCallback() {
     this.value = this.initialValue;
-    if (this.internals && typeof this.internals.setFormValue === 'function') {
-      this.internals.setFormValue(this.value);
-    }
+    this.syncValidity();
   }
 
   // ============================ [4] EXPOSED METHODS ============================
@@ -156,12 +196,24 @@ export class QInput {
   };
 
   private syncValidity(): void {
+    const disabled = syncFieldHost(this.el, this.disabled, this.name, this.required);
+    if (this.disabledState !== disabled) this.disabledState = disabled;
     if (!this.inputEl || !this.internals) return;
+    this.inputEl.disabled = disabled;
+    this.inputEl.required = this.required;
+    this.inputEl.readOnly = this.el.hasAttribute('readonly');
+    this.inputEl.name = this.name ?? '';
+    this.inputEl.type = this.type === 'password' && this.passwordVisible ? 'text' : this.type;
+    syncNativeAttribute(this.inputEl, 'min', this.min);
+    syncNativeAttribute(this.inputEl, 'max', this.max);
+    syncNativeAttribute(this.inputEl, 'step', this.step);
+    if (this.inputEl.value !== this.value) this.inputEl.value = this.value;
+    this.internals.setFormValue?.(disabled ? null : this.value);
 
     syncNativeControlValidity({
       internals: this.internals,
       control: this.inputEl,
-      disabled: this.disabled,
+      disabled: this.isDisabled,
       customError: this.error || this.errorMessage,
     });
   }
@@ -204,7 +256,7 @@ export class QInput {
   }
 
   private stepValue(direction: 1 | -1) {
-    if (this.disabled) return;
+    if (this.isDisabled) return;
 
     const stepVal = (this.step !== undefined && this.step !== null) ? this.step : 1;
     const newValue = this.clampNumericValue(this.resolveNumericBase() + (stepVal * direction));
@@ -254,11 +306,12 @@ export class QInput {
   };
 
   private handleClick = (ev: MouseEvent) => {
-    if (this.disabled) return;
+    if (this.isDisabled) return;
     this.qClick.emit(ev);
   };
 
-  private handleClear = () => {
+  private handleClear = (event?: Event) => {
+    if (event && this.isDisabled) return;
     this.value = "";
     this.qInput.emit(this.value);
     this.qChange.emit(this.value);
@@ -270,7 +323,7 @@ export class QInput {
   private handlePasswordToggle = (ev: MouseEvent) => {
     ev.preventDefault();
     ev.stopPropagation();
-    if (this.disabled || this.type !== 'password') return;
+    if (this.isDisabled || this.type !== 'password') return;
 
     const selectionStart = this.inputEl?.selectionStart ?? null;
     const selectionEnd = this.inputEl?.selectionEnd ?? null;
@@ -287,7 +340,7 @@ export class QInput {
   };
 
   private handleKeyDown = (ev: KeyboardEvent) => {
-    if (this.type !== 'number' || this.disabled) return;
+    if (this.type !== 'number' || this.isDisabled) return;
 
     if (ev.key === 'ArrowUp') {
       ev.preventDefault();
@@ -303,8 +356,8 @@ export class QInput {
   render() {
     const hasError = !!(this.error || this.errorMessage);
     const displayError = this.error || this.errorMessage;
-    const showClearBtn = this.clearable && !this.disabled && this.value.length > 0;
-    const showPasswordToggle = this.type === 'password' && !this.disabled;
+    const showClearBtn = this.clearable && !this.isDisabled && this.value.length > 0;
+    const showPasswordToggle = this.type === 'password' && !this.isDisabled;
     const inputType: QInputType = showPasswordToggle && this.passwordVisible ? 'text' : this.type;
 
     const showSuffixContainer = this.hasSuffix || showClearBtn || showPasswordToggle;
@@ -319,7 +372,7 @@ export class QInput {
         style={feedbackStyle(this.reserveFeedback)}
         class={{
           'input-wrapper': true,
-          'is-disabled': this.disabled,
+          'is-disabled': this.isDisabled,
           'has-error': hasError,
           [`size-${this.size}`]: true
         }}
@@ -357,7 +410,7 @@ export class QInput {
             name={this.name}
             value={this.value}
             placeholder={this.placeholder}
-            disabled={this.disabled}
+            disabled={this.isDisabled}
             required={this.required}
             min={this.min}
             max={this.max}
@@ -377,7 +430,7 @@ export class QInput {
             aria-label={ariaLabel}
           />
 
-          {this.type === 'number' && !this.disabled && (
+          {this.type === 'number' && !this.isDisabled && (
             <div class="input-spinners" part="spinners">
               <button class="spinner-btn spinner-up" type="button" onClick={this.handleIncrement} disabled={isMaxDisabled} aria-label="Increase value">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">

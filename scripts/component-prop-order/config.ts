@@ -253,6 +253,7 @@ export const DEFAULT_CLASSIFICATIONS: readonly ClassificationEntry[] = [
       'brandHref',
       'download',
       'enctype',
+      'form', 'formAction', 'formMethod', 'formEnctype', 'formTarget', 'formNoValidate',
       'googleApiKey',
       'googleMapType',
       'href',
@@ -312,7 +313,7 @@ export const DEFAULT_PROP_ORDER_CONFIG: PropOrderConfig = {
   clusters: [
     { id: 'action-navigation', scope: 'withActionProps', props: ['href', 'rel', 'download'] },
     { id: 'button-icon-accessibility', scope: 'q-button', props: ['icon', 'iconOnly', 'ariaLabel'] },
-    { id: 'button-navigation', scope: 'q-button', props: ['href', 'target', 'rel', 'download', 'type'] },
+    { id: 'button-navigation', scope: 'q-button', props: ['href', 'target', 'rel', 'download', 'type', 'name', 'form', 'formAction', 'formMethod', 'formEnctype', 'formTarget', 'formNoValidate'] },
     { id: 'chip-navigation', scope: 'q-chip', props: ['href', 'target', 'rel', 'download'] },
     { id: 'chip-interaction', scope: 'q-chip', props: ['clickable', 'removable'] },
     {

@@ -13,6 +13,8 @@ export interface QFormSubmitDetail {
   formData: FormData;
   form: HTMLFormElement;
   originalEvent: Event;
+  /** The author control, or null for submission without a submitter. */
+  submitter?: HTMLElement | null;
 }
 
 export interface QFormResetDetail {

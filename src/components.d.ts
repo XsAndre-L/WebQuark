@@ -11,6 +11,7 @@ import { QAvatarShape, QAvatarSize } from "./components/media/avatar/avatar.type
 import { QBannerAlignment, QBannerHeight } from "./components/content/banner/banner.types";
 import { QIconColor, QIconDefinition, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
 import { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
+import { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/inputs/form/form.types";
 import { QControlSize, QSpace, QSurface } from "./theme/tokens";
 import { QCardElevation } from "./components/content/card/card.types";
 import { QCarouselSlideChangeDetail, QCarouselSnapAlignment, QCarouselTransition } from "./components/content/carousel/carousel.types";
@@ -19,7 +20,6 @@ import { QConversationBubbleVariant } from "./components/communication/conversat
 import { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
 import { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
 import { DropdownOptionInput, Option, QDropdownPlacement, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
-import { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/inputs/form/form.types";
 import { QInputSize, QInputType } from "./components/inputs/input/input.types";
 import { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
 import { QMapBoundsInput, QMapClickDetail, QMapClusterSelectDetail, QMapErrorDetail, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapMarkerVisibilityResult, QMapProvider, QMapRasterTileLoadingPolicy, QMapStatusChangeDetail, QMapViewportRect } from "./components/data-display/map/map.types";
@@ -49,6 +49,7 @@ export { QAvatarShape, QAvatarSize } from "./components/media/avatar/avatar.type
 export { QBannerAlignment, QBannerHeight } from "./components/content/banner/banner.types";
 export { QIconColor, QIconDefinition, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
 export { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
+export { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/inputs/form/form.types";
 export { QControlSize, QSpace, QSurface } from "./theme/tokens";
 export { QCardElevation } from "./components/content/card/card.types";
 export { QCarouselSlideChangeDetail, QCarouselSnapAlignment, QCarouselTransition } from "./components/content/carousel/carousel.types";
@@ -57,7 +58,6 @@ export { QConversationBubbleVariant } from "./components/communication/conversat
 export { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
 export { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
 export { DropdownOptionInput, Option, QDropdownPlacement, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
-export { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/inputs/form/form.types";
 export { QInputSize, QInputType } from "./components/inputs/input/input.types";
 export { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
 export { QMapBoundsInput, QMapClickDetail, QMapClusterSelectDetail, QMapErrorDetail, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapMarkerVisibilityResult, QMapProvider, QMapRasterTileLoadingPolicy, QMapStatusChangeDetail, QMapViewportRect } from "./components/data-display/map/map.types";
@@ -186,6 +186,31 @@ export namespace Components {
          */
         "expand": boolean;
         /**
+          * Explicit native form ID in this tree; unresolved IDs do not fall back.
+         */
+        "form"?: string;
+        /**
+          * Overrides the owning form's action for this submission.
+         */
+        "formAction"?: string;
+        /**
+          * Overrides the owning form's encoding for this submission.
+         */
+        "formEnctype"?: QFormEnctype;
+        /**
+          * Overrides the owning form's method for this submission.
+         */
+        "formMethod"?: QFormMethod;
+        /**
+          * Skips validation for this submitter while retaining cancellation and collection.
+          * @default false
+         */
+        "formNoValidate": boolean;
+        /**
+          * Overrides the owning form's browsing context for this submission.
+         */
+        "formTarget"?: string;
+        /**
           * Destination used when the component operates as a link.
          */
         "href"?: string;
@@ -207,6 +232,10 @@ export namespace Components {
          */
         "loading": boolean;
         /**
+          * Successful submission name when this button is the submitter.
+         */
+        "name"?: string;
+        /**
           * Defaults to `noopener noreferrer` when `target="_blank"`.
          */
         "rel"?: string;
@@ -225,6 +254,11 @@ export namespace Components {
           * @default 'button'
          */
         "type": QButtonType;
+        /**
+          * Successful submission value when this button is the submitter.
+          * @default ''
+         */
+        "value": string;
         /**
           * @default 'primary'
          */
@@ -676,7 +710,7 @@ export namespace Components {
     }
     /**
      * Form wrapper that bridges slotted WebQuark controls to a native form element.
-     * Named controls in the light DOM and assigned slots participate in validation,
+     * Supported controls in the light DOM and native associations participate in validation,
      * value collection, reset, and `FormData`. Controls hidden inside a
      * consumer-owned nested shadow root are outside this explicit boundary.
      */
@@ -691,6 +725,10 @@ export namespace Components {
           * @default 'on'
          */
         "autocomplete": QFormAutocomplete;
+        /**
+          * Checks current owned fields without displaying validation messages.
+         */
+        "checkValidity": () => Promise<boolean>;
         /**
           * @default 'application/x-www-form-urlencoded'
          */
@@ -725,6 +763,10 @@ export namespace Components {
           * @default true
          */
         "preventDefault": boolean;
+        /**
+          * Reports current owned field constraints and returns aggregate validity.
+         */
+        "reportValidity": () => Promise<boolean>;
         "reserveFeedback"?: boolean;
         /**
           * Resets the native form and associated controls.
@@ -2367,7 +2409,7 @@ declare global {
     }
     /**
      * Form wrapper that bridges slotted WebQuark controls to a native form element.
-     * Named controls in the light DOM and assigned slots participate in validation,
+     * Supported controls in the light DOM and native associations participate in validation,
      * value collection, reset, and `FormData`. Controls hidden inside a
      * consumer-owned nested shadow root are outside this explicit boundary.
      */
@@ -3023,6 +3065,31 @@ declare namespace LocalJSX {
          */
         "expand"?: boolean;
         /**
+          * Explicit native form ID in this tree; unresolved IDs do not fall back.
+         */
+        "form"?: string;
+        /**
+          * Overrides the owning form's action for this submission.
+         */
+        "formAction"?: string;
+        /**
+          * Overrides the owning form's encoding for this submission.
+         */
+        "formEnctype"?: QFormEnctype;
+        /**
+          * Overrides the owning form's method for this submission.
+         */
+        "formMethod"?: QFormMethod;
+        /**
+          * Skips validation for this submitter while retaining cancellation and collection.
+          * @default false
+         */
+        "formNoValidate"?: boolean;
+        /**
+          * Overrides the owning form's browsing context for this submission.
+         */
+        "formTarget"?: string;
+        /**
           * Destination used when the component operates as a link.
          */
         "href"?: string;
@@ -3043,6 +3110,10 @@ declare namespace LocalJSX {
           * @default false
          */
         "loading"?: boolean;
+        /**
+          * Successful submission name when this button is the submitter.
+         */
+        "name"?: string;
         "onQBlur"?: (event: QButtonCustomEvent<FocusEvent>) => void;
         /**
           * Emitted on activation unless disabled or loading.
@@ -3068,6 +3139,11 @@ declare namespace LocalJSX {
           * @default 'button'
          */
         "type"?: QButtonType;
+        /**
+          * Successful submission value when this button is the submitter.
+          * @default ''
+         */
+        "value"?: string;
         /**
           * @default 'primary'
          */
@@ -3546,7 +3622,7 @@ declare namespace LocalJSX {
     }
     /**
      * Form wrapper that bridges slotted WebQuark controls to a native form element.
-     * Named controls in the light DOM and assigned slots participate in validation,
+     * Supported controls in the light DOM and native associations participate in validation,
      * value collection, reset, and `FormData`. Controls hidden inside a
      * consumer-owned nested shadow root are outside this explicit boundary.
      */
@@ -4964,6 +5040,7 @@ declare namespace LocalJSX {
         "icon": QIconName;
         "iconOnly": boolean;
         "ariaLabel": string | null;
+        "value": string;
         "variant": QButtonVariant;
         "size": QButtonSize;
         "shape": QButtonShape;
@@ -4972,6 +5049,13 @@ declare namespace LocalJSX {
         "loading": boolean;
         "target": string;
         "type": QButtonType;
+        "name": string;
+        "form": string;
+        "formAction": string;
+        "formMethod": QFormMethod;
+        "formEnctype": QFormEnctype;
+        "formTarget": string;
+        "formNoValidate": boolean;
     }
     interface QCardAttributes {
         "surface": QSurface;
@@ -5507,7 +5591,7 @@ declare module "@stencil/core" {
             "q-dropdown": LocalJSX.IntrinsicElements["q-dropdown"] & JSXBase.HTMLAttributes<HTMLQDropdownElement>;
             /**
              * Form wrapper that bridges slotted WebQuark controls to a native form element.
-             * Named controls in the light DOM and assigned slots participate in validation,
+             * Supported controls in the light DOM and native associations participate in validation,
              * value collection, reset, and `FormData`. Controls hidden inside a
              * consumer-owned nested shadow root are outside this explicit boundary.
              */

@@ -103,7 +103,14 @@ Omitted `reserveFeedback` inherits the enclosing form's setting, falling back to
 
 ### Forms
 
-With name, checked contributes the string `true` to native FormData and unchecked contributes no entry. Reset restores checked captured on first load. Required unchecked controls fail with valueMissing; disabled controls are valid. `error` changes visual/ARIA messaging but does not create customError validity. [q-form](./q-form.md) represents a named toggle as a Boolean in its values object, including false.
+Native reset and q-form reset actions restore this field's initial value captured at first initialization. Later assignments, movement between forms and reconnecting preserve that default; reset is silent. q-form cancellation prevents restoration. Native form ownership takes precedence over a logical wrapper.
+
+Explicit disabled state combines with disabled fieldsets and their first-legend exception without changing the public disabled property. Re-enabling restores the current controlled value and constraints. Direct property writes and public queries reconcile native state without requiring an animation frame.
+
+q-form retains Boolean state for one toggle and uses Boolean[] for repeated unmixed names in eligible order. FormData includes only checked true strings. Mixed names preserve every successful entry. Repeated-toggle setValues requires one Boolean per owned toggle, including disabled targets, and stays silent.
+
+
+With name, checked contributes the string `true` to native FormData and unchecked contributes no entry. Reset restores checked captured on first load. Required unchecked controls fail with valueMissing; disabled controls are valid. `error` changes visual/ARIA messaging but does not create customError validity. [q-form](./q-form.md) represents one named toggle as a Boolean in its values object, including false.
 
 ### Limitations and compatibility
 

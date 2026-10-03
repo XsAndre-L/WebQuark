@@ -1,6 +1,14 @@
 # q-syntax-box
 
+Code and value are literal source, mirrored without automatic formatting. Unedited initialization, controlled updates, blur, copy and reset retain the exact supplied text. Native textarea edits use LF line endings. Explicit Format supports strict JSON only, preserving raw numeric/string tokens, duplicate members and order while changing structural whitespace to two-space/LF layout. HTML/JavaScript/CSS formatting is visibly unavailable. Invalid/commented/over-limit JSON remains unchanged with feedback; nonempty explicit JSON attempts retain qInput then qChange timing. Limits: 1,048,576 input/2,097,152 output UTF-16 units and 128 nested containers.
 
+Editable mode creates an empty textarea when both aliases are absent. Required empty editors are invalid; read-only missing code retains the default slot.
+
+```html
+<q-syntax-box heading="New template" editable required name="template" aria-label="Template source"></q-syntax-box>
+```
+
+See the [authored guide](../../../../docs/components/q-syntax-box.md) for literal-source, editing, form and compatibility examples.
 
 <!-- Auto Generated Below -->
 
@@ -70,10 +78,10 @@ Type: `Promise<void>`
 
 ## Slots
 
-| Slot        | Description                                            |
-| ----------- | ------------------------------------------------------ |
-|             | Fallback content rendered when `code` is not provided. |
-| `"actions"` | Additional actions rendered in the panel header.       |
+| Slot        | Description                                                      |
+| ----------- | ---------------------------------------------------------------- |
+|             | Read-only fallback content rendered when `code` is not provided. |
+| `"actions"` | Additional actions rendered in the panel header.                 |
 
 
 ## Dependencies

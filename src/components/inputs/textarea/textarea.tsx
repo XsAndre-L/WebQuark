@@ -1,6 +1,8 @@
+import { isFieldDisabled, syncFieldHost, syncNativeAttribute } from '../../../utils/form-field-state';
+import { registerFormField } from '../../../utils/form-field-adapter';
 import { fieldFeedback, feedbackStyle } from '../../shared/field';
 import type { QControlSize } from '../../../theme/tokens';
-import { Component, Prop, Event, EventEmitter, Method, AttachInternals, Watch, h } from '@stencil/core';
+import { Component, Prop, State, Event, EventEmitter, Method, Element, AttachInternals, Watch, h } from '@stencil/core';
 
 import { syncNativeControlValidity } from '../../../utils/form-control-validity';
 import type { QTextareaResizeMode } from './textarea.types';
@@ -21,6 +23,8 @@ import type { QTextareaResizeMode } from './textarea.types';
 })
 export class QTextarea {
   // ======== [1] STENCIL API (Props, Events, AttachInternals) =========
+  @Element() el!: HTMLElement;
+
   @Prop({ mutable: true }) value: string = "";
   @Prop() placeholder: string = "";
   @Prop() label?: string;
@@ -72,22 +76,29 @@ export class QTextarea {
 
   // ========================= [2] INTERNAL STATE & REFS =========================
 
+  @State() private disabledState = false;
+
+  private get isDisabled(): boolean {
+    return isFieldDisabled(this.el, this.disabled);
+  }
+
   private initialValue: string = "";
 
   // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
   @Watch('value')
-  watchValue(newValue: string) {
-    const value = newValue ?? "";
-
-    if (this.textareaEl && this.textareaEl.value !== value) {
-      this.textareaEl.value = value;
-    }
-
-    if (this.internals && typeof this.internals.setFormValue === 'function') {
-      this.internals.setFormValue(value);
-    }
+  watchValue() {
+    this.syncValidity();
     requestAnimationFrame(() => this.adjustHeightInternal());
+  }
+
+  @Watch('disabled')
+  @Watch('required')
+  @Watch('name')
+  @Watch('error')
+  @Watch('errorMessage')
+  watchConstraints() {
+    this.syncValidity();
   }
 
   @Watch('resizeMode')
@@ -105,7 +116,26 @@ export class QTextarea {
     }
   }
 
+  formDisabledCallback() {
+    this.syncValidity();
+  }
+
   componentDidLoad() {
+    registerFormField(this.el, {
+      kind: 'text',
+      owner: () => this.internals?.form ?? null,
+      active: () => true,
+      value: () => this.value,
+      assign: value => { this.value = value as string; },
+      reconcile: () => {
+        if (this.textareaEl && this.textareaEl.value !== this.value) this.textareaEl.value = this.value;
+        this.internals?.setFormValue?.(this.value);
+        this.syncValidity();
+      },
+      reset: () => this.formResetCallback(),
+      validate: report => report ? this.internals?.reportValidity?.() ?? true : this.internals?.checkValidity?.() ?? true,
+    });
+
     this.adjustHeightInternal();
     this.syncValidity();
     this.observeGeometry();
@@ -148,10 +178,8 @@ export class QTextarea {
 
   formResetCallback() {
     this.value = this.initialValue;
-    if (this.internals && typeof this.internals.setFormValue === 'function') {
-      this.internals.setFormValue(this.value);
-    }
-    requestAnimationFrame(() => this.adjustHeightInternal());
+    this.syncValidity();
+    this.adjustHeightInternal();
   }
 
   // ============================ [4] EXPOSED METHODS ============================
@@ -212,17 +240,26 @@ export class QTextarea {
   };
 
   private handleClick = (ev: MouseEvent) => {
-    if (this.disabled) return;
+    if (this.isDisabled) return;
     this.qClick.emit(ev);
   };
 
   private syncValidity(): void {
+    const disabled = syncFieldHost(this.el, this.disabled, this.name, this.required);
+    if (this.disabledState !== disabled) this.disabledState = disabled;
     if (!this.textareaEl || !this.internals) return;
+    this.textareaEl.disabled = disabled;
+    this.textareaEl.required = this.required;
+    this.textareaEl.readOnly = this.el.hasAttribute('readonly');
+    this.textareaEl.name = this.name ?? '';
+    syncNativeAttribute(this.textareaEl, 'rows', this.rows);
+    if (this.textareaEl.value !== this.value) this.textareaEl.value = this.value;
+    this.internals.setFormValue?.(disabled ? null : this.value);
 
     syncNativeControlValidity({
       internals: this.internals,
       control: this.textareaEl,
-      disabled: this.disabled,
+      disabled: this.isDisabled,
       customError: this.error || this.errorMessage,
     });
   }
@@ -265,7 +302,7 @@ export class QTextarea {
         style={feedbackStyle(this.reserveFeedback)}
         class={{
           'textarea-wrapper': true,
-          'is-disabled': this.disabled,
+          'is-disabled': this.isDisabled,
           'has-error': hasError,
           [`size-${this.size}`]: true
         }}
@@ -292,7 +329,7 @@ export class QTextarea {
           name={this.name}
           placeholder={this.placeholder}
           rows={this.rows}
-          disabled={this.disabled}
+          disabled={this.isDisabled}
           required={this.required}
           onInput={this.handleInput}
           onChange={this.handleChange}
