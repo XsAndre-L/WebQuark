@@ -1,196 +1,191 @@
-/**
- * @fileoverview Modular auto-formatting utilities for WebQuark.
- */
-
-/**
- * Formats a JSON string with 2-space indentation.
- */
-export function formatJson(code: string): string {
-  try {
-    return JSON.stringify(JSON.parse(code), null, 2);
-  } catch (e) {
-    return code;
-  }
+/** Explicit formatting. JSON layout preserves raw tokens; other languages stay literal. */
+export interface SyntaxFormatResult {
+  code: string;
+  status: 'formatted' | 'unchanged' | 'invalid' | 'unsupported';
 }
 
-/**
- * Formats CSS rules, block containers, and braces.
- */
-export function formatCss(code: string): string {
-  let formatted = '';
-  let indentLevel = 0;
-  
-  const clean = code
-    .replace(/\s+/g, ' ')
-    .replace(/\s*:\s*/g, ': ')
-    .replace(/\{/g, ' {\n')
-    .replace(/\}/g, '\n}\n')
-    .replace(/\;/g, ';\n');
-  
-  const lines = clean.split('\n');
-  for (let line of lines) {
-    line = line.trim();
-    if (!line) continue;
-    
-    if (line === '}') {
-      indentLevel = Math.max(0, indentLevel - 1);
-    }
-    
-    formatted += '  '.repeat(indentLevel) + line + '\n';
-    
-    if (line.endsWith('{')) {
-      indentLevel++;
-    }
-  }
-  return formatted.trim();
+export const MAX_JSON_FORMAT_INPUT = 1_048_576;
+export const MAX_JSON_FORMAT_OUTPUT = 2_097_152;
+export const MAX_JSON_FORMAT_DEPTH = 128;
+
+class FormatLimitError extends Error {}
+
+export function isFormatSupported(language: string): boolean {
+  return typeof language === 'string' && language.toLowerCase() === 'json';
 }
 
-/**
- * Helper to format attributes of a tag. If there is more than one attribute,
- * it stacks them vertically on separate indented lines.
- */
-function formatTagAttributes(tag: string, indent: number): string {
-  const isSelfClosing = tag.endsWith('/>');
-  const cleanTag = tag.trim().replace(/^<\/?/, '').replace(/\/?>$/, '').trim();
-  
-  const firstSpace = cleanTag.indexOf(' ');
-  if (firstSpace === -1) {
-    return tag;
+/** Validates JSON grammar while emitting original tokens, never JavaScript values. */
+function layoutJson(source: string): string {
+  if (source.length > MAX_JSON_FORMAT_INPUT) {
+    throw new FormatLimitError();
   }
-  
-  const tagName = cleanTag.slice(0, firstSpace);
-  const attrSection = cleanTag.slice(firstSpace).trim();
-  
-  const attrRegex = /([a-zA-Z0-9\-]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'>]+)))?/g;
-  const attributes: string[] = [];
-  let match;
-  while ((match = attrRegex.exec(attrSection)) !== null) {
-    const attrName = match[1];
-    const attrVal = match[2] !== undefined ? match[2] : (match[3] !== undefined ? match[3] : match[4]);
-    if (attrVal !== undefined) {
-      attributes.push(`${attrName}="${attrVal}"`);
-    } else {
-      attributes.push(attrName);
-    }
-  }
-  
-  if (attributes.length <= 1) {
-    return tag;
-  }
-  
-  const baseIndent = '  '.repeat(indent);
-  const attrIndent = '  '.repeat(indent + 1);
-  
-  let result = `${baseIndent}<${tagName}\n`;
-  result += attributes.map(attr => `${attrIndent}${attr}`).join('\n');
-  result += `\n${baseIndent}${isSelfClosing ? '/>' : '>'}`;
-  return result;
-}
 
-/**
- * Formats HTML tags, maintaining indentation levels for nested structures
- * while ignoring void elements (e.g. img, br, input).
- */
-export function formatHtml(code: string): string {
-  let formatted = '';
-  let indentLevel = 0;
-  
-  const clean = code
-    .replace(/>\s*</g, '>\n<')
-    .replace(/(<[^>]+>)/g, '\n$1\n');
-      
-  const lines = clean.split('\n');
-  const voidTags = ['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
-  
-  for (let line of lines) {
-    line = line.trim();
-    if (!line) continue;
-    
-    const isClosing = line.startsWith('</');
-    const isOpening = line.startsWith('<') && !line.startsWith('</') && !line.startsWith('<!--');
-    
-    let isVoid = false;
-    if (isOpening) {
-      const tagNameMatch = line.match(/^<([a-zA-Z0-9\-]+)/);
-      if (tagNameMatch) {
-        const tagName = tagNameMatch[1].toLowerCase();
-        if (voidTags.includes(tagName)) {
-          isVoid = true;
+  let index = 0;
+  let outputLength = 0;
+  const parts: string[] = [];
+
+  const emit = (text: string) => {
+    outputLength += text.length;
+    if (outputLength > MAX_JSON_FORMAT_OUTPUT) {
+      throw new FormatLimitError();
+    }
+    parts.push(text);
+  };
+
+  const whitespace = () => {
+    while (/[\x20\t\r\n]/.test(source.charAt(index)) && index < source.length) {
+      index++;
+    }
+  };
+
+  const requireCharacter = (character: string) => {
+    if (source[index++] !== character) {
+      throw new SyntaxError('Invalid JSON.');
+    }
+    whitespace();
+  };
+
+  const stringToken = (): string => {
+    const start = index;
+    if (source[index++] !== '"') {
+      throw new SyntaxError('Invalid JSON string.');
+    }
+
+    while (index < source.length) {
+      const character = source[index++];
+      if (character === '"') {
+        return source.slice(start, index);
+      }
+      if (character.charCodeAt(0) < 0x20) {
+        throw new SyntaxError('Invalid JSON string.');
+      }
+
+      if (character === '\\') {
+        const escaped = source[index++];
+        if (escaped === 'u') {
+          if (!/^[\da-fA-F]{4}$/.test(source.slice(index, index + 4))) {
+            throw new SyntaxError('Invalid JSON escape.');
+          }
+          index += 4;
+        } else if (!escaped || !'"\\/bfnrt'.includes(escaped)) {
+          throw new SyntaxError('Invalid JSON escape.');
         }
       }
     }
-    
-    if (isClosing) {
-      indentLevel = Math.max(0, indentLevel - 1);
-      formatted += '  '.repeat(indentLevel) + line + '\n';
-    } else if (line.startsWith('<!--')) {
-      formatted += '  '.repeat(indentLevel) + line + '\n';
-    } else if (line.startsWith('<')) {
-      const formattedTag = formatTagAttributes(line, indentLevel);
-      if (formattedTag === line) {
-        formatted += '  '.repeat(indentLevel) + line + '\n';
-      } else {
-        formatted += formattedTag + '\n';
+
+    throw new SyntaxError('Unterminated JSON string.');
+  };
+
+  const newline = (depth: number) => emit('\n' + '  '.repeat(depth));
+
+  const value = (depth: number): void => {
+    whitespace();
+    const character = source[index];
+
+    if (character === '{' || character === '[') {
+      if (depth >= MAX_JSON_FORMAT_DEPTH) {
+        throw new FormatLimitError();
       }
 
-      const isSelfClosing = line.endsWith('/>');
-      if (!isSelfClosing && !isVoid) {
-        indentLevel++;
+      const object = character === '{';
+      const close = object ? '}' : ']';
+      index++;
+      emit(character);
+      whitespace();
+
+      if (source[index] === close) {
+        index++;
+        emit(close);
+        return;
       }
-    } else {
-      formatted += '  '.repeat(indentLevel) + line + '\n';
+
+      newline(depth + 1);
+      while (true) {
+        if (object) {
+          emit(stringToken());
+          whitespace();
+          requireCharacter(':');
+          emit(': ');
+        }
+
+        value(depth + 1);
+        whitespace();
+
+        if (source[index] === close) {
+          index++;
+          newline(depth);
+          emit(close);
+          return;
+        }
+
+        requireCharacter(',');
+        emit(',');
+        newline(depth + 1);
+      }
     }
+
+    if (character === '"') {
+      emit(stringToken());
+      return;
+    }
+
+    for (const literal of ['true', 'false', 'null']) {
+      if (source.startsWith(literal, index)) {
+        index += literal.length;
+        emit(literal);
+        return;
+      }
+    }
+
+    const start = index;
+    while (index < source.length && /[\d.eE+-]/.test(source[index])) {
+      index++;
+    }
+
+    const token = source.slice(start, index);
+    if (!/^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$/.test(token)) {
+      throw new SyntaxError('Invalid JSON value.');
+    }
+    emit(token);
+  };
+
+  value(0);
+  whitespace();
+  if (index !== source.length) {
+    throw new SyntaxError('Trailing JSON content.');
   }
-  return formatted.trim();
+  return parts.join('');
 }
 
-/**
- * Formats simple JavaScript code block braces and rule statements.
- */
+export function formatSource(code: string, language: string): SyntaxFormatResult {
+  if (!isFormatSupported(language)) {
+    return { code, status: 'unsupported' };
+  }
+
+  try {
+    const formatted = layoutJson(code);
+    return { code: formatted, status: formatted === code ? 'unchanged' : 'formatted' };
+  } catch (error) {
+    return { code, status: error instanceof FormatLimitError ? 'unsupported' : 'invalid' };
+  }
+}
+
+export function formatJson(code: string): string {
+  return formatSource(code, 'json').code;
+}
+
+export function formatCss(code: string): string {
+  return code;
+}
+
+export function formatHtml(code: string): string {
+  return code;
+}
+
 export function formatJs(code: string): string {
-  let formatted = '';
-  let indentLevel = 0;
-  
-  const clean = code
-    .replace(/\s+/g, ' ')
-    .replace(/\{/g, ' {\n')
-    .replace(/\}/g, '\n}\n')
-    .replace(/\;/g, ';\n');
-      
-  const lines = clean.split('\n');
-  for (let line of lines) {
-    line = line.trim();
-    if (!line) continue;
-    
-    if (line === '}') {
-      indentLevel = Math.max(0, indentLevel - 1);
-    }
-    
-    formatted += '  '.repeat(indentLevel) + line + '\n';
-    
-    if (line.endsWith('{')) {
-      indentLevel++;
-    }
-  }
-  return formatted.trim();
+  return code;
 }
 
-/**
- * Main auto-formatter entrypoint.
- */
 export function formatCode(code: string, language: string): string {
-  if (!code) return '';
-  switch (language.toLowerCase()) {
-    case 'json':
-      return formatJson(code);
-    case 'html':
-      return formatHtml(code);
-    case 'css':
-      return formatCss(code);
-    case 'javascript':
-    case 'js':
-      return formatJs(code);
-    default:
-      return code;
-  }
+  return formatSource(code, language).code;
 }

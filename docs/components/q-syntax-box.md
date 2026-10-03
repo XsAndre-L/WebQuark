@@ -42,11 +42,11 @@ Place the following markup in the application HTML. Scripts shown below are modu
 | [Editing](#keyboard-and-focus) | Read-only, editable, disabled; format/copy actions | Read-only; copy off |
 | [Forms](#forms) | Named editable value, required validation, reset | No name; optional |
 
-**Bare tag:** renders an empty panel with a 110 px body and no heading or actions. Add `code` or default-slot content. To render an empty editor, supply `code=""` as well as `editable`; `editable` alone still leaves the fallback slot.
+**Bare tag:** renders an empty panel with a 110 px body and no heading or actions. Add `code` or default-slot content. Add `editable` to render an empty editor even when neither `code` nor `value` is supplied.
 
 ## Examples
 
-Registration from [Quick start](#quick-start) is required. Screenshots show the actual registered components in the existing playground runtime.
+Registration from [Quick start](#quick-start) is required. Screenshots show actual registered components with the production theme.
 
 ### Display a code sample
 
@@ -81,7 +81,45 @@ editor.addEventListener('qInput', () => {
 </script>
 ```
 
-Replace the editor text with `{"enabled": false}` to reach the screenshot. `qInput` fires while typing; `qChange` fires on native commit or formatting. Supply trusted code; see the current escaping limitation.
+Replace the editor text with `{"enabled": false}` to reach the screenshot. `qInput` fires while typing; `qChange` fires on native commit or formatting. Code is displayed literally, including raw markup and entity-looking text. Initialization and updates retain the supplied spacing.
+
+### Start with an empty required editor
+
+An editor needs no seed value. Required validation rejects its empty value until the user supplies text.
+
+![Empty required HTML editor titled New template](./assets/q-syntax-box-empty-editor.png)
+
+```html
+<form>
+  <q-syntax-box heading="New template" language="html" name="template" editable required aria-label="Template source"></q-syntax-box>
+</form>
+```
+
+The textarea is present immediately; its initial `code` and `value` are empty strings. Native form reset returns it to that empty, invalid value.
+
+### Format JSON while retaining exact tokens
+
+Click the explicit Format action to lay out strict JSON without changing its token spelling or member structure.
+
+![Formatted JSON retaining a large number, negative zero and repeated same members](./assets/q-syntax-box-format-json.png)
+
+```html
+<q-syntax-box heading="Exact JSON tokens" language="json" code='{"10":9007199254740993,"2":-0,"same":1,"same":2}' editable height="190px" aria-label="Exact JSON source"></q-syntax-box>
+```
+
+Click **Format JSON** to reach the screenshot. The repeated `same` members and their order remain intact. When the editor belongs to a native form, form reset restores the exact initial unformatted source.
+
+### Keep other languages literal
+
+HTML, JavaScript and CSS remain editable while Format is visibly unavailable.
+
+![JavaScript editor with a disabled Format action and visible JSON-only message](./assets/q-syntax-box-format-unsupported.png)
+
+```html
+<q-syntax-box heading="Literal JavaScript" language="javascript" code="const message = `keep  spaces; { braces }`;" editable aria-label="Literal JavaScript source"></q-syntax-box>
+```
+
+Comments, templates, attribute/text spacing and CSS string content retain their supplied text. Native editing still updates the string value; formatting adds no regex rewrites.
 
 ### Submit editable code in a form
 
@@ -126,17 +164,19 @@ The screenshot shows the initial action. Clicking it uses the browser Clipboard 
 
 Use `code` as the primary content property; `value` is a compatibility/form alias. If only one is supplied initially, it is copied to the other. If both differ, avoid relying on reconciliation: read-only initialization retains each supplied value; rendering uses `code`.
 
-In editable mode, nonempty initial text and unfocused programmatic updates are formatted. While the textarea is focused, incoming updates preserve their supplied formatting. User input and the Format action update both properties internally.
+Initialization, property updates, focus/blur and reset preserve the supplied source without automatic formatting. Editable initialization uses `code` when both aliases are supplied, then mirrors it to `value`. Subsequent writes to either alias mirror the exact supplied text to the other; missing editable content becomes an empty string. User input and the explicit Format action also update both properties.
+
+Unedited stored values, copy and reset preserve whitespace, comments, Unicode and CRLF/CR line endings exactly. Native textarea presentation uses LF line endings; an actual textarea edit stores that LF value. Focusing or blurring without editing does not change the stored source.
 
 | Content state | Rendered result |
 | :--- | :--- |
-| `code === undefined` | Default slot |
+| Read-only, `code === undefined` | Default slot |
 | `code=""` | Empty code body, or empty textarea when editable |
 | `editable=false` | Highlighted read-only code |
-| `editable=true` | Textarea over highlighted code |
+| `editable=true` | Textarea over highlighted code, initially empty when neither alias is supplied |
 | `disabled=true` | Native textarea disabled and built-in copy/format actions blocked |
 
-The Format action exists only in editable panel mode; Copy exists only when `copyable` and panel mode are both active. The `actions` slot is also panel-only. Consumer-provided actions must implement their own disabled behavior.
+The Format action exists only in editable panel mode and supports strict JSON. HTML, JavaScript and CSS show a disabled Format button and a visible JSON-only message; their source remains unchanged. Copy exists only when `copyable` and panel mode are both active. The `actions` slot is also panel-only. Consumer-provided actions must implement their own disabled behavior.
 
 ### Keyboard and focus
 
@@ -157,15 +197,26 @@ The built-in copy and format icon buttons currently lack explicit accessible nam
 
 ### Forms
 
+Native reset and q-form reset actions restore this field's initial value captured at first initialization. Later assignments, movement between forms and reconnecting preserve that default; reset is silent. q-form cancellation prevents restoration. Native form ownership takes precedence over a logical wrapper.
+
+Explicit disabled state combines with disabled fieldsets and their first-legend exception without changing the public disabled property. Re-enabling restores the current controlled value and constraints. Direct property writes and public queries reconcile native state without requiring an animation frame. Readonly native text is distinct from disabling: it remains successful and programmatically assignable.
+
+The q-form adapter includes only editable mode. Unnamed editable fields validate; named enabled editors collect their exact source string. Partial setValues writes are silent and keep code/value/form participation coherent. Display mode does not participate, and no consumer shadow roots are traversed.
+
+
 Only editable mode contributes a form value. Use `name` and `required` for native form submission and validation; unnamed fields do not produce named entries. `checkValidity()` and `reportValidity()` return promises.
 
-Native form reset restores the initial code. The implementation does not expose custom validity setters or form-state restoration. It has no `formDisabledCallback` to mirror a disabled ancestor fieldset into the internal textarea; set the component's `disabled` property when its editor must be disabled.
+Native form reset restores the initial code. Inherited disabling is mirrored into the internal textarea and guarded editor actions while preserving the public disabled property. The implementation does not expose custom validity setters or form-state restoration.
 
 ### Limitations and compatibility
 
-The highlighter inserts generated HTML and its escaping helper skips escaping when the input already contains certain HTML entities. Mixed encoded/raw markup is therefore not reliably escaped. Use trusted code; this component is not a sanitizer.
+Code properties are literal text. Raw tags and entity-looking strings such as `&lt;` appear as supplied; only generated highlighting spans become elements. The default read-only slot still projects consumer-owned content normally. Highlighting recognizes lightweight token patterns and does not validate a language.
 
-Clipboard actions need a working browser Clipboard API. Invalid JSON formatting is caught by the formatter and returns the original text. Formatting/highlighting are lightweight helpers, not language parsers or validators.
+Clipboard actions need a working browser Clipboard API. JSON Format changes only structural whitespace to two-space indentation and LF line endings. It retains original string escapes, numeric spelling (including large numbers and negative zero), duplicate member occurrences, member order and array order without converting tokens to JavaScript values. Highlighting remains lexical decoration, not a parser.
+
+Only strict JSON grammar is supported; comments, trailing commas, malformed text and BOM-prefixed input remain unchanged with visible feedback. Formatting is bounded to 1,048,576 input UTF-16 units, 2,097,152 output units and 128 nested containers. Over-limit input remains exact with limit feedback. These checks run only on an explicit Format attempt and do not validate the field for form submission. No formatter dependency or asynchronous loader is required.
+
+For nonempty JSON, an explicit Format attempt emits `qInput` then `qChange` once with the resulting source, including unchanged/error outcomes, preserving the existing action timing. Empty, disabled and unsupported-language actions emit neither event. Initialization, controlled updates, blur, native editing and reset never invoke formatting.
 
 The code theme stays dark even in a light application theme. There is no component-specific reduced-motion override; nested controls retain their own motion behavior.
 
@@ -182,12 +233,12 @@ An unrecognized variant renders the plain branch. Panel height defaults to 110 p
 
 ### Languages
 
-| `language` | Highlighting and formatting |
+| `language` | Highlighting / explicit formatting |
 | :--- | :--- |
-| `html` (default) | HTML markup |
-| `javascript` | JavaScript tokens |
-| `css` | CSS declarations |
-| `json` | JSON tokens and JSON indentation |
+| `html` (default) | HTML markup / Format unavailable |
+| `javascript` | JavaScript tokens / Format unavailable |
+| `css` | CSS declarations / Format unavailable |
+| `json` | JSON tokens / token-preserving JSON indentation |
 
 Language changes select the helper used on subsequent rendering/formatting. Use the supported values.
 
@@ -222,7 +273,7 @@ All properties are optional. Use JavaScript properties for structured values and
 | `code` | `undefined` | Mirrored with `value`; prefer `code` for domain usage.<br>**Type:** `string`. **HTML attribute:** `code`. **Required:** No. |
 | `copyable` | `false` | Shows the Copy action in panel mode only.<br>**Type:** `boolean`. **HTML attribute:** `copyable`. **Required:** No. |
 | `disabled` | `false` | Disables editing and panel actions.<br>**Type:** `boolean`. **HTML attribute:** `disabled`. **Required:** No. |
-| `editable` | `false` | Enables editing when code is defined, including an empty string.<br>**Type:** `boolean`. **HTML attribute:** `editable`. **Required:** No. |
+| `editable` | `false` | Enables editing, including an initially empty textarea when code and value are absent.<br>**Type:** `boolean`. **HTML attribute:** `editable`. **Required:** No. |
 | `heading` | `undefined` | Shown only in the panel variant.<br>**Type:** `string`. **HTML attribute:** `heading`. **Required:** No. |
 | `height` | `undefined` | Explicit content height. Panel mode defaults to 110px; plain mode defaults to auto.<br>**Type:** `string`. **HTML attribute:** `height`. **Required:** No. |
 | `language` | `'html'` | Accepted values: `html`, `javascript`, `css`, `json`.<br>**Type:** `QSyntaxBoxLanguage`. **HTML attribute:** `language`. **Required:** No. |
@@ -243,7 +294,7 @@ These types describe property values and event payloads. Optional fields are mar
 
 | Name | Description |
 | :--- | :--- |
-| (default) | Fallback content only while `code` is undefined; no built-in fallback text |
+| (default) | Read-only fallback content only while `code` is undefined; no built-in fallback text |
 | `actions` | Consumer-owned panel header controls; not rendered in plain mode |
 
 ### Events

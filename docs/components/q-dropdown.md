@@ -123,7 +123,7 @@ Local search filters labels case-insensitively using the trimmed query. It initi
 
 With externalSearch, the component renders all supplied options without local filtering. Search input emits qSearch when searchable; scrolling to the bottom emits qLoadMore if hasMore and not loading. The application must replace/append options and manage loading/hasMore. An outstanding load latch clears when options changes or loading becomes false. Opening/closing resets search state; opening does not automatically emit a blank qSearch.
 
-Disabled blocks opening through the trigger/keys. Setting disabled while already open does not automatically close the menu, and existing option handlers do not check disabled; close/reset the interaction in the application before disabling it.
+Effective disabling blocks opening, searching and selection. Setting disabled or disabling an ancestor fieldset closes an open menu, stops its floating updates and disables the trigger/search controls. Re-enabling preserves the consumer's explicit disabled property.
 
 ### Keyboard and focus
 
@@ -137,7 +137,14 @@ Description is replaced by error feedback. The feedback span always exists with 
 
 ### Forms
 
-The named string value participates through ElementInternals; reset restores the first-load value. Required checks value truthiness, not membership in the current options page: any nonempty string, including whitespace, satisfies required. Nonblank error sets customError. Disabled is valid and excluded from native submission. checkValidity() checks these rules, reportValidity() also focuses the trigger and reports invalidity.
+Native reset and q-form reset actions restore this field's initial value captured at first initialization. Later assignments, movement between forms and reconnecting preserve that default; reset is silent. q-form cancellation prevents restoration. Native form ownership takes precedence over a logical wrapper.
+
+Explicit disabled state combines with disabled fieldsets and their first-legend exception without changing the public disabled property. Re-enabling restores the current controlled value and constraints. Direct property writes and public queries reconcile native state without requiring an animation frame.
+
+q-form omits unavailable local selections instead of collecting an unmatched raw value. externalSearch retains a nonempty unloaded domain value; a known disabled selection is omitted. setValues takes string/null silently and reconciles required validity. Native ownership and inherited disabled fieldsets govern collection, validity and the internal trigger/search controls.
+
+
+The successful string selection participates through ElementInternals; reset restores the first-load value. Local selections need an enabled matching option. externalSearch preserves a nonempty unloaded domain value, unless a known option is disabled. Empty required selections remain invalid even when an empty-value option exists. Nonblank error sets customError. Disabled is valid and excluded from native submission. checkValidity() checks these rules, reportValidity() also focuses the trigger and reports invalidity.
 
 ### Limitations and compatibility
 
@@ -193,7 +200,7 @@ All properties are optional in the TypeScript component contract. Required conte
 | `ariaLabel` | `null` | Accessible trigger/list name; nonblank value takes precedence.<br>**Type:** `string \| null`. **HTML attribute:** `aria-label`. **Required:** No. |
 | `collisionPadding` | `8` | Viewport margin in CSS pixels; negative finite values clamp to 0.<br>**Type:** `number`. **HTML attribute:** `collision-padding`. **Required:** No. |
 | `description` | `undefined` | Supporting text replaced by error.<br>**Type:** `string`. **HTML attribute:** `description`. **Required:** No. |
-| `disabled` | `false` | Disables trigger/keyboard actions; does not close an already-open menu.<br>**Type:** `boolean`. **HTML attribute:** `disabled`. **Required:** No. |
+| `disabled` | `false` | Disables trigger/search/selection actions and closes an open menu. Combines with inherited fieldset disabling.<br>**Type:** `boolean`. **HTML attribute:** `disabled`. **Required:** No. |
 | `error` | `undefined` | Custom validity error when nonblank; truthy text supplies visible feedback.<br>**Type:** `string`. **HTML attribute:** `error`. **Required:** No. |
 | `externalSearch` | `false` | Delegates filtering/pagination to the application; all supplied options render.<br>**Type:** `boolean`. **HTML attribute:** `external-search`. **Required:** No. |
 | `hasMore` | `false` | Allows qLoadMore in externalSearch mode when not loading.<br>**Type:** `boolean`. **HTML attribute:** `has-more`. **Required:** No. |

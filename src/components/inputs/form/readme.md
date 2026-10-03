@@ -8,7 +8,7 @@
 ## Overview
 
 Form wrapper that bridges slotted WebQuark controls to a native form element.
-Named controls in the light DOM and assigned slots participate in validation,
+Supported controls in the light DOM and native associations participate in validation,
 value collection, reset, and `FormData`. Controls hidden inside a
 consumer-owned nested shadow root are outside this explicit boundary.
 
@@ -41,6 +41,16 @@ consumer-owned nested shadow root are outside this explicit boundary.
 
 ## Methods
 
+### `checkValidity() => Promise<boolean>`
+
+Checks current owned fields without displaying validation messages.
+
+#### Returns
+
+Type: `Promise<boolean>`
+
+
+
 ### `getValues() => Promise<QFormValues>`
 
 Returns values collected from named native and WebQuark form controls.
@@ -48,6 +58,16 @@ Returns values collected from named native and WebQuark form controls.
 #### Returns
 
 Type: `Promise<QFormValues>`
+
+
+
+### `reportValidity() => Promise<boolean>`
+
+Reports current owned field constraints and returns aggregate validity.
+
+#### Returns
+
+Type: `Promise<boolean>`
 
 
 

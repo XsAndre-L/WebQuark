@@ -61,6 +61,13 @@
 }
 
 /* Plain Layout */
+.format-feedback {
+  padding: 4px 16px;
+  font-size: var(--q-syntax-header-font-size);
+  color: var(--q-syntax-comment);
+  border-bottom: 1px solid var(--q-syntax-border);
+}
+
 .plain-container {
   margin: 0;
   padding: 0;

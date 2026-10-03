@@ -1,3 +1,5 @@
+import { isFieldDisabled, syncFieldHost } from '../../../utils/form-field-state';
+import { registerFormField } from '../../../utils/form-field-adapter';
 import { fieldFeedback, feedbackStyle } from '../../shared/field';
 import { Component, Prop, State, Event, EventEmitter, Element, AttachInternals, Watch, Listen, Method, h } from '@stencil/core';
 import { identifyItems } from '../../../utils/collection-identity';
@@ -92,6 +94,12 @@ export class QDropdown {
 
   // ========================= [2] INTERNAL STATE & REFS =========================
 
+  @State() private disabledState = false;
+
+  private get isDisabled(): boolean {
+    return isFieldDisabled(this.el, this.disabled);
+  }
+
   private triggerEl?: HTMLButtonElement;
   private searchInputEl?: HTMLInputElement;
   private menuEl?: HTMLDivElement;
@@ -107,6 +115,25 @@ export class QDropdown {
   disconnectedCallback() {
     this.clearScrollLoading();
     this.stopFloatingUpdates();
+  }
+
+  formDisabledCallback() {
+    this.syncValidity();
+  }
+
+  componentDidLoad() {
+    registerFormField(this.el, {
+      kind: 'selection',
+      owner: () => this.internals?.form ?? null,
+      active: () => true,
+      value: () => this.getFormSelection(),
+      assign: value => { this.value = value as string; },
+      reconcile: () => {
+        this.syncValidity();
+      },
+      reset: () => this.formResetCallback(),
+      validate: report => report ? this.internals?.reportValidity?.() ?? true : this.internals?.checkValidity?.() ?? true,
+    });
   }
 
   componentDidRender() {
@@ -127,19 +154,31 @@ export class QDropdown {
     this.syncValidity();
   }
 
+  @Watch('name')
+  @Watch('externalSearch')
   @Watch('required')
   @Watch('error')
   @Watch('disabled')
   syncValidity(): void {
+    const disabled = syncFieldHost(this.el, this.disabled, this.name, this.required);
+    if (this.disabledState !== disabled) this.disabledState = disabled;
+    if (this.triggerEl) this.triggerEl.disabled = disabled;
+    if (this.searchInputEl) this.searchInputEl.disabled = disabled;
+    if (disabled && this.isOpen) {
+      this.isOpen = false;
+      this.stopFloatingUpdates();
+    }
+    const selected = this.getFormSelection();
+    this.internals?.setFormValue?.(disabled ? null : selected);
     if (typeof this.internals?.setValidity !== 'function') return;
-    const message = this.disabled ? '' : this.error?.trim() || (this.required && !this.value ? 'Please select an option.' : '');
+    const message = this.isDisabled ? '' : this.error?.trim() || (this.required && (!this.value || selected === null) ? 'Please select an option.' : '');
     this.internals.setValidity(message ? this.error?.trim() ? { customError: true } : { valueMissing: true } : {}, message, this.triggerEl);
   }
 
   @Method()
   async checkValidity(): Promise<boolean> {
     this.syncValidity();
-    return this.disabled || !(this.error?.trim() || (this.required && !this.value));
+    return this.isDisabled || !(this.error?.trim() || (this.required && (!this.value || this.getFormSelection() === null)));
   }
 
   @Method()
@@ -159,6 +198,7 @@ export class QDropdown {
 
   @Watch('options')
   watchOptions() {
+    this.syncValidity();
     if (this.externalSearch) {
       this.isScrollingLoading = false;
     }
@@ -191,6 +231,12 @@ export class QDropdown {
   }
 
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
+
+  private getFormSelection(): string | null {
+    const selected = getSelectedOption(getDropdownOptions(this.options), this.value);
+    if (selected && (selected as Option & { disabled?: boolean }).disabled !== true) return selected.value;
+    return this.externalSearch && !selected && this.value ? this.value : null;
+  }
 
   private clearScrollLoading() {
     this.isScrollingLoading = false;
@@ -229,7 +275,7 @@ export class QDropdown {
   }
 
   private toggleMenu = () => {
-    if (this.disabled) return;
+    if (this.isDisabled) return;
     this.isOpen = !this.isOpen;
     this.clearScrollLoading();
     if (this.isOpen) {
@@ -252,6 +298,7 @@ export class QDropdown {
   };
 
   private handleSelect = (option: Option) => {
+    if (this.isDisabled) return;
     this.value = option.value;
     this.isOpen = false;
     this.focusedIndex = -1;
@@ -271,12 +318,13 @@ export class QDropdown {
   };
 
   private handleTriggerClick = (ev: MouseEvent) => {
-    if (this.disabled) return;
+    if (this.isDisabled) return;
     this.qClick.emit(ev);
     this.toggleMenu();
   };
 
   private handleSearchInput = (ev: Event) => {
+    if (this.isDisabled) return;
     const target = ev.target as HTMLInputElement;
     this.searchTerm = target.value || '';
     this.focusedIndex = -1;
@@ -445,7 +493,7 @@ export class QDropdown {
   }
 
   private handleKeyDown = (ev: KeyboardEvent) => {
-    if (this.disabled) return;
+    if (this.isDisabled) return;
 
     const target = ev.target as HTMLElement;
     const isInput = target && target.tagName && target.tagName.toLowerCase() === 'input';
@@ -583,7 +631,7 @@ export class QDropdown {
         class={{
           'dropdown-wrapper': true,
           'is-open': this.isOpen,
-          'is-disabled': this.disabled,
+          'is-disabled': this.isDisabled,
           [`size-${this.size}`]: true
         }}
         onKeyDown={this.handleKeyDown}
@@ -602,7 +650,7 @@ export class QDropdown {
           class="dropdown-trigger"
           part="trigger"
           type="button"
-          disabled={this.disabled}
+          disabled={this.isDisabled}
           onClick={this.handleTriggerClick}
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}

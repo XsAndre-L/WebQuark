@@ -126,6 +126,13 @@ Omitted `reserveFeedback` inherits the enclosing form's setting, falling back to
 
 ### Forms
 
+Native reset and q-form reset actions restore this field's initial value captured at first initialization. Later assignments, movement between forms and reconnecting preserve that default; reset is silent. q-form cancellation prevents restoration. Native form ownership takes precedence over a logical wrapper.
+
+Explicit disabled state combines with disabled fieldsets and their first-legend exception without changing the public disabled property. Re-enabling restores the current controlled value and constraints. Direct property writes and public queries reconcile native state without requiring an animation frame. Readonly native text is distinct from disabling: it remains successful and programmatically assignable.
+
+Its q-form adapter participates only for its actual native owner or the nearest eligible q-form. Unnamed fields still validate. Partial setValues writes are silent and synchronize the native value before resolving; repeated scalar names use arrays. Native field capabilities beyond the current API remain separate work.
+
+
 With `name`, the string value participates through ElementInternals. Native form reset restores the initial value captured before first render; later updates do not redefine that initial value. Required/native type/range/step constraints and nonblank custom error text are synchronized to validity. Nonempty `error` wins over the deprecated `errorMessage` alias. Disabled controls are exempt from validity and native submission. Empty error attributes are empty strings, not Boolean error flags; whitespace can render an error style without a trimmed custom validity message.
 
 ### Limitations and compatibility

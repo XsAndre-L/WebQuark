@@ -29,6 +29,29 @@ strict mode before defining or bootstrapping components. The default remains
 
 
 
+## Supported SVG and asset URLs
+
+Fetched XML and registered data share a strict element/attribute/resource allowlist.
+Paths, groups, masks, clip paths, gradients and local symbol references are supported;
+references must resolve within the icon. Malformed XML, namespaces outside SVG/xlink,
+active content, inline styles, external resources, cycles and exceeded budgets are
+rejected through the existing fallback. There is no regex recovery. Without native
+browser XML parsing, fetched inline SVG fails closed; registered data still renders.
+
+Registered child-node attributes may include the own enumerable string `key` metadata supplied by `@lucide/icons`. It is discarded before SVG validation/rendering and still counts against attribute and UTF-8 byte budgets. Function/accessor metadata is rejected. This exception does not apply to root SVG attributes or fetched XML: `key` remains unsupported there, and all emitted SVG attributes use the strict allowlist.
+
+All IDs, including a root SVG ID, must be nonempty, valid and unique. Root IDs are
+retained; local references may target supported child elements, never the SVG root.
+
+Limits: 512 child elements, depth 16, 64 attributes per element, 64 KiB per attribute,
+128 KiB accumulated attribute values/fetched UTF-8 response bytes, and 4096 expanded
+reference nodes at depth 32. Streaming SVG responses are required to enforce the cap.
+
+Image classification uses the pathname and preserves query/fragment: for example,
+`library="local" name="check-preview.png?v=2#preview"`. Extensionless local names
+infer .svg before the suffix. HTTP(S), file/blob assets, relative paths and SVG image
+data URLs follow browser loading permissions; other schemes are rejected.
+
 <!-- Auto Generated Below -->
 
 

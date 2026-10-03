@@ -122,6 +122,13 @@ Description is replaced by active error text. The always-present feedback span u
 
 ### Forms
 
+Native reset and q-form reset actions restore this field's initial value captured at first initialization. Later assignments, movement between forms and reconnecting preserve that default; reset is silent. q-form cancellation prevents restoration. Native form ownership takes precedence over a logical wrapper.
+
+Explicit disabled state combines with disabled fieldsets and their first-legend exception without changing the public disabled property. Re-enabling restores the current controlled value and constraints. Direct property writes and public queries reconcile native state without requiring an animation frame.
+
+q-form collects only an enabled matching option, consistent with the group selection rule. Unknown/disabled values remain public values but have no successful entry. String/null setValues writes are silent and reconcile validity. Native radio input option values are identities and are preserved by form assignment.
+
+
 With name, the selected enabled option contributes its string through ElementInternals. Unmatched, disabled-option and empty selections contribute nothing. Required groups need an enabled selection. Trimmed error/errorMessage sets customError, with error taking precedence. Disabled groups are valid and excluded from native submission. Native form reset restores the first-load value. The form wrapper's explicit value collector has its own rules; see [q-form](./q-form.md#forms).
 
 ### Limitations and compatibility

@@ -1,5 +1,7 @@
+import { isFieldDisabled, syncFieldHost } from '../../../utils/form-field-state';
+import { registerFormField } from '../../../utils/form-field-adapter';
 import { fieldFeedback, feedbackStyle } from '../../shared/field';
-import { AttachInternals, Component, Element, Event, EventEmitter, h, Method, Prop, Watch } from '@stencil/core';
+import { AttachInternals, Component, Element, Event, EventEmitter, h, Method, Prop, State, Watch } from '@stencil/core';
 
 import { identifyItems } from '../../../utils/collection-identity';
 import type { QRadioGroupOrientation, QRadioGroupSize, RadioGroupOption, RadioGroupOptionInput } from './radio-group.types';
@@ -69,6 +71,12 @@ export class QRadioGroup {
 
   // ========================= [2] INTERNAL STATE & REFS =========================
 
+  @State() private disabledState = false;
+
+  private get isDisabled(): boolean {
+    return isFieldDisabled(this.el, this.disabled);
+  }
+
   private readonly internalName = `q-radio-group-${++nextRadioGroupId}`;
   private initialValue: string = '';
   private fieldsetEl?: HTMLFieldSetElement;
@@ -81,6 +89,7 @@ export class QRadioGroup {
   }
 
   @Watch('options')
+  @Watch('name')
   @Watch('disabled')
   @Watch('required')
   @Watch('error')
@@ -92,6 +101,25 @@ export class QRadioGroup {
   componentWillLoad() {
     this.initialValue = this.value;
     this.syncFormState();
+  }
+
+  formDisabledCallback() {
+    this.syncFormState();
+  }
+
+  componentDidLoad() {
+    registerFormField(this.el, {
+      kind: 'selection',
+      owner: () => this.internals?.form ?? null,
+      active: () => true,
+      value: () => this.getSelectedOption()?.value ?? null,
+      assign: value => { this.value = value as string; },
+      reconcile: () => {
+        this.syncFormState();
+      },
+      reset: () => this.formResetCallback(),
+      validate: report => report ? this.internals?.reportValidity?.() ?? true : this.internals?.checkValidity?.() ?? true,
+    });
   }
 
   componentDidRender() {
@@ -147,22 +175,31 @@ export class QRadioGroup {
   }
 
   private isValid(): boolean {
-    if (this.disabled) return true;
+    if (this.isDisabled) return true;
     if ((this.error || this.errorMessage)?.trim()) return false;
     return !this.required || this.getSelectedOption() !== undefined;
   }
 
   private syncFormState(): void {
+    const disabled = syncFieldHost(this.el, this.disabled, this.name, this.required);
+    if (this.disabledState !== disabled) this.disabledState = disabled;
+    if (this.fieldsetEl) this.fieldsetEl.disabled = disabled;
+    const options = this.getOptions();
+    for (const input of this.getInputs()) {
+      const option = options.find(candidate => candidate.value === input.value);
+      input.disabled = disabled || !option || option.disabled === true;
+      input.checked = Boolean(option && option.value === this.value);
+    }
     if (!this.internals) return;
 
     const selectedOption = this.getSelectedOption();
     if (typeof this.internals.setFormValue === 'function') {
-      this.internals.setFormValue(this.disabled || !selectedOption ? null : selectedOption.value);
+      this.internals.setFormValue(this.isDisabled || !selectedOption ? null : selectedOption.value);
     }
 
     if (typeof this.internals.setValidity !== 'function') return;
 
-    if (this.disabled) {
+    if (this.isDisabled) {
       this.internals.setValidity({});
       return;
     }
@@ -192,7 +229,7 @@ export class QRadioGroup {
   }
 
   private handleChange = (event: Event) => {
-    if (this.disabled) return;
+    if (this.isDisabled) return;
 
     const input = event.target as HTMLInputElement;
     const option = this.getOptions().find(candidate => candidate.value === input.value);
@@ -227,7 +264,7 @@ export class QRadioGroup {
         style={feedbackStyle(this.reserveFeedback)}
         class={{
           'radio-group': true,
-          'is-disabled': this.disabled,
+          'is-disabled': this.isDisabled,
           'has-error': hasError,
           [`size-${this.size}`]: true,
           [`orientation-${this.orientation}`]: true,
@@ -237,7 +274,7 @@ export class QRadioGroup {
           ref={element => (this.fieldsetEl = element)}
           class="group-fieldset"
           part="group"
-          disabled={this.disabled}
+          disabled={this.isDisabled}
           role="radiogroup"
           aria-label={!this.label ? ariaLabel : undefined}
           aria-required={this.required ? 'true' : 'false'}
@@ -257,7 +294,7 @@ export class QRadioGroup {
                 class={{
                   option: true,
                   'is-selected': option.value === this.value,
-                  'is-disabled': this.disabled || option.disabled === true,
+                  'is-disabled': this.isDisabled || option.disabled === true,
                 }}
                 part="option"
               >
@@ -266,7 +303,7 @@ export class QRadioGroup {
                   name={radioName}
                   value={option.value}
                   checked={option.value === this.value}
-                  disabled={this.disabled || option.disabled}
+                  disabled={this.isDisabled || option.disabled}
                   required={this.required}
                   part="input"
                   onClick={this.handleChange}

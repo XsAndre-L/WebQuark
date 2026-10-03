@@ -262,6 +262,11 @@ describe('foundation composition in the browser', () => {
     dropdown.value = 'not-in-current-page';
     await frame();
     await form.submitForm();
+    expect(submissions).toBe(0);
+    expect(await dropdown.checkValidity()).toBe(false);
+    dropdown.externalSearch = true;
+    await frame();
+    await form.submitForm();
     expect(submissions).toBe(1);
     dropdown.error = 'Server rejected selection';
     await frame();
@@ -278,6 +283,7 @@ describe('foundation composition in the browser', () => {
   it('participates in native form validation and preserves noValidate', async () => {
     await fixture('<form><q-dropdown name="choice" required></q-dropdown></form><q-form no-validate><q-dropdown name="other" required></q-dropdown></q-form>');
     expect(document.querySelector('form')!.checkValidity()).toBe(false);
+    document.querySelector('q-dropdown')!.options = ['a'];
     document.querySelector('q-dropdown')!.value = 'a';
     await frame();
     expect(document.querySelector('form')!.checkValidity()).toBe(true);
