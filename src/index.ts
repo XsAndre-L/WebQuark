@@ -41,6 +41,7 @@ export {
   getDataTableCellSlotName,
   getDataTableCellValue,
   getDataTableItemKey,
+  getDataTableRowGutterSlotName,
 } from './components/data-display/data-table/data-table-cell';
 export type * from './components.d.ts';
 export type {
@@ -52,6 +53,7 @@ export type {
   DataTableRowAction,
   DataTableRowGroup,
   DataTableRowGrouper,
+  DataTableRowGutter,
   DataTableSortDirection,
   DataTableSortMode,
   QDataTableRowActionDetail,

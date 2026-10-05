@@ -206,6 +206,24 @@ td.is-sticky-start {
   color: var(--q-fg-muted, #9ca3af);
 }
 
+.col-row-gutter,
+.cell-row-gutter {
+  width: var(--q-table-row-gutter-width, 36px);
+  min-width: var(--q-table-row-gutter-width, 36px);
+  max-width: var(--q-table-row-gutter-width, 36px);
+  padding-inline: 0;
+  text-align: center;
+  color: var(--q-fg-muted, #9ca3af);
+}
+
+.row-gutter-content {
+  width: var(--q-table-row-gutter-width, 36px);
+  max-width: var(--q-table-row-gutter-width, 36px);
+  padding-inline: 4px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
 .col-selection,
 .cell-selection {
   width: 48px;

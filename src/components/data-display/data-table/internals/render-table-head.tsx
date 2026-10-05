@@ -18,6 +18,12 @@ export function renderDataTableHead({ model, onSelectAllChange, onSortToggle }: 
   return (
     <thead>
       <tr role="row">
+        {model.rowGutter !== 'none' && (
+          <th key="row-gutter" class="col-row-gutter" part="row-gutter-header" role="columnheader"
+            aria-label={model.rowGutter === 'numbers' ? 'Row number' : 'Row gutter'}>
+            <div class="row-gutter-content" />
+          </th>
+        )}
         {model.selectable && (
           <th key="selection" class="col-selection" role="columnheader">
             <input

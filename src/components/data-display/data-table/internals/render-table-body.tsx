@@ -1,6 +1,6 @@
 import { h } from '@stencil/core';
 
-import { getDataTableCellSlotName } from '../data-table-cell';
+import { getDataTableCellSlotName, getDataTableRowGutterSlotName } from '../data-table-cell';
 import type { DataTableItem, DataTableRowAction, TableColumn } from '../data-table.types';
 import { renderDataTableRowActions } from './render-row-actions';
 import type { DataTableModel, DataTableRowModel } from './table-model';
@@ -77,6 +77,14 @@ function renderDataTableRow(row: DataTableRowModel, options: RenderDataTableBody
       onClick={model.rowClickable ? event => options.onRowClick(row.item, row.index, event) : undefined}
       onKeyDown={model.rowClickable ? event => options.onRowKeyDown(row.item, row.index, event) : undefined}
     >
+      {model.rowGutter !== 'none' && (
+        <td key="row-gutter" class="cell-row-gutter" part="row-gutter-cell" role="gridcell">
+          <div class="row-gutter-content">
+            {model.rowGutter === 'numbers' ? row.index + model.rowNumberOffset + 1 :
+              model.rowGutter === 'custom' ? <slot name={getDataTableRowGutterSlotName(row.identity)} /> : null}
+          </div>
+        </td>
+      )}
       {model.selectable && (
         <td key="selection" class="cell-selection" role="gridcell">
           <input

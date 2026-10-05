@@ -7,6 +7,11 @@ import type { DataTableItem } from './data-table.types';
 
 const CELL_SLOT_PREFIX = 'q-data-table-cell';
 
+/** Row-specific gutter slot. Use the row's unique, stable collection identity. */
+export function getDataTableRowGutterSlotName(rowKey: CollectionIdentity): string {
+  return `q-data-table-row-gutter-${encodeSlotPart(serializeIdentity(rowKey))}`;
+}
+
 export function getDataTableCellSlotName(
   columnKey: CollectionIdentity,
   rowKey: CollectionIdentity,
