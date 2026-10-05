@@ -53,6 +53,38 @@ table.items = [{ id: 'ana', name: 'Ana', role: 'Designer' }, { id: 'ben', name: 
 
 ## Examples
 
+### Row gutter
+
+Every table defaults to a blank 36px leading gutter, separate from selection and
+data columns. Set `row-gutter="none"` to omit it, `row-gutter="numbers"` to show
+rendered row numbers, or `row-gutter="custom"` for row-specific named slots.
+`row-number-offset` defaults to zero and accepts only finite, nonnegative safe
+integers. Invalid modes fall back to blank; invalid offsets fall back to zero.
+Numbers follow the current rendered order (including local sorting), exclude
+group headers, and restart for each supplied collection unless you set an offset.
+External sorting leaves the supplied order unchanged.
+
+```javascript
+import { getDataTableRowGutterSlotName } from '@webquark/core';
+table.rowGutter = 'custom';
+const control = document.createElement('button');
+control.textContent = 'Open';
+control.slot = getDataTableRowGutterSlotName('ana');
+table.append(control);
+```
+
+Use unique, stable string or number values in `keyField` (default `id`). The helper
+uses the same typed identity encoding as data-cell slots. Missing or duplicate
+keys use collection fallback identities, which cannot reliably preserve custom
+slot attachment through sorting or replacement. Angular and React support these
+props and ordinary named-slot children; no additional adapter API is required.
+
+Set `--q-table-row-gutter-width` to override the 36px width. Gutter content is
+clipped to this width, so keep custom controls compact and give them accessible
+names. The gutter scrolls horizontally with the table; sticky start data columns
+remain at `left: 0`. Blank and numeric areas activate the row, while interactive
+slotted controls preserve their own click and keyboard behavior.
+
 Registration from [Quick start](#quick-start) is required. Screenshots show the actual registered components in the existing playground runtime.
 
 ### Show a collection of records
@@ -266,6 +298,8 @@ All properties are optional. Use JavaScript properties for structured values and
 | `loading` | `false` | Shows a loading state and suppresses row rendering while true.<br>**Type:** `boolean`. **HTML attribute:** `loading`. **Required:** No. |
 | `rowActions` | `[]` | Row actions rendered as trailing icon buttons.<br>**Type:** `DataTableRowAction[] \| string`. **HTML attribute:** `row-actions`. **Required:** No. |
 | `rowClickable` | `true` | Enables full-row click and keyboard activation.<br>**Type:** `boolean`. **HTML attribute:** `row-clickable`. **Required:** No. |
+| `rowGutter` | `blank` | Leading structural gutter: `none`, `blank`, `numbers`, or `custom`. **HTML attribute:** `row-gutter`. |
+| `rowNumberOffset` | `0` | Nonnegative safe integer offset for rendered row numbers. **HTML attribute:** `row-number-offset`. |
 | `rowGroup` | `undefined` | JavaScript callback returning a group key and label; see DataTableRowGrouper.<br>**Type:** `DataTableRowGrouper`. **HTML attribute:** --. **Required:** No. |
 | `searchPlaceholder` | `'Search...'` | Placeholder of the built-in search field.<br>**Type:** `string`. **HTML attribute:** `search-placeholder`. **Required:** No. |
 | `searchValue` | `''` | Current search text, updated internally on input; does not filter rows itself.<br>**Type:** `string`. **HTML attribute:** `search-value`. **Required:** No. |
@@ -386,6 +420,7 @@ Public helpers also include `getDataTableCellValue(item, path): unknown` for dot
 | `filters` | Left toolbar filters; only with showToolbar |
 | `footer` | Content below the scrollable table, such as pagination |
 | `q-data-table-cell-*` | Generated per-column/per-row rich content; default is rendered cell value |
+| `q-data-table-row-gutter-*` | Row-specific content in custom gutter mode; names from `getDataTableRowGutterSlotName` |
 | `toolbar-left` | Content after the optional title and before built-in search; only with showToolbar |
 
 There is no public default slot.
@@ -436,6 +471,7 @@ Defaults show local declarations, shared defaults where declared, or the compone
 | `--q-table-outer-border` | `var(--q-border, 1px solid var(--q-border-color, #374151))` | Table container border. |
 | `--q-table-outer-radius` | `var(--q-radius-lg, 11px)` | Table container corner radius. |
 | `--q-table-search-width` | `240px` | Built-in search field width. |
+| `--q-table-row-gutter-width` | `36px` | Leading gutter width, including padding; oversized content is clipped. |
 | `--q-table-sticky-column-bg` | `var(--q-bg-base, #111827)` | Sticky body cell background. |
 | `--q-table-sticky-column-hover-bg` | `var(--q-bg-surface-1, #1f2937)` | Sticky body cell background on row hover. |
 | `--q-table-sticky-column-selected-bg` | `color-mix(in srgb, var(--q-color-primary, #60a5fa) 8%, var(--q-bg-base, #111827))` | Sticky body cell background in a selected row. |
@@ -449,6 +485,8 @@ Defaults show local declarations, shared defaults where declared, or the compone
 
 | Name | Targets |
 | :--- | :--- |
+| `row-gutter-header` | Structural gutter header. |
+| `row-gutter-cell` | Structural gutter body cells. |
 | `cell` | Each data cell; absent for loading/empty/group cells |
 | `column-header` | Each configured column header |
 | Consumer class tokens | Header/body targets produced by className and cellClassName |

@@ -75,6 +75,7 @@ export class QButton extends Mixin(withActionProps) {
   // ========================= [2] INTERNAL STATE & REFS =========================
 
   @State() autoIconOnly: boolean = false;
+  @State() private defaultSlotIcon: boolean = false;
 
   private hasWarnedMissingAccessibleName = false;
   @State() private disabledState = false;
@@ -131,6 +132,7 @@ export class QButton extends Mixin(withActionProps) {
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
   private checkIconOnly = () => {
+    this.defaultSlotIcon = this.hasDefaultSlotIcon();
     const text = this.getVisibleText();
     const hasIcon = this.hasShortcutIcon() ||
                     this.el.querySelector('q-icon') !== null ||
@@ -145,15 +147,16 @@ export class QButton extends Mixin(withActionProps) {
   };
 
   private getVisibleText(): string {
-    return Array.from(this.el.childNodes)
-      .filter(node => {
-        if (node.nodeType !== 1) return true;
-        const slot = (node as HTMLElement).slot;
-        return slot !== 'icon-left' && slot !== 'icon-right';
-      })
+    return this.getDefaultSlotNodes()
       .map(node => node.textContent || '')
       .join('')
       .trim();
+  }
+
+  private getDefaultSlotNodes(): Node[] {
+    return Array.from(this.el.childNodes).filter(node =>
+      node.nodeType === 3 || (node.nodeType === 1 && !(node as HTMLElement).slot),
+    );
   }
 
   private getShortcutIcon(): QIconName | undefined {
@@ -173,7 +176,9 @@ export class QButton extends Mixin(withActionProps) {
   }
 
   private hasDefaultSlotIcon(): boolean {
-    return this.el.querySelector('q-icon:not([slot])') !== null;
+    return this.getDefaultSlotNodes().some(node => node.nodeType === 1 && (
+      (node as HTMLElement).matches('q-icon') || (node as HTMLElement).querySelector('q-icon') !== null
+    ));
   }
 
   private warnForMissingAccessibleName() {
@@ -223,7 +228,6 @@ export class QButton extends Mixin(withActionProps) {
     const isIcon = this.iconOnly !== undefined ? this.iconOnly : this.autoIconOnly;
     const shortcutIcon = this.getShortcutIcon();
     const ariaLabel = this.ariaLabel?.trim() || undefined;
-    const hasDefaultSlotIcon = this.hasDefaultSlotIcon();
 
     const classes = {
       'btn': true,
@@ -242,7 +246,7 @@ export class QButton extends Mixin(withActionProps) {
         <slot name="icon-left" onSlotchange={this.handleSlotChange}>
           {shortcutIcon && <q-icon name={shortcutIcon} size="var(--_q-control-icon)" part="icon" />}
         </slot>
-        <span class={{ 'btn-label': true, 'has-default-slot-icon': hasDefaultSlotIcon }}>
+        <span class={{ 'btn-label': true, 'has-default-slot-icon': this.defaultSlotIcon }}>
           <slot onSlotchange={this.handleSlotChange} />
         </span>
         <slot name="icon-right" onSlotchange={this.handleSlotChange} />
@@ -288,4 +292,3 @@ export class QButton extends Mixin(withActionProps) {
     );
   }
 }
-

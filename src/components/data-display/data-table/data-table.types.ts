@@ -2,6 +2,7 @@ export type DataTableItem = unknown;
 export type DataTableKey = unknown;
 export type DataTableSortDirection = 'asc' | 'desc';
 export type DataTableSortMode = 'table' | 'external';
+export type DataTableRowGutter = 'none' | 'blank' | 'numbers' | 'custom';
 export type DataTableColumnSticky = 'start';
 export type DataTableCellClassName<T = unknown> =
   | string

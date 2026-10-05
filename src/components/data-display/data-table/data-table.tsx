@@ -4,6 +4,7 @@ import type {
   DataTableKey,
   DataTableRowAction,
   DataTableRowGrouper,
+  DataTableRowGutter,
   DataTableSortDirection,
   DataTableSortMode,
   QDataTableRowActionDetail,
@@ -28,6 +29,8 @@ import { getAllItemKeys, getSelectedItems, toggleSelectedKey } from './internals
  * @slot empty - Empty-state content shown when no rows are available.
  * @slot footer - Footer content rendered below the scrollable table.
  * @slot q-data-table-cell-* - Framework adapter cell content keyed by column and stable row key.
+ * @slot q-data-table-row-gutter-* - Custom row gutter content keyed by stable row identity.
+ * @cssprop --q-table-row-gutter-width - Row gutter width, including padding (default 36px).
  * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
  * @cssprop --q-table-group-bg - Background color for row-group divider rows.
  * @cssprop --q-table-group-fg - Text color for row-group divider rows.
@@ -62,6 +65,10 @@ export class QDataTable {
   @Prop() rowActions: DataTableRowAction[] | string = [];
   /** Enables full-row click and keyboard activation. */
   @Prop() rowClickable: boolean = true;
+  /** Structural leading cell: blank by default, numbers, custom row slots, or none. */
+  @Prop() rowGutter: DataTableRowGutter = 'blank';
+  /** Numbering offset; invalid, negative or non-safe-integer values fall back to zero. */
+  @Prop() rowNumberOffset: number = 0;
   /** Enables row selection checkboxes and selection state. */
   @Prop() selectable: boolean = false;
   @Prop({ mutable: true }) selectedKeys: DataTableKey[] = [];
@@ -210,6 +217,8 @@ export class QDataTable {
       items: this.items,
       rowActions: this.rowActions,
       rowClickable: this.rowClickable,
+      rowGutter: this.rowGutter,
+      rowNumberOffset: this.rowNumberOffset,
       rowGroup: this.rowGroup,
       selectedKeys: this.selectedKeys,
       selectable: this.selectable,

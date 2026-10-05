@@ -110,6 +110,12 @@ The inner button uses native Tab, Enter, and Space behavior; anchors use Tab and
 
 Visible default-slot text names the control. A nonblank `aria-label` is forwarded to the native button or anchor. Icon-only content needs `aria-label`. When `iconOnly` is omitted, the component detects icon content without visible text; explicit `false` disables this detection. `icon-left` content replaces the `icon` shorthand. Loading exposes busy state, without creating a live region.
 
+Icons inside a wrapper assigned to `icon-left` or `icon-right` belong to that named
+region and leave no empty label or extra label gap. Direct default-slot icons and
+icons inside default-slot wrappers remain visible in icon-only mode. Moving a
+wrapper between named and default slots updates its classification; framework
+comment nodes do not count as visible label text.
+
 ### Forms
 
 `q-button` associates with its native form for ownership and inherited disabling. type="reset" bridges to that native form, including a same-tree form= target, or its logical [q-form](./q-form.md) owner. type="submit" uses the same ownership rules. An unresolved/empty form= target prevents fallback; a q-form host ID is not a native form target. Both activations wait until qClick and native click listeners finish, so either event can cancel, including later listeners. Link mode, loading and effective disabling suppress form actions.

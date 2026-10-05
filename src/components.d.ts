@@ -17,7 +17,7 @@ import { QCardElevation } from "./components/content/card/card.types";
 import { QCarouselSlideChangeDetail, QCarouselSnapAlignment, QCarouselTransition } from "./components/content/carousel/carousel.types";
 import { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/data-display/chip/chip.types";
 import { QConversationBubbleVariant } from "./components/communication/conversation-bubble/conversation-bubble.types";
-import { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
+import { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableRowGutter, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
 import { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
 import { DropdownOptionInput, Option, QDropdownPlacement, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
 import { QInputSize, QInputType } from "./components/inputs/input/input.types";
@@ -55,7 +55,7 @@ export { QCardElevation } from "./components/content/card/card.types";
 export { QCarouselSlideChangeDetail, QCarouselSnapAlignment, QCarouselTransition } from "./components/content/carousel/carousel.types";
 export { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/data-display/chip/chip.types";
 export { QConversationBubbleVariant } from "./components/communication/conversation-bubble/conversation-bubble.types";
-export { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
+export { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableRowGutter, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
 export { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
 export { DropdownOptionInput, Option, QDropdownPlacement, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
 export { QInputSize, QInputType } from "./components/inputs/input/input.types";
@@ -432,6 +432,7 @@ export namespace Components {
     }
     /**
      * Data grid with optional toolbar, search, row activation, and multi-row selection.
+     * @cssprop --q-table-row-gutter-width - Row gutter width, including padding (default 36px).
      * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
      * @cssprop --q-table-group-bg - Background color for row-group divider rows.
      * @cssprop --q-table-group-fg - Text color for row-group divider rows.
@@ -487,6 +488,16 @@ export namespace Components {
           * Inserts a divider whenever the returned group key changes.
          */
         "rowGroup"?: DataTableRowGrouper;
+        /**
+          * Structural leading cell: blank by default, numbers, custom row slots, or none.
+          * @default 'blank'
+         */
+        "rowGutter": DataTableRowGutter;
+        /**
+          * Numbering offset; invalid, negative or non-safe-integer values fall back to zero.
+          * @default 0
+         */
+        "rowNumberOffset": number;
         /**
           * @default 'Search...'
          */
@@ -2325,6 +2336,7 @@ declare global {
     }
     /**
      * Data grid with optional toolbar, search, row activation, and multi-row selection.
+     * @cssprop --q-table-row-gutter-width - Row gutter width, including padding (default 36px).
      * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
      * @cssprop --q-table-group-bg - Background color for row-group divider rows.
      * @cssprop --q-table-group-fg - Text color for row-group divider rows.
@@ -3320,6 +3332,7 @@ declare namespace LocalJSX {
     }
     /**
      * Data grid with optional toolbar, search, row activation, and multi-row selection.
+     * @cssprop --q-table-row-gutter-width - Row gutter width, including padding (default 36px).
      * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
      * @cssprop --q-table-group-bg - Background color for row-group divider rows.
      * @cssprop --q-table-group-fg - Text color for row-group divider rows.
@@ -3383,6 +3396,16 @@ declare namespace LocalJSX {
           * Inserts a divider whenever the returned group key changes.
          */
         "rowGroup"?: DataTableRowGrouper;
+        /**
+          * Structural leading cell: blank by default, numbers, custom row slots, or none.
+          * @default 'blank'
+         */
+        "rowGutter"?: DataTableRowGutter;
+        /**
+          * Numbering offset; invalid, negative or non-safe-integer values fall back to zero.
+          * @default 0
+         */
+        "rowNumberOffset"?: number;
         /**
           * @default 'Search...'
          */
@@ -5104,6 +5127,8 @@ declare namespace LocalJSX {
         "keyField": string;
         "rowActions": DataTableRowAction[] | string;
         "rowClickable": boolean;
+        "rowGutter": DataTableRowGutter;
+        "rowNumberOffset": number;
         "selectable": boolean;
         "sortable": boolean;
         "sortMode": DataTableSortMode;
@@ -5564,6 +5589,7 @@ declare module "@stencil/core" {
             "q-conversation-bubble": LocalJSX.IntrinsicElements["q-conversation-bubble"] & JSXBase.HTMLAttributes<HTMLQConversationBubbleElement>;
             /**
              * Data grid with optional toolbar, search, row activation, and multi-row selection.
+             * @cssprop --q-table-row-gutter-width - Row gutter width, including padding (default 36px).
              * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
              * @cssprop --q-table-group-bg - Background color for row-group divider rows.
              * @cssprop --q-table-group-fg - Text color for row-group divider rows.

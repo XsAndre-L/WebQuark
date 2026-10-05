@@ -2,6 +2,17 @@
   "name": "Data Table",
   "tag": "q-data-table",
   "props": {
+    "rowGutter": {
+      "type": "select",
+      "options": ["none", "blank", "numbers", "custom"],
+      "default": "blank",
+      "desc": "Structural leading cell; custom uses stable row-specific slots"
+    },
+    "rowNumberOffset": {
+      "type": "number",
+      "default": 0,
+      "desc": "Nonnegative safe integer offset for displayed row numbers"
+    },
     "selectable": {
       "type": "boolean",
       "default": false,
@@ -108,6 +119,19 @@
     }
   },
   "variants": [
+    {
+      "name": "Numbered Rows",
+      "props": {
+        "rowGutter": "numbers",
+        "rowNumberOffset": 0
+      }
+    },
+    {
+      "name": "No Row Gutter",
+      "props": {
+        "rowGutter": "none"
+      }
+    },
     {
       "name": "Standard Data Grid",
       "props": {

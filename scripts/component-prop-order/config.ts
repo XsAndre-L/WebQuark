@@ -176,6 +176,8 @@ export const DEFAULT_CLASSIFICATIONS: readonly ClassificationEntry[] = [
       'rowActions',
       'rowClickable',
       'rowGroup',
+      'rowGutter',
+      'rowNumberOffset',
       'scrollable',
       'searchable',
       'selectable',
@@ -324,6 +326,7 @@ export const DEFAULT_PROP_ORDER_CONFIG: PropOrderConfig = {
     { id: 'alert-dismissal', scope: 'q-alert', props: ['dismissible', 'dismissLabel'] },
     { id: 'table-data', scope: 'q-data-table', props: ['columns', 'items', 'keyField'] },
     { id: 'table-row-interaction', scope: 'q-data-table', props: ['rowGroup', 'rowActions', 'rowClickable'] },
+    { id: 'table-row-gutter', scope: 'q-data-table', props: ['rowGutter', 'rowNumberOffset'] },
     { id: 'table-selection', scope: 'q-data-table', props: ['selectable', 'selectedKeys'] },
     {
       id: 'table-sorting',
