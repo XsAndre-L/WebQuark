@@ -7,7 +7,7 @@ import type {
 
 type QIconElement = HTMLElement & { name?: string; size?: string | number };
 
-const KIND_CLASSES = ['kind-dot', 'kind-avatar', 'kind-icon'];
+const KIND_CLASSES = ['kind-dot', 'kind-avatar', 'kind-icon', 'kind-image'];
 const RING_CLASSES = ['ring-none', 'ring-solid', 'ring-dashed'];
 const ICON_SIZE_PROPERTY = '--q-map-marker-icon-size';
 const ICON_OFFSET_X_PROPERTY = '--q-map-marker-icon-offset-x';
@@ -52,13 +52,21 @@ export function createMarkerContent(document: Document): HTMLElement {
   image.setAttribute('aria-hidden', 'true');
   image.addEventListener('load', () => {
     if (image.dataset.source !== image.getAttribute('src')) return;
+    if (surface.dataset.markerKind === 'image' && (!image.complete || image.naturalWidth <= 0))
+      return;
+
     image.hidden = false;
     center.classList.add('has-image');
+    syncImageMarkerPresentation(surface, image);
   });
   image.addEventListener('error', () => {
     if (image.dataset.source !== image.getAttribute('src')) return;
+    if (surface.dataset.markerKind === 'image' && (!image.complete || image.naturalWidth > 0))
+      return;
+
     image.hidden = true;
     center.classList.remove('has-image');
+    syncImageMarkerPresentation(surface, image);
   });
 
   const icon = createIcon(document, 'q-map-marker__icon');
@@ -79,6 +87,39 @@ export function createMarkerContent(document: Document): HTMLElement {
   content.append(center, badge);
   surface.append(content);
   return surface;
+}
+
+function syncImageMarkerPresentation(element: HTMLElement, image: HTMLImageElement): void {
+  const position = element.parentElement;
+  const requested = element.dataset.markerKind === 'image';
+  const active = requested && !image.hidden;
+  if (active) {
+    element.classList.add('kind-image');
+    position?.classList.add('is-image');
+  } else {
+    element.classList.remove('kind-image');
+    position?.classList.remove('is-image');
+  }
+  if (!requested)
+    return;
+
+  element.classList.toggle('kind-dot', !active);
+  element.classList.toggle('has-content', active);
+  if (!active || !position)
+    return;
+
+  const naturalWidth = image.naturalWidth || 32;
+  const naturalHeight = image.naturalHeight || 32;
+  const scale = Math.min(1, 48 / naturalWidth, 48 / naturalHeight);
+  const width = Number(image.dataset.width) || naturalWidth * scale;
+  const height = Number(image.dataset.height) || naturalHeight * scale;
+  const anchorX = image.dataset.anchorX === undefined ? width / 2 : Number(image.dataset.anchorX);
+  const anchorY = image.dataset.anchorY === undefined ? height : Number(image.dataset.anchorY);
+
+  position.style.setProperty('--q-map-image-width', `${width}px`);
+  position.style.setProperty('--q-map-image-height', `${height}px`);
+  position.style.setProperty('--q-map-image-anchor-x', `${anchorX}px`);
+  position.style.setProperty('--q-map-image-anchor-y', `${anchorY}px`);
 }
 
 function updateImage(center: HTMLElement, image: HTMLImageElement, imageUrl: string | undefined): void {
@@ -107,6 +148,7 @@ export function updateMarkerPresentation(element: HTMLElement, marker: QMapMarke
 
   const kind = marker.kind === 'icon' && !marker.icon ? 'dot' : marker.kind;
   if (kind) element.classList.add(`kind-${kind}`);
+  element.dataset.markerKind = kind ?? '';
   element.classList.toggle('is-pulsing', marker.pulse === true);
   element.classList.toggle('is-selected', selected);
   syncFinitePixelProperty(element, ICON_SIZE_PROPERTY, marker.iconSize);
@@ -121,13 +163,25 @@ export function updateMarkerPresentation(element: HTMLElement, marker: QMapMarke
 
   const avatarContent = kind === 'avatar' || kind === undefined;
   const fallbackText = avatarContent ? marker.fallbackText ?? '' : '';
-  const imageUrl = avatarContent ? marker.imageUrl : undefined;
+  const imageUrl = avatarContent || kind === 'image' ? marker.imageUrl : undefined;
   const iconName = kind === 'icon' ? marker.icon : undefined;
   fallback.textContent = fallbackText;
   fallback.hidden = !fallbackText;
+  for (const [key, value] of Object.entries({
+    width: marker.imageSize?.[0],
+    height: marker.imageSize?.[1],
+    anchorX: marker.imageAnchor?.[0],
+    anchorY: marker.imageAnchor?.[1],
+  })) {
+    if (value === undefined)
+      delete image.dataset[key];
+    else
+      image.dataset[key] = String(value);
+  }
   updateImage(center, image, imageUrl);
   updateIcon(icon, iconName);
   element.classList.toggle('has-content', Boolean(fallbackText || imageUrl || iconName));
+  syncImageMarkerPresentation(element, image);
 
   const badge = element.querySelector<HTMLElement>('.q-map-marker__badge');
   const badgeIcon = badge?.querySelector<QIconElement>('.q-map-marker__badge-icon');

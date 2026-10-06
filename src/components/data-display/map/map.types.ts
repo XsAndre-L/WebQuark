@@ -32,7 +32,7 @@ export type QMapRasterTileLoadingPolicy =
 export type QMapGoogleMapType = 'roadmap' | 'satellite' | 'terrain' | 'hybrid';
 
 export const Q_MAP_MARKER_VARIANTS = ['default', 'success', 'warning', 'danger', 'muted'] as const;
-export const Q_MAP_MARKER_KINDS = ['dot', 'avatar', 'icon'] as const;
+export const Q_MAP_MARKER_KINDS = ['dot', 'avatar', 'icon', 'image'] as const;
 export const Q_MAP_MARKER_SIZES = ['small', 'medium', 'large'] as const;
 export const Q_MAP_MARKER_RINGS = ['none', 'solid', 'dashed'] as const;
 export const Q_MAP_MARKER_CALLOUT_PLACEMENTS = ['auto', 'left', 'right', 'top', 'bottom'] as const;
@@ -85,6 +85,13 @@ export interface QMapMarkerCallout {
   visibility?: QMapMarkerCalloutVisibility;
 }
 
+export interface QMapFitMarkersOptions {
+  /** Padding on each viewport edge in pixels. Defaults to zero. */
+  padding?: number;
+  /** Limits fitted zoom without exceeding the map's configured zoom range. */
+  maxZoom?: number;
+}
+
 export interface QMapMarker {
   id: QMapMarkerId;
   latitude: number;
@@ -96,6 +103,10 @@ export interface QMapMarker {
   clusterGroup?: string;
   variant?: QMapMarkerVariant;
   imageUrl?: string;
+  /** Displayed width and height for image markers, in pixels. */
+  imageSize?: readonly [number, number];
+  /** Coordinate anchor measured from the image's top-left. Defaults to bottom-center. */
+  imageAnchor?: readonly [number, number];
   fallbackText?: string;
   kind?: QMapMarkerKind;
   icon?: QIconName;

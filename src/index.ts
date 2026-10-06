@@ -45,6 +45,13 @@ export {
 } from './components/data-display/data-table/data-table-cell';
 export type * from './components.d.ts';
 export type {
+  QCarouselAutoplayChangeDetail,
+  QCarouselLayout,
+  QCarouselSlideChangeDetail,
+  QCarouselSnapAlignment,
+  QCarouselTransition,
+} from './components/content/carousel/carousel.types';
+export type {
   DataTableCellContext,
   DataTableCellClassName,
   DataTableColumnSticky,
@@ -70,6 +77,7 @@ export type {
   QMapErrorCode,
   QMapErrorDetail,
   QMapGoogleMapType,
+  QMapFitMarkersOptions,
   QMapMarker,
   QMapMarkerBadge,
   QMapMarkerCallout,

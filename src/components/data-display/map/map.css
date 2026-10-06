@@ -408,6 +408,37 @@ a.map-attribution:focus-visible {
   display: none;
 }
 
+.q-map-marker-position.is-image {
+  width: var(--q-map-image-width) !important;
+  height: var(--q-map-image-height) !important;
+  margin-left: calc(var(--q-map-image-anchor-x) * -1) !important;
+  margin-top: calc(var(--q-map-image-anchor-y) * -1) !important;
+}
+
+.q-map-marker.kind-image {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.q-map-marker.kind-image.is-selected {
+  filter: drop-shadow(0 0 3px var(--q-map-marker-selected-color, var(--q-fg-base, #f9fafb)));
+}
+
+.q-map-marker.kind-image .q-map-marker__center {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  border-radius: 0;
+  background: transparent;
+}
+
+.q-map-marker.kind-image .q-map-marker__image {
+  object-fit: contain;
+}
+
 .q-map-marker.ring-solid::after,
 .q-map-marker.ring-dashed::after {
   position: absolute;
