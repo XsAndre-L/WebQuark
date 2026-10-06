@@ -14,7 +14,7 @@ import { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant }
 import { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/inputs/form/form.types";
 import { QControlSize, QSpace, QSurface } from "./theme/tokens";
 import { QCardElevation } from "./components/content/card/card.types";
-import { QCarouselSlideChangeDetail, QCarouselSnapAlignment, QCarouselTransition } from "./components/content/carousel/carousel.types";
+import { QCarouselAutoplayChangeDetail, QCarouselLayout, QCarouselSlideChangeDetail, QCarouselSnapAlignment, QCarouselTransition } from "./components/content/carousel/carousel.types";
 import { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/data-display/chip/chip.types";
 import { QConversationBubbleVariant } from "./components/communication/conversation-bubble/conversation-bubble.types";
 import { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableRowGutter, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
@@ -22,7 +22,7 @@ import { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types
 import { DropdownOptionInput, Option, QDropdownPlacement, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
 import { QInputSize, QInputType } from "./components/inputs/input/input.types";
 import { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
-import { QMapBoundsInput, QMapClickDetail, QMapClusterSelectDetail, QMapErrorDetail, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapMarkerVisibilityResult, QMapProvider, QMapRasterTileLoadingPolicy, QMapStatusChangeDetail, QMapViewportRect } from "./components/data-display/map/map.types";
+import { QMapBoundsInput, QMapClickDetail, QMapClusterSelectDetail, QMapErrorDetail, QMapFitMarkersOptions, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapMarkerVisibilityResult, QMapProvider, QMapRasterTileLoadingPolicy, QMapStatusChangeDetail, QMapViewportRect } from "./components/data-display/map/map.types";
 import { QMediaKind, QMediaLoading } from "./components/media/media/media.types";
 import { NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode, QNavbarNavAlign, QNavbarNavCenterWithin } from "./components/layout/navbar/navbar.types";
 import { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
@@ -52,7 +52,7 @@ export { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant }
 export { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/inputs/form/form.types";
 export { QControlSize, QSpace, QSurface } from "./theme/tokens";
 export { QCardElevation } from "./components/content/card/card.types";
-export { QCarouselSlideChangeDetail, QCarouselSnapAlignment, QCarouselTransition } from "./components/content/carousel/carousel.types";
+export { QCarouselAutoplayChangeDetail, QCarouselLayout, QCarouselSlideChangeDetail, QCarouselSnapAlignment, QCarouselTransition } from "./components/content/carousel/carousel.types";
 export { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/data-display/chip/chip.types";
 export { QConversationBubbleVariant } from "./components/communication/conversation-bubble/conversation-bubble.types";
 export { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableRowGutter, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
@@ -60,7 +60,7 @@ export { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types
 export { DropdownOptionInput, Option, QDropdownPlacement, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
 export { QInputSize, QInputType } from "./components/inputs/input/input.types";
 export { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
-export { QMapBoundsInput, QMapClickDetail, QMapClusterSelectDetail, QMapErrorDetail, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapMarkerVisibilityResult, QMapProvider, QMapRasterTileLoadingPolicy, QMapStatusChangeDetail, QMapViewportRect } from "./components/data-display/map/map.types";
+export { QMapBoundsInput, QMapClickDetail, QMapClusterSelectDetail, QMapErrorDetail, QMapFitMarkersOptions, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapMarkerVisibilityResult, QMapProvider, QMapRasterTileLoadingPolicy, QMapStatusChangeDetail, QMapViewportRect } from "./components/data-display/map/map.types";
 export { QMediaKind, QMediaLoading } from "./components/media/media/media.types";
 export { NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode, QNavbarNavAlign, QNavbarNavCenterWithin } from "./components/layout/navbar/navbar.types";
 export { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
@@ -308,24 +308,56 @@ export namespace Components {
      */
     interface QCarousel {
         /**
+          * Accessible name forwarded to the slide viewport.
+          * @default 'Carousel content'
+         */
+        "ariaLabel": string;
+        /**
+          * Enables rotation; user interaction pauses until explicitly restarted.
+          * @default false
+         */
+        "autoplay": boolean;
+        /**
+          * Finite positive interval in milliseconds; invalid values use 5000.
+          * @default 5000
+         */
+        "autoplayInterval": number;
+        /**
+          * Temporarily suspends requested playback without changing the button action.
+          * @default false
+         */
+        "autoplaySuspended": boolean;
+        /**
           * `auto` preserves each slotted item's natural width.
           * @default 'auto'
          */
         "itemWidth": string;
+        /**
+          * Slideshow provides full-width slides with no default viewport inset or gap.
+          * @default 'strip'
+         */
+        "layout": QCarouselLayout;
+        /**
+          * Stops rotation until play() or the playback control explicitly restarts it.
+         */
+        "pause": () => Promise<void>;
+        /**
+          * Requests rotation when enabled; completed non-repeating playback restarts at the first slide.
+         */
+        "play": () => Promise<void>;
         /**
           * Wraps arrow and programmatic navigation at either end.
           * @default false
          */
         "repeat": boolean;
         /**
-          * @default false
+          * Omitted controls are enabled for navigable slideshows and disabled for strips.
          */
-        "showArrows": boolean;
+        "showArrows"?: boolean;
         /**
           * Shows clickable slide indicator dots when the carousel can scroll.
-          * @default false
          */
-        "showIndicators": boolean;
+        "showIndicators"?: boolean;
         /**
           * Scrolls the carousel to a zero-based slide index.
          */
@@ -1104,6 +1136,10 @@ export namespace Components {
          */
         "ensureMarkerVisible": (markerId: QMapMarkerId, occlusions: readonly QMapViewportRect[]) => Promise<QMapMarkerVisibilityResult>;
         /**
+          * Fits the latest valid marker coordinates without changing the configured center or zoom props.
+         */
+        "fitMarkers": (options?: QMapFitMarkersOptions) => Promise<boolean>;
+        /**
           * Browser-restricted key used only when WebQuark loads Google Maps.
           * @default ''
          */
@@ -1147,6 +1183,11 @@ export namespace Components {
           * @default 'full-batch'
          */
         "rasterTileLoadingPolicy": QMapRasterTileLoadingPolicy;
+        /**
+          * Enables mouse-wheel zoom without changing touch, keyboard, or button controls.
+          * @default true
+         */
+        "scrollWheelZoom": boolean;
         /**
           * Controls the selected visual and `aria-pressed` state.
          */
@@ -2277,6 +2318,7 @@ declare global {
     };
     interface HTMLQCarouselElementEventMap {
         "qSlideChange": QCarouselSlideChangeDetail;
+        "qAutoplayChange": QCarouselAutoplayChangeDetail;
     }
     /**
      * A carousel with sliding, crossfade or instant transitions and shared navigation.
@@ -3205,10 +3247,39 @@ declare namespace LocalJSX {
      */
     interface QCarousel {
         /**
+          * Accessible name forwarded to the slide viewport.
+          * @default 'Carousel content'
+         */
+        "ariaLabel"?: string;
+        /**
+          * Enables rotation; user interaction pauses until explicitly restarted.
+          * @default false
+         */
+        "autoplay"?: boolean;
+        /**
+          * Finite positive interval in milliseconds; invalid values use 5000.
+          * @default 5000
+         */
+        "autoplayInterval"?: number;
+        /**
+          * Temporarily suspends requested playback without changing the button action.
+          * @default false
+         */
+        "autoplaySuspended"?: boolean;
+        /**
           * `auto` preserves each slotted item's natural width.
           * @default 'auto'
          */
         "itemWidth"?: string;
+        /**
+          * Slideshow provides full-width slides with no default viewport inset or gap.
+          * @default 'strip'
+         */
+        "layout"?: QCarouselLayout;
+        /**
+          * Actual running state, including temporary suspension.
+         */
+        "onQAutoplayChange"?: (event: QCarouselCustomEvent<QCarouselAutoplayChangeDetail>) => void;
         "onQSlideChange"?: (event: QCarouselCustomEvent<QCarouselSlideChangeDetail>) => void;
         /**
           * Wraps arrow and programmatic navigation at either end.
@@ -3216,12 +3287,11 @@ declare namespace LocalJSX {
          */
         "repeat"?: boolean;
         /**
-          * @default false
+          * Omitted controls are enabled for navigable slideshows and disabled for strips.
          */
         "showArrows"?: boolean;
         /**
           * Shows clickable slide indicator dots when the carousel can scroll.
-          * @default false
          */
         "showIndicators"?: boolean;
         /**
@@ -4077,6 +4147,11 @@ declare namespace LocalJSX {
           * @default 'full-batch'
          */
         "rasterTileLoadingPolicy"?: QMapRasterTileLoadingPolicy;
+        /**
+          * Enables mouse-wheel zoom without changing touch, keyboard, or button controls.
+          * @default true
+         */
+        "scrollWheelZoom"?: boolean;
         /**
           * Controls the selected visual and `aria-pressed` state.
          */
@@ -5092,6 +5167,7 @@ declare namespace LocalJSX {
         "interactive": boolean;
     }
     interface QCarouselAttributes {
+        "layout": QCarouselLayout;
         "snapAlignment": QCarouselSnapAlignment;
         "itemWidth": string;
         "showArrows": boolean;
@@ -5099,6 +5175,10 @@ declare namespace LocalJSX {
         "repeat": boolean;
         "transition": QCarouselTransition;
         "transitionDuration": number;
+        "autoplay": boolean;
+        "autoplayInterval": number;
+        "autoplaySuspended": boolean;
+        "ariaLabel": string;
     }
     interface QChipAttributes {
         "label": string;
@@ -5269,6 +5349,7 @@ declare namespace LocalJSX {
         "centerLongitude": number;
         "zoom": number;
         "zoomControls": boolean;
+        "scrollWheelZoom": boolean;
         "minZoom": number;
         "maxZoom": number;
         "maxBounds": QMapBoundsInput;

@@ -111,3 +111,83 @@ describe('q-map marker callout presentation', () => {
     expect(content.classList.contains('variant-danger')).toBe(true);
   });
 });
+
+describe('q-map original image marker presentation', () => {
+  it('places the whole image at its anchor and restores dot geometry after failure or reuse', () => {
+    const position = document.createElement('div');
+    const content = createMarkerContent(document);
+    position.append(content);
+    const marker = {
+      id: 'pin', latitude: 0, longitude: 0, label: 'Pin', kind: 'image' as const,
+      imageUrl: 'https://example.test/pin.png', imageSize: [25, 41] as const,
+      imageAnchor: [0, 41] as const,
+    };
+    updateMarkerPresentation(content, marker, false);
+    const image = content.querySelector<HTMLImageElement>('img')!;
+    expect(content.classList.contains('kind-dot')).toBe(true);
+    Object.defineProperty(image, 'complete', { configurable: true, value: true });
+    Object.defineProperty(image, 'naturalWidth', { configurable: true, value: 25 });
+    Object.defineProperty(image, 'naturalHeight', { configurable: true, value: 41 });
+    image.dispatchEvent(new Event('load'));
+    expect(content.classList.contains('kind-image')).toBe(true);
+    expect(position.classList.contains('is-image')).toBe(true);
+    expect(position.style.getPropertyValue('--q-map-image-width')).toBe('25px');
+    expect(position.style.getPropertyValue('--q-map-image-height')).toBe('41px');
+    expect(position.style.getPropertyValue('--q-map-image-anchor-x')).toBe('0px');
+    Object.defineProperty(image, 'naturalWidth', { configurable: true, value: 0 });
+    image.dispatchEvent(new Event('error'));
+    expect(content.classList.contains('kind-dot')).toBe(true);
+    expect(position.classList.contains('is-image')).toBe(false);
+
+    updateMarkerPresentation(content, { ...marker, kind: 'avatar' }, false);
+    image.dispatchEvent(new Event('load'));
+    expect(content.classList.contains('kind-avatar')).toBe(true);
+    expect(position.classList.contains('is-image')).toBe(false);
+  });
+
+  it('ignores stale load and error events while a replacement image is pending', () => {
+    const position = document.createElement('div');
+    const content = createMarkerContent(document);
+    position.append(content);
+    const marker = {
+      id: 'pin', latitude: 0, longitude: 0, label: 'Pin', kind: 'image' as const,
+      imageUrl: 'https://example.test/first.png',
+    };
+    updateMarkerPresentation(content, marker, false);
+    const image = content.querySelector<HTMLImageElement>('img')!;
+    Object.defineProperty(image, 'complete', { configurable: true, value: false });
+    Object.defineProperty(image, 'naturalWidth', { configurable: true, value: 0 });
+    updateMarkerPresentation(content, { ...marker, imageUrl: 'https://example.test/next.png' }, false);
+    image.dispatchEvent(new Event('load'));
+    image.dispatchEvent(new Event('error'));
+    expect(image.hidden).toBe(true);
+    expect(position.classList.contains('is-image')).toBe(false);
+
+    Object.defineProperty(image, 'complete', { configurable: true, value: true });
+    Object.defineProperty(image, 'naturalWidth', { configurable: true, value: 25 });
+    Object.defineProperty(image, 'naturalHeight', { configurable: true, value: 41 });
+    image.dispatchEvent(new Event('load'));
+    image.dispatchEvent(new Event('error'));
+    expect(image.hidden).toBe(false);
+    expect(position.classList.contains('is-image')).toBe(true);
+  });
+
+  it('uses bounded natural dimensions and bottom-center without image metadata', () => {
+    const position = document.createElement('div');
+    const content = createMarkerContent(document);
+    position.append(content);
+    updateMarkerPresentation(content, {
+      id: 'natural', latitude: 0, longitude: 0, label: 'Natural',
+      kind: 'image', imageUrl: 'https://example.test/wide.png',
+    }, false);
+    const image = content.querySelector<HTMLImageElement>('img')!;
+    Object.defineProperty(image, 'complete', { value: true });
+    Object.defineProperty(image, 'naturalWidth', { value: 200 });
+    Object.defineProperty(image, 'naturalHeight', { value: 100 });
+    image.dispatchEvent(new Event('load'));
+    expect(position.style.getPropertyValue('--q-map-image-width')).toBe('48px');
+    expect(position.style.getPropertyValue('--q-map-image-height')).toBe('24px');
+    expect(position.style.getPropertyValue('--q-map-image-anchor-x')).toBe('24px');
+    expect(position.style.getPropertyValue('--q-map-image-anchor-y')).toBe('24px');
+  });
+});

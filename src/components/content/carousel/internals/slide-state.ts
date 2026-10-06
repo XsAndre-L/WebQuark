@@ -2,7 +2,7 @@
 export class CarouselSlideState {
   private originals = new Map<HTMLElement, { inert: boolean; hidden: string | null; active: string | null }>();
 
-  update(slides: HTMLElement[], index: number, viewport?: HTMLElement): void {
+  update(slides: HTMLElement[], index: number, focusTarget?: HTMLElement | (() => void)): void {
     for (const element of this.originals.keys()) {
       if (!slides.includes(element)) this.restoreElement(element);
     }
@@ -19,7 +19,12 @@ export class CarouselSlideState {
       // Focus is retargeted at each shadow boundary; inspect the slide's own root.
       const root = element.getRootNode();
       const focused = root instanceof ShadowRoot ? root.activeElement : element.ownerDocument.activeElement;
-      if (!active && element.contains(focused)) viewport?.focus({ preventScroll: true });
+      if (!active && element.contains(focused)) {
+        if (typeof focusTarget === 'function')
+          focusTarget();
+        else
+          focusTarget?.focus({ preventScroll: true });
+      }
       element.inert = active ? original.inert : true;
       this.attribute(element, 'aria-hidden', active ? original.hidden : 'true');
       this.attribute(element, 'data-q-carousel-active', active ? 'true' : 'false');

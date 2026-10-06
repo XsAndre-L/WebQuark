@@ -73,6 +73,18 @@ function getOptionalFiniteNumber(value: unknown): number | undefined {
     : undefined;
 }
 
+function getOptionalPixelPair(value: unknown, positive: boolean): [number, number] | undefined {
+  if (!Array.isArray(value) || value.length !== 2)
+    return undefined;
+
+  const first = getOptionalFiniteNumber(value[0]);
+  const second = getOptionalFiniteNumber(value[1]);
+  if (first === undefined || second === undefined || (positive && (first <= 0 || second <= 0)))
+    return undefined;
+
+  return [first, second];
+}
+
 function normalizeBadge(value: unknown): QMapMarkerBadge | undefined {
   if (!isRecord(value)) return undefined;
   const ariaLabel = getOptionalText(value.ariaLabel);
@@ -172,13 +184,17 @@ function normalizeMarker(value: unknown): QMapMarker | undefined {
 
   const label = typeof value.label === 'string' && value.label.trim().length > 0 ? value.label : String(value.id);
   const imageUrl = getOptionalText(value.imageUrl);
+  const imageSize = getOptionalPixelPair(value.imageSize, true);
+  const imageAnchor = getOptionalPixelPair(value.imageAnchor, false);
   const fallbackText = getOptionalText(value.fallbackText);
   const icon = getOptionalText(value.icon);
   const iconSize = getOptionalFiniteNumber(value.iconSize);
   const iconOffsetX = getOptionalFiniteNumber(value.iconOffsetX);
   const iconOffsetY = getOptionalFiniteNumber(value.iconOffsetY);
   const requestedKind = getOptionalEnum<QMapMarkerKind>(value.kind, MARKER_KINDS);
-  const kind = requestedKind === 'icon' && !icon ? 'dot' : requestedKind;
+  const kind = (requestedKind === 'icon' && !icon) || (requestedKind === 'image' && !imageUrl)
+    ? 'dot'
+    : requestedKind;
   const size = getOptionalEnum<QMapMarkerSize>(value.size, MARKER_SIZES);
   const ring = getOptionalEnum<QMapMarkerRing>(value.ring, MARKER_RINGS);
   const badge = normalizeBadge(value.badge);
@@ -193,6 +209,8 @@ function normalizeMarker(value: unknown): QMapMarker | undefined {
     clusterGroup: normalizeClusterGroup(value.clusterGroup),
     variant: getMarkerVariant(value.variant),
     ...(imageUrl ? { imageUrl } : {}),
+    ...(imageSize ? { imageSize } : {}),
+    ...(imageAnchor ? { imageAnchor } : {}),
     ...(fallbackText ? { fallbackText } : {}),
     ...(kind ? { kind } : {}),
     ...(icon ? { icon } : {}),

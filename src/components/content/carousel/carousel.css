@@ -20,9 +20,16 @@
   flex-direction: column;
 }
 
+/* The preset changes layout defaults without replacing authored per-instance tokens. */
+:host([layout='slideshow']) {
+  --q-carousel-padding: 0;
+  --q-carousel-gap: 0;
+}
+
 /* Viewport slider shell */
 .carousel-viewport {
   display: flex;
+  order: 1;
   flex-direction: row;
   overflow-x: auto;
   width: 100%;
@@ -34,9 +41,9 @@
   outline: none;
 }
 
-.carousel-viewport:focus-visible {
-  box-shadow: 0 0 0 2px var(--q-color-primary, #60a5fa);
-  border-radius: var(--q-radius-md, 8px);
+.carousel-viewport.viewport-focusable:focus-visible {
+  outline: var(--q-focus-ring, 2px solid var(--q-color-primary, #60a5fa));
+  outline-offset: -2px;
 }
 
 /* Hide native scrollbars to keep overlay interfaces clean */
@@ -125,6 +132,8 @@
 /* Keep additional content with the native indicators; consumers can style the part. */
 .carousel-controls {
   display: flex;
+  order: 2;
+  max-width: 100%;
   flex-direction: column;
   align-items: center;
   gap: var(--q-carousel-controls-gap, 0px);
@@ -213,5 +222,29 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .carousel-viewport { scroll-behavior: auto; }
   :host([transition='crossfade']) ::slotted(:not([slot='controls-extra'])) { transition: none; }
+}
+
+.rotation-btn {
+  min-width: 44px;
+  min-height: 44px;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: var(--q-padding-sm, 8px) var(--q-padding-md, 12px);
+  border: var(--q-border, 1px solid var(--q-border-color, #374151));
+  border-radius: var(--q-radius-md, 8px);
+  background: var(--q-bg-base, #111827);
+  color: var(--q-fg-base, #f9fafb);
+  font: inherit;
+  cursor: pointer;
+}
+
+.rotation-btn:focus-visible {
+  outline: var(--q-focus-ring, 2px solid var(--q-color-primary, #60a5fa));
+  outline-offset: 2px;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .arrow-btn { opacity: 1; }
 }
