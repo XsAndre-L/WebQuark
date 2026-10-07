@@ -5,6 +5,7 @@ import {
   QButton,
   QDropdown,
   QInput,
+  QImageComparison,
   QNavbar,
   QRadioGroup,
   QToggle,
@@ -19,6 +20,7 @@ import {
     QButton,
     QDropdown,
     QInput,
+    QImageComparison,
     QNavbar,
     QRadioGroup,
     QToggle,
@@ -28,6 +30,10 @@ import {
   ],
   template: `
     <q-navbar navAlign="center" navCenterWithin="container" [sticky]="true" />
+    <q-image-comparison beforeSrc="before.png" afterSrc="after.png"
+      beforeAlt="Original view" afterAlt="Updated view" beforeLabel="Original" afterLabel="Updated"
+      [aspectRatio]="16 / 9" [position]="comparisonPosition" ariaLabel="Compare views"
+      (qChange)="comparisonPosition = $event.detail" />
     <q-input label="Name" [formControl]="name" />
     <q-dropdown
       label="Status"
@@ -44,6 +50,7 @@ import {
   `,
 })
 export class ValidStandaloneConsumer {
+  comparisonPosition = 50;
   readonly name = new FormControl('', { nonNullable: true });
   readonly status = new FormControl('', { nonNullable: true });
   readonly access = new FormControl('user', { nonNullable: true });

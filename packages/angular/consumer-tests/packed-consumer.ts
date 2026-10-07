@@ -6,6 +6,7 @@ import {
   QButton,
   QDropdown,
   QInput,
+  QImageComparison,
   QNavbar,
   QPagination,
   QToggle,
@@ -24,6 +25,7 @@ import {
     QButton,
     QDropdown,
     QInput,
+    QImageComparison,
     QNavbar,
     QPagination,
     QToggle,
@@ -33,6 +35,9 @@ import {
   ],
   template: `
     <q-navbar navAlign="center" navCenterWithin="container" [sticky]="true" />
+    <q-image-comparison beforeSrc="before.png" afterSrc="after.png"
+      beforeAlt="Original view" afterAlt="Updated view" [aspectRatio]="16 / 9"
+      [position]="comparisonPosition" (qChange)="comparisonPosition = $event.detail" />
     <q-input label="Name" [formControl]="name" />
     <q-dropdown
       label="Status"
@@ -50,6 +55,7 @@ import {
   `,
 })
 export class PackedFormsConsumer {
+  comparisonPosition = 50;
   readonly name = new FormControl('', { nonNullable: true });
   readonly status = new FormControl('', { nonNullable: true });
   readonly enabled = new FormControl(false, { nonNullable: true });
