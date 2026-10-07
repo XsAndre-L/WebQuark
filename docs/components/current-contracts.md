@@ -109,6 +109,13 @@ Shared [foundation rules](../foundation.md) define inherited control sizes, layo
 - [Authored guide](./q-icon.md) · [Generated API](../../src/components/media/icon/readme.md)
 - Status: Implemented; see guide limitations.
 
+### `q-image-comparison`
+
+`q-image-comparison` reveals Before from the left over a complete After image in a fixed aspect-ratio frame.
+
+- [Authored guide](./q-image-comparison.md) · [Generated API](../../src/components/media/image-comparison/readme.md)
+- Status: Implemented; see guide limitations.
+
 ### `q-inline`
 
 `q-inline` arranges actions or content in a wrapping horizontal row.

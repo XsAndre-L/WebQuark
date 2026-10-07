@@ -19,6 +19,7 @@ This inventory follows current public component declarations. Documentation cove
 | `q-form` | Forms & inputs | Implemented; see guide limitations | [Guide](./components/q-form.md) |
 | `q-grid` | Layout | Implemented; see guide limitations | [Guide](./components/q-grid.md) |
 | `q-icon` | Media | Implemented; see guide limitations | [Guide](./components/q-icon.md) |
+| `q-image-comparison` | Media | Implemented; see guide limitations | [Guide](./components/q-image-comparison.md) |
 | `q-inline` | Layout | Implemented; see guide limitations | [Guide](./components/q-inline.md) |
 | `q-input` | Forms & inputs | Implemented; see guide limitations | [Guide](./components/q-input.md) |
 | `q-link` | Actions | Implemented; see guide limitations | [Guide](./components/q-link.md) |

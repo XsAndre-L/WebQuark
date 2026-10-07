@@ -909,6 +909,56 @@ export namespace Components {
         "size": QIconSize;
     }
     /**
+     * Compare two complete images in a stable frame by revealing Before from the left.
+     */
+    interface QImageComparison {
+        /**
+          * Accessible description of the After image.
+          * @default ''
+         */
+        "afterAlt": string;
+        /**
+          * Caption for the right image.
+          * @default 'After'
+         */
+        "afterLabel": string;
+        /**
+          * Source of the image revealed on the right.
+          * @default ''
+         */
+        "afterSrc": string;
+        /**
+          * Accessible name of the comparison control.
+          * @default 'Image comparison'
+         */
+        "ariaLabel": string;
+        /**
+          * Positive width / height ratio; invalid values use 16 / 9.
+          * @default 16 / 9
+         */
+        "aspectRatio": number;
+        /**
+          * Accessible description of the Before image.
+          * @default ''
+         */
+        "beforeAlt": string;
+        /**
+          * Caption for the left image.
+          * @default 'Before'
+         */
+        "beforeLabel": string;
+        /**
+          * Source of the image revealed on the left.
+          * @default ''
+         */
+        "beforeSrc": string;
+        /**
+          * Percentage of Before revealed, clamped to 0–100.
+          * @default 50
+         */
+        "position": number;
+    }
+    /**
      * Wrapping action/content row.
      */
     interface QInline {
@@ -2173,6 +2223,10 @@ export interface QFormCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLQFormElement;
 }
+export interface QImageComparisonCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQImageComparisonElement;
+}
 export interface QInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLQInputElement;
@@ -2512,6 +2566,26 @@ declare global {
     var HTMLQIconElement: {
         prototype: HTMLQIconElement;
         new (): HTMLQIconElement;
+    };
+    interface HTMLQImageComparisonElementEventMap {
+        "qChange": number;
+    }
+    /**
+     * Compare two complete images in a stable frame by revealing Before from the left.
+     */
+    interface HTMLQImageComparisonElement extends Components.QImageComparison, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQImageComparisonElementEventMap>(type: K, listener: (this: HTMLQImageComparisonElement, ev: QImageComparisonCustomEvent<HTMLQImageComparisonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQImageComparisonElementEventMap>(type: K, listener: (this: HTMLQImageComparisonElement, ev: QImageComparisonCustomEvent<HTMLQImageComparisonElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLQImageComparisonElement: {
+        prototype: HTMLQImageComparisonElement;
+        new (): HTMLQImageComparisonElement;
     };
     /**
      * Wrapping action/content row.
@@ -2999,6 +3073,7 @@ declare global {
         "q-form": HTMLQFormElement;
         "q-grid": HTMLQGridElement;
         "q-icon": HTMLQIconElement;
+        "q-image-comparison": HTMLQImageComparisonElement;
         "q-inline": HTMLQInlineElement;
         "q-input": HTMLQInputElement;
         "q-link": HTMLQLinkElement;
@@ -3869,6 +3944,60 @@ declare namespace LocalJSX {
           * @default 'md'
          */
         "size"?: QIconSize;
+    }
+    /**
+     * Compare two complete images in a stable frame by revealing Before from the left.
+     */
+    interface QImageComparison {
+        /**
+          * Accessible description of the After image.
+          * @default ''
+         */
+        "afterAlt"?: string;
+        /**
+          * Caption for the right image.
+          * @default 'After'
+         */
+        "afterLabel"?: string;
+        /**
+          * Source of the image revealed on the right.
+          * @default ''
+         */
+        "afterSrc"?: string;
+        /**
+          * Accessible name of the comparison control.
+          * @default 'Image comparison'
+         */
+        "ariaLabel"?: string;
+        /**
+          * Positive width / height ratio; invalid values use 16 / 9.
+          * @default 16 / 9
+         */
+        "aspectRatio"?: number;
+        /**
+          * Accessible description of the Before image.
+          * @default ''
+         */
+        "beforeAlt"?: string;
+        /**
+          * Caption for the left image.
+          * @default 'Before'
+         */
+        "beforeLabel"?: string;
+        /**
+          * Source of the image revealed on the left.
+          * @default ''
+         */
+        "beforeSrc"?: string;
+        /**
+          * Emits the numeric reveal percentage continuously for user changes only.
+         */
+        "onQChange"?: (event: QImageComparisonCustomEvent<number>) => void;
+        /**
+          * Percentage of Before revealed, clamped to 0–100.
+          * @default 50
+         */
+        "position"?: number;
     }
     /**
      * Wrapping action/content row.
@@ -5329,6 +5458,17 @@ declare namespace LocalJSX {
         "color": QIconColor;
         "label": string;
     }
+    interface QImageComparisonAttributes {
+        "beforeSrc": string;
+        "afterSrc": string;
+        "beforeLabel": string;
+        "afterLabel": string;
+        "aspectRatio": number;
+        "position": number;
+        "beforeAlt": string;
+        "afterAlt": string;
+        "ariaLabel": string;
+    }
     interface QInlineAttributes {
         "gap": QSpace;
         "align": 'stretch' | 'start' | 'center' | 'end';
@@ -5632,6 +5772,7 @@ declare namespace LocalJSX {
         "q-form": Omit<QForm, keyof QFormAttributes> & { [K in keyof QForm & keyof QFormAttributes]?: QForm[K] } & { [K in keyof QForm & keyof QFormAttributes as `attr:${K}`]?: QFormAttributes[K] } & { [K in keyof QForm & keyof QFormAttributes as `prop:${K}`]?: QForm[K] };
         "q-grid": Omit<QGrid, keyof QGridAttributes> & { [K in keyof QGrid & keyof QGridAttributes]?: QGrid[K] } & { [K in keyof QGrid & keyof QGridAttributes as `attr:${K}`]?: QGridAttributes[K] } & { [K in keyof QGrid & keyof QGridAttributes as `prop:${K}`]?: QGrid[K] };
         "q-icon": Omit<QIcon, keyof QIconAttributes> & { [K in keyof QIcon & keyof QIconAttributes]?: QIcon[K] } & { [K in keyof QIcon & keyof QIconAttributes as `attr:${K}`]?: QIconAttributes[K] } & { [K in keyof QIcon & keyof QIconAttributes as `prop:${K}`]?: QIcon[K] };
+        "q-image-comparison": Omit<QImageComparison, keyof QImageComparisonAttributes> & { [K in keyof QImageComparison & keyof QImageComparisonAttributes]?: QImageComparison[K] } & { [K in keyof QImageComparison & keyof QImageComparisonAttributes as `attr:${K}`]?: QImageComparisonAttributes[K] } & { [K in keyof QImageComparison & keyof QImageComparisonAttributes as `prop:${K}`]?: QImageComparison[K] };
         "q-inline": Omit<QInline, keyof QInlineAttributes> & { [K in keyof QInline & keyof QInlineAttributes]?: QInline[K] } & { [K in keyof QInline & keyof QInlineAttributes as `attr:${K}`]?: QInlineAttributes[K] } & { [K in keyof QInline & keyof QInlineAttributes as `prop:${K}`]?: QInline[K] };
         "q-input": Omit<QInput, keyof QInputAttributes> & { [K in keyof QInput & keyof QInputAttributes]?: QInput[K] } & { [K in keyof QInput & keyof QInputAttributes as `attr:${K}`]?: QInputAttributes[K] } & { [K in keyof QInput & keyof QInputAttributes as `prop:${K}`]?: QInput[K] };
         "q-link": Omit<QLink, keyof QLinkAttributes> & { [K in keyof QLink & keyof QLinkAttributes]?: QLink[K] } & { [K in keyof QLink & keyof QLinkAttributes as `attr:${K}`]?: QLinkAttributes[K] } & { [K in keyof QLink & keyof QLinkAttributes as `prop:${K}`]?: QLink[K] };
@@ -5745,6 +5886,10 @@ declare module "@stencil/core" {
              * Synchronous registered icon renderer with optional backwards-compatible URL loading.
              */
             "q-icon": LocalJSX.IntrinsicElements["q-icon"] & JSXBase.HTMLAttributes<HTMLQIconElement>;
+            /**
+             * Compare two complete images in a stable frame by revealing Before from the left.
+             */
+            "q-image-comparison": LocalJSX.IntrinsicElements["q-image-comparison"] & JSXBase.HTMLAttributes<HTMLQImageComparisonElement>;
             /**
              * Wrapping action/content row.
              */
