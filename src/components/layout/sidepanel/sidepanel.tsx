@@ -13,7 +13,7 @@ import {
   PanelTopClose,
   PanelTopOpen,
 } from '@lucide/icons';
-import { focusFirstElement, handleTabTrap } from '../../../utils/dom';
+import { focusFirstElement, getDeepActiveElement, handleTabTrap, safeFocus } from '../../../utils/dom';
 import type { QIconDefinition } from '../../media/icon/icon.types';
 import { handleDrawerOpenChange } from './internals/drawer';
 import { seedExpandedGroups, toggleGroup } from './internals/groups';
@@ -59,6 +59,7 @@ const COLLAPSE_ICON_DEFINITIONS: Readonly<Record<string, QIconDefinition>> = {
  * @part backdrop - Drawer backdrop click target.
  * @part drawer - Drawer dialog surface.
  * @part panel - Persistent panel surface.
+ * @part surface - Stable inner content surface for persistent panels.
  * @part header - Header region.
  * @part body - Body or navigation region.
  * @part item-badge - Navigation item's optional count badge.
@@ -141,6 +142,9 @@ export class QSidepanel {
   @Element() host!: HTMLElement;
 
   private drawerEl?: HTMLDivElement;
+  private persistentShell?: HTMLDivElement;
+  private persistentContent?: HTMLDivElement;
+  private panelParentObserver?: ResizeObserver;
 
   // ========================= [2] INTERNAL STATE & REFS =========================
 
@@ -165,19 +169,90 @@ export class QSidepanel {
   }
 
   componentDidLoad() {
+    this.updatePersistentSizing();
     if (this.variant === 'drawer' && this.open) {
+      this.previousActiveElement = getDeepActiveElement() as HTMLElement | null;
       focusFirstElement(this.drawerEl);
+    }
+  }
+
+  connectedCallback() {
+    if (this.persistentShell) this.updatePersistentSizing();
+  }
+
+  componentDidUpdate() {
+    this.updatePersistentSizing();
+  }
+
+  @Listen('resize', { target: 'window' })
+  handleResize() {
+    this.updatePersistentSizing();
+  }
+
+  @Watch('collapsed')
+  handleCollapsedChange(collapsed: boolean) {
+    if (!collapsed || !this.collapsible || this.variant === 'drawer' || this.collapseMode !== 'hidden') return;
+    let active = getDeepActiveElement() as HTMLElement | null;
+    while (active) {
+      if (this.host.contains(active) || this.persistentContent?.contains(active)) {
+        const control = this.persistentShell?.querySelector<HTMLButtonElement>('.collapse-control');
+        // Externally controlled panels without a built-in control release focus.
+        if (control) safeFocus(control);
+        else active.blur();
+        return;
+      }
+      active = (active.getRootNode() as ShadowRoot).host as HTMLElement | null;
+    }
+  }
+
+  private updatePersistentSizing() {
+    if (!this.persistentShell) return;
+    const style = getComputedStyle(this.persistentShell);
+    const hostStyle = getComputedStyle(this.host);
+    const inset = ['borderLeftWidth', 'borderRightWidth', 'paddingLeft', 'paddingRight']
+      .reduce((total, property) => total + (parseFloat(style[property]) || 0) + (parseFloat(hostStyle[property]) || 0), 0);
+    this.persistentShell.style.setProperty('--q-sidepanel-content-inline-inset', `${inset}px`);
+    const blockInset = ['borderTopWidth', 'borderBottomWidth', 'paddingTop', 'paddingBottom']
+      .reduce((total, property) => total + (parseFloat(style[property]) || 0) + (parseFloat(hostStyle[property]) || 0), 0);
+    const height = (hostStyle.getPropertyValue('--q-sidepanel-panel-content-height') || hostStyle.getPropertyValue('--q-sidepanel-panel-height')).trim();
+    if (height) this.persistentShell.style.setProperty('--q-sidepanel-resolved-content-height', `calc(${height} - ${blockInset}px)`);
+    else this.persistentShell.style.removeProperty('--q-sidepanel-resolved-content-height');
+    const width = (this.variant === 'nav'
+      ? hostStyle.getPropertyValue('--q-sidepanel-expanded-width')
+      : hostStyle.getPropertyValue('--q-sidepanel-panel-width') || hostStyle.getPropertyValue('--q-panel-width')).trim();
+    const parent = this.host.parentElement;
+    if (this.collapsible && parent && /^\d+(\.\d+)?%$/.test(width)) {
+      const parentStyle = getComputedStyle(parent);
+      const parentWidth = parent.clientWidth - parseFloat(parentStyle.paddingLeft || '0') - parseFloat(parentStyle.paddingRight || '0');
+      this.persistentShell.style.setProperty('--q-sidepanel-resolved-panel-width', `${parentWidth * parseFloat(width) / 100}px`);
+      if (!this.panelParentObserver && typeof ResizeObserver !== 'undefined') {
+        // Only percentage sizing needs observation of its containing layout.
+        this.panelParentObserver = new ResizeObserver(() => this.updatePersistentSizing());
+        this.panelParentObserver.observe(parent);
+      }
+    } else {
+      this.persistentShell.style.removeProperty('--q-sidepanel-resolved-panel-width');
+      this.panelParentObserver?.disconnect();
+      this.panelParentObserver = undefined;
     }
   }
 
   disconnectedCallback() {
     this.clearDrawerOpenCleanup();
+    this.panelParentObserver?.disconnect();
+    this.panelParentObserver = undefined;
   }
 
   @Watch('open')
   handleOpenChange(isOpen: boolean) {
     if (this.variant !== 'drawer') return;
     this.clearDrawerOpenCleanup();
+    if (!isOpen && !this.isAnimatedOpen) {
+      this.isVisible = false;
+      safeFocus(this.previousActiveElement);
+      this.previousActiveElement = null;
+      return;
+    }
     this.drawerOpenCleanup = handleDrawerOpenChange({
       isOpen,
       drawerEl: this.drawerEl,
@@ -402,11 +477,18 @@ export class QSidepanel {
         'nav-sidebar': true,
         'is-collapsible': isCollapseActive,
         'is-collapsed': isCollapsed,
-        [`collapse-mode-${this.collapseMode}`]: isCollapsed,
+        [`collapse-mode-${this.collapseMode}`]: true,
+        'has-header-control': isCollapseActive && this.collapseControl === 'header',
+        'has-footer-control': isCollapseActive && this.collapseControl === 'footer',
       };
 
       return (
-        <div class={navClasses} role="navigation" aria-label={ariaLabel || 'Sidebar navigation'}>
+        <div
+          ref={el => { this.persistentShell = el; }}
+          class={navClasses}
+          role="navigation"
+          aria-label={ariaLabel || 'Sidebar navigation'}
+        >
           <div
             class={{
               'nav-header': true,
@@ -414,23 +496,29 @@ export class QSidepanel {
             }}
             part="header"
           >
-            {/* aria-hidden lives on this inner wrapper (not nav-header itself) so the
-                built-in collapse-control button below -- which stays visually/keyboard
-                reachable in collapse-mode="hidden" via the CSS override -- is never pulled
-                out of the accessibility tree by an aria-hidden ancestor. */}
-            <span aria-hidden={isHiddenCollapsed ? 'true' : undefined}>
+            <span
+              aria-hidden={isHiddenCollapsed ? 'true' : undefined}
+              inert={isHiddenCollapsed ? true : undefined}
+            >
               <slot name="header" onSlotchange={this.handleHeaderSlotChange} />
             </span>
-            {isCollapseActive && this.collapseControl === 'header' && this.renderCollapseControl('header')}
           </div>
 
-          <div class="nav-body" part="body" aria-hidden={isHiddenCollapsed ? 'true' : undefined}>
-            {renderNavItems({
-              items: this.normalizedItems,
-              expandedGroups: this.expandedGroups,
-              activeValue: this.value,
-              onItemClick: this.handleNavItemClick,
-            })}
+          <div
+            ref={el => { this.persistentContent = el; }}
+            class="nav-body"
+            part="body"
+            aria-hidden={isHiddenCollapsed ? 'true' : undefined}
+            inert={isHiddenCollapsed ? true : undefined}
+          >
+            <div class="nav-surface">
+              {renderNavItems({
+                items: this.normalizedItems,
+                expandedGroups: this.expandedGroups,
+                activeValue: this.value,
+                onItemClick: this.handleNavItemClick,
+              })}
+            </div>
           </div>
 
           <div
@@ -440,12 +528,16 @@ export class QSidepanel {
             }}
             part="footer"
           >
-            <span aria-hidden={isHiddenCollapsed ? 'true' : undefined}>
+            <span
+              aria-hidden={isHiddenCollapsed ? 'true' : undefined}
+              inert={isHiddenCollapsed ? true : undefined}
+            >
               <slot name="footer" onSlotchange={this.handleFooterSlotChange} />
             </span>
-            {isCollapseActive && this.collapseControl === 'footer' && this.renderCollapseControl('footer')}
           </div>
 
+          {isCollapseActive && this.collapseControl === 'header' && this.renderCollapseControl('header')}
+          {isCollapseActive && this.collapseControl === 'footer' && this.renderCollapseControl('footer')}
           {isCollapseActive && this.collapseControl === 'edge' && this.renderCollapseControl('edge')}
         </div>
       );
@@ -460,49 +552,55 @@ export class QSidepanel {
 
       return (
         <div
+          ref={el => { this.persistentShell = el; }}
           class={{
             'panel-shell': true,
             [`panel-side-${this.side}`]: true,
             'is-collapsible': isCollapseActive,
             'is-collapsed': isCollapsed,
             [`collapse-mode-${this.collapseMode}`]: isCollapsed,
+            'has-header-control': isCollapseActive && this.collapseControl === 'header',
+            'has-footer-control': isCollapseActive && this.collapseControl === 'footer',
           }}
           part="panel"
           role={ariaLabel ? 'region' : undefined}
           aria-label={ariaLabel}
         >
           <div
+            ref={el => { this.persistentContent = el; }}
             class="panel-content"
             aria-hidden={isHiddenCollapsed ? 'true' : undefined}
             inert={isHiddenCollapsed ? true : undefined}
           >
-            <div
-              class={{
-                'panel-header': true,
-                'is-hidden': !showHeader,
-              }}
-              part="header"
-            >
-              <slot name="header" onSlotchange={this.handleHeaderSlotChange} />
-              {isCollapseActive && this.collapseControl === 'header' && this.renderCollapseControl('header')}
-            </div>
+            <div class="panel-surface" part="surface">
+              <div
+                class={{
+                  'panel-header': true,
+                  'is-hidden': !showHeader,
+                }}
+                part="header"
+              >
+                <slot name="header" onSlotchange={this.handleHeaderSlotChange} />
+              </div>
 
-            <div class="panel-body" part="body">
-              <slot />
-            </div>
+              <div class="panel-body" part="body">
+                <slot />
+              </div>
 
-            <div
-              class={{
-                'panel-footer': true,
-                'is-hidden': !showFooter,
-              }}
-              part="footer"
-            >
-              <slot name="footer" onSlotchange={this.handleFooterSlotChange} />
-              {isCollapseActive && this.collapseControl === 'footer' && this.renderCollapseControl('footer')}
+              <div
+                class={{
+                  'panel-footer': true,
+                  'is-hidden': !showFooter,
+                }}
+                part="footer"
+              >
+                <slot name="footer" onSlotchange={this.handleFooterSlotChange} />
+              </div>
             </div>
           </div>
 
+          {isCollapseActive && this.collapseControl === 'header' && this.renderCollapseControl('header')}
+          {isCollapseActive && this.collapseControl === 'footer' && this.renderCollapseControl('footer')}
           {isCollapseActive && this.collapseControl === 'edge' && this.renderCollapseControl('edge')}
         </div>
       );

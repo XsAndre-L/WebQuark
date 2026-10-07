@@ -53,6 +53,34 @@ table.items = [{ id: 'ana', name: 'Ana', role: 'Designer' }, { id: 'ben', name: 
 
 ## Examples
 
+### Uniform two-line rows
+
+```html
+<q-data-table two-line-rows aria-label="Team members"></q-data-table>
+```
+
+Each data cell reserves two text lines plus its existing padding. Plain text
+wraps to two lines with ellipsis. Set `overflowTooltip: true` on selected columns
+to expose truncated values in a tooltip on hover and keyboard focus. Fitting
+text has no tooltip or extra keyboard stop. Full text remains in the accessible DOM.
+Column widths use fixed table layout in this mode.
+
+```javascript
+table.columns = [
+  { key: 'member', header: 'Member', overflowTooltip: true },
+  { key: 'store', header: 'Store', overflowTooltip: true },
+  { key: 'status', header: 'Status' },
+];
+```
+
+Rich-cell slots retain their own controls and tooltips. Their content must fit
+the shared height; use `--q-table-cell-content-height` for consistently taller
+rich cells or leave `two-line-rows` off for forms, expanded rows, and bespoke
+layouts. Default tables continue to size rows automatically.
+
+`--q-table-cell-line-height` defaults to `1.5` and the reserved content height
+defaults to `2lh`; padding still uses the existing cell padding variables.
+
 ### Row gutter
 
 Every table defaults to a blank 36px leading gutter, separate from selection and
@@ -298,6 +326,7 @@ All properties are optional. Use JavaScript properties for structured values and
 | `loading` | `false` | Shows a loading state and suppresses row rendering while true.<br>**Type:** `boolean`. **HTML attribute:** `loading`. **Required:** No. |
 | `rowActions` | `[]` | Row actions rendered as trailing icon buttons.<br>**Type:** `DataTableRowAction[] \| string`. **HTML attribute:** `row-actions`. **Required:** No. |
 | `rowClickable` | `true` | Enables full-row click and keyboard activation.<br>**Type:** `boolean`. **HTML attribute:** `row-clickable`. **Required:** No. |
+| `twoLineRows` | `false` | Reserves two lines per data cell with ellipsis for plain text. Rich cells must fit the reserved height.<br>**Type:** `boolean`. **HTML attribute:** `two-line-rows`. **Required:** No. |
 | `rowGutter` | `blank` | Leading structural gutter: `none`, `blank`, `numbers`, or `custom`. **HTML attribute:** `row-gutter`. |
 | `rowNumberOffset` | `0` | Nonnegative safe integer offset for rendered row numbers. **HTML attribute:** `row-number-offset`. |
 | `rowGroup` | `undefined` | JavaScript callback returning a group key and label; see DataTableRowGrouper.<br>**Type:** `DataTableRowGrouper`. **HTML attribute:** --. **Required:** No. |
@@ -347,6 +376,7 @@ These types describe property values and event payloads. Optional fields are mar
 | `width` | `string` | No |
 | `className` | `string` | No |
 | `cellClassName` | `DataTableCellClassName<T>` | No |
+| `overflowTooltip` | `boolean` (default `false`; truncated plain text in two-line mode) | No |
 | `sticky` | `DataTableColumnSticky` | No |
 | `sortable` | `boolean` | No |
 | `sortKey` | `string` | No |

@@ -16,7 +16,8 @@ vi.spyOn(customElements, 'define').mockImplementation((name, constructor, option
   if (name !== 'q-input' || typeof descriptor?.value !== 'function') return define(name, constructor, options);
   class CountedInput extends constructor {
     formResetCallback(...args: unknown[]) {
-      nativeResetCounts.set(this, (nativeResetCounts.get(this) ?? 0) + 1);
+      const input = this as unknown as HTMLElement;
+      nativeResetCounts.set(input, (nativeResetCounts.get(input) ?? 0) + 1);
       return descriptor.value.apply(this, args);
     }
   }

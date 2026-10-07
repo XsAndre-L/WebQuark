@@ -299,6 +299,7 @@ export const DEFAULT_PROP_ORDER_CONFIG: PropOrderConfig = {
   groups: PROP_GROUPS,
   classifications: DEFAULT_CLASSIFICATIONS,
   overrides: [
+    { scope: 'q-data-table', prop: 'twoLineRows', group: 'appearance-layout' },
     { scope: 'q-banner', prop: 'alignment', group: 'appearance-layout' },
     { scope: 'q-section', prop: 'reverse', group: 'appearance-layout' },
     { scope: 'q-section', prop: 'columns', group: 'appearance-layout' },
