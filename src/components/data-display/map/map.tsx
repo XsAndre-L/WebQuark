@@ -198,7 +198,6 @@ export class QMap {
   private map?: LeafletMap;
   private canvas?: HTMLDivElement;
   private resizeObserver?: ResizeObserver;
-  private resizeFrame?: number;
   private initializationToken = 0;
   private markerVisibilityToken = 0;
   private cancelMarkerVisibilityPan?: () => void;
@@ -476,7 +475,7 @@ export class QMap {
 
       this.markerController?.sync(this.markers);
       this.observeResize();
-      this.map.invalidateSize({ animate: false, pan: false });
+      this.map.invalidateSize({ animate: false, pan: true });
       this.qReady.emit();
     } catch (error) {
       if (token !== this.initializationToken) return;
@@ -820,17 +819,18 @@ export class QMap {
   private observeResize(): void {
     if (!this.canvas || typeof ResizeObserver === 'undefined') return;
     this.resizeObserver?.disconnect();
-    this.resizeObserver = new ResizeObserver(() => this.scheduleResize());
+    // Update before paint so a changing frame never paints the previous frame's center.
+    this.resizeObserver = new ResizeObserver(() => this.resizeMap());
     this.resizeObserver.observe(this.canvas);
   }
 
-  private scheduleResize(): void {
-    if (this.resizeFrame !== undefined) cancelAnimationFrame(this.resizeFrame);
-    this.resizeFrame = requestAnimationFrame(() => {
-      this.resizeFrame = undefined;
-      this.map?.invalidateSize({ animate: false, debounceMoveend: true, pan: false });
-      this.syncBounds(false);
+  private resizeMap(): void {
+    this.map?.invalidateSize({
+      animate: false,
+      debounceMoveend: true,
+      pan: true,
     });
+    this.syncBounds(false);
   }
 
   private destroyMap(): void {
@@ -839,11 +839,6 @@ export class QMap {
     this.cancelMarkerVisibilityPan = undefined;
     this.resizeObserver?.disconnect();
     this.resizeObserver = undefined;
-    if (this.resizeFrame !== undefined) {
-      cancelAnimationFrame(this.resizeFrame);
-      this.resizeFrame = undefined;
-    }
-
     this.markerController?.destroy();
     this.markerController = undefined;
     this.layerController?.destroy();

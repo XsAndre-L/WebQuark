@@ -65,6 +65,61 @@ td {
   box-sizing: border-box;
 }
 
+:host([two-line-rows]) .table-el {
+  table-layout: fixed;
+  line-height: var(--q-table-cell-line-height, 1.5);
+}
+
+.cell-content {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  height: var(--q-table-cell-content-height, 2lh);
+  overflow: hidden;
+}
+
+.cell-text {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.cell-text-value {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+.cell-text:not([data-overflow]) q-tooltip {
+  display: none;
+}
+
+.cell-text q-tooltip {
+  --q-tooltip-width: max-content;
+  --q-tooltip-max-width: min(32rem, calc(100vw - 16px));
+  --q-tooltip-white-space: normal;
+  --q-tooltip-overflow-wrap: anywhere;
+  --q-tooltip-viewport-padding: 8px;
+}
+
+:host([two-line-rows]) .col-actions,
+:host([two-line-rows]) .cell-actions {
+  width: calc(var(--q-table-action-count, 1) * 32px + (var(--q-table-action-count, 1) - 1) * 4px + 2 * var(--q-table-cell-padding-inline, 8px));
+}
+
+:host([two-line-rows]) .row-actions q-button {
+  width: 32px;
+  height: 32px;
+  --q-btn-height: 32px;
+}
+
+.cell-text:focus-visible {
+  outline: var(--q-focus-ring, 2px solid var(--q-color-primary));
+  outline-offset: -2px;
+}
+
 th {
   position: sticky;
   top: 0;

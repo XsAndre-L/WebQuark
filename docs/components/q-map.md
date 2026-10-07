@@ -1,6 +1,6 @@
 # q-map
 
-`q-map` displays an interactive Leaflet map with configurable imagery, markers, clustering, and selected-location state.
+`q-map` displays an interactive Leaflet map with configurable imagery, markers, clustering, and selected-location state. Resizing its frame preserves the current geographic center and zoom, subject to configured map bounds.
 
 **Component tag:** `<q-map>`
 

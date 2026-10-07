@@ -8,6 +8,18 @@ custom element. Angular and React consumers should use the framework APIs from
 Rich cells require a stable value in `keyField` (the default is `id`) so projected
 content remains attached to the correct row while rows are sorted or refreshed.
 
+Set `two-line-rows` to reserve two lines in every data cell. Plain text wraps up
+to two lines with ellipsis. Set `overflowTooltip: true` on selected columns to
+expose truncated plain text in a tooltip on hover and keyboard focus. Fitting
+text gains no tooltip or keyboard stop. Rich slots keep their own controls and tooltips and
+must fit the reserved content height. Leave this option off for tall forms,
+expanded rows, or bespoke layouts. Existing tables retain automatic row sizing.
+
+The content height defaults to `2lh`, using `--q-table-cell-line-height` (default
+`1.5`), plus the existing cell padding. Override `--q-table-cell-content-height`
+when a consistent rich-cell layout needs additional room. The option uses fixed
+column layout, so provide column widths where their proportions matter.
+
 Columns support `sticky: 'start'` for a left-pinned identity column.
 `cellClassName` accepts either a class string or a callback that returns classes
 for each row. Column and cell classes are also exposed as CSS shadow parts, so
@@ -69,6 +81,7 @@ Data grid with optional toolbar, search, row activation, and multi-row selection
 | `sortMode`          | `sort-mode`          | `table` sorts locally; `external` only emits sort changes.                                  | `"external" \| "table"`                      | `'table'`     |
 | `sortable`          | `sortable`           | Enables sortable column headers. Columns can override this with their own sortable setting. | `boolean`                                    | `false`       |
 | `toolbarTitle`      | `toolbar-title`      |                                                                                             | `string`                                     | `undefined`   |
+| `twoLineRows`       | `two-line-rows`      | Reserves two text lines per data cell; rich cells must fit the same content height.         | `boolean`                                    | `false`       |
 
 
 ## Events
@@ -100,18 +113,18 @@ Data grid with optional toolbar, search, row activation, and multi-row selection
 ### Depends on
 
 - [q-progress](../../indicators/progress)
+- [q-tooltip](../../overlays/tooltip)
 - [q-button](../../actions/button)
 - [q-icon](../../media/icon)
-- [q-tooltip](../../overlays/tooltip)
 - [q-input](../../inputs/input)
 
 ### Graph
 ```mermaid
 graph TD;
   q-data-table --> q-progress
+  q-data-table --> q-tooltip
   q-data-table --> q-button
   q-data-table --> q-icon
-  q-data-table --> q-tooltip
   q-data-table --> q-input
   q-button --> q-icon
   style q-data-table fill:#f9f,stroke:#333,stroke-width:4px

@@ -466,6 +466,8 @@ export namespace Components {
      * Data grid with optional toolbar, search, row activation, and multi-row selection.
      * @cssprop --q-table-row-gutter-width - Row gutter width, including padding (default 36px).
      * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
+     * @cssprop --q-table-cell-line-height - Line height in two-line row mode (default 1.5).
+     * @cssprop --q-table-cell-content-height - Reserved content height in two-line row mode (default 2lh).
      * @cssprop --q-table-group-bg - Background color for row-group divider rows.
      * @cssprop --q-table-group-fg - Text color for row-group divider rows.
      * @cssprop --q-table-group-border - Border color for row-group divider rows.
@@ -568,6 +570,11 @@ export namespace Components {
          */
         "sortable": boolean;
         "toolbarTitle"?: string;
+        /**
+          * Reserves two text lines per data cell; rich cells must fit the same content height.
+          * @default false
+         */
+        "twoLineRows": boolean;
     }
     /**
      * Modal confirmation or message dialog with focus trapping and safe solid backdrops.
@@ -2111,6 +2118,11 @@ export namespace Components {
     }
     /**
      * Non-interactive tooltip attached to its immediate parent element.
+     * @cssprop --q-tooltip-max-width - Optional maximum bubble width (default none).
+     * @cssprop --q-tooltip-width - Optional bubble sizing (default auto).
+     * @cssprop --q-tooltip-white-space - Bubble text whitespace (default nowrap).
+     * @cssprop --q-tooltip-overflow-wrap - Bubble word wrapping (default normal).
+     * @cssprop --q-tooltip-viewport-padding - Optional viewport inset in pixels for positioning.
      */
     interface QTooltip {
         "content"?: string;
@@ -2380,6 +2392,8 @@ declare global {
      * Data grid with optional toolbar, search, row activation, and multi-row selection.
      * @cssprop --q-table-row-gutter-width - Row gutter width, including padding (default 36px).
      * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
+     * @cssprop --q-table-cell-line-height - Line height in two-line row mode (default 1.5).
+     * @cssprop --q-table-cell-content-height - Reserved content height in two-line row mode (default 2lh).
      * @cssprop --q-table-group-bg - Background color for row-group divider rows.
      * @cssprop --q-table-group-fg - Text color for row-group divider rows.
      * @cssprop --q-table-group-border - Border color for row-group divider rows.
@@ -2957,6 +2971,11 @@ declare global {
     };
     /**
      * Non-interactive tooltip attached to its immediate parent element.
+     * @cssprop --q-tooltip-max-width - Optional maximum bubble width (default none).
+     * @cssprop --q-tooltip-width - Optional bubble sizing (default auto).
+     * @cssprop --q-tooltip-white-space - Bubble text whitespace (default nowrap).
+     * @cssprop --q-tooltip-overflow-wrap - Bubble word wrapping (default normal).
+     * @cssprop --q-tooltip-viewport-padding - Optional viewport inset in pixels for positioning.
      */
     interface HTMLQTooltipElement extends Components.QTooltip, HTMLStencilElement {
     }
@@ -3404,6 +3423,8 @@ declare namespace LocalJSX {
      * Data grid with optional toolbar, search, row activation, and multi-row selection.
      * @cssprop --q-table-row-gutter-width - Row gutter width, including padding (default 36px).
      * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
+     * @cssprop --q-table-cell-line-height - Line height in two-line row mode (default 1.5).
+     * @cssprop --q-table-cell-content-height - Reserved content height in two-line row mode (default 2lh).
      * @cssprop --q-table-group-bg - Background color for row-group divider rows.
      * @cssprop --q-table-group-fg - Text color for row-group divider rows.
      * @cssprop --q-table-group-border - Border color for row-group divider rows.
@@ -3514,6 +3535,11 @@ declare namespace LocalJSX {
          */
         "sortable"?: boolean;
         "toolbarTitle"?: string;
+        /**
+          * Reserves two text lines per data cell; rich cells must fit the same content height.
+          * @default false
+         */
+        "twoLineRows"?: boolean;
     }
     /**
      * Modal confirmation or message dialog with focus trapping and safe solid backdrops.
@@ -5093,6 +5119,11 @@ declare namespace LocalJSX {
     }
     /**
      * Non-interactive tooltip attached to its immediate parent element.
+     * @cssprop --q-tooltip-max-width - Optional maximum bubble width (default none).
+     * @cssprop --q-tooltip-width - Optional bubble sizing (default auto).
+     * @cssprop --q-tooltip-white-space - Bubble text whitespace (default nowrap).
+     * @cssprop --q-tooltip-overflow-wrap - Bubble word wrapping (default normal).
+     * @cssprop --q-tooltip-viewport-padding - Optional viewport inset in pixels for positioning.
      */
     interface QTooltip {
         "content"?: string;
@@ -5205,6 +5236,7 @@ declare namespace LocalJSX {
         "columns": TableColumn[] | string;
         "items": DataTableItem[] | string;
         "keyField": string;
+        "twoLineRows": boolean;
         "rowActions": DataTableRowAction[] | string;
         "rowClickable": boolean;
         "rowGutter": DataTableRowGutter;
@@ -5672,6 +5704,8 @@ declare module "@stencil/core" {
              * Data grid with optional toolbar, search, row activation, and multi-row selection.
              * @cssprop --q-table-row-gutter-width - Row gutter width, including padding (default 36px).
              * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
+             * @cssprop --q-table-cell-line-height - Line height in two-line row mode (default 1.5).
+             * @cssprop --q-table-cell-content-height - Reserved content height in two-line row mode (default 2lh).
              * @cssprop --q-table-group-bg - Background color for row-group divider rows.
              * @cssprop --q-table-group-fg - Text color for row-group divider rows.
              * @cssprop --q-table-group-border - Border color for row-group divider rows.
@@ -5840,6 +5874,11 @@ declare module "@stencil/core" {
             "q-toolbar": LocalJSX.IntrinsicElements["q-toolbar"] & JSXBase.HTMLAttributes<HTMLQToolbarElement>;
             /**
              * Non-interactive tooltip attached to its immediate parent element.
+             * @cssprop --q-tooltip-max-width - Optional maximum bubble width (default none).
+             * @cssprop --q-tooltip-width - Optional bubble sizing (default auto).
+             * @cssprop --q-tooltip-white-space - Bubble text whitespace (default nowrap).
+             * @cssprop --q-tooltip-overflow-wrap - Bubble word wrapping (default normal).
+             * @cssprop --q-tooltip-viewport-padding - Optional viewport inset in pixels for positioning.
              */
             "q-tooltip": LocalJSX.IntrinsicElements["q-tooltip"] & JSXBase.HTMLAttributes<HTMLQTooltipElement>;
         }

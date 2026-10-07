@@ -10,6 +10,11 @@ let tooltipId = 0;
 /**
  * Non-interactive tooltip attached to its immediate parent element.
  * @slot - Tooltip content used when `content` is not supplied.
+ * @cssprop --q-tooltip-max-width - Optional maximum bubble width (default none).
+ * @cssprop --q-tooltip-width - Optional bubble sizing (default auto).
+ * @cssprop --q-tooltip-white-space - Bubble text whitespace (default nowrap).
+ * @cssprop --q-tooltip-overflow-wrap - Bubble word wrapping (default normal).
+ * @cssprop --q-tooltip-viewport-padding - Optional viewport inset in pixels for positioning.
  */
 @Component({
   tag: 'q-tooltip',
@@ -66,7 +71,8 @@ export class QTooltip {
 
   private updatePosition = () => {
     if (!this.parentEl) return;
-    const { left, top } = getTooltipPosition(this.el, this.parentEl, this.position);
+    const padding = parseFloat(getComputedStyle(this.el).getPropertyValue('--q-tooltip-viewport-padding'));
+    const { left, top } = getTooltipPosition(this.el, this.parentEl, this.position, padding);
 
     this.el.style.left = `${left}px`;
     this.el.style.top = `${top}px`;

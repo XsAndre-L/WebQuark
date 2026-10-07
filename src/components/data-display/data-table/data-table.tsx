@@ -1,4 +1,4 @@
-import { Component, Prop, Event, EventEmitter, h } from '@stencil/core';
+import { Component, Element, Prop, Event, EventEmitter, h } from '@stencil/core';
 import type {
   DataTableItem,
   DataTableKey,
@@ -32,6 +32,8 @@ import { getAllItemKeys, getSelectedItems, toggleSelectedKey } from './internals
  * @slot q-data-table-row-gutter-* - Custom row gutter content keyed by stable row identity.
  * @cssprop --q-table-row-gutter-width - Row gutter width, including padding (default 36px).
  * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
+ * @cssprop --q-table-cell-line-height - Line height in two-line row mode (default 1.5).
+ * @cssprop --q-table-cell-content-height - Reserved content height in two-line row mode (default 2lh).
  * @cssprop --q-table-group-bg - Background color for row-group divider rows.
  * @cssprop --q-table-group-fg - Text color for row-group divider rows.
  * @cssprop --q-table-group-border - Border color for row-group divider rows.
@@ -58,6 +60,9 @@ export class QDataTable {
   @Prop() items: DataTableItem[] | string = [];
   /** Row field used as the stable selection and render key. Falls back to the row index. */
   @Prop() keyField: string = 'id';
+
+  /** Reserves two text lines per data cell; rich cells must fit the same content height. */
+  @Prop({ reflect: true }) twoLineRows: boolean = false;
 
   /** Inserts a divider whenever the returned group key changes. */
   @Prop() rowGroup?: DataTableRowGrouper;
@@ -99,6 +104,45 @@ export class QDataTable {
   @Event() qSearch!: EventEmitter<string>;
 
   @Event() qSortChange!: EventEmitter<QDataTableSortChangeDetail>;
+
+  @Element() host!: HTMLElement;
+
+  private rowResizeObserver?: ResizeObserver;
+
+  connectedCallback() {
+    if (this.twoLineRows) this.observeRowSize();
+  }
+
+  componentDidRender() {
+    if (!this.twoLineRows || !this.host.shadowRoot?.querySelector('.cell-text')) {
+      this.rowResizeObserver?.disconnect();
+      this.rowResizeObserver = undefined;
+      return;
+    }
+
+    this.observeRowSize();
+    this.updateCellOverflow();
+  }
+
+  private observeRowSize() {
+    if (this.rowResizeObserver || !this.host.shadowRoot?.querySelector('.cell-text')) return;
+    this.rowResizeObserver = new ResizeObserver(() => this.updateCellOverflow());
+    this.rowResizeObserver.observe(this.host);
+  }
+
+  disconnectedCallback() {
+    this.rowResizeObserver?.disconnect();
+    this.rowResizeObserver = undefined;
+  }
+
+  private updateCellOverflow() {
+    this.host.shadowRoot?.querySelectorAll<HTMLElement>('.cell-text').forEach(trigger => {
+      const text = trigger.querySelector<HTMLElement>('.cell-text-value');
+      const overflowing = !!text && (text.scrollHeight > text.clientHeight || text.scrollWidth > text.clientWidth);
+      trigger.tabIndex = overflowing ? 0 : -1;
+      trigger.toggleAttribute('data-overflow', overflowing);
+    });
+  }
 
   private getParsedItems(): DataTableItem[] {
     return parseDataTableItems(this.items);
@@ -244,7 +288,7 @@ export class QDataTable {
           onSearchInput: this.handleSearchInput,
         })}
         <div class="table-scroll-area">
-          <table class="table-el">
+          <table class="table-el" style={this.twoLineRows ? { '--q-table-action-count': String(model.rowActions.length) } : undefined}>
             {renderDataTableHead({
               model,
               onSelectAllChange: event => this.handleSelectAllChange(event),
@@ -253,6 +297,7 @@ export class QDataTable {
             {renderDataTableBody({
               model,
               loading: this.loading,
+              twoLineRows: this.twoLineRows,
               onRowClick: (item, index, event) => this.handleRowClick(item, index, event),
               onRowKeyDown: (item, index, event) => this.handleRowKeyDown(item, index, event),
               onRowCheckboxChange: (item, index, event) => this.handleRowCheckboxChange(item, index, event),
