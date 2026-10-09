@@ -29,12 +29,12 @@ const nodeCommand = process.env.WEBQUARK_COMPAT_NODE || 'node';
 const targets: CompatibilityTarget[] = [
   {
     name: 'angular-21',
-    angular: '21.2.20',
-    typescript: '5.9.3',
+    angular: '21.2.25',
+    typescript: '6.0.3',
   },
   {
     name: 'angular-22',
-    angular: '22.0.7',
+    angular: '22.2.2',
     typescript: '6.0.3',
   },
 ];
@@ -99,7 +99,7 @@ function verifyNodeVersion(): void {
     throw new Error(
       `Angular 22 compatibility verification requires Node.js ` +
         `^22.22.3, ^24.15.0, or ^26.0.0; received ${result.stdout}. ` +
-        `Use Node.js 24.15.0 or set WEBQUARK_COMPAT_NODE to a compatible executable.`,
+        `Use Node.js 24.21.0 or set WEBQUARK_COMPAT_NODE to a compatible executable.`,
     );
   }
 }
@@ -155,7 +155,7 @@ function writeConsumer(
       rxjs: '7.8.2',
       tslib: '2.8.1',
       typescript: target.typescript,
-      'zone.js': '0.15.1',
+      'zone.js': '0.16.3',
     },
   };
   const tsconfig = {

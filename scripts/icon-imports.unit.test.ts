@@ -13,7 +13,7 @@ describe('icon dependency boundaries', () => {
     const runtimeImports = Array.from(source.matchAll(/from\s+['"](@lucide\/icons[^'"]*)['"]/g))
       .map(match => match[1]);
 
-    expect(packageJson.dependencies?.['@lucide/icons']).toBe('1.47.0');
+    expect(packageJson.dependencies?.['@lucide/icons']).toBe('1.54.0');
     expect(runtimeImports.length).toBeGreaterThan(0);
     expect(runtimeImports.every(specifier => specifier === '@lucide/icons')).toBe(true);
     expect(source).not.toMatch(/import\s+\*\s+as\s+\w+\s+from\s+['"]@lucide\/icons/);

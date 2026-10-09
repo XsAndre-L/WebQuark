@@ -111,7 +111,10 @@ function verifyTarball(directory: string): void {
   );
 }
 
-console.log('Building core, React, and Angular packages...');
+console.log('Checking component prop ordering...');
+run(['bun', 'run', 'check:prop-order']);
+
+console.log('\nBuilding core, React, and Angular packages...');
 run(['bun', 'run', 'build']);
 for (const definition of packages.slice(1)) {
   run(['bun', 'run', 'build'], definition.directory);

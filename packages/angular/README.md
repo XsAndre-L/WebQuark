@@ -14,7 +14,7 @@ Keep the build dependencies on Angular 21 so the package remains consumable by
 both supported major versions. The sibling drift check requires matching Angular
 versions only when InStoreFocus uses a local `file:`, `link:`, or `workspace:`
 wrapper dependency. Published-package compatibility is verified by the packed
-consumer checks, including Angular 22.0.7 used by InStoreFocus.
+consumer checks with Angular 21.2.25 and Angular 22.2.2, both using TypeScript 6.0.3.
 
 ## Standalone components
 
