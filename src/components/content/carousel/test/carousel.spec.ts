@@ -50,14 +50,11 @@ describe('q-carousel', () => {
     el.remove();
   });
 
-  it('renders disabled arrow buttons when content cannot scroll', async () => {
+  it('hides arrow buttons when content cannot scroll', async () => {
     const el = await createComponent({ showArrows: true }, '<div>Slide one</div>');
     const arrows = Array.from(el.shadowRoot.querySelectorAll('.arrow-btn')) as HTMLButtonElement[];
 
-    expect(arrows).toHaveLength(2);
-    expect(arrows[0].getAttribute('aria-label')).toBe('Previous slide');
-    expect(arrows[1].getAttribute('aria-label')).toBe('Next slide');
-    expect(arrows.every(arrow => arrow.getAttribute('aria-disabled') === 'true')).toBe(true);
+    expect(arrows).toHaveLength(0);
 
     el.remove();
   });
