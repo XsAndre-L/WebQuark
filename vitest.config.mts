@@ -3,6 +3,20 @@ import { playwright } from '@vitest/browser-playwright';
 import { defineVitestConfig } from '@stencil/vitest/config';
 import { stencilVitestPlugin } from '@stencil/vitest/plugin';
 
+const browserDependencies = [
+  '@stencil/core',
+  '@stencil/core/internal/client',
+  '@lucide/icons',
+  '@maplibre/maplibre-gl-leaflet',
+  'leaflet',
+  'leaflet.gridlayer.googlemutant/src/Leaflet.GoogleMutant.mjs',
+  'supercluster',
+  'react',
+  'react-dom',
+  'react-dom/client',
+  '@webquark/react',
+];
+
 export default defineVitestConfig({
   stencilConfig: './stencil.config.ts',
   oxc: false,
@@ -24,7 +38,7 @@ export default defineVitestConfig({
       },
       {
         plugins: [stencilVitestPlugin()],
-        optimizeDeps: { include: ['@stencil/core/internal/client', 'leaflet'] },
+        optimizeDeps: { include: browserDependencies },
         test: {
           name: 'carousel-browsers',
           include: ['src/components/content/carousel/test/transitions.cmp.test.ts'],
@@ -39,7 +53,7 @@ export default defineVitestConfig({
       {
         plugins: [stencilVitestPlugin()],
         optimizeDeps: {
-          include: ['@stencil/core/internal/client', 'leaflet'],
+          include: browserDependencies,
         },
         test: {
           name: 'browser',

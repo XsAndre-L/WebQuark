@@ -1,16 +1,17 @@
 # WebQuark GitHub Actions
 
-WebQuark has one pull-request verification workflow and one publishing workflow. Both target only the `dev` and `main` branches. Publishing remains dormant until deliberately enabled.
+WebQuark has one publishing workflow for `dev` and `main`. Automatic verification runs after changes reach either release branch and before npm publishing. Pull requests do not run GitHub Actions checks. Publishing remains dormant until deliberately enabled.
 
 ## The developer flow
 
 1. Work on a feature branch and open a pull request into `dev`.
-2. The pull-request workflow checks prop policy, builds all three packages, runs tooling/unit suites, then runs the carousel transition suite in Chromium, Firefox and WebKit.
-3. Merge the pull request into `dev`.
-4. The deploy workflow reads `.github/release.json`, finds the next available npm sequence, verifies the prepared packages, and publishes them together as `1.1.0-dev.1` only after every release check passes.
-5. The next merge into `dev` becomes `1.1.0-dev.2`, then `dev.3`, and so on.
-6. Open a pull request from `dev` into `main`. The same pre-merge checks must pass.
-7. Merge into `main`. The deploy workflow publishes all packages as `1.1.0` and creates the `v1.1.0` GitHub release.
+2. Review and merge the pull request into `dev`.
+3. When dev publishing is enabled, the deploy workflow audits the locked dependencies, reads `.github/release.json`, finds the next available npm sequence, verifies the prepared packages, and publishes them together as `1.1.0-dev.1` only after every release check passes.
+4. The next merge into `dev` becomes `1.1.0-dev.2`, then `dev.3`, and so on.
+5. Open and review a pull request from `dev` into `main`.
+6. Merge into `main`. When production publishing is enabled, the deploy workflow runs the same release gates, publishes all packages as `1.1.0`, and creates the `v1.1.0` GitHub release.
+
+The workflow also handles direct pushes to these branches and manual retries through `workflow_dispatch`, subject to the same branch-specific enable flags.
 
 No commit-title convention and no manually applied npm tag controls the version.
 
@@ -33,7 +34,7 @@ A numeric prerelease identifier cannot contain a leading zero. The valid form is
 
 | Event | Result | npm dist-tag | Environment |
 |---|---|---|---|
-| Pull request into `dev` or `main` | Prop policy, build, tooling/unit and carousel browser tests | None | None |
+| Pull request into `dev` or `main` | No automatic checks or publishing | None | None |
 | Merge/push to `dev` | Next automatic `-dev.N` version | `dev` | `dev` |
 | Merge/push to `main` | Stable `nextVersion` | `latest` | `prod` |
 
@@ -49,9 +50,9 @@ npm install @webquark/core@latest @webquark/react@latest @webquark/angular@lates
 The release logic lives under `.github/scripts/publishing/`:
 
 - The root `packages:build` package script builds core, React, and Angular without running tests.
-- The root `pr:verify` package script checks prop policy before building packages and running tooling and unit tests; the pull-request workflow calls it for every targeted pull request.
+- The root `pr:verify` package script remains available for local checks: it checks prop policy before building packages and running tooling and unit tests.
 - `prepare-release.ts` validates `.github/release.json`, calculates `-dev.N`, and aligns all package versions.
-- `verify-packages.ts` provides the complete release verification and is the publish workflow's final gate.
+- `verify-packages.ts` checks prop policy, builds all three packages, verifies packed Angular 21/22 consumers, runs every Vitest project, and validates manifests and npm tarballs. It is the publish workflow's final gate.
 - `publish-packages.ts` packs first, publishes in core/React/Angular order, prevents overwriting different npm contents, and applies the requested npm dist-tag.
 
 The root `publish-all` package script points to this guarded publisher. A real publish requires both an explicit `--tag dev|latest` argument and `NODE_AUTH_TOKEN`.
@@ -65,6 +66,8 @@ Create these repository settings before enabling deployment:
 - One repository secret named `NPM_TOKEN`, with npm publish access to the `@webquark` scope. This shared credential publishes core, React, and Angular; there are no per-package secrets.
 - Recommended reviewer approval on `prod`.
 
+If branch protection or a ruleset requires the former `Pull Request` workflow's `Build and test packages` status check, remove that requirement when retiring the workflow so pull requests can merge.
+
 The pipeline uses independent controls:
 
 1. Dev deployment requires `WEBQUARK_DEV_PIPELINE_ENABLED` to equal the exact string `true`.
@@ -75,9 +78,11 @@ Dev and production publishing can be enabled independently. A disabled branch re
 
 ## Release gates
 
-Pull requests audit the locked dependency graph, build core, React, and Angular, and run the focused tooling and unit suites. A publish run repeats the audit, installs Playwright Chromium, and executes the full release verifier after the lockstep version is prepared. Vitest, browser tests, Angular 21/22 compatibility installs, manifest validation, and npm pack dry-runs must all pass before npm publishing begins.
+A publish run installs dependencies with the frozen lockfile, audits the locked graph at the moderate threshold, prepares the lockstep version, installs Playwright Chromium, Firefox, and WebKit, then executes the full release verifier. Prop policy, core/React/Angular builds, every Vitest project (tooling, unit, carousel-browsers, and browser), Angular 21/22 compatibility installs, manifest validation, and npm pack dry-runs must all pass before npm publishing begins.
 
-The workflows pin their GitHub Actions and Bun versions for reproducible runs. Dev and production publishing remain independently controlled by repository variables and protected environments.
+The workflow pins its GitHub Actions and Bun versions for reproducible runs. Dev and production publishing remain independently controlled by repository variables and protected environments.
+
+The toolchain uses Bun 1.4.2, Node.js 24.21.0 LTS, and TypeScript 6.0.3 across all three packages. Angular wrappers compile with Angular 21.2.25 in partial-Ivy mode and are checked with packed Angular 21.2.25 and 22.2.2 consumers. React wrappers compile and check consumer types with React 19.3.0. Stencil's test adapter supports Vitest 4, so its three Vitest packages stay aligned at 4.1.11. TypeScript 7 is outside the Angular compiler peer ranges and lacks the compiler API used by repository tooling. The dependency graph uses upstream dependency ranges without overrides or patches.
 
 ## Local safe checks
 
@@ -105,8 +110,10 @@ To make dev publishing dormant again, set `WEBQUARK_DEV_PIPELINE_ENABLED` back t
 
 ## Focused carousel browser checks
 
-After `pr:verify` has built the production loader, CI installs the browser binaries
-from the lockfile-pinned Playwright version and runs `bun run test:carousel:browsers`.
+The deploy workflow installs browser binaries from the lockfile-pinned Playwright
+version before `release:verify` builds the production loader and runs every Vitest
+project, including `carousel-browsers`. For a focused local run after
+`bun run packages:build`, use `bun run test:carousel:browsers` with those browsers installed.
 The dedicated `carousel-browsers` Vitest project includes only the transition
 regression file; the existing all-component browser project remains Chromium-only.
 No second package build is needed. WebKit engine coverage is not proof of Safari
