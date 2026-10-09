@@ -1,7 +1,22 @@
-import { formSubmitCommands } from './scripts/browser/form-submit-commands';
+import { fileURLToPath } from 'node:url';
+import { formSubmitCommands } from './scripts/browser/form-submit-commands.mts';
 import { playwright } from '@vitest/browser-playwright';
 import { defineVitestConfig } from '@stencil/vitest/config';
 import { stencilVitestPlugin } from '@stencil/vitest/plugin';
+
+// Verify workspace wrappers against the core artifacts built by packages:build.
+const browserResolve = {
+  alias: [
+    {
+      find: /^@webquark\/core$/,
+      replacement: fileURLToPath(new URL('./dist/index.js', import.meta.url)),
+    },
+    {
+      find: '@webquark/core/dist/components',
+      replacement: fileURLToPath(new URL('./dist/components', import.meta.url)),
+    },
+  ],
+};
 
 const browserDependencies = [
   '@stencil/core',
@@ -38,6 +53,7 @@ export default defineVitestConfig({
       },
       {
         plugins: [stencilVitestPlugin()],
+        resolve: browserResolve,
         optimizeDeps: { include: browserDependencies },
         test: {
           name: 'carousel-browsers',
@@ -52,6 +68,7 @@ export default defineVitestConfig({
       },
       {
         plugins: [stencilVitestPlugin()],
+        resolve: browserResolve,
         optimizeDeps: {
           include: browserDependencies,
         },
