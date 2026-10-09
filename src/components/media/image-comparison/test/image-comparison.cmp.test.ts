@@ -40,11 +40,13 @@ describe('built q-image-comparison', () => {
     const el = await create();
     const before = el.shadowRoot.querySelector('[part="before-image"]') as HTMLImageElement;
     const after = el.shadowRoot.querySelector('[part="after-image"]') as HTMLImageElement;
+    const reveal = el.shadowRoot.querySelector('[part="before-layer"]') as HTMLDivElement;
     const initial = frame(el).getBoundingClientRect();
     expect(initial.width).toBe(640); expect(initial.height).toBe(360);
     for (const position of [0, 25, 50, 100]) {
       el.position = position;
-      await vi.waitFor(() => expect(before.style.clipPath).toBe(`inset(0px ${100 - position}% 0px 0px)`));
+      await vi.waitFor(() => expect(reveal.style.clipPath).toBe(`inset(0px ${100 - position}% 0px 0px)`));
+      expect(before.style.clipPath).toBe('');
       for (const img of [before, after]) {
         expect(img.getBoundingClientRect().width).toBe(initial.width);
         expect(img.getBoundingClientRect().height).toBe(initial.height);
@@ -52,6 +54,74 @@ describe('built q-image-comparison', () => {
       }
     }
     expect(before.alt).toBe('Red before'); expect(after.alt).toBe('Blue after');
+  });
+
+  it('derives one common frame from After, then Before, while explicit ratios and full crops retain legacy behavior', async () => {
+    const partial = { x: 50, y: 0, width: 50, height: 100 };
+    const el = await create({ beforeCrop: partial });
+    expect(frame(el).getBoundingClientRect().height).toBe(720);
+    el.beforeCrop = undefined;
+    el.afterCrop = { x: 0, y: 50, width: 100, height: 50 };
+    await vi.waitFor(() => expect(frame(el).getBoundingClientRect().height).toBe(180));
+    el.aspectRatio = 2;
+    await vi.waitFor(() => expect(frame(el).getBoundingClientRect().height).toBe(320));
+    el.beforeCrop = undefined; el.afterCrop = { x: 0, y: 0, width: 100, height: 100 }; el.aspectRatio = undefined;
+    await vi.waitFor(() => expect(frame(el).getBoundingClientRect().height).toBe(360));
+    expect(getComputedStyle(el.shadowRoot.querySelector('[part="after-image"]')).objectFit).toBe('contain');
+  });
+
+  it('contains independent regions without distortion and keeps the reveal at the frame midpoint', async () => {
+    const el = await create({
+      beforeCrop: { x: 0, y: 50, width: 50, height: 50 },
+      afterCrop: { x: 50, y: 0, width: 50, height: 100 },
+    });
+    const outer = frame(el).getBoundingClientRect();
+    const beforeViewport = el.shadowRoot.querySelector('[part="before-viewport"]') as HTMLDivElement;
+    const afterViewport = el.shadowRoot.querySelector('[part="after-viewport"]') as HTMLDivElement;
+    const before = el.shadowRoot.querySelector('[part="before-image"]') as HTMLImageElement;
+    const after = el.shadowRoot.querySelector('[part="after-image"]') as HTMLImageElement;
+    const reveal = el.shadowRoot.querySelector('[part="before-layer"]') as HTMLDivElement;
+    expect(outer.width).toBe(640); expect(outer.height).toBe(720);
+    expect(beforeViewport.getBoundingClientRect().height).toBe(360);
+    expect(beforeViewport.getBoundingClientRect().top - outer.top).toBe(180);
+    expect(afterViewport.getBoundingClientRect().height).toBe(720);
+    for (const img of [before, after]) {
+      const rect = img.getBoundingClientRect();
+      expect(rect.width / rect.height).toBeCloseTo(img.naturalWidth / img.naturalHeight);
+      expect(img.style.clipPath).toBe('');
+    }
+    for (const viewport of [beforeViewport, afterViewport]) expect(getComputedStyle(viewport).overflow).toBe('hidden');
+    expect(before.getBoundingClientRect().top - beforeViewport.getBoundingClientRect().top).toBe(-360);
+    expect(after.getBoundingClientRect().left - afterViewport.getBoundingClientRect().left).toBe(-640);
+    expect(reveal.style.clipPath).toBe('inset(0px 50% 0px 0px)');
+    expect(reveal.getBoundingClientRect().width).toBe(outer.width);
+    const divider = el.shadowRoot.querySelector('[part="divider"]');
+    expect(divider.getBoundingClientRect().left + 1 - outer.left).toBe(320);
+    el.position = 25;
+    await vi.waitFor(() => expect(reveal.style.clipPath).toBe('inset(0px 75% 0px 0px)'));
+    expect(before.getBoundingClientRect().width).toBe(1280);
+    expect(after.getBoundingClientRect().width).toBe(1280);
+  });
+
+  it('recomputes crop-only changes without replacing loaded images and handles invalid or unusable crop dimensions', async () => {
+    const el = await create();
+    const before = el.shadowRoot.querySelector('[part="before-image"]') as HTMLImageElement;
+    el.beforeCrop = { x: 60, y: 0, width: 40, height: 100 };
+    await vi.waitFor(() => expect(frame(el).getBoundingClientRect().height).toBe(900));
+    expect(el.shadowRoot.querySelector('[part="before-image"]')).toBe(before);
+    expect(control(el).disabled).toBe(false);
+    el.beforeCrop = { x: 60, y: 0, width: 41, height: 100 };
+    await vi.waitFor(() => expect(control(el).disabled).toBe(true));
+    expect(el.shadowRoot.querySelector('[role="status"]').textContent).toBe('Comparison unavailable');
+    el.beforeCrop = undefined;
+    await vi.waitFor(() => expect(control(el).disabled).toBe(false));
+    vi.spyOn(before, 'naturalWidth', 'get').mockReturnValue(0);
+    before.dispatchEvent(new Event('load'));
+    el.beforeCrop = { x: 0, y: 0, width: 50, height: 100 };
+    await vi.waitFor(() => expect(control(el).disabled).toBe(true));
+    expect(el.shadowRoot.querySelector('[role="status"]').textContent).toBe('Comparison unavailable');
+    el.beforeCrop = undefined;
+    await vi.waitFor(() => expect(control(el).disabled).toBe(false));
   });
 
   it('uses one native range for keyboard, accessible value text and continuous numeric events', async () => {

@@ -1,6 +1,6 @@
 # Image comparison
 
-Reveal two complete images in one stable frame with `q-image-comparison`.
+Reveal two independently framed images with `q-image-comparison`.
 
 Run `bun run start` and choose **Media → Image Comparison** in the existing playground. The permanent example uses workspace illustrations, not release screenshots.
 
@@ -32,7 +32,8 @@ The images fill the same 16:9 frame using containment. Half of Before is initial
 | Capability | Options | Default |
 | :--- | :--- | :--- |
 | Reveal | 0–100% of Before | 50% |
-| Frame | Positive width / height ratio | 16 / 9 |
+| Frame | Positive width / height ratio; otherwise partial After, then Before | 16 / 9 for full images |
+| Framing | Independent source-percentage `beforeCrop` / `afterCrop` objects | Full image |
 | Input | Pointer drag, horizontal touch drag, native range keyboard | Enabled after both loads |
 | Captions | Consumer-provided strings | Before / After |
 
@@ -82,13 +83,44 @@ export class Comparison {
 
 Each component owns its own position. Assigning `position` from application code updates the view without emitting `qChange`.
 
+### Select independent image regions
+
+Assign crop objects as JavaScript properties or Angular property bindings. Coordinates
+are percentages of each complete source file, starting at its left/top origin:
+
+```ts
+comparison.beforeCrop = { x: 0, y: 55, width: 45, height: 45 };
+comparison.afterCrop = { x: 60, y: 0, width: 40, height: 100 };
+```
+
+All four fields must be finite numbers. Origins must be nonnegative, sizes must be
+positive, and the rectangle must fit within 100% on each axis. Invalid rectangles
+show the unavailable state; the component never clamps them. Omitted crops and
+`{ x: 0, y: 0, width: 100, height: 100 }` display the complete image.
+
+An explicit positive `aspectRatio` sets the common frame. When omitted, a partial
+After crop determines its natural ratio, otherwise a partial Before crop does;
+full images retain 16:9. The component reserves a provisional 16:9 frame while
+the selected source loads. Set `aspectRatio` to reserve a final ratio in advance.
+Each region is contained with uniform scaling and its own clip, so differing
+proportions may leave neutral space. The reveal always follows the full frame.
+Original source bytes and URLs stay intact, including animated formats.
+
+For consumer-owned standalone frames, `@webquark/core` exports `ImageCrop`,
+`ImageCropBox`, `ImageCropGeometry`, `isImageCropValid`, `hasPartialImageCrop` and
+`calculateImageCropGeometry(naturalWidth, naturalHeight, crop?, frameAspectRatio?)`.
+The geometry contains percentage `left`, `top`, `width` and `height` boxes: clip
+`viewport` relative to the frame and position `image` inside that viewport. Omit
+the frame ratio to use the selected region's natural ratio. Invalid input returns
+`undefined`. Use positive browser-reported intrinsic dimensions after image load.
+
 ## Behavior & accessibility
 
 ### State and interaction
 
-Both complete images retain identical width, height, and centered containment. Clipping reveals Before from the left over After. `0` shows all After; `100` shows all Before. Empty or failed sources show an unavailable state. The configured aspect ratio remains stable during loading, failure, and replacement. Invalid ratios fall back to 16 / 9.
+Clipping reveals Before from the left over After. `0` shows all After; `100` shows all Before. Full images retain centered containment. Empty or failed sources and crops with unusable intrinsic dimensions show an unavailable state. An explicit aspect ratio remains stable during loading, failure, and replacement. Invalid explicit ratios fall back to 16 / 9.
 
-Source changes reset readiness. Load/error events from a replaced image cannot change current readiness. Pointer dragging emits changes continuously, clamps beyond the frame, and ends on release, cancellation, lost capture, or source replacement. Cancellation retains the last position. Touch movement waits for horizontal intent; vertical gestures remain available for page scrolling.
+Source changes reset readiness and intrinsic dimensions. Load/error events from a replaced image cannot change current readiness. Crop-only changes reuse loaded dimensions and recompute both layers in the shared frame. Pointer dragging emits changes continuously, clamps beyond the frame, and ends on release, cancellation, lost capture, or source/framing replacement. Cancellation retains the last position. Touch movement waits for horizontal intent; vertical gestures remain available for page scrolling.
 
 ### Keyboard and focus
 
@@ -110,7 +142,7 @@ Only horizontal reveal is supported. Image persistence, release metadata, orient
 
 ### Custom styling
 
-The component inherits [shared theme tokens](../theme-tokens.md) for surfaces, foreground, spacing, radii, and focus. The `aspectRatio` property owns frame geometry; image and clip dimensions are intentionally fixed to that frame. Use the host width to size the comparison.
+The component inherits [shared theme tokens](../theme-tokens.md) for surfaces, foreground, spacing, radii, and focus. The `aspectRatio` and crop properties own frame geometry. Use the host width to size the comparison.
 
 ```css
 q-image-comparison { width: 100%; max-width: 60rem; }
@@ -128,7 +160,9 @@ q-image-comparison::part(before-label) { font-weight: 600; }
 | `afterAlt` | `''` | Optional string; `after-alt`; accessible After image description. |
 | `afterLabel` | `'After'` | Optional string; `after-label`; right caption. |
 | `ariaLabel` | `'Image comparison'` | Optional string; `aria-label`; native control name. |
-| `aspectRatio` | `16 / 9` | Optional number; `aspect-ratio`; positive width / height ratio. |
+| `aspectRatio` | omitted | Optional number; `aspect-ratio`; positive frame width / height ratio; otherwise derives from partial crops or uses 16 / 9. |
+| `afterCrop` | omitted | Optional `ImageCrop` object property; rectangle measured in complete After source percentages. |
+| `beforeCrop` | omitted | Optional `ImageCrop` object property; rectangle measured in complete Before source percentages. |
 | `beforeAlt` | `''` | Optional string; `before-alt`; accessible Before image description. |
 | `beforeLabel` | `'Before'` | Optional string; `before-label`; left caption. |
 | `position` | `50` | Optional mutable number; `position`; clamped to 0–100; nonfinite values use 50. |
@@ -159,7 +193,11 @@ No component-specific variables. Uses shared theme tokens.
 | :--- | :--- |
 | `after-image` | Full After image |
 | `after-label` | Right decorative caption |
-| `before-image` | Full, clipped Before image |
+| `before-image` | Complete Before image inside its selected viewport |
+| `after-layer` | Full-frame After layer |
+| `before-layer` | Full-frame Before reveal plane |
+| `after-viewport` | Selected After region clip |
+| `before-viewport` | Selected Before region clip |
 | `before-label` | Left decorative caption |
 | `control` | Native range control |
 | `divider` | Reveal boundary |
