@@ -1,8 +1,10 @@
+import { isFieldDisabled, syncFieldHost } from '../../../utils/form-field-state';
+import { registerFormField } from '../../../utils/form-field-adapter';
 import { AttachInternals, Component, Element, Event, EventEmitter, Host, Method, Prop, State, Watch, h } from '@stencil/core';
 import { Braces, Check, Copy } from '@lucide/icons';
-import { formatCode } from '../../../utils/formatter';
+import { formatSource, isFormatSupported } from '../../../utils/formatter';
 import { syncNativeControlValidity } from '../../../utils/form-control-validity';
-import { highlight as highlightSyntax } from '../../../utils/syntax';
+import { tokenizeSyntax } from '../../../utils/syntax';
 
 import type { QSyntaxBoxLanguage, QSyntaxBoxVariant } from './syntax-box.types';
 import { getSyntaxBoxCopyText, writeClipboardText } from './internals/clipboard';
@@ -11,7 +13,7 @@ import { normalizeSyntaxBoxValue, resolveInitialSyntaxBoxValue } from './interna
 
 /**
  * Displays and optionally edits syntax-highlighted code, with form association in editable mode.
- * @slot - Fallback content rendered when `code` is not provided.
+ * @slot - Read-only fallback content rendered when `code` is not provided.
  * @slot actions - Additional actions rendered in the panel header.
  */
 @Component({
@@ -60,9 +62,17 @@ export class QSyntaxBox {
   @Event() qInput!: EventEmitter<string>;
 
   // ======================== [2] INTERNAL STATE & REFS ========================
+
+  @State() private disabledState = false;
+
+  private get isDisabled(): boolean {
+    return isFieldDisabled(this.el, this.disabled);
+  }
   @State() copied: boolean = false;
 
   @State() copyFailed: boolean = false;
+
+  @State() formatMessage?: string;
 
   private initialValue = '';
   private copiedTimeoutId?: ReturnType<typeof setTimeout>;
@@ -71,13 +81,10 @@ export class QSyntaxBox {
 
   // ========================= [3] LIFECYCLE & WATCHERS =========================
   @Watch('code')
-  watchCode(newCode: string) {
-    const textarea = this.el.shadowRoot?.querySelector('textarea');
-    const isFocused = textarea && this.el.shadowRoot?.activeElement === textarea;
+  watchCode(newCode: string | undefined) {
+    this.formatMessage = undefined;
     const finalCode = normalizeSyntaxBoxValue(newCode, {
       editable: this.editable,
-      language: this.language,
-      shouldFormat: !isFocused,
     });
 
     if (finalCode !== newCode) {
@@ -91,13 +98,10 @@ export class QSyntaxBox {
   }
 
   @Watch('value')
-  watchValue(newValue: string) {
-    const textarea = this.el.shadowRoot?.querySelector('textarea');
-    const isFocused = textarea && this.el.shadowRoot?.activeElement === textarea;
+  watchValue(newValue: string | undefined) {
+    this.formatMessage = undefined;
     const finalVal = normalizeSyntaxBoxValue(newValue, {
       editable: this.editable,
-      language: this.language,
-      shouldFormat: !isFocused,
     });
 
     if (finalVal !== newValue) {
@@ -111,8 +115,16 @@ export class QSyntaxBox {
     this.syncFormValue(finalVal);
   }
 
+  @Watch('disabled')
+  @Watch('required')
+  @Watch('name')
+  watchConstraints() {
+    this.syncValidity();
+  }
+
   @Watch('editable')
   watchEditable() {
+    if (this.editable) this.watchCode(this.code);
     this.syncFormValue(this.code);
   }
 
@@ -121,13 +133,34 @@ export class QSyntaxBox {
       code: this.code,
       value: this.value,
       editable: this.editable,
-      language: this.language,
     });
 
     this.code = initial.code;
     this.value = initial.value;
     this.initialValue = initial.initialValue;
     this.syncFormValue(this.code);
+  }
+
+  formDisabledCallback() {
+    this.syncValidity();
+  }
+
+  componentDidLoad() {
+    registerFormField(this.el, {
+      kind: 'text',
+      owner: () => this.internals?.form ?? null,
+      active: () => this.editable,
+      value: () => this.code ?? '',
+      assign: value => { this.value = value as string; },
+      reconcile: () => {
+        const textarea = this.el.shadowRoot?.querySelector('textarea');
+        if (textarea && textarea.value !== (this.code ?? '')) textarea.value = this.code ?? '';
+        this.syncFormValue(this.code);
+        this.syncValidity();
+      },
+      reset: () => this.formResetCallback(),
+      validate: report => report ? this.internals?.reportValidity?.() ?? true : this.internals?.checkValidity?.() ?? true,
+    });
   }
 
   componentDidRender() {
@@ -142,6 +175,7 @@ export class QSyntaxBox {
     this.code = this.initialValue;
     this.value = this.initialValue;
     this.syncFormValue(this.code);
+    this.syncValidity();
   }
 
   // ========================== [4] EXPOSED METHODS ==========================
@@ -175,10 +209,20 @@ export class QSyntaxBox {
   private syncFormValue(value: string | undefined) {
     if (!this.internals || typeof this.internals.setFormValue !== 'function') return;
     this.internals.setFormValue(this.editable ? value || '' : null);
+    this.syncValidity();
   }
 
   private syncValidity(): void {
+    const disabled = syncFieldHost(this.el, this.disabled, this.name, this.required);
+    if (this.disabledState !== disabled) this.disabledState = disabled;
     const textarea = this.el.shadowRoot?.querySelector('textarea');
+    if (textarea) {
+      textarea.disabled = disabled;
+      textarea.required = this.required;
+      textarea.readOnly = this.el.hasAttribute('readonly');
+      if (textarea.value !== (this.code ?? '')) textarea.value = this.code ?? '';
+    }
+    this.internals?.setFormValue?.(this.editable && !disabled ? this.code ?? '' : null);
     if (!this.internals || !textarea || !this.editable) {
       if (typeof this.internals?.setValidity === 'function') {
         this.internals.setValidity({});
@@ -189,7 +233,7 @@ export class QSyntaxBox {
     syncNativeControlValidity({
       internals: this.internals,
       control: textarea,
-      disabled: this.disabled,
+      disabled: this.isDisabled,
     });
   }
 
@@ -210,7 +254,7 @@ export class QSyntaxBox {
   }
 
   private copyCode = async () => {
-    if (this.disabled) return;
+    if (this.isDisabled) return;
 
     const codeToCopy = getSyntaxBoxCopyText(this.code, this.el.textContent);
     try {
@@ -275,13 +319,15 @@ export class QSyntaxBox {
   };
 
   private handleFormat = () => {
-    if (this.disabled) return;
+    if (this.isDisabled || !isFormatSupported(this.language)) return;
     if (this.code) {
-      const formatted = formatCode(this.code, this.language);
-      this.code = formatted;
-      this.value = formatted;
-      this.qInput.emit(formatted);
-      this.qChange.emit(formatted);
+      const result = formatSource(this.code, this.language);
+      this.code = result.code;
+      this.value = result.code;
+      this.formatMessage = result.status === 'invalid' ? 'Invalid JSON; source unchanged.'
+        : result.status === 'unsupported' ? 'JSON formatting limit reached; source unchanged.' : undefined;
+      this.qInput.emit(result.code);
+      this.qChange.emit(result.code);
     }
   };
 
@@ -295,9 +341,14 @@ export class QSyntaxBox {
   render() {
     const resolvedHeight = this.height !== undefined ? this.height : this.variant === 'panel' ? '110px' : 'auto';
     const isScrollable = resolvedHeight !== 'auto' && resolvedHeight !== '';
+    const formatSupported = isFormatSupported(this.language);
+    const formatFeedback = this.editable ? formatSupported ? this.formatMessage : 'Formatting is available for JSON only.' : undefined;
+    const highlighted = tokenizeSyntax(this.code ?? '', this.language).map(token =>
+      token.className ? <span class={token.className}>{token.text}</span> : token.text
+    );
 
     const content =
-      this.code !== undefined ? (
+      this.editable || this.code !== undefined ? (
         this.editable ? (
           <div class="editor-area" style={{ height: resolvedHeight }}>
             <span id="syntax-box-keyboard-help" class="visually-hidden">
@@ -305,9 +356,9 @@ export class QSyntaxBox {
             </span>
             <textarea
               class="editor-textarea"
-              value={this.code}
+              value={this.code ?? ''}
               name={this.name}
-              disabled={this.disabled}
+              disabled={this.isDisabled}
               required={this.required}
               aria-label={this.ariaLabel?.trim() || this.heading?.trim() || `${this.language.toUpperCase()} code editor`}
               aria-describedby="syntax-box-keyboard-help"
@@ -317,12 +368,12 @@ export class QSyntaxBox {
               onKeyDown={this.handleKeyDown}
             />
             <pre class="code-body" ref={el => (this.preEl = el as HTMLPreElement)}>
-              <code innerHTML={highlightSyntax(this.code, this.language)}></code>
+              <code>{highlighted}</code>
             </pre>
           </div>
         ) : (
           <pre class="code-body">
-            <code innerHTML={highlightSyntax(this.code, this.language)}></code>
+            <code>{highlighted}</code>
           </pre>
         )
       ) : (
@@ -347,13 +398,13 @@ export class QSyntaxBox {
               <div class="panel-actions">
                 <slot name="actions"></slot>
                 {this.editable && (
-                  <q-button class="format-btn" variant="ghost" size="sm" onClick={this.handleFormat} disabled={this.disabled}>
+                  <q-button class="format-btn" variant="ghost" size="sm" onClick={this.handleFormat} disabled={this.isDisabled || !formatSupported}>
                     <q-icon slot="icon-left" definition={Braces} name="braces" size="sm"></q-icon>
-                    <q-tooltip slot="icon-left" position="bottom" content="Format Code"></q-tooltip>
+                    <q-tooltip slot="icon-left" position="bottom" content={formatSupported ? 'Format JSON' : 'Formatting is available for JSON only.'}></q-tooltip>
                   </q-button>
                 )}
                 {this.copyable && (
-                  <q-button variant="ghost" size="sm" onClick={this.copyCode} disabled={this.disabled}>
+                  <q-button variant="ghost" size="sm" onClick={this.copyCode} disabled={this.isDisabled}>
                     <q-icon
                       slot="icon-left"
                       definition={this.copied ? Check : Copy}
@@ -365,6 +416,7 @@ export class QSyntaxBox {
                 )}
               </div>
             </div>
+            {formatFeedback && <div class="format-feedback" role="status">{formatFeedback}</div>}
             {bodyContent}
           </div>
         </Host>

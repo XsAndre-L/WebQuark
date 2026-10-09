@@ -9,6 +9,8 @@
  */
 
 export { format } from './utils/utils';
+export { calculateImageCropGeometry, hasPartialImageCrop, isImageCropValid } from './utils/image-crop';
+export type { ImageCrop, ImageCropBox, ImageCropGeometry } from './utils/image-crop';
 export {
   identifyItems,
   reconcileByIdentity,
@@ -41,8 +43,16 @@ export {
   getDataTableCellSlotName,
   getDataTableCellValue,
   getDataTableItemKey,
+  getDataTableRowGutterSlotName,
 } from './components/data-display/data-table/data-table-cell';
 export type * from './components.d.ts';
+export type {
+  QCarouselAutoplayChangeDetail,
+  QCarouselLayout,
+  QCarouselSlideChangeDetail,
+  QCarouselSnapAlignment,
+  QCarouselTransition,
+} from './components/content/carousel/carousel.types';
 export type {
   DataTableCellContext,
   DataTableCellClassName,
@@ -52,6 +62,7 @@ export type {
   DataTableRowAction,
   DataTableRowGroup,
   DataTableRowGrouper,
+  DataTableRowGutter,
   DataTableSortDirection,
   DataTableSortMode,
   QDataTableRowActionDetail,
@@ -68,6 +79,7 @@ export type {
   QMapErrorCode,
   QMapErrorDetail,
   QMapGoogleMapType,
+  QMapFitMarkersOptions,
   QMapMarker,
   QMapMarkerBadge,
   QMapMarkerCallout,

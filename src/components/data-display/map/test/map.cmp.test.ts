@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import type {
   QMapClusterSelectDetail,
   QMapErrorDetail,
+  QMapFitMarkersOptions,
   QMapMarker,
   QMapMarkerId,
   QMapMarkerSelectDetail,
@@ -84,7 +85,209 @@ function interceptGoogleLoaderScript(): void {
   };
 }
 
+type MapTestElement = HTMLQMapElement & {
+  fitMarkers(options?: QMapFitMarkersOptions): Promise<boolean>;
+  scrollWheelZoom: boolean;
+};
+
+function createMapTestElement(): MapTestElement {
+  return document.createElement('q-map') as MapTestElement;
+}
+
 describe('q-map in Chromium', () => {
+  it('keeps the geographic focus and scale through growth, shrinkage, reversals and hidden sizes', async () => {
+    const element = createMapTestElement();
+    element.centerLatitude = -26.2041;
+    element.centerLongitude = 28.0473;
+    element.zoom = 14;
+    element.tileUrl = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+    element.attribution = 'Test imagery';
+    element.style.cssText = 'width:480px;height:320px;--q-map-min-height:0;--q-map-border:0';
+    element.markers = [
+      { id: 'focus', latitude: -26.2041, longitude: 28.0473, label: 'Focus' },
+      { id: 'scale', latitude: -26.2041, longitude: 28.0523, label: 'Scale' },
+    ];
+    const ready = waitForReady(element);
+    document.body.append(element);
+    await ready;
+    const style = document.createElement('style');
+    style.textContent = mapStyles;
+    element.shadowRoot!.prepend(style);
+    const canvas = element.shadowRoot!.querySelector<HTMLElement>('[part="canvas"]')!;
+    const anchors = () => Array.from(element.shadowRoot!.querySelectorAll<HTMLElement>('.leaflet-marker-icon'));
+    await expect.poll(() => anchors().length).toBe(2);
+    const initialDistance = anchors()[1].getBoundingClientRect().left - anchors()[0].getBoundingClientRect().left;
+    const samples: { width: number; height: number; error: number; distance: number }[] = [];
+    const observer = new ResizeObserver(() => {
+      // Microtasks after observer delivery measure the positions that will be painted.
+      queueMicrotask(() => {
+        const frame = canvas.getBoundingClientRect();
+        if (frame.width === 0 || frame.height === 0) return;
+        const [focus, scale] = anchors().map(anchor => anchor.getBoundingClientRect());
+        const focusStyle = getComputedStyle(anchors()[0]);
+        samples.push({
+          width: frame.width,
+          height: frame.height,
+          error: Math.max(
+            Math.abs(focus.left - parseFloat(focusStyle.marginLeft) - frame.left - frame.width / 2),
+            Math.abs(focus.top - parseFloat(focusStyle.marginTop) - frame.top - frame.height / 2),
+          ),
+          distance: scale.left - focus.left,
+        });
+      });
+    });
+    observer.observe(canvas);
+    try {
+      element.style.transition = 'width 160ms linear, height 160ms linear';
+      for (const [width, height, duration] of [[760, 440, 210], [250, 170, 70], [620, 350, 210], [250, 170, 210], [480, 320, 210]]) {
+        element.style.width = `${width}px`;
+        element.style.height = `${height}px`;
+        await new Promise(resolve => setTimeout(resolve, duration));
+      }
+      element.style.transition = 'none';
+      element.style.width = '0';
+      element.style.height = '0';
+      await new Promise(resolve => setTimeout(resolve, 50));
+      element.style.width = '375px';
+      element.style.height = '210px';
+      await new Promise(resolve => setTimeout(resolve, 50));
+    } finally {
+      observer.disconnect();
+    }
+    expect(samples.length).toBeGreaterThan(15);
+    expect(Math.max(...samples.map(sample => sample.error))).toBeLessThanOrEqual(1);
+    expect(samples.every(sample => sample.distance === initialDistance)).toBe(true);
+    expect(element.shadowRoot!.querySelector('[part="canvas"]')).toBe(canvas);
+    expect(element.zoom).toBe(14);
+    const attribution = element.shadowRoot!.querySelector<HTMLElement>('[part="attribution"]')!.getBoundingClientRect();
+    const frame = canvas.getBoundingClientRect();
+    expect(attribution.right).toBeLessThanOrEqual(frame.right);
+    expect(attribution.bottom).toBeLessThanOrEqual(frame.bottom);
+    expect(attribution.left).toBeGreaterThanOrEqual(frame.left);
+  });
+
+  it('preserves an interactive map camera after a user action instead of restoring configured props', async () => {
+    const element = createMapTestElement();
+    element.style.cssText = 'width:480px;height:320px;--q-map-min-height:0;--q-map-border:0';
+    // fitMarkers changes the current camera without mutating center/zoom props.
+    element.markers = [{ id: 'focus', latitude: -26.2041, longitude: 28.0473, label: 'Focus' }];
+    const ready = waitForReady(element);
+    document.body.append(element);
+    await ready;
+    const style = document.createElement('style');
+    style.textContent = mapStyles;
+    element.shadowRoot!.prepend(style);
+    await element.fitMarkers({ maxZoom: 13 });
+    const marker = element.shadowRoot!.querySelector<HTMLElement>('.leaflet-marker-icon')!;
+    element.style.width = '760px';
+    element.style.height = '440px';
+    await new Promise(resolve => setTimeout(resolve, 70));
+    const frame = element.shadowRoot!.querySelector<HTMLElement>('[part="canvas"]')!.getBoundingClientRect();
+    const rect = marker.getBoundingClientRect();
+    expect(Math.abs(rect.left + rect.width / 2 - frame.left - frame.width / 2)).toBeLessThanOrEqual(1);
+    expect(Math.abs(rect.top + rect.height / 2 - frame.top - frame.height / 2)).toBeLessThanOrEqual(1);
+    expect(element.centerLatitude).toBe(0);
+    expect(element.centerLongitude).toBe(0);
+    expect(element.zoom).toBe(2);
+  });
+
+  it('preserves a transparent image pin at its bottom anchor and falls back after an image error', async () => {
+    const element = createMapTestElement();
+    element.style.cssText = 'width:480px;height:320px';
+    const imageUrl = 'data:image/svg+xml,' + encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="25" height="41"><path fill="gold" d="M0 0H25L12.5 41Z"/></svg>',
+    );
+    element.markers = [{
+      id: 'pin', latitude: 0, longitude: 0, label: 'Head office', kind: 'image', imageUrl,
+    }];
+    const ready = waitForReady(element);
+    document.body.append(element);
+    await ready;
+    const style = document.createElement('style');
+    style.textContent = mapStyles;
+    element.shadowRoot!.prepend(style);
+    const marker = element.shadowRoot!.querySelector<HTMLElement>('[part~="marker"]')!;
+    await expect.poll(() => marker.classList.contains('kind-image')).toBe(true);
+    await element.fitMarkers({ maxZoom: 13 });
+    const canvas = element.shadowRoot!.querySelector<HTMLElement>('[part="canvas"]')!;
+    const rect = marker.getBoundingClientRect();
+    const canvasRect = canvas.getBoundingClientRect();
+    expect(rect.width).toBe(25);
+    expect(rect.height).toBe(41);
+    expect(rect.left).toBeCloseTo(canvasRect.left + canvasRect.width / 2 - 12.5, 1);
+    expect(rect.bottom).toBeCloseTo(canvasRect.top + canvasRect.height / 2, 1);
+    expect(getComputedStyle(marker).borderTopWidth).toBe('0px');
+    expect(getComputedStyle(marker).backgroundColor).toBe('rgba(0, 0, 0, 0)');
+    expect(getComputedStyle(marker.querySelector('img')!).objectFit).toBe('contain');
+    expect(marker.getAttribute('aria-label')).toBe('Head office');
+
+    element.markers = [{
+      id: 'pin', latitude: 0, longitude: 0, label: 'Head office',
+      kind: 'image', imageUrl: 'data:image/png;base64,broken', imageSize: [25, 41],
+    }];
+    await expect.poll(() => marker.classList.contains('kind-dot')).toBe(true);
+    await expect.poll(() => marker.getBoundingClientRect().width).toBe(20);
+    expect(marker.getAttribute('aria-label')).toBe('Head office');
+  });
+
+  it('fits current valid markers, handles identical coordinates, and returns false without locations', async () => {
+    const element = createMapTestElement();
+    element.style.cssText = 'width:480px;height:320px';
+    await expect(element.fitMarkers()).resolves.toBe(false);
+    const ready = waitForReady(element);
+    document.body.append(element);
+    await ready;
+    const style = document.createElement('style');
+    style.textContent = mapStyles;
+    element.shadowRoot!.prepend(style);
+    element.markers = [
+      { id: 'north', latitude: -33.5, longitude: 18.5, label: 'North marker' },
+      { id: 'cape', latitude: -33.9249, longitude: 18.4241, label: 'Cape Town' },
+      { id: 'invalid', latitude: 200, longitude: 0, label: 'Invalid' },
+    ];
+    await expect(element.fitMarkers({ padding: 48, maxZoom: 13 })).resolves.toBe(true);
+    const canvas = element.shadowRoot!.querySelector<HTMLElement>('[part="canvas"]')!.getBoundingClientRect();
+    const markers = element.shadowRoot!.querySelectorAll<HTMLElement>('[part~="marker"]');
+    expect(markers).toHaveLength(2);
+    for (const marker of Array.from(markers)) {
+      const bounds = marker.getBoundingClientRect();
+      expect(bounds.left).toBeGreaterThan(canvas.left + 30);
+      expect(bounds.right).toBeLessThan(canvas.right - 30);
+      expect(bounds.top).toBeGreaterThan(canvas.top + 30);
+      expect(bounds.bottom).toBeLessThan(canvas.bottom - 30);
+    }
+    element.markers = [
+      { id: 'one', latitude: 0, longitude: 0, label: 'One' },
+      { id: 'two', latitude: 0, longitude: 0, label: 'Two' },
+    ];
+    await expect(element.fitMarkers({ maxZoom: 13 })).resolves.toBe(true);
+    element.markers = [element.markers[0]];
+    await expect(element.fitMarkers({ maxZoom: 13 })).resolves.toBe(true);
+    element.markers = [];
+    await expect(element.fitMarkers()).resolves.toBe(false);
+  });
+
+  it('defaults wheel zoom on and updates its handler without removing zoom controls', async () => {
+    const element = createMapTestElement();
+    element.style.cssText = 'width:480px;height:320px';
+    expect(element.scrollWheelZoom).toBe(true);
+    element.scrollWheelZoom = false;
+    const ready = waitForReady(element);
+    document.body.append(element);
+    await ready;
+    const canvas = element.shadowRoot!.querySelector<HTMLElement>('[part="canvas"]')!;
+    const disabled = new WheelEvent('wheel', { deltaY: -120, bubbles: true, cancelable: true });
+    canvas.dispatchEvent(disabled);
+    expect(disabled.defaultPrevented).toBe(false);
+    expect(element.shadowRoot!.querySelector('.leaflet-control-zoom')).not.toBeNull();
+    element.scrollWheelZoom = true;
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+    const enabled = new WheelEvent('wheel', { deltaY: -120, bubbles: true, cancelable: true });
+    canvas.dispatchEvent(enabled);
+    expect(enabled.defaultPrevented).toBe(true);
+    await new Promise<void>(resolve => setTimeout(resolve, 400));
+  });
+
   afterEach(() => {
     restoreHeadAppend?.();
     Reflect.deleteProperty(window, 'google');

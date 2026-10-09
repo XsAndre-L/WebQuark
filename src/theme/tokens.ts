@@ -880,9 +880,18 @@ export const semanticPresetTokens: Record<string, Record<QPreset, string>> = {
   '--q-heading-display-size': { compact: 'var(--q-font-size-lg)', comfortable: 'clamp(2.5rem, 1.75rem + 3vw, 4rem)' },
   '--q-heading-display-line-height': { compact: '1.3', comfortable: '1.1' },
   '--q-heading-1-size': { compact: 'var(--q-font-size-lg)', comfortable: 'clamp(27px, 1.5rem + 2vw, 36px)' },
-  '--q-heading-2-size': { compact: 'var(--q-font-size-lg)', comfortable: 'clamp(1.75rem, 1.375rem + 1.5vw, 2.5rem)' },
-  '--q-heading-3-size': { compact: 'var(--q-font-size-lg)', comfortable: 'clamp(1.5rem, 1.25rem + 1vw, 2rem)' },
-  '--q-heading-4-size': { compact: 'var(--q-font-size-lg)', comfortable: '1.375rem' },
+  '--q-heading-2-size': {
+    compact: 'var(--q-font-size-lg)',
+    comfortable: 'clamp(1.4rem, 1.1rem + 1.2vw, 2rem)',
+  },
+  '--q-heading-3-size': {
+    compact: 'var(--q-font-size-lg)',
+    comfortable: 'clamp(1.265625rem, 1.0546875rem + 0.84375vw, 1.6875rem)',
+  },
+  '--q-heading-4-size': {
+    compact: 'var(--q-font-size-lg)',
+    comfortable: '1.25rem',
+  },
   '--q-heading-5-size': { compact: 'var(--q-font-size-lg)', comfortable: '1.25rem' },
   '--q-heading-6-size': { compact: 'var(--q-font-size-lg)', comfortable: '1.125rem' },
   ...Object.fromEntries([1, 2, 3, 4, 5, 6].map(level => [

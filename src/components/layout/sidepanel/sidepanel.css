@@ -37,7 +37,7 @@
   background: rgba(0, 0, 0, 0.5); /* static fallback background */
   background: var(--q-bg-overlay, rgba(0, 0, 0, 0.5)); /* Safe OSR solid transparency fallback */
   opacity: 0;
-  transition: opacity var(--q-panel-transition-duration, var(--q-transition-normal, 250ms ease)) cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity var(--q-panel-transition-duration, var(--q-transition-normal, 250ms ease));
   box-sizing: border-box;
   user-select: none;
   -webkit-user-select: none;
@@ -60,8 +60,19 @@
   outline: none;
 
   /* Unreal OSR-Safe 2D slide-out animations */
-  transition: transform var(--q-panel-transition-duration, var(--q-transition-normal, 250ms ease)) cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform var(--q-panel-transition-duration, var(--q-transition-normal, 250ms ease));
 }
+
+.drawer-header,
+.drawer-body,
+.drawer-footer {
+  opacity: 0;
+  transition: opacity var(--q-panel-transition-duration, var(--q-transition-normal, 250ms ease));
+}
+
+.sidepanel-wrapper.is-open .drawer-header,
+.sidepanel-wrapper.is-open .drawer-body,
+.sidepanel-wrapper.is-open .drawer-footer { opacity: 1; }
 
 /* Slide Edges Positioning & Translations */
 /* Left Edge */
@@ -347,7 +358,11 @@ slot[name='footer'] {
   line-height: 1.4;
   color: #f9fafb; /* static fallback */
   color: var(--q-sidepanel-nav-depth-color);
-  transition: background 80ms ease-out, color 80ms ease-out;
+  transition:
+    background 80ms ease-out,
+    color 80ms ease-out,
+    padding var(--q-transition-normal, 250ms ease),
+    gap var(--q-transition-normal, 250ms ease);
   outline: none;
   position: relative;
 }
@@ -499,8 +514,19 @@ slot[name='footer'] {
 
 .nav-sidebar.is-collapsed.collapse-mode-rail .nav-item__label,
 .nav-sidebar.is-collapsed.collapse-mode-rail .nav-item__chevron {
-  display: none;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
+
+.nav-item__label,
+.nav-item__chevron {
+  max-width: var(--q-sidepanel-expanded-width, 264px);
+  transition: max-width var(--q-transition-normal, 250ms ease), opacity var(--q-transition-normal, 250ms ease);
+}
+
+.nav-sidebar.is-collapsed.collapse-mode-rail .nav-item { gap: 0; }
 
 .nav-sidebar.is-collapsed.collapse-mode-rail .nav-header {
   flex-direction: column;
@@ -516,14 +542,35 @@ slot[name='footer'] {
   width: 100%;
 }
 
-/* ── Collapse feature: hidden mode ───────────────────────────────────────── */
-/* Use visibility (not display:none) so the width transition on the host
-   stays smooth, and so it actually removes content from the tab order. */
+.nav-sidebar.is-collapsed.collapse-mode-rail.has-header-control .nav-header,
+.nav-sidebar.is-collapsed.collapse-mode-rail.has-footer-control .nav-footer { padding-right: 0; }
+.nav-sidebar.is-collapsed.collapse-mode-rail > .collapse-control--header {
+  top: calc(var(--q-sidepanel-collapsed-header-height, 112px) - var(--q-sidepanel-collapse-control-size, 32px) - 8px);
+  right: calc((100% - var(--q-sidepanel-collapse-control-size, 32px)) / 2);
+}
 
-.nav-sidebar.is-collapsed.collapse-mode-hidden .nav-header,
-.nav-sidebar.is-collapsed.collapse-mode-hidden .nav-body,
-.nav-sidebar.is-collapsed.collapse-mode-hidden .nav-footer {
-  visibility: hidden;
+/* ── Collapse feature: hidden mode ───────────────────────────────────────── */
+/* Keep the expanded content width behind a shrinking viewport. Inert wrappers
+   disable hidden content; controls remain separate from the faded regions. */
+
+.nav-sidebar.collapse-mode-hidden .nav-surface,
+.nav-sidebar.collapse-mode-hidden .nav-header > span,
+.nav-sidebar.collapse-mode-hidden .nav-footer > span {
+  width: max(0px, calc(var(--q-sidepanel-resolved-panel-width, var(--q-sidepanel-expanded-width, 264px)) - var(--q-sidepanel-content-inline-inset, 0px)));
+  flex: 0 0 auto;
+}
+
+.nav-surface,
+.nav-header > span,
+.nav-footer > span {
+  opacity: 1;
+  transition: opacity var(--q-transition-normal, 250ms ease);
+}
+
+.nav-sidebar.is-collapsed.collapse-mode-hidden .nav-surface,
+.nav-sidebar.is-collapsed.collapse-mode-hidden .nav-header > span,
+.nav-sidebar.is-collapsed.collapse-mode-hidden .nav-footer > span {
+  opacity: 0;
   pointer-events: none;
 }
 
@@ -720,10 +767,10 @@ slot[name='footer'] {
   display: flex;
   flex-direction: column;
   width: var(--q-sidepanel-panel-width, var(--q-panel-width, 320px));
-  height: 100%;
+  height: var(--q-sidepanel-panel-height, 100%);
   flex-shrink: 0;
   overflow: visible;
-  transition: width var(--q-transition-normal, 250ms ease);
+  transition: width var(--q-transition-normal, 250ms ease), height var(--q-transition-normal, 250ms ease);
 }
 
 :host([variant="panel"][collapsible][collapsed][collapse-mode="rail"]) {
@@ -732,6 +779,7 @@ slot[name='footer'] {
 
 :host([variant="panel"][collapsible][collapsed][collapse-mode="hidden"]) {
   width: var(--q-sidepanel-hidden-width, 0px);
+  height: var(--q-sidepanel-hidden-height, var(--q-sidepanel-panel-height, 100%));
 }
 
 .panel-shell {
@@ -760,9 +808,92 @@ slot[name='footer'] {
   overflow: hidden;
 }
 
-.panel-shell.is-collapsed.collapse-mode-hidden .panel-content {
-  visibility: hidden;
+.panel-surface {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  height: var(--q-sidepanel-resolved-content-height, 100%);
+  min-height: 0;
+  opacity: 1;
+}
+
+.panel-shell.is-collapsible .panel-surface {
+  width: max(0px, calc(var(--q-sidepanel-resolved-panel-width, var(--q-sidepanel-panel-width, var(--q-panel-width, 320px))) - var(--q-sidepanel-content-inline-inset, 0px)));
+  transition: opacity var(--q-transition-normal, 250ms ease);
+}
+
+.panel-shell.is-collapsed.collapse-mode-hidden .panel-surface {
+  opacity: 0;
   pointer-events: none;
+}
+
+/* Controls stay outside the clipped, inert content in every placement. */
+.panel-shell > .collapse-control--header,
+.panel-shell > .collapse-control--footer,
+.nav-sidebar > .collapse-control--header,
+.nav-sidebar > .collapse-control--footer {
+  position: absolute;
+  right: var(--q-padding-lg, 16px);
+  z-index: 2;
+}
+
+.panel-shell > .collapse-control--header { top: var(--q-padding-lg, 16px); }
+.panel-shell > .collapse-control--footer { bottom: var(--q-padding-lg, 16px); }
+.nav-sidebar > .collapse-control--header { top: var(--q-padding-lg, 16px); }
+.nav-sidebar > .collapse-control--footer { bottom: var(--q-padding-lg, 16px); }
+.panel-shell.is-collapsed.collapse-mode-hidden > .collapse-control--header,
+.panel-shell.is-collapsed.collapse-mode-hidden > .collapse-control--footer,
+.nav-sidebar.is-collapsed.collapse-mode-hidden > .collapse-control--header,
+.nav-sidebar.is-collapsed.collapse-mode-hidden > .collapse-control--footer { right: 0; }
+.panel-side-left.is-collapsed.collapse-mode-hidden > .collapse-control--header,
+.panel-side-left.is-collapsed.collapse-mode-hidden > .collapse-control--footer,
+:host([side="left"]) .nav-sidebar.is-collapsed.collapse-mode-hidden > .collapse-control--header,
+:host([side="left"]) .nav-sidebar.is-collapsed.collapse-mode-hidden > .collapse-control--footer {
+  left: 0;
+  right: auto;
+}
+.panel-side-top.is-collapsed.collapse-mode-hidden > .collapse-control--header,
+.panel-side-top.is-collapsed.collapse-mode-hidden > .collapse-control--footer {
+  top: 0;
+  bottom: auto;
+  left: 0;
+  right: auto;
+}
+.panel-side-bottom.is-collapsed.collapse-mode-hidden > .collapse-control--header,
+.panel-side-bottom.is-collapsed.collapse-mode-hidden > .collapse-control--footer {
+  top: auto;
+  bottom: 0;
+  left: 0;
+  right: auto;
+}
+.panel-shell.has-header-control .panel-header,
+.panel-shell.has-footer-control .panel-footer,
+.nav-sidebar.has-header-control .nav-header,
+.nav-sidebar.has-footer-control .nav-footer {
+  box-sizing: border-box;
+  min-height: calc(var(--q-sidepanel-collapse-control-size, 32px) + 2 * var(--q-padding-lg, 16px));
+  padding-right: calc(var(--q-sidepanel-collapse-control-size, 32px) + 2 * var(--q-padding-lg, 16px));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host([variant="panel"]),
+  :host([variant="nav"]),
+  .panel-shell.is-collapsible .panel-surface,
+  .nav-surface,
+  .nav-header > span,
+  .nav-footer > span,
+  .nav-item,
+  .nav-item__label,
+  .nav-item__chevron,
+  .sidepanel-drawer,
+  .sidepanel-backdrop,
+  .drawer-header,
+  .drawer-body,
+  .drawer-footer {
+    transition: none;
+  }
 }
 
 .panel-side-left {

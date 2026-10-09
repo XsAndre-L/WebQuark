@@ -21,6 +21,7 @@ import { loadGoogleMutantConstructor } from './internals/google-mutant';
 import { loadMapLibreLayerFactory, waitForMapLibreLayerReady } from './internals/maplibre';
 import { normalizeMapMarkerClusteringOptions } from './internals/marker-cluster-index';
 import { MapMarkerController } from './internals/marker-controller';
+import { getMapMarkers } from './internals/markers';
 import {
   getMinimalVisibleTranslation,
   getRenderedMapItemRect,
@@ -42,6 +43,7 @@ import type {
   QMapErrorCode,
   QMapErrorDetail,
   QMapGoogleMapType,
+  QMapFitMarkersOptions,
   QMapMarkerId,
   QMapMarkerInput,
   QMapMarkerVisibilityResult,
@@ -135,6 +137,8 @@ export class QMap {
   /** Clamped between the normalized zoom limits. */
   @Prop() zoom: number = 2;
   @Prop() zoomControls: boolean = true;
+  /** Enables mouse-wheel zoom without changing touch, keyboard, or button controls. */
+  @Prop() scrollWheelZoom: boolean = true;
   /** Non-finite values normalize to zero. */
   @Prop() minZoom: number = 0;
   /** Never resolves below `minZoom`. */
@@ -194,7 +198,6 @@ export class QMap {
   private map?: LeafletMap;
   private canvas?: HTMLDivElement;
   private resizeObserver?: ResizeObserver;
-  private resizeFrame?: number;
   private initializationToken = 0;
   private markerVisibilityToken = 0;
   private cancelMarkerVisibilityPan?: () => void;
@@ -220,6 +223,37 @@ export class QMap {
     this.connected = false;
     this.initializationToken += 1;
     this.destroyMap();
+  }
+
+  /** Fits the latest valid marker coordinates without changing the configured center or zoom props. */
+  @Method()
+  async fitMarkers(options: QMapFitMarkersOptions = {}): Promise<boolean> {
+    const map = this.map;
+    const markers = getMapMarkers(this.markers);
+    if (!map || !this.connected || markers.length === 0)
+      return false;
+
+    map.invalidateSize({ animate: false, pan: false });
+    const size = map.getSize();
+    if (size.x <= 0 || size.y <= 0)
+      return false;
+
+    const { minimum, maximum } = this.getZoomLimits();
+    const maxZoom = Number.isFinite(options.maxZoom)
+      ? Math.max(minimum, Math.min(maximum, options.maxZoom!))
+      : maximum;
+    const requestedPadding = Number.isFinite(options.padding) ? Math.max(0, options.padding!) : 0;
+    const padding = Math.min(requestedPadding, Math.max(0, (Math.min(size.x, size.y) - 1) / 2));
+
+    this.markerVisibilityToken += 1;
+    this.cancelMarkerVisibilityPan?.();
+    this.markerController?.sync(this.markers);
+    map.fitBounds(markers.map(marker => [marker.latitude, marker.longitude]), {
+      animate: false,
+      padding: [padding, padding],
+      maxZoom,
+    });
+    return true;
   }
 
   /** Minimally pans to fully expose a marker or its current cluster without changing zoom. */
@@ -370,6 +404,14 @@ export class QMap {
     this.syncBounds(true);
   }
 
+  @Watch('scrollWheelZoom')
+  handleScrollWheelZoomChange() {
+    if (this.scrollWheelZoom)
+      this.map?.scrollWheelZoom.enable();
+    else
+      this.map?.scrollWheelZoom.disable();
+  }
+
   @Watch('zoomControls')
   handleZoomControlsChange() {
     if (!this.map) return;
@@ -418,6 +460,7 @@ export class QMap {
         wheelPxPerZoomLevel: smoothMotion ? SMOOTH_WHEEL_PIXELS_PER_LEVEL : 60,
         zoomAnimation: smoothMotion,
         zoomControl: this.zoomControls,
+        scrollWheelZoom: this.scrollWheelZoom,
         zoomDelta: smoothMotion ? SMOOTH_ZOOM_DELTA : 1,
         zoomSnap: smoothMotion ? SMOOTH_ZOOM_SNAP : 1,
       });
@@ -432,7 +475,7 @@ export class QMap {
 
       this.markerController?.sync(this.markers);
       this.observeResize();
-      this.map.invalidateSize({ animate: false, pan: false });
+      this.map.invalidateSize({ animate: false, pan: true });
       this.qReady.emit();
     } catch (error) {
       if (token !== this.initializationToken) return;
@@ -776,17 +819,18 @@ export class QMap {
   private observeResize(): void {
     if (!this.canvas || typeof ResizeObserver === 'undefined') return;
     this.resizeObserver?.disconnect();
-    this.resizeObserver = new ResizeObserver(() => this.scheduleResize());
+    // Update before paint so a changing frame never paints the previous frame's center.
+    this.resizeObserver = new ResizeObserver(() => this.resizeMap());
     this.resizeObserver.observe(this.canvas);
   }
 
-  private scheduleResize(): void {
-    if (this.resizeFrame !== undefined) cancelAnimationFrame(this.resizeFrame);
-    this.resizeFrame = requestAnimationFrame(() => {
-      this.resizeFrame = undefined;
-      this.map?.invalidateSize({ animate: false, debounceMoveend: true, pan: false });
-      this.syncBounds(false);
+  private resizeMap(): void {
+    this.map?.invalidateSize({
+      animate: false,
+      debounceMoveend: true,
+      pan: true,
     });
+    this.syncBounds(false);
   }
 
   private destroyMap(): void {
@@ -795,11 +839,6 @@ export class QMap {
     this.cancelMarkerVisibilityPan = undefined;
     this.resizeObserver?.disconnect();
     this.resizeObserver = undefined;
-    if (this.resizeFrame !== undefined) {
-      cancelAnimationFrame(this.resizeFrame);
-      this.resizeFrame = undefined;
-    }
-
     this.markerController?.destroy();
     this.markerController = undefined;
     this.layerController?.destroy();

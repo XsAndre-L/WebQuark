@@ -144,11 +144,15 @@ Navigation accepts JavaScript arrays only. String entries are trimmed and blank 
 
 `defaultGroupsExpanded` seeds all groups during initialization and during items replacements before any user group toggle. Updating defaultGroupsExpanded alone does not open/close current groups. After a user toggle, replacements preserve surviving group values. `accordion` closes siblings when opening a group; it does not force only one group open on initialization. alwaysExpanded parents remain open. The declared `mode` values flat/grouped/tree are currently unused by rendering: children produce nesting in all three.
 
-Rail collapse hides nav labels/chevrons and preserves icon items (text-only leaves can look blank). Always-expanded headings disappear in the rail. Panel rail only narrows/clips its content; it does not create icons. Hidden collapse hides content. In panel mode, use an edge control or external trigger for hidden collapse: header/footer controls sit inside the hidden inert content and cannot reopen it. In nav mode built-in controls remain outside aria-hidden content wrappers.
+Rail collapse fades nav labels/chevrons and preserves usable icon items (text-only leaves can look blank). Always-expanded headings disappear in the rail. Panel rail only narrows/clips its content; it does not create icons. Hidden collapse slides the occupied width and fades stable content. All built-in controls sit outside the clipped, inert content and remain usable. Slotted content stays mounted, retaining inputs and scroll position; consumers must keep it mounted and separately control background activity when hidden.
+
+The standard uses `--q-transition-normal` for occupied-size changes and content fading. Drawers retain their directional transform and backdrop while their content fades. Reduced motion settles immediately. Reversing a transition continues from the current position; drawer completion ignores child transitions and restores the original opener.
 
 ### Keyboard and focus
 
 Nav items are role=button elements with Tab stops and Enter/Space activation; this is not a tree-widget arrow-key model. Always-expanded parent categories use heading semantics with level min(depth+2,6), are not focusable, and do not toggle.
+
+When a persistent panel or hidden navigation sidebar closes with focus inside its content, focus moves to its built-in control before the content becomes inert. With `collapseControl="none"`, focus is released; the application should return it to its external trigger. Rail icons remain in the keyboard order.
 
 An already-open drawer focuses its first focusable descendant after load. A later open change records prior focus and focuses the first control after its transition; close restores recorded focus. Tab/Shift+Tab wrap among focusable descendants when present. The drawer itself has tabindex=-1 as a focus fallback, but an empty drawer has no loopable descendants for the Tab trap. Closed drawer content is inert. Provide a labelled close action. Background content is not made inert and no document scroll lock is implemented. Changing variant while already open does not rerun the open watcher; choose variant before opening.
 
@@ -166,7 +170,7 @@ The sidepanel has no form value. Built-in collapse controls use type=button; app
 
 ### Limitations and compatibility
 
-Left/right drawers become bottom sheets at viewport widths ≤600px with height clamp(280px, drawerSize, 80vh); top/bottom drawers retain their edges. No component-specific reduced-motion override exists. The drawer transition declaration combines a timing function with --q-transition-normal (which already contains one), so the default computed transform transition can be zero; set --q-panel-transition-duration to a duration-only value for a valid animated transition. Unknown variants fall through to drawer rendering, while reflected host selectors may not match; use supported values. Unknown sides have no positioning rule.
+Left/right drawers become bottom sheets at viewport widths ≤600px with height clamp(280px, drawerSize, 80vh); top/bottom drawers retain their edges. Unknown variants fall through to drawer rendering, while reflected host selectors may not match; use supported values. Unknown sides have no positioning rule.
 
 ## Styling
 
@@ -187,6 +191,24 @@ Collapse requires collapsible. rail (default) retains a 65px strip; hidden defau
 Nav width defaults to 264px; persistent panel width to 320px. Their height is 100% and needs a parent height. The effective `drawerSize` defaults to 320px and becomes width for left/right or height for top/bottom. It does not size persistent panels; use their CSS hooks. side defaults right. A persistent panel’s side changes borders/control placement, not its horizontal flow direction or its width-based collapse.
 
 The edge-tab defaults to 24×52px; horizontal sides swap the dimensions. collapseControlPosition sets an inline offset variable used by panel edge controls and nav left/right edge-tabs; nav icon-button edge placement remains fixed.
+
+### Stable content and flexible layouts
+
+The component owns its animated width. A surrounding wrapper should follow that width (`flex: 0 0 auto`) rather than animate a competing width or flex basis. Set the expanded target through `--q-sidepanel-panel-width` (panel) or `--q-sidepanel-expanded-width` (nav). Fixed lengths and container units keep content stable through collapse. Literal percentages are resolved against the containing layout, including initially closed state and container resizing. Avoid a shrinking wrapper as the percentage sizing reference. Targets that exceed the available flex space are clipped; choose a fitting expanded target rather than relying on content reflow during collapse. Complex percentage expressions such as `calc(100% - 20px)` are not resolved; use container units such as `calc(100cqw - 20px)` or an explicit expanded length.
+
+Borders and padding on both the host and persistent shell are included in the stable surface dimensions. These are refreshed on component updates, window resizing, and percentage-container resizing; theme changes that only alter CSS border geometry should trigger a resize/update. Header/body/footer parts and slots are preserved. `surface` exposes the inner content region without including the collapse control.
+
+For a stacked page, keep its layout direction consistent while closing and use the height hooks below. The page still chooses vertical layout; `side="top"` or `side="bottom"` alone does not change persistent collapse to height. Example inside an inline-size query container:
+
+```css
+q-sidepanel.stacked {
+  --q-sidepanel-panel-width: 100cqw;
+  --q-sidepanel-hidden-width: 100cqw;
+  --q-sidepanel-panel-height: min(72vh, 680px);
+  --q-sidepanel-panel-content-height: min(72vh, 680px);
+  --q-sidepanel-hidden-height: 0px;
+}
+```
 
 ### Custom styling
 
@@ -299,7 +321,7 @@ Defaults below include the imported shared stylesheet; `var(...)` values follow 
 | `--q-panel-bg` | `var(--q-bg-surface-1, #111827)` | Drawer/persistent fallback background alias; --q-sidepanel-bg takes precedence and is set by shared theme. |
 | `--q-panel-border` | `var(--q-border)` | Drawer/persistent fallback border alias; --q-sidepanel-border takes precedence where used. Also directly controls drawer header and mobile top border. |
 | `--q-panel-shadow` | `var(--q-shadow-high, 0 16px 32px rgba(0,0,0,0.12))` | Drawer shadow fallback; --q-sidepanel-shadow takes precedence and is set by shared theme. |
-| `--q-panel-transition-duration` | `var(--q-transition-normal, 250ms ease)` | Drawer opacity/transform duration. Use duration only, such as 250ms; default shared shorthand can invalidate transition. |
+| `--q-panel-transition-duration` | `var(--q-transition-normal, 250ms ease)` | Optional drawer duration override, such as 250ms. Otherwise the complete shared normal transition is used. |
 | `--q-panel-width` | `Drawer: drawerSize inline (320px); persistent fallback: 320px` | Drawer inline sizing from drawerSize overrides host inheritance. Fallback alias for persistent width when --q-sidepanel-panel-width is unset. |
 | `--q-shadow-high` | `0 16px 32px rgba(0, 0, 0, 0.45)` | shadow high applied to `.sidepanel-drawer`. |
 | `--q-sidepanel-bg` | `var(--q-bg-surface-1)` | All variants’ background; overrides --q-panel-bg where both appear. |
@@ -334,6 +356,9 @@ Defaults below include the imported shared stylesheet; `var(...)` values follow 
 | `--q-sidepanel-panel-padding` | `var(--q-padding-lg)` | sidepanel panel padding applied to `.panel-body`. |
 | `--q-sidepanel-panel-section-border` | `var(--q-border)` | sidepanel panel section border applied to `.panel-header`, `.panel-footer`. |
 | `--q-sidepanel-panel-width` | `320px` | sidepanel panel width applied to `:host([variant="panel"])`. |
+| `--q-sidepanel-panel-height` | `100%` | Persistent panel expanded outer height; consumer may use it for a stacked layout. |
+| `--q-sidepanel-panel-content-height` | `Expanded outer height, otherwise fill` | Stable inner height target, adjusted for actual host/shell borders and padding. |
+| `--q-sidepanel-hidden-height` | `Expanded outer height` | Optional closed height for hidden panel collapse; set 0px for vertical collapse. |
 | `--q-sidepanel-shadow` | `var(--q-shadow-high)` | sidepanel shadow applied to `.sidepanel-drawer`. |
 | `--q-transition-normal` | `250ms cubic-bezier(0.4, 0, 0.2, 1)` | transition normal applied to `.sidepanel-backdrop`, `.sidepanel-drawer`, `:host([variant="nav"])`. |
 | `--q-z-index-overlay` | `1000` | z index overlay applied to `.sidepanel-wrapper`. |
@@ -351,3 +376,4 @@ Defaults below include the imported shared stylesheet; `var(...)` values follow 
 | `header` | All variants; wrapper may be hidden. |
 | `item-badge` | Each nav item with a valid positive badgeCount. |
 | `panel` | Persistent panel surface only; nav has no equivalent surface part. |
+| `surface` | Stable inner persistent-panel content, excluding collapse controls. |

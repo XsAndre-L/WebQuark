@@ -1,6 +1,7 @@
 import { h } from '@stencil/core';
+import type { CollectionIdentity } from '../../../../utils/collection-identity';
 
-import { getDataTableCellSlotName } from '../data-table-cell';
+import { getDataTableCellSlotName, getDataTableRowGutterSlotName } from '../data-table-cell';
 import type { DataTableItem, DataTableRowAction, TableColumn } from '../data-table.types';
 import { renderDataTableRowActions } from './render-row-actions';
 import type { DataTableModel, DataTableRowModel } from './table-model';
@@ -8,6 +9,7 @@ import type { DataTableModel, DataTableRowModel } from './table-model';
 export interface RenderDataTableBodyOptions {
   model: DataTableModel;
   loading: boolean;
+  twoLineRows?: boolean;
   onRowClick: (item: DataTableItem, index: number, event: MouseEvent) => void;
   onRowKeyDown: (item: DataTableItem, index: number, event: KeyboardEvent) => void;
   onRowCheckboxChange: (item: DataTableItem, index: number, event: Event) => void;
@@ -77,6 +79,14 @@ function renderDataTableRow(row: DataTableRowModel, options: RenderDataTableBody
       onClick={model.rowClickable ? event => options.onRowClick(row.item, row.index, event) : undefined}
       onKeyDown={model.rowClickable ? event => options.onRowKeyDown(row.item, row.index, event) : undefined}
     >
+      {model.rowGutter !== 'none' && (
+        <td key="row-gutter" class="cell-row-gutter" part="row-gutter-cell" role="gridcell">
+          <div class="row-gutter-content">
+            {model.rowGutter === 'numbers' ? row.index + model.rowNumberOffset + 1 :
+              model.rowGutter === 'custom' ? <slot name={getDataTableRowGutterSlotName(row.identity)} /> : null}
+          </div>
+        </td>
+      )}
       {model.selectable && (
         <td key="selection" class="cell-selection" role="gridcell">
           <input
@@ -102,9 +112,7 @@ function renderDataTableRow(row: DataTableRowModel, options: RenderDataTableBody
             part={getCellPartNames(className)}
             role="gridcell"
           >
-            <slot name={getDataTableCellSlotName(columnModel.identity, row.identity)}>
-              {options.renderCell(row.item, columnModel.column)}
-            </slot>
+            {renderCellContent(row, columnModel.column, columnModel.identity, options)}
           </td>
         );
       })}
@@ -116,6 +124,28 @@ function renderDataTableRow(row: DataTableRowModel, options: RenderDataTableBody
       })}
     </tr>
   );
+}
+
+function renderCellContent(
+  row: DataTableRowModel,
+  column: TableColumn,
+  columnIdentity: CollectionIdentity,
+  options: RenderDataTableBodyOptions,
+) {
+  const value = options.renderCell(row.item, column);
+  const plainText = typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean';
+  let content = value;
+  if (options.twoLineRows && plainText) {
+    const text = <span class="cell-text-value">{String(value)}</span>;
+    content = column.overflowTooltip ? (
+      <span class="cell-text" tabindex="-1">
+        {text}
+        <q-tooltip content={String(value)} />
+      </span>
+    ) : text;
+  }
+  const slot = <slot name={getDataTableCellSlotName(columnIdentity, row.identity)}>{content}</slot>;
+  return options.twoLineRows ? <div class="cell-content" part="cell-content">{slot}</div> : slot;
 }
 
 function getCellClassName(

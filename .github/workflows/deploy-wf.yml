@@ -59,8 +59,8 @@ jobs:
           bun .github/scripts/publishing/prepare-release.ts
           --channel ${{ github.ref_name == 'main' && 'stable' || 'dev' }}
 
-      - name: Install Playwright Chromium
-        run: bunx playwright install --with-deps chromium
+      - name: Install Playwright browsers
+        run: bunx playwright install --with-deps chromium firefox webkit
 
       - name: Build, test, and verify npm packages
         run: bun run release:verify

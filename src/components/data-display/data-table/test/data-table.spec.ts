@@ -1,6 +1,6 @@
 import { h } from '@stencil/core';
 import { expect, describe, it, vi } from 'vitest';
-import { getDataTableCellSlotName } from '../data-table-cell';
+import { getDataTableCellSlotName, getDataTableRowGutterSlotName } from '../data-table-cell';
 import { isInteractiveDataTableTarget } from '../internals/row-events';
 import {
   getDataTableModel,
@@ -25,7 +25,7 @@ describe('q-data-table', () => {
   }
 
   function getFirstColumnText(el: any): string[] {
-    return Array.from(el.shadowRoot.querySelectorAll('tbody tr')).map((row: any) => row.querySelector('td:not(.cell-selection):not(.cell-actions)')?.textContent?.trim());
+    return Array.from(el.shadowRoot.querySelectorAll('tbody tr')).map((row: any) => row.querySelector('td:not(.cell-row-gutter):not(.cell-selection):not(.cell-actions)')?.textContent?.trim());
   }
 
   async function clickFirstSortButton(el: any) {
@@ -44,6 +44,57 @@ describe('q-data-table', () => {
     { id: 1, name: 'Alpha' },
     { id: 2, name: 'Beta' },
   ];
+
+  it('defaults to a blank structural gutter before selection and data', async () => {
+    const el = await createComponent({ columns, items, selectable: true });
+    const cells = el.shadowRoot.querySelector('.row-el').children;
+    expect(cells[0].className).toBe('cell-row-gutter');
+    expect(cells[0].getAttribute('role')).toBe('gridcell');
+    expect(cells[0].textContent).toBe('');
+    expect(cells[1].className).toBe('cell-selection');
+    expect(cells[2].textContent).toBe('Alpha');
+    await updateComponent(el, { rowGutter: 'none' });
+    expect(el.shadowRoot.querySelector('.cell-row-gutter')).toBeNull();
+    await updateComponent(el, { rowGutter: 'invalid' });
+    expect(el.shadowRoot.querySelector('.cell-row-gutter')).toBeTruthy();
+    el.remove();
+  });
+
+  it('numbers rendered rows after sorting without counting group headers', async () => {
+    const el = await createComponent({ columns, items: [items[1], items[0]], rowGutter: 'numbers', rowNumberOffset: 10,
+      sortable: true, rowGroup: (item: any) => ({ key: item.id, label: item.name }) });
+    await clickFirstSortButton(el);
+    expect(getFirstColumnText(el).filter(Boolean)).toEqual(['Alpha', 'Alpha', 'Beta', 'Beta']);
+    expect(Array.from(el.shadowRoot.querySelectorAll('.cell-row-gutter')).map((cell: any) => cell.textContent)).toEqual(['11', '12']);
+    expect(el.shadowRoot.querySelector('.col-row-gutter').getAttribute('aria-label')).toBe('Row number');
+    await updateComponent(el, { sortMode: 'external', items: [items[1], items[0]] });
+    expect(el.shadowRoot.querySelector('.row-el td:not(.cell-row-gutter)').textContent).toBe('Beta');
+    expect(el.shadowRoot.querySelector('.cell-row-gutter').textContent).toBe('11');
+    el.remove();
+  });
+
+  it.each([-1, 1.5, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1])('normalizes invalid numbering offset %s', offset => {
+    const model = createIdentityModel({ rowGutter: 'numbers', rowNumberOffset: offset });
+    expect(model.rowNumberOffset).toBe(0);
+  });
+
+  it('accounts for gutters in all structural spans including no data columns', () => {
+    expect(createIdentityModel().columnSpan).toBe(2);
+    expect(createIdentityModel({ columns: [], selectable: true, rowActions: [{ key: 'edit', icon: 'pencil', tooltip: 'Edit' }] }).columnSpan).toBe(3);
+    expect(createIdentityModel({ columns: [], rowGutter: 'none' }).columnSpan).toBe(1);
+  });
+
+  it('keeps custom gutter slots distinct and attached to stable rows through sorting', async () => {
+    expect(getDataTableRowGutterSlotName(1)).not.toBe(getDataTableRowGutterSlotName('1'));
+    const el = await createComponent({ columns, items: [items[1], items[0]], sortable: true, rowGutter: 'custom' });
+    const slotsBefore = Array.from(el.shadowRoot.querySelectorAll('.cell-row-gutter slot')) as HTMLSlotElement[];
+    expect(slotsBefore.map(slot => slot.name)).toEqual([getDataTableRowGutterSlotName(2), getDataTableRowGutterSlotName(1)]);
+    await clickFirstSortButton(el);
+    const slotsAfter = Array.from(el.shadowRoot.querySelectorAll('.cell-row-gutter slot')) as HTMLSlotElement[];
+    expect(slotsAfter.map(slot => slot.name)).toEqual([getDataTableRowGutterSlotName(1), getDataTableRowGutterSlotName(2)]);
+    expect(slotsAfter[0]).toBe(slotsBefore[1]);
+    el.remove();
+  });
 
   it('provides an accessible name for the grid', async () => {
     const el = await createComponent({ columns, items, ariaLabel: 'Inventory' });
@@ -122,7 +173,7 @@ describe('q-data-table', () => {
     expect(firstCellSlot.name).toBe(getDataTableCellSlotName('name', 1));
     expect(el.querySelector(`[slot="${firstCellSlot.name}"]`)).toBe(profile);
     expect(firstCellSlot.textContent?.trim()).toBe('Alpha');
-    expect(el.shadowRoot.querySelector('tbody td')?.getAttribute('part')).toBe('cell');
+    expect(el.shadowRoot.querySelector('tbody td:not(.cell-row-gutter)')?.getAttribute('part')).toBe('cell');
     el.remove();
   });
 
@@ -139,8 +190,8 @@ describe('q-data-table', () => {
       ],
       items,
     });
-    const header = el.shadowRoot.querySelector('thead th');
-    const cells = el.shadowRoot.querySelectorAll('tbody td');
+    const header = el.shadowRoot.querySelector('thead th:not(.col-row-gutter)');
+    const cells = el.shadowRoot.querySelectorAll('tbody td:not(.cell-row-gutter)');
 
     expect(header.classList.contains('is-sticky-start')).toBe(true);
     expect(header.getAttribute('part')).toBe(
@@ -197,9 +248,9 @@ describe('q-data-table', () => {
     ];
     const el = await createComponent({ columns: identityColumns, items });
     const firstRow = el.shadowRoot.querySelectorAll('.row-el')[0];
-    const firstCell = firstRow.querySelectorAll('td')[0];
+    const firstCell = firstRow.querySelectorAll('td:not(.cell-row-gutter)')[0];
     const firstSlot = firstCell.querySelector('slot');
-    const nameHeader = el.shadowRoot.querySelectorAll('thead th')[0];
+    const nameHeader = el.shadowRoot.querySelectorAll('thead th:not(.col-row-gutter)')[0];
 
     await updateComponent(el, {
       columns: identityColumns.map(column => ({ ...column })),
@@ -207,9 +258,9 @@ describe('q-data-table', () => {
     });
 
     expect(el.shadowRoot.querySelectorAll('.row-el')[0]).toBe(firstRow);
-    expect(el.shadowRoot.querySelectorAll('.row-el')[0].querySelectorAll('td')[0]).toBe(firstCell);
+    expect(el.shadowRoot.querySelectorAll('.row-el')[0].querySelectorAll('td:not(.cell-row-gutter)')[0]).toBe(firstCell);
     expect(el.shadowRoot.querySelectorAll('.row-el')[0].querySelector('slot')).toBe(firstSlot);
-    expect(el.shadowRoot.querySelectorAll('thead th')[0]).toBe(nameHeader);
+    expect(el.shadowRoot.querySelectorAll('thead th:not(.col-row-gutter)')[0]).toBe(nameHeader);
     el.remove();
   });
 
@@ -293,10 +344,10 @@ describe('q-data-table', () => {
     });
 
     const reorderedHeaders = Array.from(
-      el.shadowRoot.querySelectorAll('thead th'),
+      el.shadowRoot.querySelectorAll('thead th:not(.col-row-gutter)'),
     ) as HTMLTableCellElement[];
     const reorderedCells = Array.from(
-      el.shadowRoot.querySelectorAll('.row-el td'),
+      el.shadowRoot.querySelectorAll('.row-el td:not(.cell-row-gutter)'),
     ) as HTMLTableCellElement[];
     expect(reorderedHeaders.map(header => header.textContent?.trim())).toEqual(['ID', 'Name']);
     expect(reorderedCells.map(cell => cell.textContent?.trim())).toEqual(['1', 'Alpha']);
@@ -358,7 +409,7 @@ describe('q-data-table', () => {
     expect(groupRows).toHaveLength(2);
     expect(groupRows[0].textContent?.trim()).toBe('2026-07-12');
     expect(groupRows[1].textContent?.trim()).toBe('2026-07-11');
-    expect(groupRows[0].querySelector('td')?.getAttribute('colspan')).toBe('3');
+    expect(groupRows[0].querySelector('td')?.getAttribute('colspan')).toBe('4');
     expect(el.shadowRoot.querySelectorAll('.row-el')).toHaveLength(3);
     expect(el.shadowRoot.querySelectorAll('tbody input[type="checkbox"]')).toHaveLength(3);
     expect(el.shadowRoot.querySelectorAll('.row-group .cell-actions')).toHaveLength(0);
@@ -386,8 +437,8 @@ describe('q-data-table', () => {
 
     expect(el.shadowRoot.querySelector('.col-actions')).toBeNull();
     expect(el.shadowRoot.querySelector('.cell-actions')).toBeNull();
-    expect(el.shadowRoot.querySelectorAll('thead th')).toHaveLength(1);
-    expect(el.shadowRoot.querySelectorAll('tbody td')).toHaveLength(2);
+    expect(el.shadowRoot.querySelectorAll('thead th:not(.col-row-gutter)')).toHaveLength(1);
+    expect(el.shadowRoot.querySelectorAll('tbody td:not(.cell-row-gutter)')).toHaveLength(2);
     el.remove();
   });
 
@@ -395,7 +446,7 @@ describe('q-data-table', () => {
     const el = await createComponent({ columns, items });
 
     expect(el.shadowRoot.querySelector('.column-sort-button')).toBeNull();
-    expect(el.shadowRoot.querySelector('thead th')?.getAttribute('aria-sort')).toBeNull();
+    expect(el.shadowRoot.querySelector('thead th:not(.col-row-gutter)')?.getAttribute('aria-sort')).toBeNull();
     expect(getFirstColumnText(el)).toEqual(['Alpha', 'Beta']);
     el.remove();
   });
@@ -414,20 +465,20 @@ describe('q-data-table', () => {
     expect(getFirstColumnText(el)).toEqual(['Alpha', 'Beta', 'Gamma']);
     expect((el as any).sortColumn).toBe('name');
     expect((el as any).sortDirection).toBe('asc');
-    expect(el.shadowRoot.querySelector('thead th')?.getAttribute('aria-sort')).toBe('ascending');
+    expect(el.shadowRoot.querySelector('thead th:not(.col-row-gutter)')?.getAttribute('aria-sort')).toBe('ascending');
     expect(handler.mock.calls[0][0].detail).toMatchObject({ columnKey: 'name', direction: 'asc' });
 
     await clickFirstSortButton(el);
     expect(getFirstColumnText(el)).toEqual(['Gamma', 'Beta', 'Alpha']);
     expect((el as any).sortDirection).toBe('desc');
-    expect(el.shadowRoot.querySelector('thead th')?.getAttribute('aria-sort')).toBe('descending');
+    expect(el.shadowRoot.querySelector('thead th:not(.col-row-gutter)')?.getAttribute('aria-sort')).toBe('descending');
     expect(handler.mock.calls[1][0].detail).toMatchObject({ columnKey: 'name', direction: 'desc' });
 
     await clickFirstSortButton(el);
     expect(getFirstColumnText(el)).toEqual(['Beta', 'Alpha', 'Gamma']);
     expect((el as any).sortColumn).toBeUndefined();
     expect((el as any).sortDirection).toBeUndefined();
-    expect(el.shadowRoot.querySelector('thead th')?.getAttribute('aria-sort')).toBe('none');
+    expect(el.shadowRoot.querySelector('thead th:not(.col-row-gutter)')?.getAttribute('aria-sort')).toBe('none');
     expect(handler.mock.calls[2][0].detail.columnKey).toBeUndefined();
     expect(handler.mock.calls[2][0].detail.direction).toBeUndefined();
     el.remove();
@@ -593,7 +644,7 @@ describe('q-data-table', () => {
     el.addEventListener('qRowClick', handler);
 
     const firstRow = el.shadowRoot.querySelector('tbody tr') as HTMLTableRowElement;
-    const secondRowCell = el.shadowRoot.querySelectorAll('tbody td')[1] as HTMLTableCellElement;
+    const secondRowCell = el.shadowRoot.querySelectorAll('tbody td:not(.cell-row-gutter)')[1] as HTMLTableCellElement;
     expect(firstRow.classList.contains('is-clickable')).toBe(true);
     expect(firstRow.getAttribute('tabindex')).toBe('0');
     firstRow.querySelector('button')?.dispatchEvent(new MouseEvent('click', { bubbles: true, composed: true }));
@@ -634,7 +685,16 @@ describe('q-data-table', () => {
 
     expect(rows).toHaveLength(1);
     expect(el.shadowRoot.querySelector('.table-loading-state q-progress')).toBeTruthy();
+    expect(el.shadowRoot.querySelector('.loading-placeholder-cell').getAttribute('colspan')).toBe('2');
     expect(el.shadowRoot.textContent).not.toContain('Alpha');
+    el.remove();
+  });
+
+  it('spans gutter, selection and actions for empty tables without data columns', async () => {
+    const el = await createComponent({ columns: [], items: [], selectable: true,
+      rowActions: [{ key: 'edit', icon: 'pencil', tooltip: 'Edit' }] });
+    expect(el.shadowRoot.querySelector('.empty-cell').getAttribute('colspan')).toBe('3');
+    expect(el.shadowRoot.querySelectorAll('thead th')).toHaveLength(3);
     el.remove();
   });
 
@@ -651,7 +711,7 @@ describe('q-data-table', () => {
       ],
       items: [{ id: 1, profile: { name: 'Nested Alpha' } }],
     });
-    const cell = el.shadowRoot.querySelector('tbody td') as HTMLTableCellElement;
+    const cell = el.shadowRoot.querySelector('tbody td:not(.cell-row-gutter)') as HTMLTableCellElement;
 
     expect(cell.textContent?.trim()).toBe('Nested Alpha');
     el.remove();

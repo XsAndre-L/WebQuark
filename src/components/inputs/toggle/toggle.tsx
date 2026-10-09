@@ -1,3 +1,5 @@
+import { isFieldDisabled, syncFieldHost } from '../../../utils/form-field-state';
+import { registerFormField } from '../../../utils/form-field-adapter';
 import { fieldFeedback, feedbackStyle } from '../../shared/field';
 import { Component, Prop, State, Event, EventEmitter, Element, Method, AttachInternals, Watch, h } from '@stencil/core';
 
@@ -64,12 +66,25 @@ export class QToggle {
 
   // ========================= [2] INTERNAL STATE & REFS =========================
 
+  @State() private disabledState = false;
+
+  private get isDisabled(): boolean {
+    return isFieldDisabled(this.el, this.disabled);
+  }
+
   @State() hasDefaultSlot: boolean = false;
 
   private initialValue: boolean = false;
   private controlEl?: HTMLElement;
 
   // ========================= [3] LIFECYCLE & WATCHERS ==========================
+
+  @Watch('disabled')
+  @Watch('required')
+  @Watch('name')
+  watchConstraints() {
+    this.syncValidity();
+  }
 
   @Watch('checked')
   watchChecked(newValue: boolean) {
@@ -86,6 +101,26 @@ export class QToggle {
     }
     this.syncValidity();
     this.checkSlots();
+  }
+
+  formDisabledCallback() {
+    this.syncValidity();
+  }
+
+  componentDidLoad() {
+    registerFormField(this.el, {
+      kind: 'toggle',
+      owner: () => this.internals?.form ?? null,
+      active: () => true,
+      value: () => this.checked,
+      assign: value => { this.checked = value as boolean; },
+      reconcile: () => {
+        this.internals?.setFormValue?.(this.checked ? 'true' : null);
+        this.syncValidity();
+      },
+      reset: () => this.formResetCallback(),
+      validate: report => report ? this.internals?.reportValidity?.() ?? true : this.internals?.checkValidity?.() ?? true,
+    });
   }
 
   componentDidRender() {
@@ -105,7 +140,7 @@ export class QToggle {
   /** Programmatically toggles checked and emits qChange. */
   @Method()
   async toggle() {
-    if (!this.disabled) {
+    if (!this.isDisabled) {
       this.checked = !this.checked;
       this.qChange.emit(this.checked);
     }
@@ -118,7 +153,7 @@ export class QToggle {
     if (typeof this.internals.checkValidity === 'function') {
       return this.internals.checkValidity();
     }
-    return this.disabled || !this.required || this.checked;
+    return this.isDisabled || !this.required || this.checked;
   }
 
   /** Reports a required constraint violation and returns whether the toggle is valid. */
@@ -128,7 +163,7 @@ export class QToggle {
     if (typeof this.internals.reportValidity === 'function') {
       return this.internals.reportValidity();
     }
-    return this.disabled || !this.required || this.checked;
+    return this.isDisabled || !this.required || this.checked;
   }
 
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
@@ -147,18 +182,27 @@ export class QToggle {
   }
 
   private syncValidity(): void {
+    const disabled = syncFieldHost(this.el, this.disabled, this.name, this.required);
+    if (this.disabledState !== disabled) this.disabledState = disabled;
+    if (this.controlEl) {
+      this.controlEl.setAttribute('aria-checked', String(this.checked));
+      this.controlEl.setAttribute('aria-disabled', String(disabled));
+      this.controlEl.setAttribute('aria-required', String(this.required));
+      this.controlEl.tabIndex = disabled ? -1 : 0;
+    }
     if (!this.internals) return;
+    this.internals.setFormValue?.(disabled || !this.checked ? null : 'true');
 
     syncRequiredBooleanValidity(this.internals, {
       required: this.required,
       checked: this.checked,
-      disabled: this.disabled,
+      disabled: this.isDisabled,
       anchor: this.controlEl,
     });
   }
 
   private handleClick = (e: MouseEvent) => {
-    if (this.disabled) {
+    if (this.isDisabled) {
       e.preventDefault();
       e.stopPropagation();
       return;
@@ -169,7 +213,7 @@ export class QToggle {
   };
 
   private handleKeyDown = (e: KeyboardEvent) => {
-    if (this.disabled) return;
+    if (this.isDisabled) return;
     if (isToggleActivationKey(e.key)) {
       e.preventDefault();
       const clickEvent = new MouseEvent('click', {
@@ -205,7 +249,7 @@ export class QToggle {
           class={{
             'toggle-wrapper': true,
             'is-checked': this.checked,
-            'is-disabled': this.disabled,
+            'is-disabled': this.isDisabled,
             'is-required': this.required,
             'has-error': hasError,
             [`type-${this.type}`]: true,
@@ -213,11 +257,11 @@ export class QToggle {
           }}
           role={this.type === 'switch' ? 'switch' : 'checkbox'}
           aria-checked={this.checked ? 'true' : 'false'}
-          aria-disabled={this.disabled ? 'true' : 'false'}
+          aria-disabled={this.isDisabled ? 'true' : 'false'}
           aria-required={this.required ? 'true' : 'false'}
           aria-invalid={hasError ? 'true' : 'false'}
           aria-describedby={hasError || this.description ? 'toggle-error-msg' : undefined}
-          tabindex={this.disabled ? -1 : 0}
+          tabindex={this.isDisabled ? -1 : 0}
           onClick={this.handleClick}
           onKeyDown={this.handleKeyDown}
           onFocus={this.handleFocus}

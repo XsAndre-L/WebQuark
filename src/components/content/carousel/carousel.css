@@ -5,7 +5,7 @@
   position: relative;
 }
 
-::slotted(*) {
+::slotted(:not([slot='controls-extra'])) {
   box-sizing: border-box;
   flex: var(--q-carousel-item-flex, 0 0 auto);
   width: var(--q-carousel-item-width, auto);
@@ -20,9 +20,16 @@
   flex-direction: column;
 }
 
+/* The preset changes layout defaults without replacing authored per-instance tokens. */
+:host([layout='slideshow']) {
+  --q-carousel-padding: 0;
+  --q-carousel-gap: 0;
+}
+
 /* Viewport slider shell */
 .carousel-viewport {
   display: flex;
+  order: 1;
   flex-direction: row;
   overflow-x: auto;
   width: 100%;
@@ -34,9 +41,9 @@
   outline: none;
 }
 
-.carousel-viewport:focus-visible {
-  box-shadow: 0 0 0 2px var(--q-color-primary, #60a5fa);
-  border-radius: var(--q-radius-md, 8px);
+.carousel-viewport.viewport-focusable:focus-visible {
+  outline: var(--q-focus-ring, 2px solid var(--q-color-primary, #60a5fa));
+  outline-offset: -2px;
 }
 
 /* Hide native scrollbars to keep overlay interfaces clean */
@@ -122,17 +129,33 @@
   height: 20px;
 }
 
+/* Keep additional content with the native indicators; consumers can style the part. */
+.carousel-controls {
+  display: flex;
+  order: 2;
+  max-width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--q-carousel-controls-gap, 0px);
+}
+
+.carousel-controls[hidden] {
+  display: none;
+}
+
 /* Indicator dots track */
 .carousel-indicators {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   gap: var(--q-carousel-indicator-gap, 8px);
-  margin-top: 16px;
+  margin-top: var(--q-carousel-indicator-margin-top, 16px);
   width: 100%;
 }
 
 .indicator-dot {
+  flex-shrink: 0;
   padding: 0;
   width: var(--q-carousel-indicator-size, 6px);
   height: var(--q-carousel-indicator-size, 6px);
@@ -165,4 +188,63 @@
   background: var(--q-color-primary, #60a5fa);
   opacity: 1;
   width: calc(var(--q-carousel-indicator-size, 6px) * 2.5);
+}
+
+/* Overlay modes retain every slide in layout and use the tallest slide's height. */
+.carousel-viewport.is-stacked {
+  display: grid;
+  overflow: hidden;
+  gap: 0;
+  scroll-snap-type: none;
+  touch-action: pan-y pinch-zoom;
+  isolation: isolate;
+}
+
+:host([transition='crossfade']) ::slotted(:not([slot='controls-extra'])),
+:host([transition='instant']) ::slotted(:not([slot='controls-extra'])) {
+  grid-area: 1 / 1;
+  width: 100%;
+  min-width: 0;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+:host([transition='crossfade']) ::slotted(:not([slot='controls-extra'])) {
+  transition: opacity var(--q-carousel-transition-duration, 500ms) ease-in-out;
+}
+
+:host([transition='crossfade']) ::slotted([data-q-carousel-active='true']),
+:host([transition='instant']) ::slotted([data-q-carousel-active='true']) {
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel-viewport { scroll-behavior: auto; }
+  :host([transition='crossfade']) ::slotted(:not([slot='controls-extra'])) { transition: none; }
+}
+
+.rotation-btn {
+  min-width: 44px;
+  min-height: 44px;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: var(--q-padding-sm, 8px) var(--q-padding-md, 12px);
+  border: var(--q-border, 1px solid var(--q-border-color, #374151));
+  border-radius: var(--q-radius-md, 8px);
+  background: var(--q-bg-base, #111827);
+  color: var(--q-fg-base, #f9fafb);
+  font: inherit;
+  cursor: pointer;
+}
+
+.rotation-btn:focus-visible {
+  outline: var(--q-focus-ring, 2px solid var(--q-color-primary, #60a5fa));
+  outline-offset: 2px;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .arrow-btn { opacity: 1; }
 }

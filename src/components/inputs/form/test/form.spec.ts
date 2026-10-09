@@ -9,6 +9,8 @@ describe('q-form', () => {
     const el = document.createElement('q-form');
     Object.assign(el, props);
     el.innerHTML = html;
+    // Restore host identity after the mock custom-element innerHTML setter.
+    for (const child of Array.from(el.childNodes) as Node[]) el.append(child);
     document.body.appendChild(el);
     if (typeof (el as any).componentOnReady === 'function') {
       await (el as any).componentOnReady();
@@ -87,15 +89,31 @@ describe('q-form', () => {
     el.remove();
   });
 
-  it('resets the native form through resetForm', async () => {
-    const el = await createComponent('<input name="email" value="initial@example.com" />');
-    const input = el.querySelector('input') as HTMLInputElement;
-    input.value = 'changed@example.com';
+  it('dispatches one native reset through resetForm', async () => {
+    // Mock DOM has no native reset/default-value algorithm. The unchanged-value
+    // assertion lives in form-reset-state.cmp.test.ts against the real browser.
+    const el = await createComponent();
+    const form = el.shadowRoot.querySelector('form') as HTMLFormElement;
+    const prototype = form.ownerDocument.defaultView!.HTMLFormElement.prototype;
+    const original = Object.getOwnPropertyDescriptor(prototype, 'reset');
+    const nativeReset = vi.fn(function (this: HTMLFormElement) {
+      this.dispatchEvent(new Event('reset', { bubbles: true, cancelable: true }));
+    });
+    Object.defineProperty(prototype, 'reset', { configurable: true, value: nativeReset });
+    const handler = vi.fn();
+    el.addEventListener('qReset', handler);
 
-    await el.resetForm();
-
-    expect(input.value).toBe('initial@example.com');
-    el.remove();
+    try {
+      await el.resetForm();
+      expect(nativeReset).toHaveBeenCalledTimes(1);
+      expect(nativeReset.mock.contexts[0]).toBe(form);
+      expect(handler).toHaveBeenCalledTimes(1);
+      expect(handler.mock.calls[0][0].detail.originalEvent.type).toBe('reset');
+    } finally {
+      if (original) Object.defineProperty(prototype, 'reset', original);
+      else Reflect.deleteProperty(prototype, 'reset');
+      el.remove();
+    }
   });
 
   it('submits the native form through submitForm', async () => {
@@ -122,7 +140,7 @@ describe('q-form', () => {
     const button = el.querySelector('q-button') as any;
     await button.componentOnReady?.();
     button.shadowRoot.querySelector('button').click();
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await vi.waitFor(() => expect(handler).toHaveBeenCalledTimes(1));
 
     expect(handler).toHaveBeenCalledTimes(1);
     expect(handler.mock.calls[0][0].detail.values.email).toBe('user@example.com');

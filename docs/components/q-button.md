@@ -110,9 +110,17 @@ The inner button uses native Tab, Enter, and Space behavior; anchors use Tab and
 
 Visible default-slot text names the control. A nonblank `aria-label` is forwarded to the native button or anchor. Icon-only content needs `aria-label`. When `iconOnly` is omitted, the component detects icon content without visible text; explicit `false` disables this detection. `icon-left` content replaces the `icon` shorthand. Loading exposes busy state, without creating a live region.
 
+Icons inside a wrapper assigned to `icon-left` or `icon-right` belong to that named
+region and leave no empty label or extra label gap. Direct default-slot icons and
+icons inside default-slot wrappers remain visible in icon-only mode. Moving a
+wrapper between named and default slots updates its classification; framework
+comment nodes do not count as visible label text.
+
 ### Forms
 
-`type="submit"` and `type="reset"` describe the inner button, but `q-button` is not a form-associated custom element. Use it inside [q-form](./q-form.md), which bridges these actions, or call the intended native form explicitly. A shadow button does not automatically submit an unrelated light-DOM form.
+`q-button` associates with its native form for ownership and inherited disabling. type="reset" bridges to that native form, including a same-tree form= target, or its logical [q-form](./q-form.md) owner. type="submit" uses the same ownership rules. An unresolved/empty form= target prevents fallback; a q-form host ID is not a native form target. Both activations wait until qClick and native click listeners finish, so either event can cancel, including later listeners. Link mode, loading and effective disabling suppress form actions.
+
+name/value contribute only when this button is the submitter; they add no field entry to ordinary FormData collection. formAction, formMethod, formEnctype, formTarget and formNoValidate use the native attributes formaction, formmethod, formenctype, formtarget and formnovalidate. They override one submission. For q-form, qSubmit.detail.submitter is the real q-button host. An ordinary native form uses a temporary native submit button and requestSubmit: its SubmitEvent.submitter is that native proxy, which is removed after dispatch. Native validation, cancellation, formdata and delivery still apply.
 
 ### Limitations and compatibility
 
@@ -178,16 +186,24 @@ All properties are optional in the TypeScript component contract. Required conte
 | `disabled` | `false` | Prevents activation, navigation, and secondary actions such as removal.<br>**Type:** `boolean`. **HTML attribute:** `disabled`. **Required:** No. |
 | `download` | `undefined` | Enables native download behavior when the component operates as a link.<br>**Type:** `string`. **HTML attribute:** `download`. **Required:** No. |
 | `expand` | `false` | Fills the available width; circle styling also sets an explicit width.<br>**Type:** `boolean`. **HTML attribute:** `expand`. **Required:** No. |
+| `form` | `undefined` | Explicit same-tree native form ID; unresolved IDs prevent fallback.<br>**Type:** `string`. **HTML attribute:** `form`. **Required:** No. |
+| `formAction` | `undefined` | Action override for this submission.<br>**Type:** `string`. **HTML attribute:** `formaction`. **Required:** No. |
+| `formEnctype` | `undefined` | Encoding override for this submission.<br>**Type:** `'application/x-www-form-urlencoded' \| 'multipart/form-data' \| 'text/plain'`. **HTML attribute:** `formenctype`. **Required:** No. |
+| `formMethod` | `undefined` | Method override for this submission.<br>**Type:** `'get' \| 'post' \| 'dialog'`. **HTML attribute:** `formmethod`. **Required:** No. |
+| `formNoValidate` | `false` | Skips submission validation; collection and cancellation still apply.<br>**Type:** `boolean`. **HTML attribute:** `formnovalidate`. **Required:** No. |
+| `formTarget` | `undefined` | Submission browsing context override; accepts named frames.<br>**Type:** `string`. **HTML attribute:** `formtarget`. **Required:** No. |
 | `href` | `undefined` | Destination used when the component operates as a link.<br>**Type:** `string`. **HTML attribute:** `href`. **Required:** No. |
 | `icon` | `undefined` | QIconName is a string icon identifier; see [q-icon](./q-icon.md). Whitespace-only names are ignored.<br>**Type:** `string`. **HTML attribute:** `icon`. **Required:** No. |
 | `iconOnly` | `undefined` | Auto-detected from slotted icon content when omitted.<br>**Type:** `boolean`. **HTML attribute:** `icon-only`. **Required:** No. |
 | `layout` | `'inline'` | Content direction; see [Shape and layout](#shape-and-layout).<br>**Type:** `'inline' \| 'stacked'`. **HTML attribute:** `layout`. **Required:** No. |
 | `loading` | `false` | Shows a spinner and prevents interaction while loading.<br>**Type:** `boolean`. **HTML attribute:** `loading`. **Required:** No. |
+| `name` | `undefined` | Successful name only when this is the submitter.<br>**Type:** `string`. **HTML attribute:** `name`. **Required:** No. |
 | `rel` | `undefined` | Explicit relationship string; otherwise _blank receives noopener noreferrer.<br>**Type:** `string`. **HTML attribute:** `rel`. **Required:** No. |
 | `shape` | `'default'` | Supported shapes; see [Shape and layout](#shape-and-layout).<br>**Type:** `'default' \| 'pill' \| 'circle'`. **HTML attribute:** `shape`. **Required:** No. |
 | `size` | `'inherit'` | Supported visual sizes; see [Sizes](#sizes).<br>**Type:** `'inherit' \| 'sm' \| 'md' \| 'lg'`. **HTML attribute:** `size`. **Required:** No. |
 | `target` | `undefined` | Native anchor target, such as _self, _blank, or a browsing-context name.<br>**Type:** `string`. **HTML attribute:** `target`. **Required:** No. |
 | `type` | `'button'` | Applied to the native `<button>` when `href` is unset.<br>**Type:** `'button' \| 'submit' \| 'reset'`. **HTML attribute:** `type`. **Required:** No. |
+| `value` | `''` | Successful value only when this is the submitter.<br>**Type:** `string`. **HTML attribute:** `value`. **Required:** No. |
 | `variant` | `'primary'` | Visual appearance only; see [Variants](#variants).<br>**Type:** `'primary' \| 'secondary' \| 'success' \| 'danger' \| 'ghost' \| 'text'`. **HTML attribute:** `variant`. **Required:** No. |
 
 Boolean attributes use Stencil coercion: presence/empty string is true, the literal string `"false"` is false, and removing the attribute supplies false rather than restoring a true or undefined initializer. Prefer explicit JavaScript `true`/`false` for updates; an optional Boolean can be reset to `undefined` through its property to recover inheritance/detection. String attributes remain strings; numeric attributes are parsed as numbers, so invalid text can become `NaN`. Setting a property to `undefined` or removing a string/number attribute does not rerun its initializer. Keep values within the documented types.
@@ -208,7 +224,7 @@ Boolean attributes use Stencil coercion: presence/empty string is true, the lite
 | `qClick` | Activation of the enabled interactive control; detail is the original MouseEvent. | `CustomEvent<MouseEvent>` |
 | `qFocus` | The interactive field/control receives focus. | `CustomEvent<FocusEvent>` |
 
-All listed Stencil events bubble, cross shadow boundaries (`composed: true`), and are cancelable. The component handlers do not use the emitted event's canceled result to roll back state or automatically cancel the underlying native event. For forwarded MouseEvent details, the original event is available as `event.detail`.
+All listed Stencil events bubble, cross shadow boundaries (`composed: true`), and are cancelable. Canceling qClick or its original native click suppresses a reset action, including cancellation by a later listener. Other event cancellation does not roll back state or automatically cancel the underlying native event. For forwarded MouseEvent details, the original event is available as `event.detail`.
 
 ### Methods
 

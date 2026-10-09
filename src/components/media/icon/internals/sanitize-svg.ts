@@ -1,76 +1,77 @@
-const BLOCKED_SVG_ELEMENTS = new Set(['script', 'foreignobject', 'iframe', 'object', 'embed', 'link', 'meta']);
-const BLOCKED_SVG_TAG_PATTERN = /<\s*(script|foreignObject|iframe|object|embed|link|meta)\b[\s\S]*?(?:<\/\s*\1\s*>|\/\s*>)/gi;
-const EVENT_HANDLER_ATTR_PATTERN = /\s+on[a-z]+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi;
-const BLOCKED_ATTR_PATTERN = /\s+(style|tabindex)\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi;
-const HREF_ATTR_PATTERN = /\s+(xlink:href|href)\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi;
-const JAVASCRIPT_ATTR_VALUE_PATTERN = /\s+[a-z_:.-]+\s*=\s*("[^"]*javascript:[^"]*"|'[^']*javascript:[^']*'|[^\s>]*javascript:[^\s>]*)/gi;
+import type { QIconNode } from '../icon.types';
+import {
+  SVG_NAMESPACE, XLINK_NAMESPACE, MAX_ICON_ATTRIBUTES, MAX_ICON_SVG_BYTES,
+  assertIconNode, cloneIconAttributes, cloneIconNodes, createIconBudget, validateIconReferences,
+} from './policy';
 
+/** Fail closed without a real XML parser; no regex recovery or browser work at import. */
 export function sanitizeIconSvg(svgText: string): string {
-  if (typeof DOMParser === 'undefined' || typeof XMLSerializer === 'undefined') {
-    return sanitizeIconSvgString(svgText);
-  }
-
-  const parser = new DOMParser();
-  const document = parser.parseFromString(svgText, 'image/svg+xml');
-  const parserError = document.querySelector('parsererror');
-  const svg = document.documentElement;
-
-  if (parserError || !svg || svg.tagName.toLowerCase() !== 'svg') {
-    return sanitizeIconSvgString(svgText);
-  }
-
-  const walk = (element: Element) => {
-    const tagName = element.tagName.toLowerCase();
-    if (BLOCKED_SVG_ELEMENTS.has(tagName)) {
-      element.remove();
-      return;
+  if (typeof DOMParser === 'undefined' || typeof XMLSerializer === 'undefined'
+    || typeof svgText !== 'string' || svgText.length > MAX_ICON_SVG_BYTES
+    || new TextEncoder().encode(svgText).byteLength > MAX_ICON_SVG_BYTES
+    || /<!\s*(?:DOCTYPE|ENTITY)/i.test(svgText)) return '';
+  try {
+    const parsed = new DOMParser().parseFromString(svgText, 'image/svg+xml');
+    const root = parsed.documentElement;
+    if (parsed.doctype || !root || root.tagName !== 'svg'
+      || parsed.getElementsByTagName('parsererror').length || ![null, SVG_NAMESPACE].includes(root.namespaceURI)) return '';
+    for (const child of Array.from(parsed.childNodes)) {
+      if (child !== root && child.nodeType !== 8 && !(child.nodeType === 3 && !child.textContent?.trim())) return '';
     }
-
-    Array.from(element.attributes).forEach(attribute => {
-      const name = attribute.name.toLowerCase();
-      const value = attribute.value.trim().toLowerCase();
-
-      if (
-        name.startsWith('on') ||
-        name === 'style' ||
-        name === 'tabindex' ||
-        value.startsWith('javascript:') ||
-        value.includes('url(javascript:') ||
-        ((name === 'href' || name === 'xlink:href') && tagName === 'use' && !value.startsWith('#'))
-      ) {
-        element.removeAttribute(attribute.name);
+    const namespace = root.namespaceURI;
+    const readAttributes = (element: Element): Record<string, string> => {
+      if (element.attributes.length > MAX_ICON_ATTRIBUTES) throw new TypeError('SVG attribute limit exceeded.');
+      const attributes: Record<string, string> = {};
+      for (const attribute of Array.from(element.attributes)) {
+        if (attribute.name === 'xlink:href') {
+          if (attribute.namespaceURI !== XLINK_NAMESPACE) throw new TypeError('Unsupported SVG attribute namespace.');
+        } else if (attribute.namespaceURI && attribute.namespaceURI !== 'http://www.w3.org/2000/xmlns/') {
+          throw new TypeError('Unsupported SVG attribute namespace.');
+        }
+        attributes[attribute.name] = attribute.value;
       }
-    });
-
-    Array.from(element.children).forEach(walk);
-  };
-
-  walk(svg);
-  svg.setAttribute('aria-hidden', 'true');
-  svg.setAttribute('focusable', 'false');
-
-  return new XMLSerializer().serializeToString(svg);
-}
-
-export function sanitizeIconSvgString(svgText: string): string {
-  if (!/<svg[\s>]/i.test(svgText)) {
+      return attributes;
+    };
+    const parseBudget = createIconBudget();
+    const readChildren = (element: Element, depth: number): QIconNode[] => {
+      const children: QIconNode[] = [];
+      for (const child of Array.from(element.childNodes)) {
+        if (child.nodeType === 8 || child.nodeType === 3 && !child.textContent?.trim()) continue;
+        if (child.nodeType !== 1) throw new TypeError('Unsupported SVG content.');
+        const node = child as Element;
+        if (node.namespaceURI !== namespace) throw new TypeError('Unsupported SVG element namespace.');
+        assertIconNode(node.tagName, depth, parseBudget, 'Fetched SVG');
+        children.push([node.tagName, readAttributes(node), readChildren(node, depth + 1)]);
+      }
+      return children;
+    };
+    const rawNodes = readChildren(root, 1);
+    const budget = createIconBudget();
+    const attributes = cloneIconAttributes(readAttributes(root), 'svg', budget, 'Fetched SVG root');
+    const nodes = cloneIconNodes(rawNodes, budget, 'Fetched SVG nodes');
+    validateIconReferences(nodes, attributes);
+    const output = parsed.implementation.createDocument(SVG_NAMESPACE, 'svg', null);
+    const apply = (element: Element, attrs: Readonly<Record<string, string>>) => {
+      for (const [name, value] of Object.entries(attrs)) {
+        if (name === 'xmlns' || name === 'xmlns:xlink') continue;
+        if (name === 'xlink:href') element.setAttributeNS(XLINK_NAMESPACE, name, value);
+        else element.setAttribute(name, value);
+      }
+    };
+    const append = (parent: Element, items: readonly QIconNode[]) => {
+      for (const [tag, attrs, children] of items) {
+        const element = output.createElementNS(SVG_NAMESPACE, tag);
+        apply(element, attrs);
+        if (children) append(element, children);
+        parent.appendChild(element);
+      }
+    };
+    apply(output.documentElement, attributes);
+    output.documentElement.setAttribute('aria-hidden', 'true');
+    output.documentElement.setAttribute('focusable', 'false');
+    append(output.documentElement, nodes);
+    return new XMLSerializer().serializeToString(output.documentElement);
+  } catch (_) {
     return '';
   }
-
-  return svgText
-    .replace(BLOCKED_SVG_TAG_PATTERN, '')
-    .replace(EVENT_HANDLER_ATTR_PATTERN, '')
-    .replace(BLOCKED_ATTR_PATTERN, '')
-    .replace(JAVASCRIPT_ATTR_VALUE_PATTERN, '')
-    .replace(HREF_ATTR_PATTERN, (match, _name, rawValue) => {
-      const value = String(rawValue).replace(/^['"]|['"]$/g, '').trim().toLowerCase();
-      return value.startsWith('#') ? match : '';
-    })
-    .replace(/<svg\b([^>]*)>/i, (_match, attributes) => {
-      const cleanAttributes = String(attributes)
-        .replace(/\s+aria-hidden\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, '')
-        .replace(/\s+focusable\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, '');
-      return `<svg${cleanAttributes} aria-hidden="true" focusable="false">`;
-    })
-    .trim();
 }

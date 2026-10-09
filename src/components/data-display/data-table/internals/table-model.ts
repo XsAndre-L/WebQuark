@@ -10,6 +10,7 @@ import type {
   DataTableRowAction,
   DataTableRowGroup,
   DataTableRowGrouper,
+  DataTableRowGutter,
   DataTableSortDirection,
   DataTableSortMode,
   TableColumn,
@@ -48,6 +49,8 @@ export interface DataTableModel {
   rowActions: DataTableRowActionModel[];
   hasRowActions: boolean;
   rowClickable: boolean;
+  rowGutter: DataTableRowGutter;
+  rowNumberOffset: number;
   selectionState: DataTableSelectionState;
   columnSpan: number;
   selectable: boolean;
@@ -61,6 +64,8 @@ export interface GetDataTableModelOptions {
   items: DataTableItem[] | string;
   rowActions: DataTableRowAction[] | string;
   rowClickable: boolean;
+  rowGutter?: DataTableRowGutter;
+  rowNumberOffset?: number;
   rowGroup?: DataTableRowGrouper;
   selectedKeys: readonly DataTableKey[] | undefined;
   selectable: boolean;
@@ -94,6 +99,9 @@ export function getDataTableModel(options: GetDataTableModelOptions): DataTableM
     renderKey: entry.key,
   }));
   const hasRowActions = rowActions.length > 0;
+  const rowGutter = normalizeRowGutter(options.rowGutter);
+  const rowNumberOffset = Number.isSafeInteger(options.rowNumberOffset) && options.rowNumberOffset! >= 0
+    ? options.rowNumberOffset! : 0;
   const selectedKeySet = getSelectedKeySet(options.selectedKeys);
   let previousGroupKey: string | number | undefined;
   let previousRowWasGrouped = false;
@@ -129,13 +137,19 @@ export function getDataTableModel(options: GetDataTableModelOptions): DataTableM
     rowActions,
     hasRowActions,
     rowClickable: options.rowClickable,
+    rowGutter,
+    rowNumberOffset,
     selectionState: getSelectionState(items, selectedKeySet, options.keyField),
-    columnSpan: parsedColumns.length + (options.selectable ? 1 : 0) + (hasRowActions ? 1 : 0) || 1,
+    columnSpan: parsedColumns.length + (rowGutter !== 'none' ? 1 : 0) + (options.selectable ? 1 : 0) + (hasRowActions ? 1 : 0) || 1,
     selectable: options.selectable,
     sortable: options.sortable,
     sortColumn: options.sortColumn,
     sortDirection: options.sortDirection,
   };
+}
+
+function normalizeRowGutter(mode: unknown): DataTableRowGutter {
+  return mode === 'none' || mode === 'numbers' || mode === 'custom' ? mode : 'blank';
 }
 
 function resolveDataTableRowGroup(rowGroup: DataTableRowGrouper | undefined, item: DataTableItem, index: number): DataTableRowGroup | undefined {

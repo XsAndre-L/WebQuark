@@ -5,7 +5,7 @@ import { locked, recover } from './state';
 
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
-  const help = 'wq-setup [--source <path>]\nCreates .webquark.json and wq-sandbox/wq-switch package scripts in the consuming project.';
+  const help = 'wq-setup [--source <path>]\nCreates .webquark/.webquark.json and wq-sandbox/wq-switch/wq-check package scripts in the consuming project.';
   if (args.length === 1 && ['--help', '-h'].includes(args[0])) { console.log(help); return; }
   if (args.length && (args.length !== 2 || args[0] !== '--source')) throw new Error(help);
   const root = consumerRoot();

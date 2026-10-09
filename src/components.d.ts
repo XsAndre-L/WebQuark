@@ -11,18 +11,19 @@ import { QAvatarShape, QAvatarSize } from "./components/media/avatar/avatar.type
 import { QBannerAlignment, QBannerHeight } from "./components/content/banner/banner.types";
 import { QIconColor, QIconDefinition, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
 import { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
+import { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/inputs/form/form.types";
 import { QControlSize, QSpace, QSurface } from "./theme/tokens";
 import { QCardElevation } from "./components/content/card/card.types";
-import { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/content/carousel/carousel.types";
+import { QCarouselAutoplayChangeDetail, QCarouselLayout, QCarouselSlideChangeDetail, QCarouselSnapAlignment, QCarouselTransition } from "./components/content/carousel/carousel.types";
 import { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/data-display/chip/chip.types";
 import { QConversationBubbleVariant } from "./components/communication/conversation-bubble/conversation-bubble.types";
-import { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
+import { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableRowGutter, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
 import { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
 import { DropdownOptionInput, Option, QDropdownPlacement, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
-import { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/inputs/form/form.types";
+import { ImageCrop } from "./utils/image-crop";
 import { QInputSize, QInputType } from "./components/inputs/input/input.types";
 import { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
-import { QMapBoundsInput, QMapClickDetail, QMapClusterSelectDetail, QMapErrorDetail, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapMarkerVisibilityResult, QMapProvider, QMapRasterTileLoadingPolicy, QMapStatusChangeDetail, QMapViewportRect } from "./components/data-display/map/map.types";
+import { QMapBoundsInput, QMapClickDetail, QMapClusterSelectDetail, QMapErrorDetail, QMapFitMarkersOptions, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapMarkerVisibilityResult, QMapProvider, QMapRasterTileLoadingPolicy, QMapStatusChangeDetail, QMapViewportRect } from "./components/data-display/map/map.types";
 import { QMediaKind, QMediaLoading } from "./components/media/media/media.types";
 import { NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode, QNavbarNavAlign, QNavbarNavCenterWithin } from "./components/layout/navbar/navbar.types";
 import { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
@@ -49,18 +50,19 @@ export { QAvatarShape, QAvatarSize } from "./components/media/avatar/avatar.type
 export { QBannerAlignment, QBannerHeight } from "./components/content/banner/banner.types";
 export { QIconColor, QIconDefinition, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
 export { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
+export { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/inputs/form/form.types";
 export { QControlSize, QSpace, QSurface } from "./theme/tokens";
 export { QCardElevation } from "./components/content/card/card.types";
-export { QCarouselSlideChangeDetail, QCarouselSnapAlignment } from "./components/content/carousel/carousel.types";
+export { QCarouselAutoplayChangeDetail, QCarouselLayout, QCarouselSlideChangeDetail, QCarouselSnapAlignment, QCarouselTransition } from "./components/content/carousel/carousel.types";
 export { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/data-display/chip/chip.types";
 export { QConversationBubbleVariant } from "./components/communication/conversation-bubble/conversation-bubble.types";
-export { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
+export { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableRowGutter, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
 export { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
 export { DropdownOptionInput, Option, QDropdownPlacement, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
-export { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/inputs/form/form.types";
+export { ImageCrop } from "./utils/image-crop";
 export { QInputSize, QInputType } from "./components/inputs/input/input.types";
 export { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
-export { QMapBoundsInput, QMapClickDetail, QMapClusterSelectDetail, QMapErrorDetail, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapMarkerVisibilityResult, QMapProvider, QMapRasterTileLoadingPolicy, QMapStatusChangeDetail, QMapViewportRect } from "./components/data-display/map/map.types";
+export { QMapBoundsInput, QMapClickDetail, QMapClusterSelectDetail, QMapErrorDetail, QMapFitMarkersOptions, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapMarkerVisibilityResult, QMapProvider, QMapRasterTileLoadingPolicy, QMapStatusChangeDetail, QMapViewportRect } from "./components/data-display/map/map.types";
 export { QMediaKind, QMediaLoading } from "./components/media/media/media.types";
 export { NavbarItemInput, NavbarSelectDetail, QNavbarEdge, QNavbarMobileMode, QNavbarNavAlign, QNavbarNavCenterWithin } from "./components/layout/navbar/navbar.types";
 export { QPanelPadding, QPanelVariant } from "./components/layout/panel/panel.types";
@@ -186,6 +188,31 @@ export namespace Components {
          */
         "expand": boolean;
         /**
+          * Explicit native form ID in this tree; unresolved IDs do not fall back.
+         */
+        "form"?: string;
+        /**
+          * Overrides the owning form's action for this submission.
+         */
+        "formAction"?: string;
+        /**
+          * Overrides the owning form's encoding for this submission.
+         */
+        "formEnctype"?: QFormEnctype;
+        /**
+          * Overrides the owning form's method for this submission.
+         */
+        "formMethod"?: QFormMethod;
+        /**
+          * Skips validation for this submitter while retaining cancellation and collection.
+          * @default false
+         */
+        "formNoValidate": boolean;
+        /**
+          * Overrides the owning form's browsing context for this submission.
+         */
+        "formTarget"?: string;
+        /**
           * Destination used when the component operates as a link.
          */
         "href"?: string;
@@ -207,6 +234,10 @@ export namespace Components {
          */
         "loading": boolean;
         /**
+          * Successful submission name when this button is the submitter.
+         */
+        "name"?: string;
+        /**
           * Defaults to `noopener noreferrer` when `target="_blank"`.
          */
         "rel"?: string;
@@ -225,6 +256,11 @@ export namespace Components {
           * @default 'button'
          */
         "type": QButtonType;
+        /**
+          * Successful submission value when this button is the submitter.
+          * @default ''
+         */
+        "value": string;
         /**
           * @default 'primary'
          */
@@ -270,28 +306,60 @@ export namespace Components {
         "surface"?: QSurface;
     }
     /**
-     * A horizontal carousel viewport with optional arrow and dot navigation.
+     * A carousel with sliding, crossfade or instant transitions and shared navigation.
      */
     interface QCarousel {
+        /**
+          * Accessible name forwarded to the slide viewport.
+          * @default 'Carousel content'
+         */
+        "ariaLabel": string;
+        /**
+          * Enables rotation; user interaction pauses until explicitly restarted.
+          * @default false
+         */
+        "autoplay": boolean;
+        /**
+          * Finite positive interval in milliseconds; invalid values use 5000.
+          * @default 5000
+         */
+        "autoplayInterval": number;
+        /**
+          * Temporarily suspends requested playback without changing the button action.
+          * @default false
+         */
+        "autoplaySuspended": boolean;
         /**
           * `auto` preserves each slotted item's natural width.
           * @default 'auto'
          */
         "itemWidth": string;
         /**
+          * Slideshow provides full-width slides with no default viewport inset or gap.
+          * @default 'strip'
+         */
+        "layout": QCarouselLayout;
+        /**
+          * Stops rotation until play() or the playback control explicitly restarts it.
+         */
+        "pause": () => Promise<void>;
+        /**
+          * Requests rotation when enabled; completed non-repeating playback restarts at the first slide.
+         */
+        "play": () => Promise<void>;
+        /**
           * Wraps arrow and programmatic navigation at either end.
           * @default false
          */
         "repeat": boolean;
         /**
-          * @default false
+          * Omitted controls are enabled for navigable slideshows and disabled for strips.
          */
-        "showArrows": boolean;
+        "showArrows"?: boolean;
         /**
           * Shows clickable slide indicator dots when the carousel can scroll.
-          * @default false
          */
-        "showIndicators": boolean;
+        "showIndicators"?: boolean;
         /**
           * Scrolls the carousel to a zero-based slide index.
          */
@@ -300,6 +368,16 @@ export namespace Components {
           * @default 'start'
          */
         "snapAlignment": QCarouselSnapAlignment;
+        /**
+          * Animation used when selecting a slide. Overlay modes show one full-width item.
+          * @default 'slide'
+         */
+        "transition": QCarouselTransition;
+        /**
+          * Crossfade duration in milliseconds; native sliding keeps browser-controlled timing.
+          * @default 500
+         */
+        "transitionDuration": number;
         /**
           * Recalculates slide offsets, scroll bounds, and navigation states.
          */
@@ -388,7 +466,10 @@ export namespace Components {
     }
     /**
      * Data grid with optional toolbar, search, row activation, and multi-row selection.
+     * @cssprop --q-table-row-gutter-width - Row gutter width, including padding (default 36px).
      * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
+     * @cssprop --q-table-cell-line-height - Line height in two-line row mode (default 1.5).
+     * @cssprop --q-table-cell-content-height - Reserved content height in two-line row mode (default 2lh).
      * @cssprop --q-table-group-bg - Background color for row-group divider rows.
      * @cssprop --q-table-group-fg - Text color for row-group divider rows.
      * @cssprop --q-table-group-border - Border color for row-group divider rows.
@@ -444,6 +525,16 @@ export namespace Components {
          */
         "rowGroup"?: DataTableRowGrouper;
         /**
+          * Structural leading cell: blank by default, numbers, custom row slots, or none.
+          * @default 'blank'
+         */
+        "rowGutter": DataTableRowGutter;
+        /**
+          * Numbering offset; invalid, negative or non-safe-integer values fall back to zero.
+          * @default 0
+         */
+        "rowNumberOffset": number;
+        /**
           * @default 'Search...'
          */
         "searchPlaceholder": string;
@@ -481,6 +572,11 @@ export namespace Components {
          */
         "sortable": boolean;
         "toolbarTitle"?: string;
+        /**
+          * Reserves two text lines per data cell; rich cells must fit the same content height.
+          * @default false
+         */
+        "twoLineRows": boolean;
     }
     /**
      * Modal confirmation or message dialog with focus trapping and safe solid backdrops.
@@ -666,7 +762,7 @@ export namespace Components {
     }
     /**
      * Form wrapper that bridges slotted WebQuark controls to a native form element.
-     * Named controls in the light DOM and assigned slots participate in validation,
+     * Supported controls in the light DOM and native associations participate in validation,
      * value collection, reset, and `FormData`. Controls hidden inside a
      * consumer-owned nested shadow root are outside this explicit boundary.
      */
@@ -681,6 +777,10 @@ export namespace Components {
           * @default 'on'
          */
         "autocomplete": QFormAutocomplete;
+        /**
+          * Checks current owned fields without displaying validation messages.
+         */
+        "checkValidity": () => Promise<boolean>;
         /**
           * @default 'application/x-www-form-urlencoded'
          */
@@ -715,6 +815,10 @@ export namespace Components {
           * @default true
          */
         "preventDefault": boolean;
+        /**
+          * Reports current owned field constraints and returns aggregate validity.
+         */
+        "reportValidity": () => Promise<boolean>;
         "reserveFeedback"?: boolean;
         /**
           * Resets the native form and associated controls.
@@ -805,6 +909,63 @@ export namespace Components {
           * @default 'md'
          */
         "size": QIconSize;
+    }
+    /**
+     * Compare independently framed images by revealing Before from the left.
+     */
+    interface QImageComparison {
+        /**
+          * Accessible description of the After image.
+          * @default ''
+         */
+        "afterAlt": string;
+        /**
+          * Source-percentage rectangle selected from After; omitted means the full image.
+         */
+        "afterCrop"?: ImageCrop;
+        /**
+          * Caption for the right image.
+          * @default 'After'
+         */
+        "afterLabel": string;
+        /**
+          * Source of the image revealed on the right.
+          * @default ''
+         */
+        "afterSrc": string;
+        /**
+          * Accessible name of the comparison control.
+          * @default 'Image comparison'
+         */
+        "ariaLabel": string;
+        /**
+          * Positive frame width / height ratio. Omitted derives from partial After, then Before, otherwise 16 / 9; invalid values use 16 / 9.
+         */
+        "aspectRatio"?: number;
+        /**
+          * Accessible description of the Before image.
+          * @default ''
+         */
+        "beforeAlt": string;
+        /**
+          * Source-percentage rectangle selected from Before; omitted means the full image.
+         */
+        "beforeCrop"?: ImageCrop;
+        /**
+          * Caption for the left image.
+          * @default 'Before'
+         */
+        "beforeLabel": string;
+        /**
+          * Source of the image revealed on the left.
+          * @default ''
+         */
+        "beforeSrc": string;
+        /**
+          * Percentage of Before revealed, clamped to 0–100.
+          * @default 50
+         */
+        "position": number;
     }
     /**
      * Wrapping action/content row.
@@ -1041,6 +1202,10 @@ export namespace Components {
          */
         "ensureMarkerVisible": (markerId: QMapMarkerId, occlusions: readonly QMapViewportRect[]) => Promise<QMapMarkerVisibilityResult>;
         /**
+          * Fits the latest valid marker coordinates without changing the configured center or zoom props.
+         */
+        "fitMarkers": (options?: QMapFitMarkersOptions) => Promise<boolean>;
+        /**
           * Browser-restricted key used only when WebQuark loads Google Maps.
           * @default ''
          */
@@ -1084,6 +1249,11 @@ export namespace Components {
           * @default 'full-batch'
          */
         "rasterTileLoadingPolicy": QMapRasterTileLoadingPolicy;
+        /**
+          * Enables mouse-wheel zoom without changing touch, keyboard, or button controls.
+          * @default true
+         */
+        "scrollWheelZoom": boolean;
         /**
           * Controls the selected visual and `aria-pressed` state.
          */
@@ -2007,6 +2177,11 @@ export namespace Components {
     }
     /**
      * Non-interactive tooltip attached to its immediate parent element.
+     * @cssprop --q-tooltip-max-width - Optional maximum bubble width (default none).
+     * @cssprop --q-tooltip-width - Optional bubble sizing (default auto).
+     * @cssprop --q-tooltip-white-space - Bubble text whitespace (default nowrap).
+     * @cssprop --q-tooltip-overflow-wrap - Bubble word wrapping (default normal).
+     * @cssprop --q-tooltip-viewport-padding - Optional viewport inset in pixels for positioning.
      */
     interface QTooltip {
         "content"?: string;
@@ -2056,6 +2231,10 @@ export interface QDropdownCustomEvent<T> extends CustomEvent<T> {
 export interface QFormCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLQFormElement;
+}
+export interface QImageComparisonCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQImageComparisonElement;
 }
 export interface QInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -2214,9 +2393,10 @@ declare global {
     };
     interface HTMLQCarouselElementEventMap {
         "qSlideChange": QCarouselSlideChangeDetail;
+        "qAutoplayChange": QCarouselAutoplayChangeDetail;
     }
     /**
-     * A horizontal carousel viewport with optional arrow and dot navigation.
+     * A carousel with sliding, crossfade or instant transitions and shared navigation.
      */
     interface HTMLQCarouselElement extends Components.QCarousel, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQCarouselElementEventMap>(type: K, listener: (this: HTMLQCarouselElement, ev: QCarouselCustomEvent<HTMLQCarouselElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2273,7 +2453,10 @@ declare global {
     }
     /**
      * Data grid with optional toolbar, search, row activation, and multi-row selection.
+     * @cssprop --q-table-row-gutter-width - Row gutter width, including padding (default 36px).
      * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
+     * @cssprop --q-table-cell-line-height - Line height in two-line row mode (default 1.5).
+     * @cssprop --q-table-cell-content-height - Reserved content height in two-line row mode (default 2lh).
      * @cssprop --q-table-group-bg - Background color for row-group divider rows.
      * @cssprop --q-table-group-fg - Text color for row-group divider rows.
      * @cssprop --q-table-group-border - Border color for row-group divider rows.
@@ -2357,7 +2540,7 @@ declare global {
     }
     /**
      * Form wrapper that bridges slotted WebQuark controls to a native form element.
-     * Named controls in the light DOM and assigned slots participate in validation,
+     * Supported controls in the light DOM and native associations participate in validation,
      * value collection, reset, and `FormData`. Controls hidden inside a
      * consumer-owned nested shadow root are outside this explicit boundary.
      */
@@ -2392,6 +2575,26 @@ declare global {
     var HTMLQIconElement: {
         prototype: HTMLQIconElement;
         new (): HTMLQIconElement;
+    };
+    interface HTMLQImageComparisonElementEventMap {
+        "qChange": number;
+    }
+    /**
+     * Compare independently framed images by revealing Before from the left.
+     */
+    interface HTMLQImageComparisonElement extends Components.QImageComparison, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQImageComparisonElementEventMap>(type: K, listener: (this: HTMLQImageComparisonElement, ev: QImageComparisonCustomEvent<HTMLQImageComparisonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQImageComparisonElementEventMap>(type: K, listener: (this: HTMLQImageComparisonElement, ev: QImageComparisonCustomEvent<HTMLQImageComparisonElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLQImageComparisonElement: {
+        prototype: HTMLQImageComparisonElement;
+        new (): HTMLQImageComparisonElement;
     };
     /**
      * Wrapping action/content row.
@@ -2851,6 +3054,11 @@ declare global {
     };
     /**
      * Non-interactive tooltip attached to its immediate parent element.
+     * @cssprop --q-tooltip-max-width - Optional maximum bubble width (default none).
+     * @cssprop --q-tooltip-width - Optional bubble sizing (default auto).
+     * @cssprop --q-tooltip-white-space - Bubble text whitespace (default nowrap).
+     * @cssprop --q-tooltip-overflow-wrap - Bubble word wrapping (default normal).
+     * @cssprop --q-tooltip-viewport-padding - Optional viewport inset in pixels for positioning.
      */
     interface HTMLQTooltipElement extends Components.QTooltip, HTMLStencilElement {
     }
@@ -2874,6 +3082,7 @@ declare global {
         "q-form": HTMLQFormElement;
         "q-grid": HTMLQGridElement;
         "q-icon": HTMLQIconElement;
+        "q-image-comparison": HTMLQImageComparisonElement;
         "q-inline": HTMLQInlineElement;
         "q-input": HTMLQInputElement;
         "q-link": HTMLQLinkElement;
@@ -3013,6 +3222,31 @@ declare namespace LocalJSX {
          */
         "expand"?: boolean;
         /**
+          * Explicit native form ID in this tree; unresolved IDs do not fall back.
+         */
+        "form"?: string;
+        /**
+          * Overrides the owning form's action for this submission.
+         */
+        "formAction"?: string;
+        /**
+          * Overrides the owning form's encoding for this submission.
+         */
+        "formEnctype"?: QFormEnctype;
+        /**
+          * Overrides the owning form's method for this submission.
+         */
+        "formMethod"?: QFormMethod;
+        /**
+          * Skips validation for this submitter while retaining cancellation and collection.
+          * @default false
+         */
+        "formNoValidate"?: boolean;
+        /**
+          * Overrides the owning form's browsing context for this submission.
+         */
+        "formTarget"?: string;
+        /**
           * Destination used when the component operates as a link.
          */
         "href"?: string;
@@ -3033,6 +3267,10 @@ declare namespace LocalJSX {
           * @default false
          */
         "loading"?: boolean;
+        /**
+          * Successful submission name when this button is the submitter.
+         */
+        "name"?: string;
         "onQBlur"?: (event: QButtonCustomEvent<FocusEvent>) => void;
         /**
           * Emitted on activation unless disabled or loading.
@@ -3058,6 +3296,11 @@ declare namespace LocalJSX {
           * @default 'button'
          */
         "type"?: QButtonType;
+        /**
+          * Successful submission value when this button is the submitter.
+          * @default ''
+         */
+        "value"?: string;
         /**
           * @default 'primary'
          */
@@ -3103,14 +3346,43 @@ declare namespace LocalJSX {
         "surface"?: QSurface;
     }
     /**
-     * A horizontal carousel viewport with optional arrow and dot navigation.
+     * A carousel with sliding, crossfade or instant transitions and shared navigation.
      */
     interface QCarousel {
+        /**
+          * Accessible name forwarded to the slide viewport.
+          * @default 'Carousel content'
+         */
+        "ariaLabel"?: string;
+        /**
+          * Enables rotation; user interaction pauses until explicitly restarted.
+          * @default false
+         */
+        "autoplay"?: boolean;
+        /**
+          * Finite positive interval in milliseconds; invalid values use 5000.
+          * @default 5000
+         */
+        "autoplayInterval"?: number;
+        /**
+          * Temporarily suspends requested playback without changing the button action.
+          * @default false
+         */
+        "autoplaySuspended"?: boolean;
         /**
           * `auto` preserves each slotted item's natural width.
           * @default 'auto'
          */
         "itemWidth"?: string;
+        /**
+          * Slideshow provides full-width slides with no default viewport inset or gap.
+          * @default 'strip'
+         */
+        "layout"?: QCarouselLayout;
+        /**
+          * Actual running state, including temporary suspension.
+         */
+        "onQAutoplayChange"?: (event: QCarouselCustomEvent<QCarouselAutoplayChangeDetail>) => void;
         "onQSlideChange"?: (event: QCarouselCustomEvent<QCarouselSlideChangeDetail>) => void;
         /**
           * Wraps arrow and programmatic navigation at either end.
@@ -3118,18 +3390,27 @@ declare namespace LocalJSX {
          */
         "repeat"?: boolean;
         /**
-          * @default false
+          * Omitted controls are enabled for navigable slideshows and disabled for strips.
          */
         "showArrows"?: boolean;
         /**
           * Shows clickable slide indicator dots when the carousel can scroll.
-          * @default false
          */
         "showIndicators"?: boolean;
         /**
           * @default 'start'
          */
         "snapAlignment"?: QCarouselSnapAlignment;
+        /**
+          * Animation used when selecting a slide. Overlay modes show one full-width item.
+          * @default 'slide'
+         */
+        "transition"?: QCarouselTransition;
+        /**
+          * Crossfade duration in milliseconds; native sliding keeps browser-controlled timing.
+          * @default 500
+         */
+        "transitionDuration"?: number;
     }
     /**
      * Compact label, link, filter, or removable token.
@@ -3224,7 +3505,10 @@ declare namespace LocalJSX {
     }
     /**
      * Data grid with optional toolbar, search, row activation, and multi-row selection.
+     * @cssprop --q-table-row-gutter-width - Row gutter width, including padding (default 36px).
      * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
+     * @cssprop --q-table-cell-line-height - Line height in two-line row mode (default 1.5).
+     * @cssprop --q-table-cell-content-height - Reserved content height in two-line row mode (default 2lh).
      * @cssprop --q-table-group-bg - Background color for row-group divider rows.
      * @cssprop --q-table-group-fg - Text color for row-group divider rows.
      * @cssprop --q-table-group-border - Border color for row-group divider rows.
@@ -3288,6 +3572,16 @@ declare namespace LocalJSX {
          */
         "rowGroup"?: DataTableRowGrouper;
         /**
+          * Structural leading cell: blank by default, numbers, custom row slots, or none.
+          * @default 'blank'
+         */
+        "rowGutter"?: DataTableRowGutter;
+        /**
+          * Numbering offset; invalid, negative or non-safe-integer values fall back to zero.
+          * @default 0
+         */
+        "rowNumberOffset"?: number;
+        /**
           * @default 'Search...'
          */
         "searchPlaceholder"?: string;
@@ -3325,6 +3619,11 @@ declare namespace LocalJSX {
          */
         "sortable"?: boolean;
         "toolbarTitle"?: string;
+        /**
+          * Reserves two text lines per data cell; rich cells must fit the same content height.
+          * @default false
+         */
+        "twoLineRows"?: boolean;
     }
     /**
      * Modal confirmation or message dialog with focus trapping and safe solid backdrops.
@@ -3526,7 +3825,7 @@ declare namespace LocalJSX {
     }
     /**
      * Form wrapper that bridges slotted WebQuark controls to a native form element.
-     * Named controls in the light DOM and assigned slots participate in validation,
+     * Supported controls in the light DOM and native associations participate in validation,
      * value collection, reset, and `FormData`. Controls hidden inside a
      * consumer-owned nested shadow root are outside this explicit boundary.
      */
@@ -3654,6 +3953,67 @@ declare namespace LocalJSX {
           * @default 'md'
          */
         "size"?: QIconSize;
+    }
+    /**
+     * Compare independently framed images by revealing Before from the left.
+     */
+    interface QImageComparison {
+        /**
+          * Accessible description of the After image.
+          * @default ''
+         */
+        "afterAlt"?: string;
+        /**
+          * Source-percentage rectangle selected from After; omitted means the full image.
+         */
+        "afterCrop"?: ImageCrop;
+        /**
+          * Caption for the right image.
+          * @default 'After'
+         */
+        "afterLabel"?: string;
+        /**
+          * Source of the image revealed on the right.
+          * @default ''
+         */
+        "afterSrc"?: string;
+        /**
+          * Accessible name of the comparison control.
+          * @default 'Image comparison'
+         */
+        "ariaLabel"?: string;
+        /**
+          * Positive frame width / height ratio. Omitted derives from partial After, then Before, otherwise 16 / 9; invalid values use 16 / 9.
+         */
+        "aspectRatio"?: number;
+        /**
+          * Accessible description of the Before image.
+          * @default ''
+         */
+        "beforeAlt"?: string;
+        /**
+          * Source-percentage rectangle selected from Before; omitted means the full image.
+         */
+        "beforeCrop"?: ImageCrop;
+        /**
+          * Caption for the left image.
+          * @default 'Before'
+         */
+        "beforeLabel"?: string;
+        /**
+          * Source of the image revealed on the left.
+          * @default ''
+         */
+        "beforeSrc"?: string;
+        /**
+          * Emits the numeric reveal percentage continuously for user changes only.
+         */
+        "onQChange"?: (event: QImageComparisonCustomEvent<number>) => void;
+        /**
+          * Percentage of Before revealed, clamped to 0–100.
+          * @default 50
+         */
+        "position"?: number;
     }
     /**
      * Wrapping action/content row.
@@ -3958,6 +4318,11 @@ declare namespace LocalJSX {
           * @default 'full-batch'
          */
         "rasterTileLoadingPolicy"?: QMapRasterTileLoadingPolicy;
+        /**
+          * Enables mouse-wheel zoom without changing touch, keyboard, or button controls.
+          * @default true
+         */
+        "scrollWheelZoom"?: boolean;
         /**
           * Controls the selected visual and `aria-pressed` state.
          */
@@ -4899,6 +5264,11 @@ declare namespace LocalJSX {
     }
     /**
      * Non-interactive tooltip attached to its immediate parent element.
+     * @cssprop --q-tooltip-max-width - Optional maximum bubble width (default none).
+     * @cssprop --q-tooltip-width - Optional bubble sizing (default auto).
+     * @cssprop --q-tooltip-white-space - Bubble text whitespace (default nowrap).
+     * @cssprop --q-tooltip-overflow-wrap - Bubble word wrapping (default normal).
+     * @cssprop --q-tooltip-viewport-padding - Optional viewport inset in pixels for positioning.
      */
     interface QTooltip {
         "content"?: string;
@@ -4944,6 +5314,7 @@ declare namespace LocalJSX {
         "icon": QIconName;
         "iconOnly": boolean;
         "ariaLabel": string | null;
+        "value": string;
         "variant": QButtonVariant;
         "size": QButtonSize;
         "shape": QButtonShape;
@@ -4952,6 +5323,13 @@ declare namespace LocalJSX {
         "loading": boolean;
         "target": string;
         "type": QButtonType;
+        "name": string;
+        "form": string;
+        "formAction": string;
+        "formMethod": QFormMethod;
+        "formEnctype": QFormEnctype;
+        "formTarget": string;
+        "formNoValidate": boolean;
     }
     interface QCardAttributes {
         "surface": QSurface;
@@ -4965,11 +5343,18 @@ declare namespace LocalJSX {
         "interactive": boolean;
     }
     interface QCarouselAttributes {
+        "layout": QCarouselLayout;
         "snapAlignment": QCarouselSnapAlignment;
         "itemWidth": string;
         "showArrows": boolean;
         "showIndicators": boolean;
         "repeat": boolean;
+        "transition": QCarouselTransition;
+        "transitionDuration": number;
+        "autoplay": boolean;
+        "autoplayInterval": number;
+        "autoplaySuspended": boolean;
+        "ariaLabel": string;
     }
     interface QChipAttributes {
         "label": string;
@@ -4996,8 +5381,11 @@ declare namespace LocalJSX {
         "columns": TableColumn[] | string;
         "items": DataTableItem[] | string;
         "keyField": string;
+        "twoLineRows": boolean;
         "rowActions": DataTableRowAction[] | string;
         "rowClickable": boolean;
+        "rowGutter": DataTableRowGutter;
+        "rowNumberOffset": number;
         "selectable": boolean;
         "sortable": boolean;
         "sortMode": DataTableSortMode;
@@ -5086,6 +5474,17 @@ declare namespace LocalJSX {
         "color": QIconColor;
         "label": string;
     }
+    interface QImageComparisonAttributes {
+        "beforeSrc": string;
+        "afterSrc": string;
+        "beforeLabel": string;
+        "afterLabel": string;
+        "aspectRatio": number;
+        "position": number;
+        "beforeAlt": string;
+        "afterAlt": string;
+        "ariaLabel": string;
+    }
     interface QInlineAttributes {
         "gap": QSpace;
         "align": 'stretch' | 'start' | 'center' | 'end';
@@ -5138,6 +5537,7 @@ declare namespace LocalJSX {
         "centerLongitude": number;
         "zoom": number;
         "zoomControls": boolean;
+        "scrollWheelZoom": boolean;
         "minZoom": number;
         "maxZoom": number;
         "maxBounds": QMapBoundsInput;
@@ -5155,9 +5555,9 @@ declare namespace LocalJSX {
     }
     interface QMediaAttributes {
         "src": string;
-        "alt": string;
         "kind": QMediaKind;
         "loading": QMediaLoading;
+        "alt": string;
     }
     interface QNavbarAttributes {
         "brand": string;
@@ -5388,6 +5788,7 @@ declare namespace LocalJSX {
         "q-form": Omit<QForm, keyof QFormAttributes> & { [K in keyof QForm & keyof QFormAttributes]?: QForm[K] } & { [K in keyof QForm & keyof QFormAttributes as `attr:${K}`]?: QFormAttributes[K] } & { [K in keyof QForm & keyof QFormAttributes as `prop:${K}`]?: QForm[K] };
         "q-grid": Omit<QGrid, keyof QGridAttributes> & { [K in keyof QGrid & keyof QGridAttributes]?: QGrid[K] } & { [K in keyof QGrid & keyof QGridAttributes as `attr:${K}`]?: QGridAttributes[K] } & { [K in keyof QGrid & keyof QGridAttributes as `prop:${K}`]?: QGrid[K] };
         "q-icon": Omit<QIcon, keyof QIconAttributes> & { [K in keyof QIcon & keyof QIconAttributes]?: QIcon[K] } & { [K in keyof QIcon & keyof QIconAttributes as `attr:${K}`]?: QIconAttributes[K] } & { [K in keyof QIcon & keyof QIconAttributes as `prop:${K}`]?: QIcon[K] };
+        "q-image-comparison": Omit<QImageComparison, keyof QImageComparisonAttributes> & { [K in keyof QImageComparison & keyof QImageComparisonAttributes]?: QImageComparison[K] } & { [K in keyof QImageComparison & keyof QImageComparisonAttributes as `attr:${K}`]?: QImageComparisonAttributes[K] } & { [K in keyof QImageComparison & keyof QImageComparisonAttributes as `prop:${K}`]?: QImageComparison[K] };
         "q-inline": Omit<QInline, keyof QInlineAttributes> & { [K in keyof QInline & keyof QInlineAttributes]?: QInline[K] } & { [K in keyof QInline & keyof QInlineAttributes as `attr:${K}`]?: QInlineAttributes[K] } & { [K in keyof QInline & keyof QInlineAttributes as `prop:${K}`]?: QInline[K] };
         "q-input": Omit<QInput, keyof QInputAttributes> & { [K in keyof QInput & keyof QInputAttributes]?: QInput[K] } & { [K in keyof QInput & keyof QInputAttributes as `attr:${K}`]?: QInputAttributes[K] } & { [K in keyof QInput & keyof QInputAttributes as `prop:${K}`]?: QInput[K] };
         "q-link": Omit<QLink, keyof QLinkAttributes> & { [K in keyof QLink & keyof QLinkAttributes]?: QLink[K] } & { [K in keyof QLink & keyof QLinkAttributes as `attr:${K}`]?: QLinkAttributes[K] } & { [K in keyof QLink & keyof QLinkAttributes as `prop:${K}`]?: QLink[K] };
@@ -5445,7 +5846,7 @@ declare module "@stencil/core" {
              */
             "q-card": LocalJSX.IntrinsicElements["q-card"] & JSXBase.HTMLAttributes<HTMLQCardElement>;
             /**
-             * A horizontal carousel viewport with optional arrow and dot navigation.
+             * A carousel with sliding, crossfade or instant transitions and shared navigation.
              */
             "q-carousel": LocalJSX.IntrinsicElements["q-carousel"] & JSXBase.HTMLAttributes<HTMLQCarouselElement>;
             /**
@@ -5458,7 +5859,10 @@ declare module "@stencil/core" {
             "q-conversation-bubble": LocalJSX.IntrinsicElements["q-conversation-bubble"] & JSXBase.HTMLAttributes<HTMLQConversationBubbleElement>;
             /**
              * Data grid with optional toolbar, search, row activation, and multi-row selection.
+             * @cssprop --q-table-row-gutter-width - Row gutter width, including padding (default 36px).
              * @cssprop --q-table-max-height - Maximum height for the scrollable table area.
+             * @cssprop --q-table-cell-line-height - Line height in two-line row mode (default 1.5).
+             * @cssprop --q-table-cell-content-height - Reserved content height in two-line row mode (default 2lh).
              * @cssprop --q-table-group-bg - Background color for row-group divider rows.
              * @cssprop --q-table-group-fg - Text color for row-group divider rows.
              * @cssprop --q-table-group-border - Border color for row-group divider rows.
@@ -5485,7 +5889,7 @@ declare module "@stencil/core" {
             "q-dropdown": LocalJSX.IntrinsicElements["q-dropdown"] & JSXBase.HTMLAttributes<HTMLQDropdownElement>;
             /**
              * Form wrapper that bridges slotted WebQuark controls to a native form element.
-             * Named controls in the light DOM and assigned slots participate in validation,
+             * Supported controls in the light DOM and native associations participate in validation,
              * value collection, reset, and `FormData`. Controls hidden inside a
              * consumer-owned nested shadow root are outside this explicit boundary.
              */
@@ -5498,6 +5902,10 @@ declare module "@stencil/core" {
              * Synchronous registered icon renderer with optional backwards-compatible URL loading.
              */
             "q-icon": LocalJSX.IntrinsicElements["q-icon"] & JSXBase.HTMLAttributes<HTMLQIconElement>;
+            /**
+             * Compare independently framed images by revealing Before from the left.
+             */
+            "q-image-comparison": LocalJSX.IntrinsicElements["q-image-comparison"] & JSXBase.HTMLAttributes<HTMLQImageComparisonElement>;
             /**
              * Wrapping action/content row.
              */
@@ -5627,6 +6035,11 @@ declare module "@stencil/core" {
             "q-toolbar": LocalJSX.IntrinsicElements["q-toolbar"] & JSXBase.HTMLAttributes<HTMLQToolbarElement>;
             /**
              * Non-interactive tooltip attached to its immediate parent element.
+             * @cssprop --q-tooltip-max-width - Optional maximum bubble width (default none).
+             * @cssprop --q-tooltip-width - Optional bubble sizing (default auto).
+             * @cssprop --q-tooltip-white-space - Bubble text whitespace (default nowrap).
+             * @cssprop --q-tooltip-overflow-wrap - Bubble word wrapping (default normal).
+             * @cssprop --q-tooltip-viewport-padding - Optional viewport inset in pixels for positioning.
              */
             "q-tooltip": LocalJSX.IntrinsicElements["q-tooltip"] & JSXBase.HTMLAttributes<HTMLQTooltipElement>;
         }

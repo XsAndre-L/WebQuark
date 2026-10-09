@@ -41,6 +41,7 @@ export const config: Config = {
         { src: 'playground/components.manifest.json', dest: 'playground/components.manifest.json' },
         { src: 'playground/specs', dest: 'playground/specs' },
         { src: 'playground/css', dest: 'css' },
+        { src: 'playground/assets', dest: 'assets' },
         { src: 'playground/views', dest: 'views' },
         { src: 'assets/icons', dest: 'assets/icons' }
       ]

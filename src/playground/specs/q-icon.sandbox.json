@@ -107,6 +107,14 @@
         "size": "24",
         "color": "var(--q-color-success)"
       }
+    },
+    {
+      "name": "Local SVG with Query and Inferred Extension",
+      "props": {
+        "library": "local",
+        "name": "check?v=1.2#preview",
+        "size": "24"
+      }
     }
   ],
   "edgeCases": [
@@ -121,7 +129,7 @@
       "name": "Binary Image File (.png)",
       "props": {
         "library": "local",
-        "name": "logo-test.png",
+        "name": "check-preview.png",
         "size": "64"
       }
     },
@@ -132,6 +140,14 @@
         "name": "bell",
         "size": "120",
         "color": "var(--q-color-secondary)"
+      }
+    },
+    {
+      "name": "Binary Image with Query and Fragment",
+      "props": {
+        "library": "local",
+        "name": "check-preview.png?v=2#preview",
+        "size": "64"
       }
     }
   ]

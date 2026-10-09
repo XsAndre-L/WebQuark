@@ -118,17 +118,85 @@ Combine q-grid and q-inline inside a form while preserving field collection.
 </q-form>
 ```
 
+### Assign and read repeated fields
+
+Repeated text names use positional arrays; repeated toggles use Boolean arrays. The setter is partial and silent.
+
+![Typed form values with design and review tags and Boolean feature states](./assets/q-form-typed-values.png)
+
+```html
+<q-form id="typed-form" label="Typed form values">
+  <q-input name="tag" label="First tag" value="alpha"></q-input>
+  <q-input name="tag" label="Second tag" value="beta"></q-input>
+  <q-toggle name="features" label="Email" checked></q-toggle>
+  <q-toggle name="features" label="SMS"></q-toggle>
+  <q-button slot="actions" type="button">Read values</q-button>
+</q-form>
+<pre id="typed-result"></pre>
+<script type="module">
+  await customElements.whenDefined("q-form");
+  const form = document.querySelector("#typed-form");
+  await form.componentOnReady();
+  await form.setValues({ tag: ["design", "review"], features: [true, false] });
+  const read = async () => {
+    document.querySelector("#typed-result").textContent =
+      JSON.stringify(await form.getValues(), null, 2);
+  };
+  form.querySelector("q-button").addEventListener("qClick", read);
+  await read();
+</script>
+```
+
+The screenshot shows the initial scripted update. Read values collects the current state without submitting or navigating.
+
+### Cancelable reset with dynamic field defaults
+
+This example adds a field after the form initializes, changes all three values, then uses the same reset action as resetForm. Keep edits cancels the reset before any field changes.
+
+```html
+<q-form id="reset-profile" label="Reset profile">
+  <input name="native" value="Native default">
+  <q-input name="custom" label="Custom field" value="Custom default"></q-input>
+  <label><input id="keep-edits" type="checkbox"> Keep edits</label>
+  <q-button id="change-profile" slot="actions" type="button">Change values</q-button>
+  <q-button slot="actions" type="reset">Reset</q-button>
+</q-form>
+<output id="reset-result"></output>
+<script type="module">
+  await customElements.whenDefined("q-form");
+  const form = document.getElementById("reset-profile");
+  await form.componentOnReady();
+  const dynamic = document.createElement("q-input");
+  dynamic.name = "dynamic";
+  dynamic.label = "Added field";
+  dynamic.value = "Dynamic default";
+  form.append(dynamic);
+  document.getElementById("change-profile").addEventListener("qClick", async () => {
+    await form.setValues({ native: "Changed", custom: "Changed", dynamic: "Changed" });
+    document.getElementById("reset-result").textContent = JSON.stringify(await form.getValues());
+  });
+  form.addEventListener("qReset", event => {
+    if (document.getElementById("keep-edits").checked) event.preventDefault();
+    queueMicrotask(async () => {
+      document.getElementById("reset-result").textContent = JSON.stringify(await form.getValues());
+    });
+  });
+</script>
+```
+
 ## Behavior & accessibility
 
 ### State and interaction
 
-Valid submission emits qSubmit with values, FormData, the inner form and original submit event. preventDefault=true cancels the native event's navigation; false permits native behavior where submission originated natively. q-button submit/reset clicks are explicitly bridged because those controls live outside the native form's shadow boundary. The bridge dispatches a submit event, so it does not itself perform a browser navigation.
+A submit cancels its original native default synchronously, waits for supported fields to become ready, then validates and takes one current snapshot. A valid submission emits one cancelable qSubmit containing values, FormData, the inner form, the original event and the author submitter (or null). preventDefault=true keeps this event-only flow. With preventDefault=false, an uncanceled qSubmit permits one native delivery of that same FormData. Cancel qSubmit synchronously to stop delivery; the original event is already canceled by the wrapper. Native buttons, submit/image inputs and q-button actions participate through their current owner, including layout wrappers.
 
-submitForm() requests native submission and awaits the pending validation task. setValues() applies values to matching names without emitting synthetic input/change events. resetForm() resets native and known controls, then reapplies the initial values captured after first mount. In contrast, a q-button type=reset click calls the inner native form reset; that path emits qReset but does not call the wrapper's explicit resetValues/applyValues bridge. Use resetForm() when restoring slotted controls is required.
+Native submit listeners can cancel synchronously with event.preventDefault() or event.returnValue=false, including listeners registered after the wrapper. The wrapper suppresses the original navigation immediately and waits for submit dispatch to finish before validation. It tracks those calls on the individual event and restores its own-property descriptors afterward; it changes no global event prototype. Calling a cached or prototype preventDefault function directly bypasses that tracking: use the cancelable qSubmit event for that pattern. Async application work must cancel qSubmit before awaiting. Native submit/requestSubmit calls reentered from formdata retain the browser's entry-list construction guard and produce no second delivery.
+
+submitForm() starts the same guarded transaction without a submitter and awaits its completion. Busy or reentrant requests join the current transaction. Detaching the form cancels pending readiness and invalidates delivery; moving/removing/disabling its submitter also suppresses delivery. setValues() applies typed values silently. resetForm(), native reset buttons and q-button type=reset use the same native reset event. qReset fires once before restoration; canceling qReset or the native reset event leaves values unchanged, including cancellation from a later native listener. Native defaults remain live. Each custom field restores the initial value captured at its first initialization, including dynamically added fields; assignment, moving to another form and reconnecting do not replace that default. Reset emits no input/change/qInput/qChange. Concurrent or reentrant resetForm calls join the current reset.
 
 ### Keyboard and focus
 
-submit leaves Enter's native behavior alone; it does not add a universal Enter-to-submit bridge for every slotted shadow input. focus-next intercepts Enter on eligible named q-input/native text inputs and focuses the next; Shift+Enter moves backward. Enter on the last eligible field requests submit. none prevents the intercepted Enter action. Multiline, contenteditable, other native interactive controls, non-input q-* controls, modifiers and IME composition are excluded.
+submit handles Enter from an owned eligible single-line q-input/native input, including unnamed fields under layout wrappers. It activates the first owned submit action; a disabled first action blocks implicit submission. Without an action, the wrapper submits once even with multiple text fields. focus-next moves among visible enabled eligible fields, including unnamed and readonly fields; Shift+Enter moves backward and forward Enter at the end submits. none suppresses only eligible Enter. Already-canceled events, modifiers, IME composition/keyCode 229, multiline/editor/contenteditable fields, popup searches, selection/toggle controls, buttons and links retain their own keyboard behavior.
 
 ### Labels and announcements
 
@@ -138,15 +206,32 @@ reserveFeedback publishes an inherited 1rem minimum when true, 0px when false; u
 
 ### Forms
 
-The wrapper discovers named controls in its light DOM and assigned content, including descendants through ordinary layout wrappers. It does not traverse consumer-owned nested shadow roots. Disabled controls and noneditable q-syntax-box are skipped. Native FormData is collected first, then values from otherwise unassociated slotted controls are appended.
+The wrapper discovers supported native input/textarea/select fields and q-input, q-textarea, q-dropdown, q-radio-group, q-toggle and editable q-syntax-box. Unnamed fields validate but do not collect. Arbitrary named wrappers, slots, action controls, display-only editors and consumer shadow internals are excluded. Native ownership wins: controls belonging to another native form or nested q-form are excluded. An explicit unresolved/empty form attribute prevents fallback ownership. A q-form id is not an external native form target. Register q-form and await its own readiness before invoking methods. Its getValues/setValues/submission operations wait for adapters on connected, potentially owned supported fields within one five-second transaction deadline, including tags whose registration is still pending. A supported field that never registers or never initializes rejects with TimeoutError instead of being silently omitted; assignment has not begun when readiness fails. Removal or re-association cancels obsolete waits, and observers/timers are cleaned up. An undefined custom tag outside the host has no native form association yet, so it is not an externally associated field until registration establishes that association.
 
-Repeated submitted names become arrays. The values object additionally represents q-toggle as a Boolean (including false), even though unchecked toggles have no FormData entry. Input numbers generally remain strings after FormData collection. Unselected native checkbox/radio controls may appear as null in values even when absent from FormData. For slotted custom controls, the bridge reads their value property; for example an unmatched q-radio-group value can enter the wrapper's collection even when the control would omit it from native FormData. Required validation still runs first unless noValidate.
+Values and FormData come from one successful-control snapshot, in field order. Disabled fields, including disabled fieldsets except their first legend, do not contribute. Readonly native fields remain successful. Unchecked native checkbox/radio controls and unavailable local selections have no fallback value. Native options exclude disabled options/optgroups; files preserve every File and the native empty-file placeholder. Native numeric inputs retain strings.
 
-setValues takes the first element of an array and assigns it to every matching control. It is not a general inverse for grouped radios, repeated names, multi-selects or files. Do not nest forms. noValidate skips wrapper/native validation; applications must handle their own validation when using it.
+| Group | values shape | FormData |
+| --- | --- | --- |
+| Repeated text/scalar fields | Array, including when only one succeeds | Every successful entry |
+| One q-toggle | Boolean, including false | Checked: string true; unchecked: no entry |
+| Repeated unmixed q-toggles | Boolean[] in eligible field order | One true entry per checked field |
+| Native radio group | Checked eligible identity or omitted; multiple native owner/tree groups sharing a name use an array | Same successful identities |
+| Repeated native checkboxes | Selected identity string[], including [] | Checked identities, including an empty identity |
+| Multiple select | string[], including [] | Selected enabled values |
+| Multiple/repeated file controls | File[] | Every file or empty placeholder |
+| Mixed control kinds sharing a name | Every successful entry; no toggle overwrite | Same successful entries |
+
+Boolean toggle projection intentionally differs from native successful FormData. Local unavailable dropdown/radio values remain in their public props but are omitted; externalSearch dropdowns retain nonempty unloaded domain values. Native radio validity follows the browser even when a disabled checked option satisfies required while submitting nothing.
+
+setValues applies only supplied owned names, including disabled/readonly targets, without input/change/qInput/qChange. Missing names are ignored. Scalars broadcast to repeated text fields; positional arrays must match the full owned field count. Native radio/checkbox values are option identities and are never rewritten: one radio group takes a string/null; multiple native groups sharing a name accept scalar broadcast or an exact positional identity/null array. A lone dropdown/radio-group/single-select rejects arrays; repeated selections accept exact positional arrays. Repeated checkboxes take identity strings/null/[], and a lone checkbox additionally accepts Boolean. Repeated toggles require one Boolean per owned toggle. Multiselect takes identity strings/null; repeated multiselect containers are ambiguous and rejected. File fields support clearing with null, empty string or []; assigning Files/FileLists is unsupported. Mixed identity/Boolean/file/scalar containers and other invalid shapes reject with TypeError before partial mutation. getValues is a successful-value projection rather than a general inverse editing model.
+
+Immediate setValues/getValues/checkValidity/reportValidity/submit chaining uses current values and constraints without a consumer frame wait. Direct value/checked/code, name and existing constraint-property updates synchronize the actual field and native participation. Existing fields combine explicit disabled state with inherited fieldset disabling, preserve the first-legend exception and retain their explicit disabled property when re-enabled. Readonly native text remains successful and programmatically assignable. Public form queries wait for a pending reset to finish. noValidate skips submission validation; explicit checkValidity/reportValidity always check constraints. Submission noValidate or the originating submitter's formnovalidate skips validation while retaining ownership, readiness, collection and cancellation.
+
+Native radios group by their actual native form owner, tree and name. Unassociated radios with the same name in different q-form wrappers still share the browser group: selecting one can uncheck a peer in another wrapper. Wrapper collection and direct assignment stay ownership-scoped; clearing owned options does not clear a checked foreign peer. Use distinct names or actual native owners when independent groups are required.
 
 ### Limitations and compatibility
 
-The wrapper is not itself a form-associated field and has no public checkValidity/reportValidity API. Native navigation with preventDefault=false can happen before asynchronous custom validation completes; use the default event-driven flow for application submission. Custom header content does not automatically name the form. A whitespace-only ariaLabel is truthy for suppressing aria-labelledby yet trims away when rendered, so use nonblank names. There is no component-specific animation.
+The wrapper is not itself a form-associated field. checkValidity/reportValidity are asynchronous aggregate checks of its owned fields. With preventDefault=false, native GET/POST uses the approved FormData, including repeated entries and Files. Synchronous qSubmit FormData edits change delivery; values remains the original snapshot. Native formdata listeners can make subsequent native edits. Submitter formaction/formmethod/formenctype/formtarget overrides apply to that transaction and the form attributes are restored afterward. No temporary value inputs or field reparenting are used. method="dialog" validates and closes an actual native dialog ancestor with the submitter value without a request; outside one, delivery rejects with NotSupportedError. Event-only dialog mode still emits qSubmit. A q-dialog/role="dialog" overlay is not a native dialog ancestor. Custom header content does not automatically name the form. A whitespace-only ariaLabel is truthy for suppressing aria-labelledby yet trims away when rendered, so use nonblank names. There is no component-specific animation.
 
 ## Styling
 
@@ -204,9 +289,9 @@ All properties are optional in the TypeScript component contract. Required conte
 | `enterBehavior` | `'submit'` | Enter handling policy; see [Keyboard and focus](#keyboard-and-focus).<br>**Type:** `'submit' \| 'focus-next' \| 'none'`. **HTML attribute:** `enter-behavior`. **Required:** No. |
 | `label` | `undefined` | Default form heading/name; also names a form with a custom header.<br>**Type:** `string`. **HTML attribute:** `label`. **Required:** No. |
 | `labelHidden` | `false` | Visually hides the entire header while preserving its accessible content.<br>**Type:** `boolean`. **HTML attribute:** `label-hidden`. **Required:** No. |
-| `method` | `'post'` | Native HTTP submission method; event-driven submission remains default.<br>**Type:** `'get' \| 'post' \| 'dialog'`. **HTML attribute:** `method`. **Required:** No. |
+| `method` | `'post'` | Native GET/POST transport or actual native dialog closure; event-driven submission remains default.<br>**Type:** `'get' \| 'post' \| 'dialog'`. **HTML attribute:** `method`. **Required:** No. |
 | `noValidate` | `false` | Skips native and wrapper validation.<br>**Type:** `boolean`. **HTML attribute:** `no-validate`. **Required:** No. |
-| `preventDefault` | `true` | Prevents native submit-event navigation when true.<br>**Type:** `boolean`. **HTML attribute:** `prevent-default`. **Required:** No. |
+| `preventDefault` | `true` | Keeps valid qSubmit event-only when true; false permits one uncanceled native delivery after readiness/validation.<br>**Type:** `boolean`. **HTML attribute:** `prevent-default`. **Required:** No. |
 | `reserveFeedback` | `undefined` | undefined inherits reservation; true publishes 1rem; false publishes 0px.<br>**Type:** `boolean`. **HTML attribute:** `reserve-feedback`. **Required:** No. |
 | `size` | `'inherit'` | Publishes control geometry for descendants; inherit returns to an ancestor or md fallback.<br>**Type:** `'inherit' \| 'sm' \| 'md' \| 'lg'`. **HTML attribute:** `size`. **Required:** No. |
 | `target` | `undefined` | Native submission browsing context.<br>**Type:** `'_self' \| '_blank' \| '_parent' \| '_top'`. **HTML attribute:** `target`. **Required:** No. |
@@ -228,11 +313,11 @@ Boolean attributes use Stencil coercion: presence/empty string is true, the lite
 | `qReset` | The inner native form dispatches reset. | `CustomEvent<QFormResetDetail>` |
 | `qSubmit` | A submit passes validation, or noValidate is true. | `CustomEvent<QFormSubmitDetail>` |
 
-All listed Stencil events bubble, cross shadow boundaries (`composed: true`), and are cancelable. The component handlers do not use the emitted event's canceled result to roll back state or automatically cancel the underlying native event. For forwarded MouseEvent details, the original event is available as `event.detail`.
+All listed Stencil events bubble, cross shadow boundaries (`composed: true`), and are cancelable. qReset cancellation cancels the underlying native reset. qSubmit cancellation stops native delivery or dialog closure. For forwarded MouseEvent details, the original event is available as `event.detail`.
 
 #### Event details
 
-`QFormSubmitDetail` contains `values: QFormValues`, `formData: FormData`, `form: HTMLFormElement`, and `originalEvent: Event`. `QFormResetDetail` contains `form` and `originalEvent`. qReset fires during the native reset event, before resetForm's final explicit value restoration; it does not include a values snapshot.
+`QFormSubmitDetail` contains `values: QFormValues`, `formData: FormData`, `form: HTMLFormElement`, and `originalEvent: Event`, plus optional `submitter: HTMLElement | null`. `QFormResetDetail` contains `form` and `originalEvent`. qReset fires once during native reset dispatch before restoration; cancel it synchronously to retain current values. It does not include a values snapshot.
 
 ### Methods
 
@@ -240,10 +325,12 @@ With the loader used above, first `await customElements.whenDefined("q-form");` 
 
 | Signature | Purpose | Returns |
 | :--- | :--- | :--- |
+| `checkValidity(): Promise<boolean>` | Checks current owned fields without displaying validation messages. | `boolean` |
 | `getValues(): Promise<QFormValues>` | Collects current values from named controls. | `QFormValues` |
-| `resetForm(): Promise<void>` | Resets native/known controls then reapplies values captured after first mount; qReset occurs during native reset. | `void` |
-| `setValues(values: QFormValues): Promise<void>` | Applies values by matching name; arrays use their first member; no input/change events are dispatched. | `void` |
-| `submitForm(): Promise<void>` | Requests native submission then awaits the wrapper's validation/submission task; invalid controls suppress qSubmit. | `void` |
+| `reportValidity(): Promise<boolean>` | Reports current owned constraints and returns aggregate validity. | `boolean` |
+| `resetForm(): Promise<void>` | Runs one cancelable reset and awaits restoration of native live defaults and field-owned initial defaults. | `void` |
+| `setValues(values: QFormValues): Promise<void>` | Applies typed partial updates to owned named fields, including disabled/readonly targets; repeated-field arrays map positionally with exact arity; no input/change events are dispatched. | `void` |
+| `submitForm(): Promise<void>` | Runs and awaits the guarded transaction without a submitter; invalid or canceled submissions never deliver. | `void` |
 
 #### Value records
 

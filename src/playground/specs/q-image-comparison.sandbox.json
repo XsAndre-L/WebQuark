@@ -1,0 +1,24 @@
+{
+  "name": "Image Comparison",
+  "tag": "q-image-comparison",
+  "props": {
+    "beforeSrc": { "type": "string", "default": "assets/comparison-before.svg", "desc": "Before image source" },
+    "afterSrc": { "type": "string", "default": "assets/comparison-after.svg", "desc": "After image source" },
+    "beforeAlt": { "type": "string", "default": "Illustrated workspace with a dark blue background", "desc": "Before image description" },
+    "afterAlt": { "type": "string", "default": "Illustrated workspace with a green background", "desc": "After image description" },
+    "beforeLabel": { "type": "string", "default": "Before", "desc": "Left caption" },
+    "afterLabel": { "type": "string", "default": "After", "desc": "Right caption" },
+    "aspectRatio": { "type": "number", "default": 1.7777777778, "desc": "Frame width / height" },
+    "position": { "type": "number", "default": 50, "desc": "Before reveal percentage" },
+    "ariaLabel": { "type": "string", "default": "Compare workspace illustrations", "desc": "Control name" }
+  },
+  "variants": [
+    { "name": "Half revealed", "props": { "position": 50 } },
+    { "name": "All Before", "props": { "position": 100 } },
+    { "name": "All After", "props": { "position": 0 } },
+    { "name": "Square frame", "props": { "aspectRatio": 1 } }
+  ],
+  "edgeCases": [
+    { "name": "Unavailable image", "props": { "afterSrc": "assets/missing-comparison.png" } }
+  ]
+}

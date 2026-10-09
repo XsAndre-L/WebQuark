@@ -34,7 +34,7 @@ Shared [foundation rules](../foundation.md) define inherited control sizes, layo
 
 ### `q-button`
 
-`q-button` runs an action or presents a destination as a button.
+`q-button` runs an action or presents a destination as a button. Reset uses cancelable native/logical ownership and inherited disabling; native submit transport remains limited.
 
 - [Authored guide](./q-button.md) · [Generated API](../../src/components/actions/button/readme.md)
 - Status: Implemented; see guide limitations.
@@ -90,7 +90,7 @@ Shared [foundation rules](../foundation.md) define inherited control sizes, layo
 
 ### `q-form`
 
-`q-form` collects and validates named controls while sharing field size and feedback spacing.
+`q-form` validates current owned fields, including unnamed fields, and collects canonical successful values with typed grouped assignment. Reset uses one cancelable native event and field-owned defaults; direct property updates and inherited disabling synchronize field participation. Submission cancels the original default before readiness, emits one cancelable qSubmit snapshot and, when preventDefault=false, delivers that approved FormData once. Native/q-button submitters and originating eligible Enter share ownership and cancellation; dialog submission requires an actual native dialog.
 
 - [Authored guide](./q-form.md) · [Generated API](../../src/components/inputs/form/readme.md)
 - Status: Implemented; see guide limitations.
@@ -107,6 +107,13 @@ Shared [foundation rules](../foundation.md) define inherited control sizes, layo
 `q-icon` renders registered SVG definitions or loads named remote/local icon assets.
 
 - [Authored guide](./q-icon.md) · [Generated API](../../src/components/media/icon/readme.md)
+- Status: Implemented; see guide limitations.
+
+### `q-image-comparison`
+
+`q-image-comparison` reveals Before from the left over a complete After image in a fixed aspect-ratio frame.
+
+- [Authored guide](./q-image-comparison.md) · [Generated API](../../src/components/media/image-comparison/readme.md)
 - Status: Implemented; see guide limitations.
 
 ### `q-inline`

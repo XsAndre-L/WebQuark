@@ -1,17 +1,16 @@
 import { existsSync, mkdirSync, readFileSync, realpathSync, renameSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
+import { projectPaths } from './paths';
 
 export const names = ['@webquark/core', '@webquark/angular', '@webquark/react'] as const;
 export type PackageName = typeof names[number];
 export interface SwitchConfig { version: 1; source: string; preferredVersion?: string; }
 export interface WebQuarkConfig { 'wq-switch'?: SwitchConfig; [key: string]: unknown; }
-export const configName = '.webquark.json';
-
 export function readWebQuarkConfig(root: string): WebQuarkConfig {
-  const file = join(root, configName);
+  const file = projectPaths(root).config;
   if (!existsSync(file)) return {};
   const value = json<unknown>(file);
-  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error(`Invalid ${configName}; expected a JSON object.`);
+  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error(`Invalid ${file}; expected a JSON object.`);
   return value as WebQuarkConfig;
 }
 
@@ -56,7 +55,7 @@ export function validateSource(source: string): string {
 export function sourceFor(root: string): string {
   const config = readSwitchConfig(root);
   if (!config) throw new Error('First run: wq-setup');
-  if (!config.source.trim()) throw new Error('Set source inside "wq-switch" in .webquark.json to your WebQuark repository, or run wq-setup --source "path/to/WebQuark".');
+  if (!config.source.trim()) throw new Error('Set source inside "wq-switch" in .webquark/.webquark.json to your WebQuark repository, or run wq-setup --source "path/to/WebQuark".');
   return validateSource(resolve(root, config.source));
 }
 export function selectedPackages(root: string): PackageName[] {

@@ -3,7 +3,8 @@ import { createRequire } from 'node:module';
 import { join, resolve } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { manifest, selectedPackages, type PackageName } from './config';
-import { assertActive, home, link, originalEntry, readState, within, type State } from './state';
+import { assertActive, link, originalEntry, readState, within, type State } from './state';
+import { projectPaths } from './paths';
 
 export function installed(name: string, from: string): string {
   const require = createRequire(join(from, 'package.json'));
@@ -28,7 +29,7 @@ export function stage(root: string, source: string): State {
     assertActive(previous);
     if (previous.source !== source || previous.entries.map(e => e.name).join() !== selected.join()) throw new Error('Source or selected dependencies changed. Run wq-switch npm before switching again.');
   }
-  const generation = join(home(root), 'packages', randomUUID());
+  const generation = join(projectPaths(root).packages, randomUUID());
   const targets = new Map<PackageName, string>();
   for (const name of selected) {
     const directory = name === '@webquark/core' ? source : join(source, 'packages', name.split('/')[1]);

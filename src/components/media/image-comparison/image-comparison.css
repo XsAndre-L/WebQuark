@@ -1,0 +1,124 @@
+:host {
+  display: block;
+  min-width: 0;
+  font-family: var(--q-font-family, inherit);
+}
+
+.frame {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--q-radius-md, 7px);
+  background: var(--q-bg-surface-2, #19243b);
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.frame.ready {
+  cursor: ew-resize;
+}
+
+.layer,
+.viewport {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.image {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  pointer-events: none;
+}
+
+.image.cropped {
+  max-width: none;
+  max-height: none;
+  object-fit: fill;
+}
+
+.before {
+  background: var(--q-bg-surface-2, #19243b);
+}
+
+.status {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--q-bg-surface-2, #19243b);
+  color: var(--q-fg-base, #f9fafb);
+  font-size: .875rem;
+}
+
+.decorations {
+  pointer-events: none;
+}
+
+.label {
+  position: absolute;
+  top: var(--q-space-sm, .5rem);
+  padding: var(--q-space-xs, .25rem) var(--q-space-sm, .5rem);
+  border-radius: var(--q-radius-sm, 4px);
+  background: var(--q-bg-surface-1, #111827);
+  color: var(--q-fg-base, #f9fafb);
+  font-size: .875rem;
+}
+
+.before-label {
+  left: var(--q-space-sm, .5rem);
+}
+
+.after-label {
+  right: var(--q-space-sm, .5rem);
+}
+
+.divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  transform: translateX(-50%);
+  background: var(--q-color-primary, #60a5fa);
+}
+
+.handle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--q-bg-surface-1, #111827);
+  color: var(--q-fg-base, #f9fafb);
+  border: 2px solid var(--q-color-primary, #60a5fa);
+  font-size: 24px;
+}
+
+/* One native keyboard/focus control; the frame owns pointer gestures. */
+.control {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  direction: ltr;
+}
+
+.frame:focus-within {
+  outline: var(--q-focus-ring, 2px solid var(--q-color-primary, #60a5fa));
+  outline-offset: 2px;
+}

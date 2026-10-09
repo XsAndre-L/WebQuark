@@ -35,6 +35,7 @@
 
   { "tag": "q-avatar"               , "name": "Avatar"               , "category": "media" },
   { "tag": "q-icon"                 , "name": "Icon"                 , "category": "media" },
+  { "tag": "q-image-comparison"     , "name": "Image Comparison"     , "category": "media" },
   { "tag": "q-reel"                 , "name": "Reel"                 , "category": "media" },
 
   { "tag": "q-dialog"               , "name": "Dialog"               , "category": "overlays" },

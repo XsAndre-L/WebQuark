@@ -1,11 +1,14 @@
 import { controlScope, type QControlSize } from '../../../theme/tokens';
 import { Component, Element, Event, EventEmitter, Host, Listen, Method, Prop, State, h } from '@stencil/core';
 import { handleEnterBehavior } from './internals/enter-behavior';
-import { getNamedControls, shouldSkipControl } from './internals/controls';
-import { applyValues, collectValues, createFormData, resetValues } from './internals/values';
+import { awaitFormControls, getFormControls } from './internals/controls';
+import { validateField } from './internals/field-state';
+import { applyValues, collectFormState, collectValues } from './internals/values';
+import { reconcileControls, resetLogicalControls } from './internals/reset';
+import { dispatchFormSubmit, isSubmitAction, readSubmitActivation, scheduleSubmitAction, setFormSubmitting, submitOwner, submitterNoValidate, type SubmitActivation } from '../../../utils/form-submit-action';
+import { cancelSubmitAndAwaitDispatch, closeSubmissionDialog, deliverForm, normalizedMethod, submissionSettings, submitterFields } from './internals/submission';
+import { awaitResetActions, scheduleResetAction } from '../../../utils/form-reset-action';
 import type {
-  NamedFormControl,
-  QFormAction,
   QFormAutocomplete,
   QFormEnctype,
   QFormEnterBehavior,
@@ -20,7 +23,7 @@ let formIds = 0;
 
 /**
  * Form wrapper that bridges slotted WebQuark controls to a native form element.
- * Named controls in the light DOM and assigned slots participate in validation,
+ * Supported controls in the light DOM and native associations participate in validation,
  * value collection, reset, and `FormData`. Controls hidden inside a
  * consumer-owned nested shadow root are outside this explicit boundary.
  *
@@ -77,17 +80,23 @@ export class QForm {
   private formEl?: HTMLFormElement;
   private headerSlot?: HTMLSlotElement;
   private actionsSlot?: HTMLSlotElement;
-  private handledButtonClicks = new WeakSet<Event>();
   private readonly titleId = `q-form-title-${++formIds}`;
-  private initialValues: QFormValues = {};
+  private resetTask?: Promise<void>;
+  private resetRequest?: Promise<void>;
   private submitTask?: Promise<void>;
+  private submitGeneration = 0;
+  private submitAbort?: AbortController;
 
   // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
   componentDidLoad() {
     this.updateHeaderSlotState();
     this.updateActionsSlotState();
-    this.initialValues = collectValues(this.formEl, this.el);
+  }
+
+  disconnectedCallback() {
+    this.submitGeneration++;
+    this.submitAbort?.abort();
   }
 
   // ============================ [4] EXPOSED METHODS ============================
@@ -95,51 +104,79 @@ export class QForm {
   /** Returns values collected from named native and WebQuark form controls. */
   @Method()
   async getValues(): Promise<QFormValues> {
+    await awaitFormControls(this.formEl, this.el);
+    await awaitResetActions(this.el);
+    await (this.resetRequest ?? this.resetTask);
     return collectValues(this.formEl, this.el);
   }
 
   /** Applies values to matching named native and WebQuark form controls. */
   @Method()
   async setValues(values: QFormValues): Promise<void> {
+    await awaitFormControls(this.formEl, this.el);
+    await awaitResetActions(this.el);
+    await (this.resetRequest ?? this.resetTask);
     applyValues(this.formEl, this.el, values);
   }
 
   /** Resets the native form and associated controls. */
   @Method()
   async resetForm(): Promise<void> {
-    if (!this.formEl) return;
-
-    const nativeReset = HTMLFormElement.prototype.reset;
-    if (typeof nativeReset === 'function') {
-      nativeReset.call(this.formEl);
-    } else {
-      this.formEl.dispatchEvent(new globalThis.Event('reset', { bubbles: true, cancelable: true }));
+    if (this.resetRequest) return this.resetRequest;
+    if (this.resetTask) return this.resetTask;
+    const request = this.performReset();
+    this.resetRequest = request;
+    try {
+      await request;
+    } finally {
+      if (this.resetRequest === request) this.resetRequest = undefined;
     }
+  }
 
-    resetValues(this.formEl, this.el);
-    applyValues(this.formEl, this.el, this.initialValues);
+  /** Checks current owned fields without displaying validation messages. */
+  @Method()
+  async checkValidity(): Promise<boolean> {
+    return this.reportControlValidity(false);
+  }
+
+  /** Reports current owned field constraints and returns aggregate validity. */
+  @Method()
+  async reportValidity(): Promise<boolean> {
+    return this.reportControlValidity(true);
   }
 
   /** Requests native form submission, falling back to dispatching a submit event. */
   @Method()
   async submitForm(): Promise<void> {
-    this.requestSubmit();
+    if (!this.submitTask) this.requestSubmit();
     await this.submitTask;
   }
 
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
-  @Listen('click')
-  handleComposedClick(ev: MouseEvent) {
-    this.handleComposedFormAction(ev, ev);
+  private async performReset(): Promise<void> {
+    await awaitFormControls(this.formEl, this.el);
+    if (this.resetTask) return this.resetTask;
+    if (!this.formEl) return;
+    reconcileControls(this.formEl, this.el);
+
+    const nativeReset = this.formEl.ownerDocument.defaultView!.HTMLFormElement.prototype.reset;
+    nativeReset.call(this.formEl);
+    await this.resetTask;
   }
 
-  @Listen('qClick')
-  handleButtonClick(ev: CustomEvent<MouseEvent>) {
-    // q-button forwards its original MouseEvent in qClick.detail; the WeakSet prevents the host click listener from handling it twice.
-    if (ev.detail && this.handledButtonClicks.has(ev.detail)) return;
-    if (ev.detail) this.handledButtonClicks.add(ev.detail);
-    this.handleComposedFormAction(ev, ev);
+  @Listen('click')
+  handleComposedClick(ev: MouseEvent) {
+    const action = ev.composedPath().find(target => target instanceof HTMLButtonElement || target instanceof HTMLInputElement) as HTMLButtonElement | HTMLInputElement | undefined;
+    // Read native image offsetX/Y inside its own shadow tree. Outside that tree
+    // the click is retargeted to q-form and offsets are relative to the host.
+    if (action?.getRootNode() === this.formEl?.getRootNode() && ev.currentTarget === this.el) return;
+    if (action?.type === 'reset') {
+      if (!action.form && !action.hasAttribute('form')) scheduleResetAction(action, ev);
+      return;
+    }
+    // q-button owns its bridge, including cancellation of qClick and late click listeners.
+    if (action && !ev.composedPath().some(target => target instanceof HTMLElement && target.tagName === 'Q-BUTTON')) scheduleSubmitAction(action, ev);
   }
 
   @Listen('keydown')
@@ -154,48 +191,7 @@ export class QForm {
   }
 
   private requestSubmit() {
-    if (!this.formEl) return;
-
-    if (typeof this.formEl.requestSubmit === 'function') {
-      this.formEl.requestSubmit();
-      return;
-    }
-
-    this.dispatchSubmitEvent();
-  }
-
-  private handleComposedFormAction(ev: Event, sourceEvent: Event) {
-    if (this.handledButtonClicks.has(sourceEvent)) return;
-
-    const action = this.getFormActionFromComposedPath(sourceEvent.composedPath());
-    if (!action || !this.formEl) return;
-
-    this.handledButtonClicks.add(sourceEvent);
-    ev.preventDefault();
-
-    if (action === 'reset') {
-      this.formEl.reset();
-      return;
-    }
-
-    this.dispatchSubmitEvent();
-  }
-
-  private dispatchSubmitEvent() {
-    this.formEl?.dispatchEvent(new globalThis.Event('submit', { bubbles: true, cancelable: true }));
-  }
-
-  private getFormActionFromComposedPath(path: EventTarget[]): QFormAction | undefined {
-    for (const target of path) {
-      if (!(target instanceof HTMLElement)) continue;
-      if (target.tagName.toLowerCase() !== 'q-button') continue;
-
-      const control = target as NamedFormControl;
-      const type = (control.type || target.getAttribute('type') || '').toLowerCase();
-      if (type === 'submit' || type === 'reset') return type;
-    }
-
-    return undefined;
+    if (this.formEl) dispatchFormSubmit(this.formEl);
   }
 
   private handleHeaderSlotChange = () => {
@@ -225,69 +221,103 @@ export class QForm {
   }
 
   private handleSubmit = (ev: Event): void => {
-    this.submitTask = this.processSubmit(ev);
-  };
-
-  private async processSubmit(ev: Event): Promise<void> {
-    if (this.preventDefault) {
+    if (ev.target !== this.formEl) return;
+    if (ev.defaultPrevented || this.submitTask || !this.formEl) {
       ev.preventDefault();
-    }
-
-    if (!this.noValidate && !(await this.reportControlValidity())) {
       return;
     }
+    // Cancels synchronously and observes later native submit listener calls.
+    const dispatch = cancelSubmitAndAwaitDispatch(ev);
+    const form = this.formEl;
+    const generation = this.submitGeneration;
+    const activation = readSubmitActivation(ev);
+    const abort = new AbortController();
+    this.submitAbort = abort;
+    setFormSubmitting(form, true);
+    const task = this.processSubmit(ev, form, generation, activation, abort.signal, dispatch);
+    this.submitTask = task;
+    void task.catch(error => console.error(error));
+    void task.finally(() => {
+      if (this.submitTask === task) this.submitTask = undefined;
+      if (this.submitAbort === abort) this.submitAbort = undefined;
+      setFormSubmitting(form, false);
+    }).catch(() => {});
+  };
 
-    if (!this.formEl) return;
-
-    const formData = createFormData(this.formEl, this.el);
-
-    this.qSubmit.emit({
-      values: collectValues(this.formEl, this.el, formData),
-      formData,
-      form: this.formEl,
-      originalEvent: ev,
-    });
+  private currentSubmission(form: HTMLFormElement, generation: number, activation: SubmitActivation): boolean {
+    if (!this.el.isConnected || this.formEl !== form || this.submitGeneration !== generation) return false;
+    const submitter = activation.submitter;
+    return !submitter || (submitter.isConnected && isSubmitAction(submitter) && [form, this.el].includes(submitOwner(submitter)!));
   }
 
-  private async reportControlValidity(): Promise<boolean> {
-    if (
-      this.formEl &&
-      typeof this.formEl.reportValidity === 'function' &&
-      !this.formEl.reportValidity()
-    ) {
-      return false;
+  private async processSubmit(ev: Event, form: HTMLFormElement, generation: number, activation: SubmitActivation, signal: AbortSignal, dispatch: Promise<boolean>): Promise<void> {
+    if (await dispatch) return;
+    await awaitFormControls(form, this.el, signal);
+    await awaitResetActions(this.el);
+    await (this.resetRequest ?? this.resetTask);
+    if (!this.currentSubmission(form, generation, activation)) return;
+    reconcileControls(form, this.el);
+    if (!this.noValidate && !submitterNoValidate(activation.submitter)) {
+      for (const control of getFormControls(form, this.el)) if (!validateField(control, true)) return;
     }
+    if (!this.currentSubmission(form, generation, activation)) return;
+    const { values, formData } = collectFormState(form, this.el, submitterFields(activation));
+    const settings = submissionSettings({ action: this.action, method: this.method, enctype: this.enctype, target: this.target }, activation.submitter);
+    const emitted = this.qSubmit.emit({ values, formData, form, originalEvent: ev, submitter: activation.submitter });
+    if (emitted.defaultPrevented || this.preventDefault || !this.currentSubmission(form, generation, activation)) return;
+    if (normalizedMethod(form, settings.method) === 'dialog') closeSubmissionDialog(this.el, activation);
+    else deliverForm(form, formData, settings);
+  }
 
-    const controls = getNamedControls(this.formEl, this.el);
-    for (const control of controls) {
-      const validate =
-        typeof control.reportValidity === 'function'
-          ? control.reportValidity
-          : control.checkValidity;
-
-      if (
-        control.disabled ||
-        shouldSkipControl(control) ||
-        typeof validate !== 'function'
-      ) {
-        continue;
-      }
-
-      if (!(await validate.call(control))) {
-        return false;
-      }
+  private async reportControlValidity(report = true): Promise<boolean> {
+    await awaitFormControls(this.formEl, this.el);
+    await awaitResetActions(this.el);
+    await (this.resetRequest ?? this.resetTask);
+    if (this.formEl) reconcileControls(this.formEl, this.el);
+    for (const control of getFormControls(this.formEl, this.el)) {
+      if (!validateField(control, report)) return false;
     }
-
     return true;
   }
 
   private handleReset = (ev: Event) => {
     if (!this.formEl) return;
-
-    this.qReset.emit({
+    if (this.resetTask) {
+      ev.preventDefault();
+      return;
+    }
+    const form = this.formEl;
+    let complete!: () => void;
+    let fail!: (reason: unknown) => void;
+    const task = new Promise<void>((resolve, reject) => {
+      complete = resolve;
+      fail = reject;
+    });
+    this.resetTask = task;
+    const emitted = this.qReset.emit({
       form: this.formEl,
       originalEvent: ev,
     });
+    if (emitted.defaultPrevented) ev.preventDefault();
+    // Native reset dispatch can flush microtasks before later listeners run.
+    // Preserve resetTask while waiting for their final cancellation decision.
+    setTimeout(async () => {
+      try {
+        if (!ev.defaultPrevented && this.el.isConnected) {
+          await awaitFormControls(form, this.el);
+          if (!ev.defaultPrevented && this.el.isConnected && this.formEl === form) {
+            resetLogicalControls(form, this.el);
+            reconcileControls(form, this.el);
+          }
+        }
+        complete();
+      } catch (error) {
+        fail(error);
+      } finally {
+        if (this.resetTask === task) this.resetTask = undefined;
+      }
+    }, 0);
+    void task.catch(error => console.error(error));
   };
 
   // ===================== [6] RENDER (Visual Template Only) =====================
@@ -318,6 +348,10 @@ export class QForm {
           aria-label={formAriaLabel}
           part="form"
           onSubmit={this.handleSubmit}
+          onClick={(ev) => {
+            const image = ev.target;
+            if (image instanceof HTMLInputElement && image.type === 'image' && image.getRootNode() === this.formEl?.getRootNode()) this.handleComposedClick(ev);
+          }}
           onReset={this.handleReset}
         >
           <div class="form-body" part="body">

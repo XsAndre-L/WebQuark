@@ -5,6 +5,22 @@ import type { QMapMarker } from '../map.types';
 import { getMapMarkerKey, getMapMarkers } from '../internals/markers';
 
 describe('q-map marker normalization', () => {
+  it('retains image geometry for array and JSON input without accepting malformed pairs', () => {
+    const marker: QMapMarker = {
+      id: 'pin', latitude: 0, longitude: 0, label: 'Pin', kind: 'image',
+      imageUrl: 'https://example.test/pin.png', imageSize: [25, 41], imageAnchor: [0, 41],
+    };
+    expect(getMapMarkers([marker])[0]).toMatchObject(marker);
+    expect(getMapMarkers(JSON.stringify([marker]))[0]).toMatchObject(marker);
+
+    const invalid = getMapMarkers(JSON.stringify([
+      { ...marker, imageSize: [0, 41], imageAnchor: [null, 0] },
+    ]))[0];
+    expect(invalid).not.toHaveProperty('imageSize');
+    expect(invalid).not.toHaveProperty('imageAnchor');
+    expect(getMapMarkers([{ ...marker, imageUrl: '' }])[0].kind).toBe('dot');
+  });
+
   it('keeps numeric and string IDs type-stable', () => {
     expect(getMapMarkerKey(1)).toBe('number:1');
     expect(getMapMarkerKey('1')).toBe('string:1');

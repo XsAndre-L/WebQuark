@@ -2,6 +2,7 @@ export type DataTableItem = unknown;
 export type DataTableKey = unknown;
 export type DataTableSortDirection = 'asc' | 'desc';
 export type DataTableSortMode = 'table' | 'external';
+export type DataTableRowGutter = 'none' | 'blank' | 'numbers' | 'custom';
 export type DataTableColumnSticky = 'start';
 export type DataTableCellClassName<T = unknown> =
   | string
@@ -20,6 +21,8 @@ export interface TableColumn<T = unknown> {
   width?: string;
   className?: string;
   cellClassName?: DataTableCellClassName<T>;
+  /** Shows full plain text on hover/focus only when two-line text is truncated. */
+  overflowTooltip?: boolean;
   sticky?: DataTableColumnSticky;
   sortable?: boolean;
   sortKey?: string;

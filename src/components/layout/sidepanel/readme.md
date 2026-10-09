@@ -73,6 +73,7 @@ Drawer, persistent panel, or hierarchical navigation side panel.
 | `"header"`                     | Header region.                                                            |
 | `"item-badge"`                 | Navigation item's optional count badge.                                   |
 | `"panel"`                      | Persistent panel surface.                                                 |
+| `"surface"`                    | Stable inner content surface for persistent panels.                       |
 
 
 ## Dependencies

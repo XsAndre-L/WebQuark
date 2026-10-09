@@ -1,4 +1,8 @@
-import { Build, Component, Prop, Element, State, Event, EventEmitter, Mixin, Watch, h } from '@stencil/core';
+import { registerSubmitOwner, scheduleSubmitAction } from '../../../utils/form-submit-action';
+import type { QFormEnctype, QFormMethod } from '../../inputs/form/form.types';
+import { isFieldDisabled, syncFieldHost, syncNativeAttribute } from '../../../utils/form-field-state';
+import { scheduleResetAction } from '../../../utils/form-reset-action';
+import { AttachInternals, Build, Component, Prop, Element, State, Event, EventEmitter, Mixin, Watch, h } from '@stencil/core';
 import type { QIconName } from '../../media/icon/icon.types';
 import { withActionProps } from '../action.props';
 import type { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant } from './button.types';
@@ -15,6 +19,7 @@ import { shouldWarnForMissingButtonAccessibleName } from './button.utils';
  */
 @Component({
   tag: 'q-button',
+  formAssociated: true,
   styleUrl: 'button.css',
   shadow: {
     delegatesFocus: true,
@@ -23,6 +28,7 @@ import { shouldWarnForMissingButtonAccessibleName } from './button.utils';
 export class QButton extends Mixin(withActionProps) {
   // ======== [1] STENCIL API (Props, Events, AttachInternals, Elements) =========
   @Element() el!: HTMLElement;
+  @AttachInternals() internals!: ElementInternals;
 
   /** Lucide icon rendered before the label. Use icon slots for custom content. */
   @Prop() icon?: QIconName;
@@ -30,6 +36,8 @@ export class QButton extends Mixin(withActionProps) {
   @Prop({ reflect: true }) iconOnly?: boolean;
   /** Required when an icon-only button has no accessible text. */
   @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;
+  /** Successful submission value when this button is the submitter. */
+  @Prop() value: string = '';
 
   @Prop() variant: QButtonVariant = 'primary';
   @Prop() size: QButtonSize = 'inherit';
@@ -44,6 +52,20 @@ export class QButton extends Mixin(withActionProps) {
   @Prop() target?: string;
   /** Applied to the native `<button>` when `href` is unset. */
   @Prop() type: QButtonType = 'button';
+  /** Successful submission name when this button is the submitter. */
+  @Prop({ reflect: true }) name?: string;
+  /** Explicit native form ID in this tree; unresolved IDs do not fall back. */
+  @Prop({ reflect: true }) form?: string;
+  /** Overrides the owning form's action for this submission. */
+  @Prop({ attribute: 'formaction' }) formAction?: string;
+  /** Overrides the owning form's method for this submission. */
+  @Prop({ attribute: 'formmethod' }) formMethod?: QFormMethod;
+  /** Overrides the owning form's encoding for this submission. */
+  @Prop({ attribute: 'formenctype' }) formEnctype?: QFormEnctype;
+  /** Overrides the owning form's browsing context for this submission. */
+  @Prop({ attribute: 'formtarget' }) formTarget?: string;
+  /** Skips validation for this submitter while retaining cancellation and collection. */
+  @Prop({ attribute: 'formnovalidate', reflect: true }) formNoValidate: boolean = false;
 
   /** Emitted on activation unless disabled or loading. */
   @Event() qClick!: EventEmitter<MouseEvent>;
@@ -53,8 +75,41 @@ export class QButton extends Mixin(withActionProps) {
   // ========================= [2] INTERNAL STATE & REFS =========================
 
   @State() autoIconOnly: boolean = false;
+  @State() private defaultSlotIcon: boolean = false;
 
   private hasWarnedMissingAccessibleName = false;
+  @State() private disabledState = false;
+  private get isDisabled(): boolean {
+    return isFieldDisabled(this.el, this.disabled);
+  }
+
+  private syncButtonState() {
+    const disabled = syncFieldHost(this.el, this.disabled, this.name);
+    syncNativeAttribute(this.el, 'form', this.form);
+    registerSubmitOwner(this.el, () => this.internals?.form ?? null);
+    if (this.disabledState !== disabled) this.disabledState = disabled;
+    const button = this.el.shadowRoot?.querySelector('button');
+    if (button) button.disabled = disabled || this.loading;
+    const anchor = this.el.shadowRoot?.querySelector('a');
+    if (anchor) {
+      const unavailable = disabled || this.loading;
+      anchor.setAttribute('aria-disabled', String(unavailable));
+      if (unavailable) anchor.tabIndex = -1;
+      else anchor.removeAttribute('tabindex');
+    }
+  }
+
+  formDisabledCallback() {
+    this.syncButtonState();
+  }
+  componentDidRender() { this.syncButtonState(); }
+  @Watch('disabled')
+  @Watch('loading')
+  @Watch('name')
+  @Watch('form')
+  watchDisabled() {
+    this.syncButtonState();
+  }
 
   // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
@@ -77,6 +132,7 @@ export class QButton extends Mixin(withActionProps) {
   // =================== [5] EVENT HANDLERS & INTERNAL METHODS ===================
 
   private checkIconOnly = () => {
+    this.defaultSlotIcon = this.hasDefaultSlotIcon();
     const text = this.getVisibleText();
     const hasIcon = this.hasShortcutIcon() ||
                     this.el.querySelector('q-icon') !== null ||
@@ -91,15 +147,16 @@ export class QButton extends Mixin(withActionProps) {
   };
 
   private getVisibleText(): string {
-    return Array.from(this.el.childNodes)
-      .filter(node => {
-        if (node.nodeType !== 1) return true;
-        const slot = (node as HTMLElement).slot;
-        return slot !== 'icon-left' && slot !== 'icon-right';
-      })
+    return this.getDefaultSlotNodes()
       .map(node => node.textContent || '')
       .join('')
       .trim();
+  }
+
+  private getDefaultSlotNodes(): Node[] {
+    return Array.from(this.el.childNodes).filter(node =>
+      node.nodeType === 3 || (node.nodeType === 1 && !(node as HTMLElement).slot),
+    );
   }
 
   private getShortcutIcon(): QIconName | undefined {
@@ -119,7 +176,9 @@ export class QButton extends Mixin(withActionProps) {
   }
 
   private hasDefaultSlotIcon(): boolean {
-    return this.el.querySelector('q-icon:not([slot])') !== null;
+    return this.getDefaultSlotNodes().some(node => node.nodeType === 1 && (
+      (node as HTMLElement).matches('q-icon') || (node as HTMLElement).querySelector('q-icon') !== null
+    ));
   }
 
   private warnForMissingAccessibleName() {
@@ -138,12 +197,14 @@ export class QButton extends Mixin(withActionProps) {
   }
 
   private handleClick = (e: MouseEvent) => {
-    if (this.disabled || this.loading) {
+    if (this.isDisabled || this.loading) {
       e.preventDefault();
       e.stopPropagation();
       return;
     }
-    this.qClick.emit(e);
+    const emitted = this.qClick.emit(e);
+    if (this.type === 'submit' && !this.href) scheduleSubmitAction(this.el, e, emitted);
+    if (this.type === 'reset' && !this.href) scheduleResetAction(this.el, e, emitted, () => this.internals?.form ?? null);
   };
 
   private handleFocus = (ev: FocusEvent) => {
@@ -163,11 +224,10 @@ export class QButton extends Mixin(withActionProps) {
 
   render() {
     const isLink = this.href !== undefined && this.href !== null && this.href !== '';
-    const isBtnDisabled = this.disabled || this.loading;
+    const isBtnDisabled = this.isDisabled || this.loading;
     const isIcon = this.iconOnly !== undefined ? this.iconOnly : this.autoIconOnly;
     const shortcutIcon = this.getShortcutIcon();
     const ariaLabel = this.ariaLabel?.trim() || undefined;
-    const hasDefaultSlotIcon = this.hasDefaultSlotIcon();
 
     const classes = {
       'btn': true,
@@ -186,7 +246,7 @@ export class QButton extends Mixin(withActionProps) {
         <slot name="icon-left" onSlotchange={this.handleSlotChange}>
           {shortcutIcon && <q-icon name={shortcutIcon} size="var(--_q-control-icon)" part="icon" />}
         </slot>
-        <span class={{ 'btn-label': true, 'has-default-slot-icon': hasDefaultSlotIcon }}>
+        <span class={{ 'btn-label': true, 'has-default-slot-icon': this.defaultSlotIcon }}>
           <slot onSlotchange={this.handleSlotChange} />
         </span>
         <slot name="icon-right" onSlotchange={this.handleSlotChange} />
@@ -232,4 +292,3 @@ export class QButton extends Mixin(withActionProps) {
     );
   }
 }
-
