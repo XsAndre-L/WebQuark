@@ -303,6 +303,8 @@ export const DEFAULT_PROP_ORDER_CONFIG: PropOrderConfig = {
     { scope: 'q-image-comparison', prop: 'afterSrc', group: 'content-data-identity' },
     { scope: 'q-image-comparison', prop: 'beforeLabel', group: 'content-data-identity' },
     { scope: 'q-image-comparison', prop: 'afterLabel', group: 'content-data-identity' },
+    { scope: 'q-image-comparison', prop: 'beforeCrop', group: 'appearance-layout' },
+    { scope: 'q-image-comparison', prop: 'afterCrop', group: 'appearance-layout' },
     { scope: 'q-image-comparison', prop: 'aspectRatio', group: 'appearance-layout' },
     { scope: 'q-image-comparison', prop: 'position', group: 'state-status' },
     { scope: 'q-image-comparison', prop: 'beforeAlt', group: 'accessibility' },

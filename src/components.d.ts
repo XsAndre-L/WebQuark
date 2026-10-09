@@ -20,6 +20,7 @@ import { QConversationBubbleVariant } from "./components/communication/conversat
 import { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableRowGutter, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
 import { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
 import { DropdownOptionInput, Option, QDropdownPlacement, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
+import { ImageCrop } from "./utils/image-crop";
 import { QInputSize, QInputType } from "./components/inputs/input/input.types";
 import { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
 import { QMapBoundsInput, QMapClickDetail, QMapClusterSelectDetail, QMapErrorDetail, QMapFitMarkersOptions, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapMarkerVisibilityResult, QMapProvider, QMapRasterTileLoadingPolicy, QMapStatusChangeDetail, QMapViewportRect } from "./components/data-display/map/map.types";
@@ -58,6 +59,7 @@ export { QConversationBubbleVariant } from "./components/communication/conversat
 export { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableRowGutter, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
 export { QDialogBackdropEffect } from "./components/overlays/dialog/dialog.types";
 export { DropdownOptionInput, Option, QDropdownPlacement, QDropdownSize } from "./components/inputs/dropdown/dropdown.types";
+export { ImageCrop } from "./utils/image-crop";
 export { QInputSize, QInputType } from "./components/inputs/input/input.types";
 export { QLinkTarget, QLinkUnderline, QLinkVariant } from "./components/actions/link/link.types";
 export { QMapBoundsInput, QMapClickDetail, QMapClusterSelectDetail, QMapErrorDetail, QMapFitMarkersOptions, QMapGoogleMapType, QMapMarkerId, QMapMarkerInput, QMapMarkerSelectDetail, QMapMarkerVisibilityResult, QMapProvider, QMapRasterTileLoadingPolicy, QMapStatusChangeDetail, QMapViewportRect } from "./components/data-display/map/map.types";
@@ -909,7 +911,7 @@ export namespace Components {
         "size": QIconSize;
     }
     /**
-     * Compare two complete images in a stable frame by revealing Before from the left.
+     * Compare independently framed images by revealing Before from the left.
      */
     interface QImageComparison {
         /**
@@ -917,6 +919,10 @@ export namespace Components {
           * @default ''
          */
         "afterAlt": string;
+        /**
+          * Source-percentage rectangle selected from After; omitted means the full image.
+         */
+        "afterCrop"?: ImageCrop;
         /**
           * Caption for the right image.
           * @default 'After'
@@ -933,15 +939,18 @@ export namespace Components {
          */
         "ariaLabel": string;
         /**
-          * Positive width / height ratio; invalid values use 16 / 9.
-          * @default 16 / 9
+          * Positive frame width / height ratio. Omitted derives from partial After, then Before, otherwise 16 / 9; invalid values use 16 / 9.
          */
-        "aspectRatio": number;
+        "aspectRatio"?: number;
         /**
           * Accessible description of the Before image.
           * @default ''
          */
         "beforeAlt": string;
+        /**
+          * Source-percentage rectangle selected from Before; omitted means the full image.
+         */
+        "beforeCrop"?: ImageCrop;
         /**
           * Caption for the left image.
           * @default 'Before'
@@ -2571,7 +2580,7 @@ declare global {
         "qChange": number;
     }
     /**
-     * Compare two complete images in a stable frame by revealing Before from the left.
+     * Compare independently framed images by revealing Before from the left.
      */
     interface HTMLQImageComparisonElement extends Components.QImageComparison, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQImageComparisonElementEventMap>(type: K, listener: (this: HTMLQImageComparisonElement, ev: QImageComparisonCustomEvent<HTMLQImageComparisonElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -3946,7 +3955,7 @@ declare namespace LocalJSX {
         "size"?: QIconSize;
     }
     /**
-     * Compare two complete images in a stable frame by revealing Before from the left.
+     * Compare independently framed images by revealing Before from the left.
      */
     interface QImageComparison {
         /**
@@ -3954,6 +3963,10 @@ declare namespace LocalJSX {
           * @default ''
          */
         "afterAlt"?: string;
+        /**
+          * Source-percentage rectangle selected from After; omitted means the full image.
+         */
+        "afterCrop"?: ImageCrop;
         /**
           * Caption for the right image.
           * @default 'After'
@@ -3970,8 +3983,7 @@ declare namespace LocalJSX {
          */
         "ariaLabel"?: string;
         /**
-          * Positive width / height ratio; invalid values use 16 / 9.
-          * @default 16 / 9
+          * Positive frame width / height ratio. Omitted derives from partial After, then Before, otherwise 16 / 9; invalid values use 16 / 9.
          */
         "aspectRatio"?: number;
         /**
@@ -3979,6 +3991,10 @@ declare namespace LocalJSX {
           * @default ''
          */
         "beforeAlt"?: string;
+        /**
+          * Source-percentage rectangle selected from Before; omitted means the full image.
+         */
+        "beforeCrop"?: ImageCrop;
         /**
           * Caption for the left image.
           * @default 'Before'
@@ -5887,7 +5903,7 @@ declare module "@stencil/core" {
              */
             "q-icon": LocalJSX.IntrinsicElements["q-icon"] & JSXBase.HTMLAttributes<HTMLQIconElement>;
             /**
-             * Compare two complete images in a stable frame by revealing Before from the left.
+             * Compare independently framed images by revealing Before from the left.
              */
             "q-image-comparison": LocalJSX.IntrinsicElements["q-image-comparison"] & JSXBase.HTMLAttributes<HTMLQImageComparisonElement>;
             /**

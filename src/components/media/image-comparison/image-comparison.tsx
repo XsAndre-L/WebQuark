@@ -1,6 +1,15 @@
 import { Component, Event, EventEmitter, h, Prop, State, Watch } from '@stencil/core';
+import { calculateImageCropGeometry, hasPartialImageCrop, isImageCropValid, type ImageCrop, type ImageCropBox } from '../../../utils/image-crop';
 
-/** Compare two complete images in a stable frame by revealing Before from the left. */
+/**
+ * Compare independently framed images by revealing Before from the left.
+ * @part after-image - Complete After image, uniformly scaled inside its viewport.
+ * @part before-image - Complete Before image, uniformly scaled inside its viewport.
+ * @part after-layer - Full-frame After layer.
+ * @part before-layer - Full-frame Before reveal plane.
+ * @part after-viewport - Centered clip for the selected After region.
+ * @part before-viewport - Centered clip for the selected Before region.
+ */
 @Component({ tag: 'q-image-comparison', styleUrl: 'image-comparison.css', shadow: true })
 export class QImageComparison {
   /** Source of the image revealed on the left. */
@@ -12,8 +21,12 @@ export class QImageComparison {
   /** Caption for the right image. */
   @Prop() afterLabel: string = 'After';
 
-  /** Positive width / height ratio; invalid values use 16 / 9. */
-  @Prop() aspectRatio: number = 16 / 9;
+  /** Source-percentage rectangle selected from Before; omitted means the full image. */
+  @Prop() beforeCrop?: ImageCrop;
+  /** Source-percentage rectangle selected from After; omitted means the full image. */
+  @Prop() afterCrop?: ImageCrop;
+  /** Positive frame width / height ratio. Omitted derives from partial After, then Before, otherwise 16 / 9; invalid values use 16 / 9. */
+  @Prop() aspectRatio?: number;
 
   /** Percentage of Before revealed, clamped to 0–100. */
   @Prop({ mutable: true }) position: number = 50;
@@ -30,6 +43,8 @@ export class QImageComparison {
 
   @State() private beforeStatus: 'loading' | 'loaded' | 'error' = 'loading';
   @State() private afterStatus: 'loading' | 'loaded' | 'error' = 'loading';
+  @State() private beforeDimensions?: { width: number; height: number };
+  @State() private afterDimensions?: { width: number; height: number };
   private generation = 0;
   private frame?: HTMLDivElement;
   private range?: HTMLInputElement;
@@ -51,6 +66,15 @@ export class QImageComparison {
     this.generation++;
     this.beforeStatus = 'loading';
     this.afterStatus = 'loading';
+    this.beforeDimensions = undefined;
+    this.afterDimensions = undefined;
+    this.endPointer();
+  }
+
+  @Watch('beforeCrop')
+  @Watch('afterCrop')
+  @Watch('aspectRatio')
+  resetGesture() {
     this.endPointer();
   }
 
@@ -59,13 +83,40 @@ export class QImageComparison {
   }
 
   private get ready() {
-    return this.beforeStatus === 'loaded' && this.afterStatus === 'loaded';
+    return !!this.beforeSrc && !!this.afterSrc
+      && this.beforeStatus === 'loaded' && this.afterStatus === 'loaded'
+      && !this.cropUnavailable;
   }
 
-  private imageResult(side: 'before' | 'after', generation: number, source: string, loaded: boolean) {
+  private get cropUnavailable() {
+    return (this.beforeCrop !== undefined && (!isImageCropValid(this.beforeCrop)
+      || (this.beforeStatus === 'loaded' && !this.beforeDimensions)))
+      || (this.afterCrop !== undefined && (!isImageCropValid(this.afterCrop)
+        || (this.afterStatus === 'loaded' && !this.afterDimensions)));
+  }
+
+  private get frameRatio() {
+    if (this.aspectRatio !== undefined) return Number.isFinite(this.aspectRatio) && this.aspectRatio > 0 ? this.aspectRatio : 16 / 9;
+    const afterPartial = hasPartialImageCrop(this.afterCrop);
+    const crop = afterPartial ? this.afterCrop : this.beforeCrop;
+    const dimensions = afterPartial ? this.afterDimensions : this.beforeDimensions;
+    return hasPartialImageCrop(crop) && dimensions
+      ? calculateImageCropGeometry(dimensions.width, dimensions.height, crop)?.aspectRatio ?? 16 / 9
+      : 16 / 9;
+  }
+
+  private imageResult(side: 'before' | 'after', generation: number, source: string, loaded: boolean, image?: HTMLImageElement) {
     if (generation !== this.generation || source !== (side === 'before' ? this.beforeSrc : this.afterSrc)) return;
-    if (side === 'before') this.beforeStatus = loaded ? 'loaded' : 'error';
-    else this.afterStatus = loaded ? 'loaded' : 'error';
+    const dimensions = loaded && image && Number.isFinite(image.naturalWidth) && image.naturalWidth > 0
+      && Number.isFinite(image.naturalHeight) && image.naturalHeight > 0
+      ? { width: image.naturalWidth, height: image.naturalHeight } : undefined;
+    if (side === 'before') {
+      this.beforeDimensions = dimensions;
+      this.beforeStatus = loaded ? 'loaded' : 'error';
+    } else {
+      this.afterDimensions = dimensions;
+      this.afterStatus = loaded ? 'loaded' : 'error';
+    }
     if (!loaded) this.endPointer();
   }
 
@@ -120,12 +171,42 @@ export class QImageComparison {
     if (id !== undefined && this.frame?.hasPointerCapture(id)) this.frame.releasePointerCapture(id);
   }
 
+  private boxStyle(box?: ImageCropBox) {
+    return box && { left: `${box.left}%`, top: `${box.top}%`, width: `${box.width}%`, height: `${box.height}%` };
+  }
+
+  private renderImage(side: 'before' | 'after', source: string, generation: number, ratio: number) {
+    if (!source) return null;
+    const crop = side === 'before' ? this.beforeCrop : this.afterCrop;
+    const dimensions = side === 'before' ? this.beforeDimensions : this.afterDimensions;
+    const geometry = hasPartialImageCrop(crop) && dimensions
+      ? calculateImageCropGeometry(dimensions.width, dimensions.height, crop, ratio) : undefined;
+    return (
+      <div part={`${side}-layer`} class={{ layer: true, before: side === 'before' }}
+        style={side === 'before' ? { clipPath: `inset(0 ${100 - this.position}% 0 0)` } : undefined}>
+        <div part={`${side}-viewport`} class="viewport" style={this.boxStyle(geometry?.viewport)}>
+          <img
+            key={`${side}-${generation}`}
+            part={`${side}-image`}
+            class={{ image: true, cropped: !!geometry }}
+            style={this.boxStyle(geometry?.image)}
+            src={source}
+            alt={side === 'before' ? this.beforeAlt : this.afterAlt}
+            draggable={false}
+            onLoad={event => this.imageResult(side, generation, source, true, event.currentTarget as HTMLImageElement)}
+            onError={() => this.imageResult(side, generation, source, false)}
+          />
+        </div>
+      </div>
+    );
+  }
+
   render() {
     const generation = this.generation;
     const beforeSrc = this.beforeSrc;
     const afterSrc = this.afterSrc;
-    const ratio = Number.isFinite(this.aspectRatio) && this.aspectRatio > 0 ? this.aspectRatio : 16 / 9;
-    const failed = !beforeSrc || !afterSrc || this.beforeStatus === 'error' || this.afterStatus === 'error';
+    const ratio = this.frameRatio;
+    const failed = !beforeSrc || !afterSrc || this.beforeStatus === 'error' || this.afterStatus === 'error' || this.cropUnavailable;
     return (
       <div
         part="frame"
@@ -138,31 +219,8 @@ export class QImageComparison {
         onPointerCancel={this.handlePointerEnd}
         onLostPointerCapture={this.handlePointerEnd}
       >
-        {afterSrc && (
-          <img
-            key={`after-${generation}`}
-            part="after-image"
-            class="image"
-            src={afterSrc}
-            alt={this.afterAlt}
-            draggable={false}
-            onLoad={() => this.imageResult('after', generation, afterSrc, true)}
-            onError={() => this.imageResult('after', generation, afterSrc, false)}
-          />
-        )}
-        {beforeSrc && (
-          <img
-            key={`before-${generation}`}
-            part="before-image"
-            class="image before"
-            src={beforeSrc}
-            alt={this.beforeAlt}
-            draggable={false}
-            style={{ clipPath: `inset(0 ${100 - this.position}% 0 0)` }}
-            onLoad={() => this.imageResult('before', generation, beforeSrc, true)}
-            onError={() => this.imageResult('before', generation, beforeSrc, false)}
-          />
-        )}
+        {this.renderImage('after', afterSrc, generation, ratio)}
+        {this.renderImage('before', beforeSrc, generation, ratio)}
         {!this.ready && (
           <div part="status" class="status" role="status">
             {failed ? 'Comparison unavailable' : 'Loading images…'}

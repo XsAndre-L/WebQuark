@@ -9,6 +9,8 @@
  */
 
 export { format } from './utils/utils';
+export { calculateImageCropGeometry, hasPartialImageCrop, isImageCropValid } from './utils/image-crop';
+export type { ImageCrop, ImageCropBox, ImageCropGeometry } from './utils/image-crop';
 export {
   identifyItems,
   reconcileByIdentity,
