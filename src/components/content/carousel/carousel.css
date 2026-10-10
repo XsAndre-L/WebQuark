@@ -61,6 +61,10 @@
 .snap-end { scroll-snap-type: x mandatory; }
 
 /* Navigation buttons */
+.carousel-arrow {
+  display: contents;
+}
+
 .arrow-btn {
   position: absolute;
   top: 50%;
