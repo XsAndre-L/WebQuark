@@ -228,7 +228,7 @@ describe('wq-switch transactions', () => {
     mkdirSync(join(core, 'scripts'));
     cpSync(resolve('scripts/wq-switch/dist/index.js'), join(core, 'scripts/index.js'));
     cpSync(resolve('scripts/wq-switch/dist/setup.js'), join(core, 'scripts/setup.js'));
-    put(join(core, 'scripts/sandbox.js'), '#!/usr/bin/env node\nconsole.log("sandbox launcher reached");');
+    writeFileSync(join(core, 'scripts/sandbox.js'), '#!/usr/bin/env node\nconsole.log("sandbox launcher reached");', { mode: 0o755 });
     writeJson(join(app, 'package.json'), { name: 'consumer', dependencies: { '@webquark/core': 'file:../core' } });
     const run = (args: string[]) => {
       const result = spawnSync('bun', args, { cwd: app, encoding: 'utf8', timeout: 20000 });

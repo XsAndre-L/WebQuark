@@ -1,4 +1,5 @@
 import { afterEach, expect, it, vi } from 'vitest';
+import { userEvent } from 'vitest/browser';
 import '../carousel';
 import carouselStyles from '../carousel.css?inline';
 import type { QCarouselLayout } from '../carousel.types';
@@ -202,6 +203,9 @@ it('supplies slideshow defaults, preserves explicit false controls, and keeps th
   viewport.focus();
   viewport.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, composed: true }));
   await frame();
+  // Native smooth scrolling continues after rendering; finish this navigation
+  // before removing its focused indicator and starting the fallback action.
+  await vi.waitFor(() => expect(viewport.scrollLeft).toBeGreaterThan(390));
   expect(el.children[1].getAttribute('data-q-carousel-active')).toBe('true');
   expect(el.children[2].getAttribute('data-q-carousel-active')).toBe('false');
   expect(el.shadowRoot!.activeElement).toBe(el.shadowRoot!.querySelectorAll('.indicator-dot')[1]);
@@ -210,6 +214,8 @@ it('supplies slideshow defaults, preserves explicit false controls, and keeps th
   el.showArrows = false;
   el.showIndicators = false;
   await frame();
+  expect(viewport.scrollLeft).toBeGreaterThan(390);
+  expect(el.children[1].getAttribute('data-q-carousel-active')).toBe('true');
   expect(viewport.getAttribute('aria-label')).toBe('Featured products');
   expect(el.shadowRoot!.querySelector('.arrow-btn')).toBeNull();
   expect(viewport.tabIndex).toBe(0);
@@ -218,6 +224,7 @@ it('supplies slideshow defaults, preserves explicit false controls, and keeps th
   expect(getComputedStyle(viewport).boxShadow).toBe('none');
   viewport.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, composed: true }));
   await frame();
+  await vi.waitFor(() => expect(viewport.scrollLeft).toBeGreaterThan(790));
   expect(el.children[2].getAttribute('data-q-carousel-active')).toBe('true');
 });
 
@@ -285,6 +292,9 @@ it('keeps playback intent labels distinct from temporary suspension and handles 
   const el = await create('instant', document.body, {
     layout: 'slideshow', autoplay: true, autoplayInterval: 1000, repeat: true,
   });
+  // Hover suspends playback. Establish running state before observing changes.
+  await userEvent.unhover(el);
+  await vi.waitFor(() => expect(el.shadowRoot!.querySelector('.carousel-viewport')!.getAttribute('aria-live')).toBe('off'));
   const states: boolean[] = [];
   el.addEventListener('qAutoplayChange', event => states.push((event as CustomEvent<{ playing: boolean }>).detail.playing));
   el.autoplaySuspended = true;
@@ -317,6 +327,9 @@ it('stops non-repeating playback and restarts completed playback explicitly', as
   const el = await create('instant', document.body, {
     layout: 'slideshow', autoplay: true, autoplayInterval: 150,
   });
+  // The browser pointer can otherwise keep this new fixture hover-suspended.
+  await userEvent.unhover(el);
+  await vi.waitFor(() => expect(el.shadowRoot!.querySelector('.carousel-viewport')!.getAttribute('aria-live')).toBe('off'));
   await vi.waitFor(() => expect(el.children[2].getAttribute('data-q-carousel-active')).toBe('true'));
   await vi.waitFor(() => expect(el.shadowRoot!.querySelector('.rotation-btn')?.textContent?.trim()).toBe('Play slideshow'));
   await el.play();
