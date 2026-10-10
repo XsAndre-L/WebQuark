@@ -638,21 +638,23 @@ export class QCarousel {
           )}
           <slot name="controls-extra" onSlotchange={this.handleExtraControlsChange} />
         </div>
-        {/* Navigation Arrow Controls with active disabled tabIndex */}
-        {this.arrowsVisible && (
-          <button
-            class={{ 'arrow-btn': true, 'arrow-left': true }}
-            part="previous-button"
-            aria-disabled={isFirst ? 'true' : 'false'}
-            onClick={isFirst ? undefined : this.slidePrev}
-            aria-label="Previous slide"
-            type="button"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-          </button>
-        )}
+        {/* Stable arrow containers keep control changes from relocating the viewport and resetting native scroll. */}
+        <div class="carousel-arrow">
+          {this.arrowsVisible && (
+            <button
+              class={{ 'arrow-btn': true, 'arrow-left': true }}
+              part="previous-button"
+              aria-disabled={isFirst ? 'true' : 'false'}
+              onClick={isFirst ? undefined : this.slidePrev}
+              aria-label="Previous slide"
+              type="button"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+          )}
+        </div>
 
         {/* Core Scrolling viewport container with a11y tab focus */}
         <div
@@ -680,20 +682,22 @@ export class QCarousel {
           <slot onSlotchange={this.handleSlotChange} />
         </div>
 
-        {this.arrowsVisible && (
-          <button
-            class={{ 'arrow-btn': true, 'arrow-right': true }}
-            part="next-button"
-            aria-disabled={isLast ? 'true' : 'false'}
-            onClick={isLast ? undefined : this.slideNext}
-            aria-label="Next slide"
-            type="button"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
-          </button>
-        )}
+        <div class="carousel-arrow">
+          {this.arrowsVisible && (
+            <button
+              class={{ 'arrow-btn': true, 'arrow-right': true }}
+              part="next-button"
+              aria-disabled={isLast ? 'true' : 'false'}
+              onClick={isLast ? undefined : this.slideNext}
+              aria-label="Next slide"
+              type="button"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </button>
+          )}
+        </div>
 
       </div>
     );

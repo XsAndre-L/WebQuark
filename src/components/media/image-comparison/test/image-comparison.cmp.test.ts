@@ -225,6 +225,6 @@ describe('built q-image-comparison', () => {
       afterAlt: 'Illustrated workspace with a green background',
     });
     el.style.width = '480px';
-    await page.screenshot({ element: el, path: 'C:/Dev/PurelyIT/WebQuark/docs/components/assets/q-image-comparison-half.png' });
+    await page.screenshot({ element: el, path: '__screenshots__/q-image-comparison-half.png' });
   });
 });
