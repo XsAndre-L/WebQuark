@@ -324,8 +324,8 @@ export const DEFAULT_PROP_ORDER_CONFIG: PropOrderConfig = {
     { scope: 'q-toggle', prop: 'type', group: 'features-behavior' },
   ],
   mixinFactories: [
-    { name: 'withActionProps', file: 'src/components/actions/action.props.ts' },
-    { name: 'withActionLabel', file: 'src/components/actions/action.props.ts' },
+    { name: 'withActionProps', file: 'src/browser/components/actions/action.props.ts' },
+    { name: 'withActionLabel', file: 'src/browser/components/actions/action.props.ts' },
   ],
   clusters: [
     { id: 'action-navigation', scope: 'withActionProps', props: ['href', 'rel', 'download'] },

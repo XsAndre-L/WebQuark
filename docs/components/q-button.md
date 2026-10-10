@@ -20,8 +20,8 @@
 2. In your application entry file (for example `src/main.js`), register the elements and load the theme. This requires a bundler that resolves package imports and CSS imports.
 
 ```javascript
-import "@webquark/core/dist/webquark/webquark.css";
-import { defineCustomElements } from "@webquark/core/loader";
+import "@webquark/browser/dist/webquark/webquark.css";
+import { defineCustomElements } from "@webquark/browser/loader";
 
 defineCustomElements();
 ```
@@ -174,7 +174,7 @@ Keep shared setup in [Theme variables](../theme_variables.md), [Theme tokens](..
 
 ## API reference
 
-Cross-check the [generated API](../../src/components/actions/button/readme.md), [implementation](../../src/components/actions/button/button.tsx), and imported public types. The entries below preserve source defaults and runtime qualifications.
+Cross-check the [generated API](../../src/browser/components/actions/button/readme.md), [implementation](../../src/browser/components/actions/button/button.tsx), and imported public types. The entries below preserve source defaults and runtime qualifications.
 
 ### Properties
 

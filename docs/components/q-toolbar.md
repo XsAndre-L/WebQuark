@@ -20,8 +20,8 @@
 2. Add registration to your application entry file (`main.js`). This requires a bundler that resolves package imports and CSS imports.
 
 ```javascript
-import '@webquark/core/dist/webquark/webquark.css';
-import { defineCustomElements } from '@webquark/core/loader';
+import '@webquark/browser/dist/webquark/webquark.css';
+import { defineCustomElements } from '@webquark/browser/loader';
 
 defineCustomElements();
 ```
@@ -175,7 +175,7 @@ Explicit padding hooks override the computed safe-area edge padding. See [CSS va
 
 ## API reference
 
-See the [Stencil-generated API](../../src/components/layout/toolbar/readme.md) and [component source](../../src/components/layout/toolbar/toolbar.tsx). The tables below include source-level types and effective rendering constraints.
+See the [Stencil-generated API](../../src/browser/components/layout/toolbar/readme.md) and [component source](../../src/browser/components/layout/toolbar/toolbar.tsx). The tables below include source-level types and effective rendering constraints.
 
 ### Properties
 

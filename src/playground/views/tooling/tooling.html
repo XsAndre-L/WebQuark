@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Changelog tooling · WebQuark</title>
+    <style>
+      :root { color-scheme: light dark; font: 16px/1.6 system-ui, sans-serif; }
+      body { margin: 0; background: light-dark(#f5f7fb, #10151f); color: light-dark(#182337, #e7edf7); }
+      main { max-width: 880px; margin: auto; padding: 40px 24px 64px; }
+      a { color: light-dark(#2754bd, #a0bdff); }
+      a:focus-visible { outline: 3px solid currentColor; outline-offset: 4px; }
+      h1 { font-size: clamp(2rem, 6vw, 3rem); line-height: 1.15; margin: 28px 0 16px; }
+      h2 { margin-top: 36px; font-size: 1.35rem; }
+      .intro { font-size: 1.15rem; max-width: 70ch; }
+      .eyebrow { margin-top: 32px; letter-spacing: .12em; text-transform: uppercase; font-size: .8rem; }
+      pre { padding: 20px; border: 1px solid light-dark(#cad3e3, #354258); border-radius: 12px; overflow-x: auto; background: light-dark(#fff, #171f2d); }
+      code { font-size: .9em; }
+      li + li { margin-top: 8px; }
+      footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid light-dark(#cad3e3, #354258); }
+    </style>
+  </head>
+  <body>
+    <main>
+      <a href="../../index.html">← Component playground</a>
+      <p class="eyebrow">Developer tooling</p>
+      <h1>Release notes from your project</h1>
+      <p class="intro">Generate a content-hashed release feed, keep application versions aligned, and stage reviewed images. Your application owns its routes, authentication, fictional demo data and viewer.</p>
+
+      <h2>Choose an entry</h2>
+      <pre><code>// Direct tooling dependency
+import { checkVersions, generateWhatsNew } from '@webquark/tooling/changelog';
+
+// The installation umbrella forwards the same separate API
+import { checkVersions as umbrellaCheckVersions } from '@webquark/core/tooling/changelog';</code></pre>
+      <p>Browser components use <code>@webquark/browser</code> or <code>@webquark/core/browser</code>. All five packages share one version and release channel; Angular and React integrations are optional.</p>
+
+      <h2>Try the content contract</h2>
+      <p>Read the <a href="sample-notes.md">fictional sample notes</a> and their <a href="sample-feed.json">sample feed JSON</a>. The feed keeps <code>{ releases }</code>, Added/Changed/Fixed/Removed summaries and an optional visuals array. A real generator hashes the feed and image bytes and writes a <code>feed-url.ts</code> reference for the application.</p>
+      <pre><code>wq-changelog version check --config ./changelog.config.ts
+wq-changelog notes --config ./changelog.config.ts --include-unreleased</code></pre>
+      <p>The reviewed configuration declares the project root, manifest, changelog and release paths. Feed generation adds an output directory, public URL prefix and project metadata resolver. Version-only checks require no feed or capture setup. Production settings exclude Unreleased.</p>
+
+      <h2>Capture setup stays with the application</h2>
+      <ol>
+        <li>Register reviewed page profiles or custom scenarios and their required fictional seed facts.</li>
+        <li>Supply an adapter for an explicitly owned local/demo environment, real authentication, allowed network operations and cleanup evidence.</li>
+        <li>Install browser binaries explicitly, then stage selected jobs. Lossless WebP is the default; PNG requires an explicit format and matching extension.</li>
+        <li>Inspect staged images and the report, then publish that reviewed run after provenance, bytes, presentation and cleanup are rechecked.</li>
+      </ol>
+      <p>This static documentation page starts no API, browser automation or database. Release preparation and publication remain separate explicit actions.</p>
+
+      <footer>See the installed tooling package README for the complete configuration and adapter contracts.</footer>
+    </main>
+  </body>
+</html>

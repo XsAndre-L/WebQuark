@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "esnext",
+    "lib": [
+      "dom",
+      "es2020"
+    ],
+    "strict": true,
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "paths": {
+      "@webquark/browser": [
+        "../../components/dist/types/index.d.ts"
+      ],
+      "@webquark/browser/*": [
+        "../../components/*"
+      ]
+    },
+    "noEmit": true
+  },
+  "angularCompilerOptions": {
+    "strictTemplates": true
+  }
+}

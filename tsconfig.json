@@ -22,7 +22,7 @@
     ]
   },
   "include": [
-    "src"
+    "src/browser"
   ],
   "exclude": [
     "node_modules"

@@ -20,8 +20,8 @@
 2. In your application entry file, register WebQuark. This assumes a bundler that resolves package imports and CSS imports.
 
 ```javascript
-import '@webquark/core/dist/webquark/webquark.css';
-import { defineCustomElements } from '@webquark/core/loader';
+import '@webquark/browser/dist/webquark/webquark.css';
+import { defineCustomElements } from '@webquark/browser/loader';
 defineCustomElements();
 ```
 
@@ -158,7 +158,7 @@ Shared geometry and theme setup are documented in [Foundation](../foundation.md)
 
 ## API reference
 
-Cross-check the [generated API](../../src/components/communication/toast/readme.md) and [implementation](../../src/components/communication/toast/toast.tsx). Source nullability and actual rendering limitations are preserved below.
+Cross-check the [generated API](../../src/browser/components/communication/toast/readme.md) and [implementation](../../src/browser/components/communication/toast/toast.tsx). Source nullability and actual rendering limitations are preserved below.
 
 ### Properties
 
@@ -197,10 +197,10 @@ Wait for `customElements.whenDefined('q-toast')` before calling element methods.
 
 #### Exported controller
 
-Import `toast` from `@webquark/core` in a bundler application entry/module. It has the same seven methods and arguments, but returns IDs/booleans/counts synchronously rather than promises. Calls before a host connects are buffered.
+Import `toast` from `@webquark/browser` in a bundler application entry/module. It has the same seven methods and arguments, but returns IDs/booleans/counts synchronously rather than promises. Calls before a host connects are buffered.
 
 ```javascript
-import { toast } from '@webquark/core';
+import { toast } from '@webquark/browser';
 const id = toast.info('Saved', 'Your draft is available.', { duration: 0 });
 toast.dismiss(id);
 ```

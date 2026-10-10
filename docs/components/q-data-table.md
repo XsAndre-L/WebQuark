@@ -19,8 +19,8 @@
 Follow the central [installation instructions](../../README.md#1-install-library). In a bundled application that resolves package imports and CSS imports, add this to the JavaScript entry file:
 
 ```javascript
-import '@webquark/core/dist/webquark/webquark.css';
-import { defineCustomElements } from '@webquark/core/loader';
+import '@webquark/browser/dist/webquark/webquark.css';
+import { defineCustomElements } from '@webquark/browser/loader';
 defineCustomElements();
 ```
 
@@ -93,7 +93,7 @@ group headers, and restart for each supplied collection unless you set an offset
 External sorting leaves the supplied order unchanged.
 
 ```javascript
-import { getDataTableRowGutterSlotName } from '@webquark/core';
+import { getDataTableRowGutterSlotName } from '@webquark/browser';
 table.rowGutter = 'custom';
 const control = document.createElement('button');
 control.textContent = 'Open';
@@ -311,7 +311,7 @@ Directly slotted dropdowns can receive the table's dropdown forwarding hooks. Th
 
 ## API reference
 
-See the [generated API](../../src/components/data-display/data-table/readme.md). The callback types below follow the source, including `rowGroup` where generated output may abbreviate the type.
+See the [generated API](../../src/browser/components/data-display/data-table/readme.md). The callback types below follow the source, including `rowGroup` where generated output may abbreviate the type.
 
 ### Properties
 
@@ -437,7 +437,7 @@ These types describe property values and event payloads. Optional fields are mar
 
 `DataTableRowAction` requires a key, icon name, and tooltip/name. Its disabled callback receives the row, visible index, and action; a thrown callback is logged and leaves the action enabled.
 
-For framework-rendered cells, use the adapters exported by `@webquark/react` and `@webquark/angular`. For direct custom elements, import `getDataTableCellSlotName(columnKey, rowKey)` from `@webquark/core` in the bundled entry file and use its returned slot name. Use stable string/number keys; do not construct encoded slot names manually.
+For framework-rendered cells, use the adapters exported by `@webquark/react` and `@webquark/angular`. For direct custom elements, import `getDataTableCellSlotName(columnKey, rowKey)` from `@webquark/browser` in the bundled entry file and use its returned slot name. Use stable string/number keys; do not construct encoded slot names manually.
 
 Public helpers also include `getDataTableCellValue(item, path): unknown` for dot-path lookup and `getDataTableItemKey(item, index, keyField)` for string/number identities; the latter returns undefined for an unsupported/missing identity. `DataTableItem` and `DataTableKey` are declared as unknown, but stable identity requires the supported scalar values.
 

@@ -11,7 +11,7 @@ On this page: [Quick start](#quick-start) · [Examples](#examples) · [Behavior 
 Register the component in a bundled application:
 
 ```ts
-import { defineCustomElement } from '@webquark/core/components/q-image-comparison.js';
+import { defineCustomElement } from '@webquark/browser/components/q-image-comparison.js';
 defineCustomElement();
 ```
 
@@ -106,7 +106,7 @@ Each region is contained with uniform scaling and its own clip, so differing
 proportions may leave neutral space. The reveal always follows the full frame.
 Original source bytes and URLs stay intact, including animated formats.
 
-For consumer-owned standalone frames, `@webquark/core` exports `ImageCrop`,
+For consumer-owned standalone frames, `@webquark/browser` exports `ImageCrop`,
 `ImageCropBox`, `ImageCropGeometry`, `isImageCropValid`, `hasPartialImageCrop` and
 `calculateImageCropGeometry(naturalWidth, naturalHeight, crop?, frameAspectRatio?)`.
 The geometry contains percentage `left`, `top`, `width` and `height` boxes: clip

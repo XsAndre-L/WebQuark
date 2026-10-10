@@ -3,6 +3,7 @@ import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import {
+  assertLockstepPackages,
   capture,
   hasFlag,
   npmCommand,
@@ -62,26 +63,15 @@ if (!dryRun && !process.env.NODE_AUTH_TOKEN) {
 }
 
 const manifests = packages.map((definition) => readPackage(definition.directory));
-const versions = new Set(manifests.map((manifest) => manifest.version));
-if (versions.size !== 1) {
-  throw new Error('Packages are not using one lockstep version: ' + [...versions].join(', '));
-}
-
-const version = manifests[0].version;
-for (const manifest of manifests.slice(1)) {
-  if (manifest.dependencies?.['@webquark/core'] !== version) {
-    const message = manifest.name + ' must depend on @webquark/core@' + version + ' before publishing';
-    if (!dryRun) {
-      throw new Error(message);
-    }
-    console.warn('Dry-run warning: ' + message);
-  }
-}
+const version = assertLockstepPackages(manifests);
 
 const destination = mkdtempSync(join(tmpdir(), 'webquark-publish-'));
 try {
   console.log('Packing WebQuark ' + version + '...');
   const packedPackages = packages.map((definition) => pack(definition.directory, destination));
+  for (const [index, packed] of packedPackages.entries()) {
+    if (packed.name !== packages[index].name || packed.version !== version) throw new Error('Packed package identity differs from its prepared manifest.');
+  }
 
   if (dryRun) {
     for (const packed of packedPackages) {

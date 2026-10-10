@@ -13,13 +13,15 @@ afterEach(() => {
     rmSync(root, { recursive: true, force: true });
   }
 });
-function fixture(exported: boolean, exists: boolean): string {
+function fixture(exported: boolean, exists: boolean, umbrella = false): string {
   const root = mkdtempSync(join(tmpdir(), 'wq-check-test-')); roots.push(root);
-  writeFileSync(join(root, 'package.json'), JSON.stringify({ name: 'consumer' }));
-  const core = join(root, 'node_modules/@webquark/core');
-  mkdirSync(join(core, 'dist/webquark'), { recursive: true });
-  writeFileSync(join(core, 'package.json'), JSON.stringify({ name: '@webquark/core', exports: exported ? { './native-content.css': './dist/webquark/native-content.css' } : { '.': './index.js' } }));
-  if (exists) writeFileSync(join(core, 'dist/webquark/native-content.css'), 'body {}');
+  const name = umbrella ? '@webquark/core' : '@webquark/browser';
+  writeFileSync(join(root, 'package.json'), JSON.stringify({ name: 'consumer', dependencies: { [name]: '1.0.0' } }));
+  const directory = join(root, 'node_modules', name);
+  mkdirSync(join(directory, 'dist/webquark'), { recursive: true });
+  const entry = umbrella ? './browser/native-content.css' : './native-content.css';
+  writeFileSync(join(directory, 'package.json'), JSON.stringify({ name, exports: exported ? { [entry]: './dist/webquark/native-content.css' } : { '.': './index.js' } }));
+  if (exists) writeFileSync(join(directory, 'dist/webquark/native-content.css'), 'body {}');
   return root;
 }
 describe('native-content stylesheet preflight', () => {
@@ -35,5 +37,17 @@ describe('native-content stylesheet preflight', () => {
   it('accepts a complete published package without local setup', () => {
     vi.spyOn(console, 'log').mockImplementation(() => {});
     expect(() => check(fixture(true, true))).not.toThrow();
+  });
+  it('accepts the umbrella browser forwarding stylesheet', () => {
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    expect(() => check(fixture(true, true, true))).not.toThrow();
+  });
+  it('checks tooling entries without requiring a browser stylesheet', () => {
+    const root = fixture(false, false);
+    writeFileSync(join(root, 'package.json'), JSON.stringify({ name: 'consumer', dependencies: { '@webquark/tooling': '1.0.0' } }));
+    const directory = join(root, 'node_modules/@webquark/tooling'); mkdirSync(directory, { recursive: true });
+    writeFileSync(join(directory, 'package.json'), JSON.stringify({ name: '@webquark/tooling' }));
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    expect(() => check(root)).not.toThrow();
   });
 });

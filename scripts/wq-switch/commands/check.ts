@@ -3,16 +3,31 @@ import { statSync } from 'node:fs';
 import { join } from 'node:path';
 import { status } from './status';
 import { hasJournal, readState } from '../state';
+import { manifest, selectedPackages } from '../config';
+import { installed, validatePackage } from '../packages';
 
 /** Resolve from the consumer so this also checks the installed package's exports map. */
 export function check(root: string): void {
-  const stylesheet = '@webquark/core/native-content.css';
+  const selected = selectedPackages(root);
+  if (!selected.includes('@webquark/browser')) {
+    validatePackage(installed('@webquark/tooling', root));
+    console.log('WebQuark tooling package entries are available.');
+    if (readState(root) || hasJournal(root)) status(root);
+    return;
+  }
+  const pkg = manifest(root);
+  const directBrowser = pkg.dependencies?.['@webquark/browser'] ?? pkg.devDependencies?.['@webquark/browser'];
+  const stylesheet = !directBrowser && selected.includes('@webquark/core')
+    ? '@webquark/core/browser/native-content.css'
+    : '@webquark/browser/native-content.css';
   try {
-    const file = createRequire(join(root, 'package.json')).resolve(stylesheet);
+    const wrapper = selected.find(name => name === '@webquark/angular' || name === '@webquark/react');
+    const from = !directBrowser && !selected.includes('@webquark/core') && wrapper ? installed(wrapper, root) : root;
+    const file = createRequire(join(from, 'package.json')).resolve(stylesheet);
     if (!statSync(file).isFile()) throw new Error('The stylesheet is not a file.');
   } catch (error) {
     throw new Error(
-      'Could not resolve "' + stylesheet + '". The installed @webquark/core must export "./native-content.css" and include its built CSS file.\n' +
+      'Could not resolve "' + stylesheet + '". The installed browser package or core browser forwarding entry must export this stylesheet and include its built CSS file.\n' +
       'For local development, run bun run wq-setup --source "<path-to-WebQuark>", then bun run wq-switch local.\n' +
       'wq-setup configures the checkout; wq-switch local builds and activates it. Alternatively, install matching published WebQuark packages containing this export.',
       { cause: error },

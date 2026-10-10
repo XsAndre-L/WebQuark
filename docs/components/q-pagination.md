@@ -19,8 +19,8 @@
 Follow the central [installation instructions](../../README.md#1-install-library). In a bundled application that resolves package imports and CSS imports, add this to the JavaScript entry file:
 
 ```javascript
-import '@webquark/core/dist/webquark/webquark.css';
-import { defineCustomElements } from '@webquark/core/loader';
+import '@webquark/browser/dist/webquark/webquark.css';
+import { defineCustomElements } from '@webquark/browser/loader';
 defineCustomElements();
 ```
 
@@ -146,7 +146,7 @@ Shared theme setup belongs in [Theme variables](../theme_variables.md).
 
 ## API reference
 
-Cross-check the [generated API](../../src/components/data-display/pagination/readme.md) with the behavior described above.
+Cross-check the [generated API](../../src/browser/components/data-display/pagination/readme.md) with the behavior described above.
 
 ### Properties
 

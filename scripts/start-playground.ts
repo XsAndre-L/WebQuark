@@ -13,13 +13,13 @@ const stencilBinary = path.resolve(
   process.cwd(), 
   isWindows ? "node_modules\\.bin\\stencil.exe" : "node_modules/.bin/stencil"
 );
-const stencilCmd = [stencilBinary, "build", "--dev", "--watch", "--serve"];
+const stencilCmd = [stencilBinary, "build", "--config", "packages/browser/components/stencil.config.ts", "--dev", "--watch", "--serve"];
 
 const bunCmd = [
   "bun", 
   "build", 
   "src/playground/playground.ts", 
-  "--outfile=dist/playground/playground.js", 
+  "--outfile=.stencil/dist/playground/playground.js",
   "--watch", 
   "--loader", 
   ".html:text", 

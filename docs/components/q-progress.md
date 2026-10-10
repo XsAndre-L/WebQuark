@@ -20,8 +20,8 @@
 2. Register the components in your application's JavaScript entry file. This setup assumes a bundler that resolves package imports and CSS imports.
 
 ```javascript
-import '@webquark/core/dist/webquark/webquark.css';
-import { defineCustomElements } from '@webquark/core/loader';
+import '@webquark/browser/dist/webquark/webquark.css';
+import { defineCustomElements } from '@webquark/browser/loader';
 
 defineCustomElements();
 ```
@@ -225,7 +225,7 @@ See [Theme variables](../theme_variables.md) for shared color, typography, and t
 
 ## API reference
 
-The [Stencil-generated API](../../src/components/indicators/progress/readme.md) provides generated property and Shadow-Part tables. The property types below also follow the current [TypeScript source](../../src/components/indicators/progress/progress.tsx), which retains `null` in the accessible-label types.
+The [Stencil-generated API](../../src/browser/components/indicators/progress/readme.md) provides generated property and Shadow-Part tables. The property types below also follow the current [TypeScript source](../../src/browser/components/indicators/progress/progress.tsx), which retains `null` in the accessible-label types.
 
 ### Properties
 

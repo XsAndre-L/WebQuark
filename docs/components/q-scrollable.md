@@ -20,8 +20,8 @@
 2. Add registration to your application entry file (`main.js`). This requires a bundler that resolves package imports and CSS imports.
 
 ```javascript
-import '@webquark/core/dist/webquark/webquark.css';
-import { defineCustomElements } from '@webquark/core/loader';
+import '@webquark/browser/dist/webquark/webquark.css';
+import { defineCustomElements } from '@webquark/browser/loader';
 
 defineCustomElements();
 ```
@@ -155,7 +155,7 @@ Set variables on an external native target itself when styling that target; valu
 
 ## API reference
 
-See the [Stencil-generated API](../../src/components/layout/scrollable/readme.md) and [component source](../../src/components/layout/scrollable/scrollable.tsx). The tables below include source-level types and effective rendering constraints.
+See the [Stencil-generated API](../../src/browser/components/layout/scrollable/readme.md) and [component source](../../src/browser/components/layout/scrollable/scrollable.tsx). The tables below include source-level types and effective rendering constraints.
 
 ### Properties
 

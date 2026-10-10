@@ -20,8 +20,8 @@
 2. In your application entry file, register WebQuark. This assumes a bundler that resolves package imports and CSS imports.
 
 ```javascript
-import '@webquark/core/dist/webquark/webquark.css';
-import { defineCustomElements } from '@webquark/core/loader';
+import '@webquark/browser/dist/webquark/webquark.css';
+import { defineCustomElements } from '@webquark/browser/loader';
 defineCustomElements();
 ```
 
@@ -108,7 +108,7 @@ Shared geometry and theme setup are documented in [Foundation](../foundation.md)
 
 ## API reference
 
-Cross-check the [generated API](../../src/components/media/media/readme.md) and [implementation](../../src/components/media/media/media.tsx). Source nullability and actual rendering limitations are preserved below.
+Cross-check the [generated API](../../src/browser/components/media/media/readme.md) and [implementation](../../src/browser/components/media/media/media.tsx). Source nullability and actual rendering limitations are preserved below.
 
 ### Properties
 

@@ -1,12 +1,15 @@
 import { resolve } from 'node:path';
 import {
   assertFile,
+  assertLockstepPackages,
+  assertPackageContract,
   capture,
   npmCommand,
   packages,
   readPackage,
   repositoryRoot,
   run,
+  type PackageDefinition,
 } from './release-utils';
 
 function assertNoLocalDependencies(value: unknown, context: string): void {
@@ -46,31 +49,19 @@ function entryPaths(manifest: Record<string, any>): string[] {
   return [...entries];
 }
 
-function verifyManifest(directory: string, coreVersion: string): void {
+function verifyManifest(definition: PackageDefinition, version: string): void {
+  const directory = definition.directory;
   const manifest = readPackage(directory);
   assertNoLocalDependencies(manifest.dependencies, manifest.name + ' dependencies');
   assertNoLocalDependencies(manifest.devDependencies, manifest.name + ' devDependencies');
 
-  if (manifest.version !== coreVersion) {
-    throw new Error(
-      manifest.name + ' version ' + manifest.version +
-      ' does not match @webquark/core@' + coreVersion,
-    );
+  assertPackageContract(definition, manifest, version);
+  assertNoLocalDependencies(manifest.peerDependencies, manifest.name + ' peerDependencies');
+  if (definition.role === 'browser' && manifest.exports?.['./native-content.css'] !== './dist/webquark/native-content.css') {
+    throw new Error('@webquark/browser must export ./native-content.css to ./dist/webquark/native-content.css');
   }
-
-  const runtimeCoreVersion = manifest.dependencies?.['@webquark/core'];
-  if (runtimeCoreVersion !== undefined) {
-    const peerCoreVersion = manifest.peerDependencies?.['@webquark/core'];
-    if (runtimeCoreVersion !== coreVersion || peerCoreVersion !== coreVersion) {
-      throw new Error(
-        manifest.name + ' must depend on and peer @webquark/core@' + coreVersion +
-        ' after release preparation',
-      );
-    }
-  }
-
-  if (manifest.name === '@webquark/core' && manifest.exports?.['./native-content.css'] !== './dist/webquark/native-content.css') {
-    throw new Error('@webquark/core must export ./native-content.css to ./dist/webquark/native-content.css');
+  if (definition.role === 'umbrella' && (!manifest.exports?.['./browser'] || !manifest.exports?.['./tooling/changelog'] || !manifest.bin?.['wq-changelog'])) {
+    throw new Error('@webquark/core must forward browser and tooling/changelog entries and the wq-changelog command');
   }
 
   for (const entry of entryPaths(manifest)) {
@@ -114,11 +105,8 @@ function verifyTarball(directory: string): void {
 console.log('Checking component prop ordering...');
 run(['bun', 'run', 'check:prop-order']);
 
-console.log('\nBuilding core, React, and Angular packages...');
-run(['bun', 'run', 'build']);
-for (const definition of packages.slice(1)) {
-  run(['bun', 'run', 'build'], definition.directory);
-}
+console.log('\nBuilding core, browser, tooling, React, and Angular packages...');
+run(['bun', 'run', 'packages:build']);
 
 console.log('\nVerifying packed Angular 21 and Angular 22 consumers...');
 const angularPackage = packages.find((definition) => definition.key === 'angular');
@@ -131,9 +119,10 @@ console.log('\nRunning the Vitest suite...');
 run(['bunx', 'vitest', 'run']);
 
 console.log('\nChecking package manifests and npm tarballs...');
-const coreVersion = readPackage(repositoryRoot).version;
+if (!readPackage(repositoryRoot).private) throw new Error('The repository orchestration manifest must be private.');
+const version = assertLockstepPackages(packages.map(definition => readPackage(definition.directory)));
 for (const definition of packages) {
-  verifyManifest(definition.directory, coreVersion);
+  verifyManifest(definition, version);
   verifyTarball(definition.directory);
 }
 
