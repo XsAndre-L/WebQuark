@@ -5,7 +5,7 @@ import { hasJournal, readState } from '../state';
 import { projectPaths } from '../paths';
 
 export function setup(root: string, source?: string): void {
-  selectedPackages(root);
+  const selected = selectedPackages(root);
   if (hasJournal(root)) throw new Error('Run wq-switch npm to recover the interrupted switch before changing configuration.');
   if (readState(root)) throw new Error('Stop the dev server and run wq-switch npm before changing configuration.');
   const file = projectPaths(root).config;
@@ -20,7 +20,7 @@ export function setup(root: string, source?: string): void {
     ...previous,
     version: 1,
     source: source === undefined ? previous?.source ?? '' : validateSource(resolve(root, source)),
-    preferredVersion: previous?.preferredVersion ?? pkg.dependencies?.['@webquark/core'] ?? pkg.devDependencies!['@webquark/core'],
+    preferredVersion: previous?.preferredVersion ?? selected.map(name => pkg.dependencies?.[name] ?? pkg.devDependencies?.[name]).find(Boolean),
   };
   writeJson(file, { ...document, 'wq-switch': config });
   writeJson(join(root, 'package.json'), { ...pkg, scripts: { ...pkg.scripts, ...scripts } });

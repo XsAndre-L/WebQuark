@@ -60,6 +60,10 @@ class PlaygroundSidebar extends HTMLElement {
             <q-icon name="globe" library="lucide" size="16"></q-icon>
             <span>Global Styling</span>
           </button>
+          <a class="global-styling-btn" href="./views/tooling/tooling.html">
+            <q-icon name="file-text" library="lucide" size="16"></q-icon>
+            <span>Changelog Tooling</span>
+          </a>
         </div>
       </q-sidepanel>
     );

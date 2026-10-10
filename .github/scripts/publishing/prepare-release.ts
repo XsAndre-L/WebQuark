@@ -7,6 +7,7 @@ import {
   npmCommand,
   packageJsonPath,
   packages,
+  prepareManifest,
   readJson,
   readPackage,
   repositoryRoot,
@@ -74,24 +75,6 @@ function nextDevSequence(baseVersion: string): number {
   return highest + 1;
 }
 
-function updateManifest(directory: string, version: string, dryRun: boolean): void {
-  const manifest = readPackage(directory);
-  manifest.version = version;
-
-  if (manifest.name !== '@webquark/core') {
-    manifest.dependencies ??= {};
-    manifest.dependencies['@webquark/core'] = version;
-    manifest.peerDependencies ??= {};
-    // Stable ranges such as ^1.0.2 do not accept 1.1.0-dev.N prereleases.
-    // Keep the wrapper's runtime and peer contracts aligned with lockstep publishing.
-    manifest.peerDependencies['@webquark/core'] = version;
-  }
-
-  if (!dryRun) {
-    writeJson(packageJsonPath(directory), manifest);
-  }
-}
-
 const planPath = resolve(repositoryRoot, '.github/release.json');
 const plan = readJson<ReleasePlan>(planPath);
 const channel = requireArgument('--channel') as Channel;
@@ -113,9 +96,10 @@ const npmTag = channel === 'dev' ? 'dev' : 'latest';
 console.log((dryRun ? 'Would prepare' : 'Preparing') + ' all WebQuark packages:');
 console.log('  version: ' + version);
 console.log('  npm tag: ' + npmTag);
-for (const definition of packages) {
+const prepared = packages.map(definition => ({ definition, manifest: prepareManifest(definition, readPackage(definition.directory), version) }));
+for (const { definition, manifest } of prepared) {
   console.log('  ' + definition.name + '@' + version);
-  updateManifest(definition.directory, version, dryRun);
+  if (!dryRun) writeJson(packageJsonPath(definition.directory), manifest);
 }
 
 const githubOutput = process.env.GITHUB_OUTPUT;

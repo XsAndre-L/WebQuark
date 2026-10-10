@@ -9,10 +9,10 @@ Use the [generated theme-token reference](./theme-tokens.md) for current names a
 In a bundled application's JavaScript entry file:
 
 ```javascript
-import '@webquark/core/dist/webquark/webquark.css';
+import '@webquark/browser/dist/webquark/webquark.css';
 ```
 
-The package stylesheet path is unchanged. Its source entry is now [src/theme/theme.css](../src/theme/theme.css), with defaults generated from [tokens.ts](../src/theme/tokens.ts). The playground theme designer reads that same catalog.
+The package stylesheet path is unchanged. Its source entry is now [src/browser/theme/theme.css](../src/browser/theme/theme.css), with defaults generated from [tokens.ts](../src/browser/theme/tokens.ts). The playground theme designer reads that same catalog.
 
 ## Choose a palette
 
@@ -57,7 +57,7 @@ The form supplies shared sizing; the button changes only its local corners. Expl
 
 ## Maintain theme definitions
 
-Edit `src/theme/tokens.ts` and run `bun run theme:generate`. The build also runs this generator. Do not hand-edit generated `tokens.css`, `behaviors/control-sizing.css`, or `docs/theme-tokens.md`.
+Edit `src/browser/theme/tokens.ts` and run `bun run theme:generate`. The build also runs this generator. Do not hand-edit generated `tokens.css`, `behaviors/control-sizing.css`, or `docs/theme-tokens.md`.
 
 Optional component overrides intentionally remain unset at the root where defaults would mask inherited geometry or scoped palette fallbacks. Shared tokens and local overrides have different responsibilities.
 

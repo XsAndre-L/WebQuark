@@ -390,7 +390,7 @@ function appliedMixins(
 }
 
 function categoryFromFile(rootDir: string, sourcePath: string): string | undefined {
-  const rel = normalizePath(relative(resolve(rootDir, 'src/components'), sourcePath));
+  const rel = normalizePath(relative(resolve(rootDir, 'src/browser/components'), sourcePath));
   if (rel.startsWith('../')) return undefined;
   return rel.split('/')[0];
 }
@@ -418,7 +418,7 @@ function findMixinClass(
 }
 
 function listComponentSourcePaths(rootDir: string): string[] {
-  const componentRoot = resolve(rootDir, 'src/components');
+  const componentRoot = resolve(rootDir, 'src/browser/components');
   if (!existsSync(componentRoot)) return [];
   const output: string[] = [];
   const walk = (directory: string): void => {
@@ -1233,7 +1233,7 @@ function selectBlocks(
     diagnostics.push(diagnosticAt(
       'operational',
       'UNKNOWN_CATEGORY',
-      'src/components',
+      'src/browser/components',
       undefined,
       undefined,
       `Unknown component category ${options.category}.`,
@@ -1244,7 +1244,7 @@ function selectBlocks(
     diagnostics.push(diagnosticAt(
       'operational',
       'UNKNOWN_COMPONENT',
-      'src/components',
+      'src/browser/components',
       undefined,
       undefined,
       `Unknown component tag ${options.component}.`,

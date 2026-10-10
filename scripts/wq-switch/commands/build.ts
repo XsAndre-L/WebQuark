@@ -4,7 +4,7 @@ import { stage } from '../packages';
 import { activate, assertActive, locked, readState } from '../state';
 
 export async function compile(source: string): Promise<void> {
-  console.log(`Building core, React, and Angular in ${source}`);
+  console.log(`Building core, browser, tooling, React, and Angular in ${source}`);
   await new Promise<void>((resolve, reject) => {
     const child = spawn('bun', ['run', 'packages:build'], { cwd: source, stdio: 'inherit', shell: false });
     child.on('error', reject);

@@ -71,7 +71,7 @@ function checkFixture(
     rootDir: 'C:/virtual/webquark',
     config,
     sources: [
-      { filePath: 'src/components/test/demo.tsx', text: source },
+      { filePath: 'src/browser/components/test/demo.tsx', text: source },
       ...extraSources,
     ],
   });
@@ -222,14 +222,14 @@ describe('relationship clusters', () => {
       componentSource(`  @Prop() showSearch = false;
   @Prop() searchValue = '';`),
       config,
-      [{ filePath: 'src/components/test/holder.tsx', text: holder }],
+      [{ filePath: 'src/browser/components/test/holder.tsx', text: holder }],
     );
 
     expect(result.exitCode).toBe(0);
   });
 
   it('accepts a relationship split across a mixin and local source block', () => {
-    const mixinFile = 'src/components/actions/action.props.ts';
+    const mixinFile = 'src/browser/components/actions/action.props.ts';
     const config = fixtureConfig({
       'platform-external-integration': ['href', 'target', 'rel'],
     }, {
@@ -351,8 +351,8 @@ export class Helper { @P() ignored = true; }`;
     const result = checkFixture(source, fixtureConfig({
       'content-data-identity': ['label'],
     }), [
-      { filePath: 'src/components/test/helper.tsx', text: helper },
-      { filePath: 'src/components.d.ts', text: generated },
+      { filePath: 'src/browser/components/test/helper.tsx', text: helper },
+      { filePath: 'src/browser/components.d.ts', text: generated },
     ]);
 
     expect(result.exitCode).toBe(0);
@@ -377,7 +377,7 @@ export class Helper { @P() ignored = true; }`;
 });
 
 describe('mixin factories and inherited API checks', () => {
-  const mixinFile = 'src/components/actions/action.props.ts';
+  const mixinFile = 'src/browser/components/actions/action.props.ts';
   const mixinSource = `import { Prop as P } from '@stencil/core';
 export const withOne = (Base: any) => {
   class One extends Base { @P() label?: string; }
@@ -520,8 +520,8 @@ describe('CLI contract and read-only behavior', () => {
   it('never changes source files in check, explain, JSON, fingerprint, or compare modes', () => {
     const root = mkdtempSync(join(tmpdir(), 'webquark-prop-order-'));
     temporaryDirectories.push(root);
-    const sourcePath = join(root, 'src/components/test/demo.tsx');
-    mkdirSync(join(root, 'src/components/test'), { recursive: true });
+    const sourcePath = join(root, 'src/browser/components/test/demo.tsx');
+    mkdirSync(join(root, 'src/browser/components/test'), { recursive: true });
     writeFileSync(sourcePath, componentSource('  @Prop() label?: string;'), 'utf8');
     const config = fixtureConfig({ 'content-data-identity': ['label'] });
     const before = snapshotSourceFiles(root);

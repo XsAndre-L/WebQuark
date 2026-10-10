@@ -39,12 +39,12 @@ CSS/token follow-up.
 
 ## Theme organization follow-up
 
-Shared styles and defaults now live in `src/theme`; field rendering is in
-`src/components/shared/field.tsx`. Core, React, and Angular builds passed,
+Shared styles and defaults now live in `src/browser/theme`; field rendering is in
+`src/browser/components/shared/field.tsx`. Core, React, and Angular builds passed,
 including strict Angular consumer compilation for 45 standalone declarations.
 All 63 Chromium tests passed across 8 files, including explicit/system palette
 selection and inherited control geometry. The published stylesheet remains
-`@webquark/core/dist/webquark/webquark.css`.
+`@webquark/browser/dist/webquark/webquark.css`.
 
 ## Consumer pilots
 

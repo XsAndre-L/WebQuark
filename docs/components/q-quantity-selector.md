@@ -20,8 +20,8 @@
 2. In your application entry file (for example `src/main.js`), register the elements and load the theme. This requires a bundler that resolves package imports and CSS imports.
 
 ```javascript
-import "@webquark/core/dist/webquark/webquark.css";
-import { defineCustomElements } from "@webquark/core/loader";
+import "@webquark/browser/dist/webquark/webquark.css";
+import { defineCustomElements } from "@webquark/browser/loader";
 
 defineCustomElements();
 ```
@@ -145,7 +145,7 @@ Keep shared setup in [Theme variables](../theme_variables.md), [Theme tokens](..
 
 For new code, use `orientation`. The deprecated aliases remain supported. Canonical properties take precedence when set; otherwise the legacy property and its default apply. Set a canonical JavaScript property to `undefined` to restore the fallback.
 
-Cross-check the [generated API](../../src/components/inputs/quantity-selector/readme.md), [implementation](../../src/components/inputs/quantity-selector/quantity-selector.tsx), and imported public types. The entries below preserve source defaults and runtime qualifications.
+Cross-check the [generated API](../../src/browser/components/inputs/quantity-selector/readme.md), [implementation](../../src/browser/components/inputs/quantity-selector/quantity-selector.tsx), and imported public types. The entries below preserve source defaults and runtime qualifications.
 
 ### Properties
 

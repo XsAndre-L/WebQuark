@@ -1,4 +1,8 @@
-# ⚡ WebQuark Component Library
+# ⚡ WebQuark
+
+WebQuark has a private workspace root and five packages released in lockstep. Install `@webquark/core` for the browser and changelog tooling together, then use the explicit `@webquark/core/browser` and `@webquark/core/tooling/changelog` entries. The umbrella owns the `wq-switch`, `wq-setup`, `wq-sandbox`, and forwarding `wq-changelog` binaries. Angular and React integrations are optional.
+
+The browser-only instructions below use a direct `@webquark/browser` dependency. Tooling-only consumers can install `@webquark/tooling`. An isolated installation should either use umbrella forwarding entries or declare the directly imported package as a dependency. Former `@webquark/core` browser imports must migrate.
 
 ## 🎯 Purpose
 A premium, glassmorphic Web Component library compiled with **StencilJS**. Designed for high performance, standard compliance, and compatibility with **Unreal Engine Webviews** (Chromium Embedded Framework in Off-Screen Rendering mode).
@@ -11,17 +15,17 @@ A premium, glassmorphic Web Component library compiled with **StencilJS**. Desig
 
 ### 1. Install Library
 ```bash
-bun add @webquark/core
+bun add @webquark/browser
 ```
 
 ### 2. Import Styles & Bootloader
 Add this to your application's entry file:
 ```javascript
 // Import core CSS variables & design tokens
-import '@webquark/core/dist/webquark/webquark.css';
+import '@webquark/browser/webquark.css';
 
 // Register custom web components
-import { defineCustomElements } from '@webquark/core/loader';
+import { defineCustomElements } from '@webquark/browser/loader';
 defineCustomElements();
 ```
 
@@ -39,19 +43,31 @@ defineCustomElements();
 
 ```
 webquark/ (Root)
- ├── dist/                  ◄── Production compilations (ESM, custom elements, CSS)
+ ├── .stencil/              ◄── Compiler cache (.build) and repository output (dist/playground)
+ ├── packages/              ◄── Published manifests and package-owned dist artifacts
+ │    ├── core/             ◄── Installation umbrella, forwarding entries and CLI binaries
+ │    ├── browser/
+ │    │    ├── components/  ◄── @webquark/browser
+ │    │    ├── angular/     ◄── @webquark/angular (handwritten and generated src)
+ │    │    └── react/       ◄── @webquark/react (handwritten and generated src)
+ │    └── tooling/          ◄── @webquark/tooling (dist/changelog)
  ├── docs/                  ◄── Design guides & API specs
  │    ├── components/       ◄── Component-specific specifications (e.g. q-card.md)
  │    ├── components.md     ◄── Roadmap implementation status dashboard
  │    ├── theme_variables.md◄── CSS custom properties reference
  │    └── unreal_compatibility.md ◄─ CEF Off-Screen Rendering layout guidelines
  ├── src/                   ◄── Source files
- │    ├── components/       ◄── Custom Web Components
- │    │    └── [category]/[name]/
- │    │         ├── [name].tsx ◄── Component logic & render template (TSX)
- │    │         ├── [name].css ◄── Local stylesheet
- │    │         └── readme.md    ◄── Auto-generated API details (props, slots, events)
- │    └── theme/            ◄── Token catalog, generated defaults, and shared styles
+ │    ├── browser/          ◄── Shared browser source
+ │    │    ├── components/  ◄── Custom Web Components
+ │    │    │    └── [category]/[name]/
+ │    │    │         ├── [name].tsx ◄── Component logic & render template (TSX)
+ │    │    │         ├── [name].css ◄── Local stylesheet
+ │    │    │         └── readme.md    ◄── Auto-generated API details (props, slots, events)
+ │    │    ├── theme/       ◄── Tokens and shared styles
+ │    │    ├── assets/      ◄── Browser assets
+ │    │    └── utils/       ◄── Browser utilities
+ │    ├── playground/      ◄── Shared demonstrations and documentation
+ │    └── tooling/changelog/◄── Notes, versioning and capture mechanisms
  └── readme.md              ◄── This file
 ```
 
@@ -66,7 +82,7 @@ webquark/ (Root)
 * [Unreal Engine / CEF compatibility](docs/unreal_compatibility.md)
 * [Full UX, DX, accessibility, and optimization audit (2026-07-11)](docs/component-audit-2026-07-11.md)
 
-Generated API references live beside each component implementation under `src/components/**/readme.md` and are refreshed by `bun run build`.
+Generated API references live beside each component implementation under `src/browser/components/**/readme.md` and are refreshed by `bun run build`.
 
 ---
 
@@ -88,8 +104,8 @@ the `wq-sandbox`/`wq-switch`/`wq-check` package scripts. Fill in `source` inside
 `preferredVersion` records your installed release preference; setup preserves an
 existing value. It does not select or download a release.
 
-Then run `bun run wq-switch local`. The switcher builds core, React, and Angular and
-activates only the packages that project uses. Run `bun run wq-switch npm` to
+Then run `bun run wq-switch local`. The switcher builds the workspace packages and
+activates the project's selected packages with their local dependency closure. Run `bun run wq-switch npm` to
 restore the original installed packages. See [the switcher guide](scripts/wq-switch/README.md).
 
 For CLI development, use the [rebuilt checkout commands](scripts/wq-switch/README.md#developing-the-cli)

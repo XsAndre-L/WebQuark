@@ -5,9 +5,10 @@ import * as fs from "fs";
 import * as path from "path";
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3333;
-// When compiled, the script will sit in scripts/webquark-serve.js.
-// The playground folder will sit in dist/playground.
-const PUBLIC_DIR = path.resolve(eval("__dirname"), "../dist/playground");
+// The same binary runs from the checkout or the umbrella's staged scripts directory.
+const PACKAGE_DIR = path.resolve(eval("__dirname"), '..');
+const packageManifest = JSON.parse(fs.readFileSync(path.join(PACKAGE_DIR, 'package.json'), 'utf8'));
+const PUBLIC_DIR = path.join(PACKAGE_DIR, packageManifest.private ? '.stencil/dist/playground' : 'dist/playground');
 
 const MIME_TYPES: Record<string, string> = {
   ".html": "text/html",

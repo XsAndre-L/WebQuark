@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "esnext",
+    "lib": [
+      "dom",
+      "es2020"
+    ],
+    "declaration": true,
+    "declarationDir": "./dist/types",
+    "outDir": "./dist",
+    "strict": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "bundler",
+    "rootDir": "./src",
+    "paths": {
+      "@webquark/browser": [
+        "../components/dist/types/index.d.ts"
+      ],
+      "@webquark/browser/*": [
+        "../components/*"
+      ]
+    }
+  },
+  "angularCompilerOptions": {
+    "compilationMode": "partial",
+    "strictTemplates": true
+  },
+  "include": [
+    "src/**/*",
+    "../components/dist/types/components.d.ts"
+  ]
+}

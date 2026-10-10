@@ -1,0 +1,64 @@
+{
+  "name": "@webquark/angular",
+  "version": "1.0.2",
+  "description": "Angular directives and wrappers for WebQuark Web Components",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./data-table-cell": {
+      "types": "./dist/types/data-table-cell.d.ts",
+      "import": "./dist/data-table-cell.js",
+      "default": "./dist/data-table-cell.js"
+    }
+  },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Purely-IT/WebQuark.git",
+    "directory": "packages/browser/angular"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "prepare:generated": "bun run scripts/prepare-generated.ts",
+    "verify:drift": "bun run scripts/verify-angular-drift.ts",
+    "verify:consumer": "bun run scripts/verify-consumer.ts",
+    "verify:compatibility": "bun run scripts/verify-angular-compatibility.ts",
+    "verify": "bun run verify:drift && bun run verify:consumer && bun run verify:compatibility",
+    "build": "bun run prepare:generated && ngc -p tsconfig.json && bun run verify:consumer && bun run verify:drift"
+  },
+  "peerDependencies": {
+    "@angular/common": "^21.0.0 || ^22.0.0",
+    "@angular/core": "^21.0.0 || ^22.0.0",
+    "@angular/forms": "^21.0.0 || ^22.0.0",
+    "rxjs": "^7.0.0",
+    "@webquark/browser": "1.0.2"
+  },
+  "devDependencies": {
+    "@angular/common": "21.2.25",
+    "@angular/compiler": "21.2.25",
+    "@angular/compiler-cli": "21.2.25",
+    "@angular/core": "21.2.25",
+    "@angular/forms": "21.2.25",
+    "@angular/platform-browser": "21.2.25",
+    "rxjs": "7.8.2",
+    "typescript": "~6.0.3",
+    "zone.js": "~0.16.3"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@webquark/browser": "1.0.2"
+  }
+}

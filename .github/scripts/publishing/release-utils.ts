@@ -10,10 +10,64 @@ export const repositoryRoot = resolve(import.meta.dir, '../../..');
 export const npmCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 
 export const packages = [
-  { key: 'core', name: '@webquark/core', directory: repositoryRoot },
-  { key: 'react', name: '@webquark/react', directory: resolve(repositoryRoot, 'packages/react') },
-  { key: 'angular', name: '@webquark/angular', directory: resolve(repositoryRoot, 'packages/angular') },
+  { key: 'browser', role: 'browser', name: '@webquark/browser', directory: resolve(repositoryRoot, 'packages/browser/components'), dependencies: [] },
+  { key: 'tooling', role: 'tooling', name: '@webquark/tooling', directory: resolve(repositoryRoot, 'packages/tooling'), dependencies: [] },
+  { key: 'core', role: 'umbrella', name: '@webquark/core', directory: resolve(repositoryRoot, 'packages/core'), dependencies: ['@webquark/browser', '@webquark/tooling'] },
+  { key: 'react', role: 'wrapper', name: '@webquark/react', directory: resolve(repositoryRoot, 'packages/browser/react'), dependencies: ['@webquark/browser'] },
+  { key: 'angular', role: 'wrapper', name: '@webquark/angular', directory: resolve(repositoryRoot, 'packages/browser/angular'), dependencies: ['@webquark/browser'] },
 ] as const;
+export type PackageDefinition = typeof packages[number];
+
+/** Align only the declared package graph; framework peers retain their ranges. */
+export function prepareManifest(definition: PackageDefinition, manifest: PackageManifest, version: string): PackageManifest {
+  if (manifest.name !== definition.name || manifest.private) throw new Error('Invalid publishable package: ' + definition.name);
+  const prepared = { ...manifest, version };
+  for (const field of ['dependencies', 'devDependencies', 'peerDependencies'] as const) {
+    if (prepared[field]) prepared[field] = { ...prepared[field] };
+    for (const name of Object.keys(prepared[field] ?? {})) {
+      if (packages.some(candidate => candidate.name === name)) prepared[field][name] = version;
+    }
+  }
+  if (definition.dependencies.length) {
+    prepared.dependencies ??= {};
+    for (const name of definition.dependencies) prepared.dependencies[name] = version;
+  }
+  if (definition.role === 'wrapper') {
+    prepared.peerDependencies ??= {};
+    for (const name of definition.dependencies) prepared.peerDependencies[name] = version;
+  }
+  assertPackageContract(definition, prepared, version);
+  return prepared;
+}
+
+export function assertPackageContract(definition: PackageDefinition, manifest: PackageManifest, version: string): void {
+  if (manifest.name !== definition.name || manifest.private) throw new Error('Invalid publishable package: ' + definition.name);
+  if (manifest.version !== version) throw new Error(manifest.name + ' must use lockstep version ' + version);
+  for (const name of definition.dependencies) {
+    if (manifest.dependencies?.[name] !== version || (definition.role === 'wrapper' && manifest.peerDependencies?.[name] !== version)) {
+      throw new Error(manifest.name + ' must depend on ' + name + '@' + version + (definition.role === 'wrapper' ? ' and use that exact peer version' : ''));
+    }
+  }
+  for (const field of ['dependencies', 'peerDependencies'] as const) {
+    for (const [name, range] of Object.entries(manifest[field] ?? {})) {
+      if (!packages.some(candidate => candidate.name === name)) continue;
+      if (!(definition.dependencies as readonly string[]).includes(name) || range !== version) {
+        throw new Error('Invalid internal dependency: ' + manifest.name + ' ' + field + ' ' + name + '=' + range);
+      }
+    }
+  }
+}
+
+export function assertLockstepPackages(manifests: PackageManifest[]): string {
+  if (manifests.length !== packages.length) throw new Error('All five package manifests are required.');
+  const version = manifests[0].version;
+  for (const definition of packages) {
+    const manifest = manifests.find(candidate => candidate.name === definition.name);
+    if (!manifest) throw new Error('Missing package manifest: ' + definition.name);
+    assertPackageContract(definition, manifest, version);
+  }
+  return version;
+}
 
 export function readJson<T>(filePath: string): T {
   return JSON.parse(readFileSync(filePath, 'utf8')) as T;

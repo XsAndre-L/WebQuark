@@ -20,8 +20,8 @@
 2. In your application entry file, register WebQuark. This assumes a bundler that resolves package imports and CSS imports.
 
 ```javascript
-import '@webquark/core/dist/webquark/webquark.css';
-import { defineCustomElements } from '@webquark/core/loader';
+import '@webquark/browser/dist/webquark/webquark.css';
+import { defineCustomElements } from '@webquark/browser/loader';
 defineCustomElements();
 ```
 
@@ -78,7 +78,7 @@ Register application-owned definitions and prevent network fallback for unknown 
 ```html
 <div id="registered-icon"></div>
 <script type="module">
-import { registerQIcons, configureQIcons } from '@webquark/core';
+import { registerQIcons, configureQIcons } from '@webquark/browser';
 registerQIcons({ 'app-check': { node: [['path', { d: 'M5 12l4 4L19 6' }]] } });
 configureQIcons({ strict: true });
 await customElements.whenDefined('q-icon');
@@ -119,7 +119,7 @@ Use a raster asset URL without losing cache parameters or its fragment.
   name="check-preview.png?v=2#preview" label="Saved" size="64"></q-icon>
 ```
 
-Copy the supplied [preview PNG](../../src/assets/icons/check-preview.png) to `/assets/icons/check-preview.png` in your application's public assets. The pathname selects the native image renderer; the complete URL is retained. This example uses the same Quick start registration and requires non-strict URL loading. The image keeps its original color.
+Copy the supplied [preview PNG](../../src/browser/assets/icons/check-preview.png) to `/assets/icons/check-preview.png` in your application's public assets. The pathname selects the native image renderer; the complete URL is retained. This example uses the same Quick start registration and requires non-strict URL loading. The image keeps its original color.
 
 ## Behavior & accessibility
 
@@ -182,7 +182,7 @@ Shared geometry and theme setup are documented in [Foundation](../foundation.md)
 
 For new code, use `library`, `libraryVersion`. The deprecated aliases remain supported. Canonical properties take precedence when set; otherwise the legacy property and its default apply. Set a canonical JavaScript property to `undefined` to restore the fallback.
 
-Cross-check the [generated API](../../src/components/media/icon/readme.md) and [implementation](../../src/components/media/icon/icon.tsx). Source nullability and actual rendering limitations are preserved below.
+Cross-check the [generated API](../../src/browser/components/media/icon/readme.md) and [implementation](../../src/browser/components/media/icon/icon.tsx). Source nullability and actual rendering limitations are preserved below.
 
 ### Properties
 
@@ -244,7 +244,7 @@ This component exposes no public methods.
 
 Registered child-node attributes may include the own enumerable string `key` metadata supplied by `@lucide/icons`. It is discarded before SVG validation/rendering and still counts against attribute and UTF-8 byte budgets. Function/accessor metadata is rejected. This exception does not apply to root SVG attributes or fetched XML: `key` remains unsupported there, and all emitted SVG attributes use the strict allowlist.
 
-These are package utilities, not methods on an element. Import them from `@webquark/core`.
+These are package utilities, not methods on an element. Import them from `@webquark/browser`.
 
 | Signature | Purpose | Returns |
 | :--- | :--- | :--- |

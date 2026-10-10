@@ -13,7 +13,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-const TARGET_DIR = path.join(__dirname, '../src');
+const TARGET_DIR = path.join(__dirname, '../src/browser');
 
 // Regex to match existing dividers (to strip them before re-sorting)
 const regexDivider = /^[ \t]*\/\/ =+[ \t]*$/;

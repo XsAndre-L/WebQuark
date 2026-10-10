@@ -35,5 +35,5 @@ src/playground/playground.bundled.js
 scripts/webquark-serve.js
 
 # Generated framework wrappers
-packages/angular/src/stencil-generated/
-packages/react/src/stencil-generated/
+packages/browser/angular/src/stencil-generated/
+packages/browser/react/src/stencil-generated/

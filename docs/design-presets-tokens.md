@@ -1,6 +1,6 @@
 # Design preset values
 
-Generated from `src/theme/tokens.ts`. Compact preserves existing defaults; new semantic roles are opt-in.
+Generated from `src/browser/theme/tokens.ts`. Compact preserves existing defaults; new semantic roles are opt-in.
 
 | Token | Compact | Comfortable |
 | --- | --- | --- |

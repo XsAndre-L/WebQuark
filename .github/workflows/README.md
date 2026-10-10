@@ -41,19 +41,20 @@ A numeric prerelease identifier cannot contain a leading zero. The valid form is
 Consumers choose the stream explicitly:
 
 ```bash
-npm install @webquark/core@dev @webquark/react@dev @webquark/angular@dev
-npm install @webquark/core@latest @webquark/react@latest @webquark/angular@latest
+npm install @webquark/core@dev
+npm install @webquark/browser@dev @webquark/angular@dev
+npm install @webquark/tooling@latest
 ```
 
 ## Publishing scripts
 
 The release logic lives under `.github/scripts/publishing/`:
 
-- The root `packages:build` package script builds core, React, and Angular without running tests.
+- The private root `packages:build` script builds browser, tooling, core, React, and Angular without running tests. The root is never packed or published.
 - The root `pr:verify` package script remains available for local checks: it checks prop policy before building packages and running tooling and unit tests.
-- `prepare-release.ts` validates `.github/release.json`, calculates `-dev.N`, and aligns all package versions.
-- `verify-packages.ts` checks prop policy, builds all three packages, verifies packed Angular 21/22 consumers, runs every Vitest project, and validates manifests and npm tarballs. It is the publish workflow's final gate.
-- `publish-packages.ts` packs first, publishes in core/React/Angular order, prevents overwriting different npm contents, and applies the requested npm dist-tag.
+- `prepare-release.ts` validates `.github/release.json`, calculates `-dev.N`, and aligns all five package versions and exact internal dependency versions. Core depends on browser and tooling; wrappers depend on and peer browser; tooling has no WebQuark dependency.
+- `verify-packages.ts` checks prop policy, builds all five packages, verifies packed Angular 21/22 consumers, runs every Vitest project, and validates manifests and npm tarballs. It is the publish workflow's final gate.
+- `publish-packages.ts` packs first, publishes browser/tooling before core and browser before React/Angular, prevents overwriting different npm contents, resumes matching partial publications, and applies the requested npm dist-tag.
 
 The root `publish-all` package script points to this guarded publisher. A real publish requires both an explicit `--tag dev|latest` argument and `NODE_AUTH_TOKEN`.
 
@@ -63,7 +64,7 @@ Create these repository settings before enabling deployment:
 
 - Repository variables `WEBQUARK_DEV_PIPELINE_ENABLED=true` and `WEBQUARK_PROD_PIPELINE_ENABLED=false`.
 - GitHub environment `dev`, managed by AnythingDevOps. `prod` remains inactive.
-- One repository secret named `NPM_TOKEN`, with npm publish access to the `@webquark` scope. This shared credential publishes core, React, and Angular; there are no per-package secrets.
+- One repository secret named `NPM_TOKEN`, with npm publish access to the `@webquark` scope. This shared credential publishes all five packages; there are no per-package secrets.
 - Recommended reviewer approval on `prod`.
 
 If branch protection or a ruleset requires the former `Pull Request` workflow's `Build and test packages` status check, remove that requirement when retiring the workflow so pull requests can merge.
@@ -78,7 +79,7 @@ Dev and production publishing can be enabled independently. A disabled branch re
 
 ## Release gates
 
-A publish run installs dependencies with the frozen lockfile, audits the locked graph at the moderate threshold, prepares the lockstep version, installs Playwright Chromium, Firefox, and WebKit, then executes the full release verifier. Prop policy, core/React/Angular builds, every Vitest project (tooling, unit, carousel-browsers, and browser), Angular 21/22 compatibility installs, manifest validation, and npm pack dry-runs must all pass before npm publishing begins.
+A publish run installs dependencies with the frozen lockfile, audits the locked graph at the moderate threshold, prepares the lockstep version, installs Playwright Chromium, Firefox, and WebKit, then executes the full release verifier. Prop policy, all five package builds, every Vitest project (tooling, unit, carousel-browsers, and browser), Angular 21/22 compatibility installs, manifest validation, and npm pack dry-runs must all pass before npm publishing begins.
 
 The workflow pins its GitHub Actions and Bun versions for reproducible runs. Dev and production publishing remain independently controlled by repository variables and protected environments.
 

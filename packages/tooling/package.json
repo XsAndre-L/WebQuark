@@ -1,0 +1,39 @@
+{
+  "name": "@webquark/tooling",
+  "version": "1.0.2",
+  "description": "WebQuark changelog, versioning and capture developer tooling",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Purely-IT/WebQuark.git",
+    "directory": "packages/tooling"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    "./changelog": {
+      "types": "./dist/changelog/index.d.ts",
+      "import": "./dist/changelog/index.js",
+      "default": "./dist/changelog/index.js"
+    }
+  },
+  "bin": {
+    "wq-changelog": "./dist/changelog/cli/index.js"
+  },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "engines": {
+    "bun": ">=1.4.2"
+  },
+  "dependencies": {
+    "sharp": "0.34.5"
+  }
+}

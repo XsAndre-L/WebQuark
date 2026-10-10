@@ -2,8 +2,22 @@ import { existsSync, mkdirSync, readFileSync, realpathSync, renameSync, writeFil
 import { dirname, join, resolve } from 'node:path';
 import { projectPaths } from './paths';
 
-export const names = ['@webquark/core', '@webquark/angular', '@webquark/react'] as const;
+export const names = ['@webquark/core', '@webquark/browser', '@webquark/tooling', '@webquark/angular', '@webquark/react'] as const;
 export type PackageName = typeof names[number];
+export const packageDirectories: Record<PackageName, string> = {
+  '@webquark/core': 'packages/core',
+  '@webquark/browser': 'packages/browser/components',
+  '@webquark/tooling': 'packages/tooling',
+  '@webquark/angular': 'packages/browser/angular',
+  '@webquark/react': 'packages/browser/react',
+};
+export const localDependencies: Record<PackageName, readonly PackageName[]> = {
+  '@webquark/core': ['@webquark/browser', '@webquark/tooling'],
+  '@webquark/browser': [],
+  '@webquark/tooling': [],
+  '@webquark/angular': ['@webquark/browser'],
+  '@webquark/react': ['@webquark/browser'],
+};
 export interface SwitchConfig { version: 1; source: string; preferredVersion?: string; }
 export interface WebQuarkConfig { 'wq-switch'?: SwitchConfig; [key: string]: unknown; }
 export function readWebQuarkConfig(root: string): WebQuarkConfig {
@@ -24,7 +38,7 @@ export function readSwitchConfig(root: string): SwitchConfig | undefined {
   }
   return value;
 }
-export type Manifest = { name: string; version: string; main?: string; module?: string; types?: string; files?: string[]; bin?: Record<string, string>; dependencies?: Record<string, string>; devDependencies?: Record<string, string>; peerDependencies?: Record<string, string>; peerDependenciesMeta?: Record<string, { optional?: boolean }>; scripts?: Record<string, string> };
+export type Manifest = { name: string; version: string; private?: boolean; main?: string; module?: string; types?: string; exports?: Record<string, unknown>; files?: string[]; bin?: Record<string, string>; dependencies?: Record<string, string>; devDependencies?: Record<string, string>; peerDependencies?: Record<string, string>; peerDependenciesMeta?: Record<string, { optional?: boolean }>; scripts?: Record<string, string> };
 export function json<T>(file: string): T { return JSON.parse(readFileSync(file, 'utf8')) as T; }
 export function manifest(root: string): Manifest { return json(join(root, 'package.json')); }
 export function writeJson(file: string, value: unknown): void {
@@ -40,15 +54,17 @@ export function consumerRoot(cwd = process.cwd()): string {
     if (parent === root) throw new Error('Run this command inside the consuming project.');
     root = parent;
   }
-  if (manifest(root).name === '@webquark/core') throw new Error('Run wq-switch in the consuming app, not the WebQuark repository.');
+  const pkg = manifest(root);
+  if (names.includes(pkg.name as PackageName) || (pkg.private && pkg.scripts?.['packages:build'])) throw new Error('Run wq-switch in the consuming app, not the WebQuark repository.');
   return realpathSync(root);
 }
 export function validateSource(source: string): string {
   const root = realpathSync(resolve(source));
-  if (manifest(root).name !== '@webquark/core' || !manifest(root).scripts?.['packages:build'] ||
-      manifest(join(root, 'packages/angular')).name !== '@webquark/angular' ||
-      manifest(join(root, 'packages/react')).name !== '@webquark/react') {
-    throw new Error('Source must be the WebQuark repository root, with packages:build and both wrappers.');
+  const pkg = manifest(root);
+  if (!pkg.private || !pkg.scripts?.['packages:build'] ||
+      !names.every(name => existsSync(join(root, packageDirectories[name], 'package.json')) &&
+        manifest(join(root, packageDirectories[name])).name === name)) {
+    throw new Error('Source must be the private WebQuark repository root, with packages:build and all five package manifests.');
   }
   return root;
 }
@@ -61,6 +77,8 @@ export function sourceFor(root: string): string {
 export function selectedPackages(root: string): PackageName[] {
   const pkg = manifest(root);
   const dependencies = { ...pkg.dependencies, ...pkg.devDependencies };
-  if (!dependencies['@webquark/core']) throw new Error('The consuming project must declare @webquark/core.');
-  return names.filter(name => dependencies[name]);
+  const selected = new Set<PackageName>(names.filter(name => dependencies[name]));
+  if (!selected.size) throw new Error('The consuming project must declare a WebQuark package.');
+  for (const name of selected) for (const dependency of localDependencies[name]) selected.add(dependency);
+  return names.filter(name => selected.has(name));
 }

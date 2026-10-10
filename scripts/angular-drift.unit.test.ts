@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-const script = resolve('packages/angular/scripts/verify-angular-drift.ts');
+const script = resolve('packages/browser/angular/scripts/verify-angular-drift.ts');
 
 function checkHost(wrapper: string, angular: string) {
   const directory = mkdtempSync(join(tmpdir(), 'webquark-drift-test-'));
@@ -32,7 +32,7 @@ describe('Angular sibling drift check', () => {
     expect(result.stdout).toContain('does not locally link');
   });
 
-  it.each(['file:../../WebQuark/packages/angular', 'link:../../WebQuark/packages/angular', 'workspace:*'])(
+  it.each(['file:../../WebQuark/packages/browser/angular', 'link:../../WebQuark/packages/browser/angular', 'workspace:*'])(
     'retains the drift guard for %s', wrapper => {
       const result = checkHost(wrapper, '^22.0.7');
       expect(result.status).toBe(1);
@@ -41,7 +41,7 @@ describe('Angular sibling drift check', () => {
   );
 
   it('allows a local link with aligned Angular versions', () => {
-    const result = checkHost('file:../../WebQuark/packages/angular', '21.2.20');
+    const result = checkHost('file:../../WebQuark/packages/browser/angular', '21.2.20');
     expect(result.status, result.stderr).toBe(0);
     expect(result.stdout).toContain('Verified Angular version alignment');
   });
