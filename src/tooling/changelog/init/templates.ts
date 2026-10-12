@@ -35,6 +35,7 @@ export const changelogConfig: ChangelogConfig = {
 3. Run \`bun run changelog:generate\` before your application build, and serve the contents of \`public/\` as static files.
 
 The viewer is available at \`changelog/\` under your application's public base URL.
+The TypeScript script requires \`@types/bun\` as a development dependency (\`bun add --dev @types/bun\`).
 The generated folder and \`public/changelog/feed-url.js\` belong to the generation script; do not edit them.
 Production generation excludes Unreleased. No released history is created by setup.
 

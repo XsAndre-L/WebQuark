@@ -14,9 +14,11 @@ Text notes and ordinary visuals require no metadata or capture adapter.
 
 In an application that already declares `@webquark/tooling` or `@webquark/core`
 and has a stable `X.Y.Z` package version, using the reviewed local packed
-candidate (init is not published to npm yet):
+candidate (init is not published to npm yet), install `@types/bun` as a
+development dependency for the TypeScript preview script:
 
 ```sh
+bun add --dev @types/bun
 bunx --no-install wq-changelog init
 bun run changelog:preview
 ```
