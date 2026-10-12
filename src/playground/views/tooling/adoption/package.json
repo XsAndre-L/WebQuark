@@ -1,0 +1,10 @@
+{
+  "name": "changelog-adoption-example",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "scripts": {
+    "notes": "bun generate.ts",
+    "serve": "bun serve.ts"
+  }
+}

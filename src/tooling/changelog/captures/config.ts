@@ -26,24 +26,52 @@ export function normalizeCaptureFocus(input: unknown, location = 'focus'): Captu
 }
 
 
+export function captureCommandHelp(command?: string): string {
+  if (command === 'publish') return [
+    'Usage: wq-changelog capture publish <run-id> --config <project-config-module>',
+    'Save the exact passed, cleanup-verified staged run after reviewing its images and report.',
+    'Publication revalidates current inputs and staged bytes; it does not start capture resources.',
+  ].join('\n');
+  if (command === 'stage') return [
+    'Usage: wq-changelog capture stage --config <project-config-module> [--scenario <id>] [--watch]',
+    'Stage images and a report for review without replacing release images. Repeat --scenario to select multiple jobs.',
+    'Requires metadata, staging/feed configuration, and captureAdapter or loadCaptureAdapter in the config module.',
+  ].join('\n');
+  return [
+    'Usage: wq-changelog capture stage --config <project-config-module> [--scenario <id>] [--watch]',
+    '       wq-changelog capture publish <run-id> --config <project-config-module>',
+    'Review the staged images/report before publishing their exact run ID.',
+    'Legacy: capture [--scenario <id>] [--watch] [--stage-only] | capture --publish-run <run-id>.',
+    'Legacy custom captures save immediately unless --stage-only; generic page captures require staging.',
+  ].join('\n');
+}
+
 export function parseArguments(arguments_: string[]) {
+  const tokens = [...arguments_];
+  const command = tokens[0] === 'stage' || tokens[0] === 'publish' ? tokens.shift() : undefined;
   const selected: string[] = [];
   let watch = false;
   let help = false;
-  let stageOnly = false;
+  let stageOnly = command === 'stage';
   let publishRun: string | undefined;
-  for (let index = 0; index < arguments_.length; index++) {
-    const argument = arguments_[index];
+  if (command === 'publish') {
+    if (tokens.includes('--help') || tokens.includes('-h')) return { selected, watch, help: true, stageOnly };
+    if (tokens.length !== 1 || !tokens[0] || tokens[0].startsWith('-')) throw new Error('capture publish requires one staged run ID and no capture options.');
+    return { selected, watch, help, stageOnly, publishRun: tokens[0] };
+  }
+  for (let index = 0; index < tokens.length; index++) {
+    const argument = tokens[index];
     if (argument === '--watch') watch = true;
     else if (argument === '--stage-only') stageOnly = true;
     else if (argument === '--publish-run') {
-      const value = arguments_[++index];
+      if (command === 'stage') throw new Error('capture stage cannot publish a run; use capture publish <run-id>.');
+      const value = tokens[++index];
       if (!value || value.startsWith('--') || publishRun) throw new Error('--publish-run requires one staged run ID.');
       publishRun = value;
     }
     else if (argument === '--help' || argument === '-h') help = true;
     else if (argument === '--scenario') {
-      const scenario = arguments_[++index];
+      const scenario = tokens[++index];
       if (!scenario || scenario.startsWith('--')) throw new Error('--scenario requires a configured capture ID.');
       selected.push(scenario);
     } else throw new Error(`Unknown capture option: ${argument}`);

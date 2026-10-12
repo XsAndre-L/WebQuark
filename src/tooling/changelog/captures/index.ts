@@ -4,14 +4,14 @@ import type { ChangelogConfig } from '../config/index.js';
 import type { CaptureAdapter, CaptureJob } from '../adapters/capture.js';
 import type { StageCaptureOptions, CaptureResult } from './run.js';
 import type { PublicationPlan, StagedCapture } from './publication.js';
-import { parseArguments } from './config.js';
+import { captureCommandHelp, parseArguments } from './config.js';
 
 export type * from '../adapters/capture.js';
 export type { StageCaptureOptions, CaptureResult } from './run.js';
 export type { PublicationPlan, StagedCapture } from './publication.js';
 export type { CaptureWatchInputs } from './fingerprint.js';
 export type { BuiltFrontend } from './watch.js';
-export { normalizeCaptureFocus, parseArguments, readCaptureConfiguration, type CaptureFocus, type CaptureFocusContext } from './config.js';
+export { captureCommandHelp, normalizeCaptureFocus, parseArguments, readCaptureConfiguration, type CaptureFocus, type CaptureFocusContext } from './config.js';
 export { bindCaptureDestination, assertCaptureDestination, type CaptureDestination, type CapturePage } from './destination.js';
 export { captureReportSchemaVersion, captureToolRevision } from './revision.js';
 export { relevantWatchChange, requiresCaptureRestart } from './fingerprint.js';
@@ -43,7 +43,7 @@ export async function publishReviewedRun<E extends CaptureJob>(config: Changelog
 }
 export async function runCaptureCommand<E extends CaptureJob>(config: ChangelogConfig, adapter: CaptureAdapter<E>, args: string[] = process.argv.slice(2)): Promise<void> {
   const options = parseArguments(args);
-  if (options.help) { console.log('Usage: wq-changelog capture --config <reviewed-config-module> [--scenario <id>] [--watch] [--stage-only] | --publish-run <run-id>'); return; }
+  if (options.help) { console.log(captureCommandHelp(args[0])); return; }
   const unlock = await acquireFileLock(config.root, 'whats-new-capture', config.lockNamespace);
   const controller = new AbortController(), stop = () => controller.abort();
   process.once('SIGINT', stop); process.once('SIGTERM', stop);

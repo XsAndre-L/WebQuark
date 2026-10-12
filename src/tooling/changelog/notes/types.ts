@@ -29,4 +29,6 @@ export type ReleaseEntry = {
   categories: { name: ChangeCategory; summaries: string[] }[];
   visuals: ReleaseVisual[];
 };
+/** Public JSON envelope generated for browser consumers. Import this type with `import type`. */
+export type ReleaseFeed = { releases: ReleaseEntry[] };
 

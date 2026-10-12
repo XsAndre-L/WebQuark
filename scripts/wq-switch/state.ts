@@ -4,12 +4,13 @@ import { createHash, randomUUID } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import { json, names, writeJson, type PackageName } from './config';
 import { projectPaths, type ProjectPaths } from './paths';
+import { assertBins, binOperations, changeBin, validateBins, type BinEntry, type BinOperation } from './bins';
 
 export interface Entry { name: PackageName; slot: string; backup: string; original: string; identity: string; target: string; }
 function identity(file: string): string { const stat = statSync(file); return `${stat.dev}:${stat.ino}`; }
-export interface State { version: 1; source: string; generation: string; entries: Entry[]; }
+export interface State { version: 1; source: string; generation: string; entries: Entry[]; bins?: BinEntry[]; }
 interface Operation { slot: string; before: string | null; after: string | null; move?: string; }
-interface Journal { previous: State | null; next: State | null; operations: Operation[]; }
+interface Journal { previous: State | null; next: State | null; operations: Operation[]; bins?: BinOperation[]; }
 export function present(file: string): boolean { try { lstatSync(file); return true; } catch (error: any) { if (error.code === 'ENOENT') return false; throw error; } }
 export function within(parent: string, child: string): boolean { const r = relative(parent, child); return r !== '' && !r.startsWith('..') && !isAbsolute(r); }
 export function linkTarget(file: string): string | null {
@@ -28,6 +29,7 @@ function validateState(root: string, state: State, paths: ProjectPaths): void {
         dirname(entry.backup) !== dirname(entry.slot) || !entry.backup.startsWith(entry.slot + '.wq-original-') ||
         !within(state.generation, entry.target)) throw new Error('Invalid switch state paths; refusing filesystem changes.');
   }
+  validateBins(root, state.bins);
 }
 export function readState(root: string): State | null {
   const paths = projectPaths(root);
@@ -43,6 +45,7 @@ export function assertActive(state: State): void {
     if (linkTarget(entry.slot) !== entry.target) throw new Error(`${entry.name} was changed by another install. Refusing to overwrite it.`);
     if (entry.identity && (!present(entry.backup) || identity(entry.backup) !== entry.identity)) throw new Error(`Original package backup is missing or changed: ${entry.backup}`);
   }
+  assertBins(state);
 }
 export function hasJournal(root: string): boolean { return existsSync(projectPaths(root).journal); }
 function removeExpectedLink(slot: string, expected: string): void {
@@ -58,11 +61,13 @@ function validateJournal(root: string, journal: Journal, paths: ProjectPaths): v
     if (!matching.length || (op.move && !matching.some(entry => entry.backup === op.move)) ||
         [op.before, op.after].some(target => target !== null && !matching.some(entry => entry.target === target))) throw new Error('Invalid recovery journal.');
   }
+  if (JSON.stringify(journal.bins ?? []) !== JSON.stringify(binOperations(journal.previous, journal.next))) throw new Error('Invalid launcher recovery journal.');
 }
 export function recover(root: string): void {
   const paths = projectPaths(root);
   if (!existsSync(paths.journal)) return;
   const journal = json<Journal>(paths.journal); validateJournal(root, journal, paths);
+  for (const operation of [...(journal.bins ?? [])].reverse()) changeBin(operation, true);
   for (const op of [...journal.operations].reverse()) {
     if (op.move) {
       const entry = journal.next!.entries.find(entry => entry.slot === op.slot)!;
@@ -104,13 +109,15 @@ export function activate(root: string, next: State): void {
     if (!old && (present(entry.backup) || (entry.identity ? !present(entry.slot) || identity(entry.slot) !== entry.identity : present(entry.slot)))) throw new Error(`Original connection changed: ${entry.name}`);
     return { slot: entry.slot, before: old?.target ?? null, after: entry.target, ...(old ? {} : { move: entry.backup }) };
   });
-  writeJson(paths.journal, { previous, next, operations });
+  const bins = binOperations(previous, next);
+  writeJson(paths.journal, { previous, next, operations, bins });
   try {
     for (const op of operations) {
       if (op.move) { if (present(op.slot)) renameSync(op.slot, op.move); }
       else removeExpectedLink(op.slot, op.before!);
       link(op.after!, op.slot);
     }
+    for (const operation of bins) changeBin(operation);
     saveState(next, paths); unlinkSync(paths.journal);
   } catch (error) { recover(root); throw error; }
 }
@@ -119,9 +126,11 @@ export function restore(root: string): void {
   const previous = readState(root); if (!previous) return;
   assertActive(previous);
   const operations = previous.entries.map(entry => ({ slot: entry.slot, before: entry.target, after: null }));
-  writeJson(paths.journal, { previous, next: null, operations });
+  const bins = binOperations(previous, null);
+  writeJson(paths.journal, { previous, next: null, operations, bins });
   try {
     for (const entry of previous.entries) { removeExpectedLink(entry.slot, entry.target); if (entry.identity) renameSync(entry.backup, entry.slot); }
+    for (const operation of bins) changeBin(operation);
     saveState(null, paths); unlinkSync(paths.journal);
   } catch (error) { recover(root); throw error; }
 }

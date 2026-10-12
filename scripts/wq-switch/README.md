@@ -113,12 +113,21 @@ node "D:\Dev\PurelyIT\WebQuark\scripts\wq-switch\dist\index.js" npm
 ```
 
 Use the same checkout executable for subsequent commands while testing CLI
-changes. Existing package-manager bin shims are not rewritten by switching.
+changes. Local activation also manages the selected packages' launchers in the
+consumer's `node_modules/.bin`. New or renamed commands work through normal
+`bun run` scripts. Existing Bun launchers with the same target and runtime are
+retained; other local Windows launchers use npm's standard `cmd-shim` generator.
+The bundled CLI includes these helpers, so consumers need no new dependencies.
+Npm restoration restores the exact original launcher artifacts. Unrelated or
+externally changed launchers stop switching before they are overwritten.
+If a currently running Windows executable would need a different target or
+runtime, retry through the checkout executable shown above; switching refuses
+that operation before changing the consumer's active state.
 
 ## Switching and recovery
 
 - Package snapshots are immutable. Build failure leaves active packages intact.
-  Activation records a recovery journal because swapping multiple package links
+  Activation records a recovery journal because swapping package links and launchers
   is not globally atomic; stop and restart the consumer server when switching.
 - Original npm entries are renamed beside themselves in `node_modules/@webquark/`
   to preserve relative Bun links. Hoisted packages receive removable local entries.
@@ -152,8 +161,9 @@ These checks read configuration and state without changing files.
 
 ## Source and validation
 
-`paths.ts` defines all consumer paths. `config.ts`, `state.ts`, and `packages.ts`
-own configuration, transactions/locks, and snapshots/dependency resolution.
+`paths.ts` defines all consumer paths. `config.ts`, `state.ts`, `packages.ts`,
+and `bins.ts` own configuration, transactions/locks, package snapshots and
+dependency resolution, and launcher staging/ownership.
 `index.ts` routes commands; `setup.ts` exposes the standalone setup executable.
 Bundled files in `dist/` are generated.
 

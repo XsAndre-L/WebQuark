@@ -20,6 +20,8 @@ export interface ChangelogConfig {
   feedPublicPrefix?: string;
   captureStagingDirectory?: string;
   metadata?: VisualMetadataAdapter;
+  /** Require contextual metadata for every active Unreleased visual. Historical archives retain their own contract. */
+  requireVisualMetadata?: boolean;
   versioning?: VersioningConfig;
   lockNamespace?: string;
   unreleasedReadme?: string;
@@ -28,19 +30,18 @@ export interface ChangelogConfig {
 export interface NotesConfig extends ChangelogConfig {
   feedOutputDirectory: string;
   feedPublicPrefix: string;
-  metadata: VisualMetadataAdapter;
 }
-export interface CaptureContentConfig extends NotesConfig { captureStagingDirectory: string }
+export interface CaptureContentConfig extends NotesConfig { captureStagingDirectory: string; metadata: VisualMetadataAdapter }
 
 export function requireMetadata(config: ChangelogConfig): asserts config is ChangelogConfig & { metadata: VisualMetadataAdapter } {
   if (!config.metadata?.applications.length || !config.metadata.id || !config.metadata.revision) throw new Error('Visual content requires a reviewed metadata adapter.');
 }
 export function requireNotesConfig(config: ChangelogConfig): asserts config is NotesConfig {
-  requireMetadata(config);
   if (!config.feedOutputDirectory || !config.feedPublicPrefix) throw new Error('Feed generation requires explicit output directory and public prefix.');
 }
 export function requireCaptureContentConfig(config: ChangelogConfig): asserts config is CaptureContentConfig {
   requireNotesConfig(config);
+  requireMetadata(config);
   if (!config.captureStagingDirectory) throw new Error('Capture presentation requires an explicit staging directory.');
 }
 
@@ -65,6 +66,7 @@ export function releaseDirectory(config: ChangelogConfig, version: string): stri
 export async function validateChangelogConfig(config: ChangelogConfig): Promise<void> {
   if (!config.root || !isAbsolute(config.root)) throw new Error('Changelog config requires an absolute consumer root.');
   if (config.metadata) requireMetadata(config);
+  if (config.requireVisualMetadata !== undefined && typeof config.requireVisualMetadata !== 'boolean') throw new Error('requireVisualMetadata must be boolean.');
   if (config.feedPublicPrefix !== undefined && (!config.feedPublicPrefix || /[\\\u0000:?#]/.test(config.feedPublicPrefix)
     || config.feedPublicPrefix.split('/').some(part => !part || part === '.' || part === '..'))) throw new Error('Feed public prefix must be a relative URL path.');
   const fields = [config.sourceManifest, config.changelog, config.releasesDirectory, config.unreleasedDirectory,
