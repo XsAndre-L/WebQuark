@@ -9,6 +9,7 @@ import { runChangelogCli } from '../src/tooling/changelog/index.js';
 
 const roots: string[] = [];
 const sourceEntry = pathToFileURL(fileURLToPath(new URL('../src/tooling/changelog/index.ts', import.meta.url))).href;
+const repositoryRoot = fileURLToPath(new URL('../', import.meta.url));
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -139,6 +140,22 @@ describe('changelog starter initialization', () => {
     expect(readFileSync(join(root, 'public/changelog/feed-url.js'), 'utf8')).toContain(`generated/${feed}`);
     expect(readFileSync(join(root, 'public/changelog/viewer.js'), 'utf8')).toBe(viewer);
   });
+
+  it('typechecks the generated script/config and actual example server using installed Bun types', async () => {
+    const root = fixture();
+    await initializeChangelog(root);
+    const declarations = fileURLToPath(new URL('../src/tooling/changelog/index.ts', import.meta.url)).replaceAll('\\', '/');
+    // Resolve the real API types, rather than inventing a declaration for a runtime global.
+    put(root, 'node_modules/@webquark/tooling/index.d.ts', `export * from ${JSON.stringify(declarations)};\n`);
+    put(root, 'tsconfig.tooling.json', JSON.stringify({ compilerOptions: {
+      target: 'ES2022', module: 'ESNext', moduleResolution: 'Bundler', strict: true, noEmit: true,
+      allowImportingTsExtensions: true, skipLibCheck: true, types: ['node'],
+      typeRoots: [join(repositoryRoot, 'node_modules/@types')],
+    }, files: [join(root, 'scripts/generate-changelog.ts'), join(root, 'changelog.config.ts'),
+      join(repositoryRoot, 'src/playground/views/tooling/adoption/serve.ts')] }));
+    const result = spawnSync('bun', [join(repositoryRoot, 'node_modules/typescript/bin/tsc'), '--project', join(root, 'tsconfig.tooling.json')], { encoding: 'utf8', timeout: 15_000 });
+    expect(result.status, result.stdout + result.stderr).toBe(0);
+  }, 20_000);
 
   it('shows inert init help and rejects unsupported options before configuration import', async () => {
     const log = vi.spyOn(console, 'log').mockImplementation(() => {});

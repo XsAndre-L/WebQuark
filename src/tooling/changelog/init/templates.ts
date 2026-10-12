@@ -51,7 +51,8 @@ Prepare a release only when the release owner explicitly requests it; setup and 
 }
 
 function generationScript(entry: string): string {
-  return `import { writeFile } from 'node:fs/promises';
+  return `/// <reference types="bun" />
+import { writeFile } from 'node:fs/promises';
 import { join, posix } from 'node:path';
 import { generateWhatsNew } from '${entry}';
 import { changelogConfig } from '../changelog.config';
