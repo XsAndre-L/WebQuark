@@ -19,8 +19,10 @@ install `@webquark/tooling` as a development dependency. The starter can also us
 an explicitly declared `@webquark/core` dependency through its tooling subpath.
 The initializer is currently available in the local candidate only. Until the
 coordinated npm publication, install the reviewed tooling tarball with
-`bun add --dev ./webquark-tooling-<version>.tgz`; after publication the usual
-installation is `bun add --dev @webquark/tooling`.
+`bun add --dev ./webquark-tooling-<version>.tgz @types/bun`; after publication the usual
+installation is `bun add --dev @webquark/tooling @types/bun`.
+The TypeScript preview script references the installed Bun types; init does not
+install this dependency automatically.
 
 ```sh
 bunx --no-install wq-changelog init
@@ -90,7 +92,7 @@ first create root `package.json`:
 Then install the development dependency in that directory:
 
 ```sh
-bun add --dev @webquark/tooling
+bun add --dev @webquark/tooling @types/bun
 ```
 
 For an unpublished candidate, install the reviewed local `.tgz` instead.
@@ -178,46 +180,26 @@ hashed filename or import runtime tooling into a browser.
 
 Create `serve.ts` for this local example:
 
-The server uses Node APIs supported by Bun, so TypeScript needs only Node
-types and no Bun globals. The same approach is emitted by `wq-changelog init`.
-
 ```ts
-import { readFile } from 'node:fs/promises';
-import { createServer } from 'node:http';
-import { extname, join } from 'node:path';
+/// <reference types="bun" />
 import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
-const fixedFiles: Record<string, string> = {
-  '/': 'viewer.html',
-  '/viewer.js': 'viewer.js',
-  '/feed-url.js': 'dist/feed-url.js',
-};
-const contentTypes: Record<string, string> = {
-  '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json',
-  '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp',
-  '.gif': 'image/gif', '.avif': 'image/avif', '.svg': 'image/svg+xml',
-};
-const server = createServer(async (request, response) => {
-  try {
-    const path = new URL(request.url ?? '/', 'http://127.0.0.1:4173').pathname;
-    const filePath = fixedFiles[path] ?? (
-      /^\/release-notes\/(?:releases\.[a-f0-9]+\.json|images\/[a-f0-9]+\.(?:png|jpe?g|webp|gif|avif|svg))$/.test(path)
-        ? `dist${path}` : undefined
-    );
-    if (!filePath) { response.writeHead(404); response.end('Not found'); return; }
-    const content = await readFile(join(root, filePath));
-    response.writeHead(200, { 'Content-Type': contentTypes[extname(filePath)] ?? 'application/octet-stream' });
-    response.end(content);
-  } catch (error) {
-    const missing = (error as NodeJS.ErrnoException).code === 'ENOENT';
-    response.writeHead(missing ? 404 : 500);
-    response.end(missing ? 'Run bun generate.ts first.' : 'Could not read release notes.');
-  }
+const server = Bun.serve({
+  hostname: '127.0.0.1',
+  port: 4173,
+  async fetch(request) {
+    const path = new URL(request.url).pathname;
+    const filePath = path === '/' ? 'viewer.html'
+      : path === '/feed-url.js' ? 'dist/feed-url.js'
+      : /^\/release-notes\/(?:releases\.[a-f0-9]+\.json|images\/[a-f0-9]+\.(?:png|jpe?g|webp|gif|avif|svg))$/.test(path)
+        ? `dist${path}` : undefined;
+    if (!filePath) return new Response('Not found', { status: 404 });
+    const file = Bun.file(`${root}/${filePath}`);
+    return await file.exists() ? new Response(file) : new Response('Run bun generate.ts first.', { status: 404 });
+  },
 });
-server.listen(4173, '127.0.0.1', () => {
-  console.log('Release notes: http://127.0.0.1:4173/');
-});
+console.log(`Release notes: ${server.url}`);
 ```
 
 In a real app, serve or copy the whole generated directory at `/release-notes/`.
