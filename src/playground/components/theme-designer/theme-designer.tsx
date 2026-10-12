@@ -3,7 +3,7 @@ import { theme, effect } from '../../state';
 import './token-section';
 import css from './theme-designer.css';
 import { TokenItem } from './token-row';
-import { dimensionTokens, themeGroups } from '../../../theme/tokens';
+import { dimensionTokens, themeGroups } from '../../../browser/theme/tokens';
 
 export interface TokenCategory {
   category: string;

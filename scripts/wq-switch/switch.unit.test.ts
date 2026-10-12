@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, renameSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs';
+import { chmodSync, cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readlinkSync, realpathSync, renameSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, relative, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -9,8 +9,10 @@ import { status } from './commands/status';
 import { check } from './commands/check';
 import { stage, installed } from './packages';
 import { activate, hasJournal, link, linkTarget, locked, readState, recover, restore, within } from './state';
-import { json, manifest, sourceFor, writeJson } from './config';
+import { consumerRoot, json, manifest, names, packageDirectories, selectedPackages, sourceFor, validateSource, writeJson } from './config';
 import { projectPaths } from './paths';
+import { binOperations, changeBin, stageBins } from './bins';
+import cmdShim from 'cmd-shim';
 
 const temporary: string[] = [];
 afterEach(() => {
@@ -32,7 +34,7 @@ function fixture(wrapper: 'angular' | 'react' = 'angular', linked = false, hoist
   writeJson(join(app, 'package.json'), { name: 'consumer', dependencies: { '@webquark/core': '1.0.0', [`@webquark/${wrapper}`]: '1.0.0' } });
   put(join(app, 'bun.lock'), 'unchanged lock');
   const installedRoot = hoisted ? base : app;
-  for (const name of ['core', wrapper]) {
+  for (const name of ['core', 'browser', 'tooling', wrapper]) {
     const slot = join(installedRoot, 'node_modules/@webquark', name);
     const target = linked ? join(installedRoot, `node_modules/.bun/${name}/node_modules/@webquark`, name) : slot;
     pkg(target, `@webquark/${name}`);
@@ -46,19 +48,155 @@ function fixture(wrapper: 'angular' | 'react' = 'angular', linked = false, hoist
   pkg(join(app, 'node_modules', framework), framework);
   // Deliberately different library-side framework: staging must not use this one.
   pkg(join(source, 'node_modules', framework), framework, { version: '99.0.0' });
-  pkg(source, '@webquark/core', {
-    scripts: { 'packages:build': 'bun build-fixture.ts' },
+  writeJson(join(source, 'package.json'), { name: '@webquark/workspace', private: true, scripts: { 'packages:build': 'bun build-fixture.ts' } });
+  const core = join(source, packageDirectories['@webquark/core']);
+  pkg(core, '@webquark/core', {
+    dependencies: { '@webquark/browser': '1.0.0', '@webquark/tooling': '1.0.0' },
+    exports: { './browser/native-content.css': './dist/browser/native-content.css' },
     files: ['dist', 'scripts/wq-switch/dist/index.js'],
     bin: { 'wq-switch': './scripts/wq-switch/dist/index.js' },
   });
-  put(join(source, 'scripts/wq-switch/dist/index.js'), '#!/usr/bin/env node\nconsole.log("fixture CLI");');
-  put(join(source, 'build-fixture.ts'), 'console.log("Built core, React and Angular fixture");');
-  for (const kind of ['react', 'angular']) pkg(join(source, 'packages', kind), `@webquark/${kind}`, {
-    peerDependencies: { '@webquark/core': '^1.0.0', ...(kind === wrapper ? { [framework]: '*' } : {}) },
+  put(join(core, 'scripts/wq-switch/dist/index.js'), '#!/usr/bin/env node\nconsole.log("fixture CLI");');
+  put(join(core, 'dist/browser/native-content.css'), 'body {}');
+  const browser = join(source, packageDirectories['@webquark/browser']);
+  pkg(browser, '@webquark/browser', { exports: { './native-content.css': './dist/webquark/native-content.css' } });
+  put(join(browser, 'dist/webquark/native-content.css'), 'body {}');
+  pkg(join(source, packageDirectories['@webquark/tooling']), '@webquark/tooling');
+  put(join(source, 'build-fixture.ts'), 'console.log("Built all five package fixtures");');
+  for (const kind of ['react', 'angular']) pkg(join(source, packageDirectories[`@webquark/${kind}`]), `@webquark/${kind}`, {
+    dependencies: { '@webquark/browser': '1.0.0' },
+    peerDependencies: { '@webquark/browser': '1.0.0', ...(kind === wrapper ? { [framework]: '*' } : {}) },
   });
   setup(app, source);
   return { app, source, wrapper, framework, installedRoot };
 }
+
+async function launcher(app: string, name: string, target: string) {
+  const file = join(app, 'node_modules/.bin', name);
+  if (process.platform === 'win32') await cmdShim(target, file);
+  else { mkdirSync(dirname(file), { recursive: true }); chmodSync(target, 0o755); symlinkSync(relative(dirname(file), target), file); }
+}
+function runConsumer(app: string, args: string[]) {
+  const result = spawnSync('bun', args, { cwd: app, encoding: 'utf8', timeout: 20000 });
+  expect(result.status, result.stderr || String(result.error)).toBe(0);
+  return result.stdout;
+}
+
+describe('wq-switch launchers', () => {
+  it('creates missing launchers, adopts active state, refreshes added/retired names, and restores exact originals', async () => {
+    const { app, source } = fixture();
+    const originalCore = join(app, 'node_modules/@webquark/core');
+    const original = manifest(originalCore); original.bin = { 'webquark-sandbox': './dist/index.js' };
+    writeJson(join(originalCore, 'package.json'), original);
+    put(join(originalCore, 'dist/index.js'), '#!/usr/bin/env node\nconsole.log("original sandbox");');
+    await launcher(app, 'webquark-sandbox', join(originalCore, 'dist/index.js'));
+    const originalFiles = Object.fromEntries((process.platform === 'win32' ? ['', '.cmd', '.ps1'] : ['']).map(extension => {
+      const file = join(app, 'node_modules/.bin/webquark-sandbox' + extension);
+      return [file, lstatSync(file).isSymbolicLink() ? readlinkSync(file) : readFileSync(file)];
+    }));
+    const legacy = stage(app, source); activate(app, legacy);
+    const next = stage(app, source); await stageBins(app, next); activate(app, next);
+    expect(runConsumer(app, ['run', 'wq-switch', 'status'])).toContain('fixture CLI');
+    expect(existsSync(join(app, 'node_modules/.bin/webquark-sandbox'))).toBe(false);
+    const core = join(source, packageDirectories['@webquark/core']);
+    const current = manifest(core); current.bin!['wq-extra'] = current.bin!['wq-switch']; writeJson(join(core, 'package.json'), current);
+    const added = stage(app, source); await stageBins(app, added); activate(app, added);
+    expect(runConsumer(app, ['run', 'wq-extra'])).toContain('fixture CLI');
+    delete current.bin!['wq-extra']; writeJson(join(core, 'package.json'), current);
+    const removed = stage(app, source); await stageBins(app, removed); activate(app, removed);
+    expect(existsSync(join(app, 'node_modules/.bin/wq-extra'))).toBe(false);
+    restore(app);
+    expect(existsSync(join(app, 'node_modules/.bin/wq-switch'))).toBe(false);
+    for (const [file, expected] of Object.entries(originalFiles)) {
+      expect(lstatSync(file).isSymbolicLink() ? readlinkSync(file) : readFileSync(file)).toEqual(expected);
+    }
+    expect(runConsumer(app, ['run', 'webquark-sandbox'])).toContain('original sandbox');
+  });
+  it('gives core ownership of the duplicate changelog binary and preserves its Bun shebang', async () => {
+    const { app, source } = fixture();
+    const consumer = manifest(app); consumer.dependencies!['@webquark/tooling'] = '1.0.0'; writeJson(join(app, 'package.json'), consumer);
+    for (const name of ['core', 'tooling'] as const) {
+      const directory = join(source, packageDirectories[`@webquark/${name}`]);
+      const pkg = manifest(directory); pkg.bin = { ...pkg.bin, 'wq-changelog': './dist/changelog.js' }; writeJson(join(directory, 'package.json'), pkg);
+      put(join(directory, 'dist/changelog.js'), `#!/usr/bin/env bun\nconsole.log("${name} changelog " + Bun.version);`);
+    }
+    const next = stage(app, source); await stageBins(app, next); activate(app, next);
+    expect(runConsumer(app, ['run', 'wq-changelog'])).toContain('core changelog');
+    restore(app);
+  });
+  it('rejects foreign collisions and modified managed launchers without replacing them', async () => {
+    const { app, source } = fixture();
+    const file = join(app, 'node_modules/.bin/wq-switch'); put(file, 'foreign executable');
+    const next = stage(app, source);
+    await expect(stageBins(app, next)).rejects.toThrow('Foreign launcher collision');
+    expect(readFileSync(file, 'utf8')).toBe('foreign executable');
+    unlinkSync(file); await stageBins(app, next); activate(app, next);
+    unlinkSync(file); put(file, 'changed executable');
+    expect(() => restore(app)).toThrow('Launcher changed by another install');
+    expect(readFileSync(file, 'utf8')).toBe('changed executable');
+    expect(readState(app)?.generation).toBe(next.generation);
+    const output = vi.spyOn(console, 'log').mockImplementation(() => {});
+    status(app);
+    expect(output.mock.calls.flat().join('\n')).toContain('Mode: BROKEN');
+    expect(process.exitCode).toBe(1);
+  });
+  it('recovers interrupted launcher refresh and refuses an unrelated replacement during recovery', async () => {
+    const { app, source } = fixture();
+    const previous = stage(app, source); await stageBins(app, previous); activate(app, previous);
+    const core = join(source, packageDirectories['@webquark/core']);
+    const pkg = manifest(core); pkg.bin!['wq-extra'] = pkg.bin!['wq-switch']; writeJson(join(core, 'package.json'), pkg);
+    const next = stage(app, source); await stageBins(app, next);
+    const operations = next.entries.map(entry => ({ slot: entry.slot, before: previous.entries.find(old => old.name === entry.name)!.target, after: entry.target }));
+    const bins = binOperations(previous, next);
+    writeJson(projectPaths(app).journal, { previous, next, operations, bins });
+    const added = bins.find(operation => operation.file.endsWith('wq-extra'))!;
+    changeBin(added); recover(app);
+    expect(existsSync(added.file)).toBe(false);
+    expect(readState(app)?.generation).toBe(previous.generation);
+    writeJson(projectPaths(app).journal, { previous, next, operations, bins });
+    put(added.file, 'unrelated install');
+    expect(() => recover(app)).toThrow('Launcher changed during switching');
+    expect(readFileSync(added.file, 'utf8')).toBe('unrelated install');
+  });
+  it('runs local, refresh, and npm through a fresh Bun-installed CLI without replacing its running PE', async () => {
+    const { app, source } = fixture();
+    const base = dirname(app), originalPackages = join(base, 'npm');
+    const consumer = manifest(app); consumer.dependencies = {};
+    for (const name of ['core', 'browser', 'tooling', 'angular']) {
+      const original = join(originalPackages, name);
+      cpSync(join(app, 'node_modules/@webquark', name), original, { recursive: true });
+      consumer.dependencies[`@webquark/${name}`] = `file:../npm/${name}`;
+    }
+    const core = join(originalPackages, 'core');
+    const pkg = manifest(core); pkg.bin = { 'wq-switch': './dist/cli.js' }; writeJson(join(core, 'package.json'), pkg);
+    cpSync(resolve('scripts/wq-switch/dist/index.js'), join(core, 'dist/cli.js'));
+    const sourceCore = join(source, packageDirectories['@webquark/core']);
+    const sourcePkg = manifest(sourceCore); sourcePkg.bin = { 'wq-switch': './dist/cli.js' }; writeJson(join(sourceCore, 'package.json'), sourcePkg);
+    cpSync(resolve('scripts/wq-switch/dist/index.js'), join(sourceCore, 'dist/cli.js'));
+    writeJson(join(app, 'package.json'), consumer); unlinkSync(join(app, 'bun.lock'));
+    runConsumer(app, ['install', '--ignore-scripts', '--no-save', '--offline']);
+    const lock = existsSync(join(app, 'bun.lock')) ? readFileSync(join(app, 'bun.lock')) : null;
+    const originalShim = process.platform === 'win32' ? readFileSync(join(app, 'node_modules/.bin/wq-switch.exe')) : readlinkSync(join(app, 'node_modules/.bin/wq-switch'));
+    expect(runConsumer(app, ['run', 'wq-switch', 'local'])).toContain('Build activated');
+    expect(runConsumer(app, ['run', 'wq-switch', 'build'])).toContain('Build activated');
+    expect(runConsumer(app, ['run', 'wq-switch', 'npm'])).toContain('original package connections restored');
+    expect(process.platform === 'win32' ? readFileSync(join(app, 'node_modules/.bin/wq-switch.exe')) : readlinkSync(join(app, 'node_modules/.bin/wq-switch'))).toEqual(originalShim);
+    expect(readFileSync(join(app, 'package.json'), 'utf8')).toBe(JSON.stringify(consumer, null, 2) + '\n');
+    expect(existsSync(join(app, 'bun.lock')) ? readFileSync(join(app, 'bun.lock')) : null).toEqual(lock);
+    if (process.platform === 'win32') {
+      sourcePkg.bin!['wq-switch'] = './dist/moved-cli.js'; writeJson(join(sourceCore, 'package.json'), sourcePkg);
+      cpSync(resolve('scripts/wq-switch/dist/index.js'), join(sourceCore, 'dist/moved-cli.js'));
+      const rejected = spawnSync('bun', ['run', 'wq-switch', 'local'], { cwd: app, encoding: 'utf8', timeout: 20000 });
+      expect(rejected.status).toBe(1);
+      expect(rejected.stderr).toContain('currently running Windows launcher would change');
+      expect(readState(app)).toBeNull(); expect(hasJournal(app)).toBe(false);
+      expect(readFileSync(join(app, 'node_modules/.bin/wq-switch.exe'))).toEqual(originalShim);
+      const direct = spawnSync('node', [resolve('scripts/wq-switch/dist/index.js'), 'local'], { cwd: app, encoding: 'utf8', timeout: 20000 });
+      expect(direct.status, direct.stderr).toBe(0);
+      expect(runConsumer(app, ['run', 'wq-switch', 'npm'])).toContain('original package connections restored');
+    }
+  }, 30000);
+});
 
 describe('wq-switch transactions', () => {
   for (const wrapper of ['angular', 'react'] as const) {
@@ -70,7 +208,10 @@ describe('wq-switch transactions', () => {
       expect(within(projectPaths(app).packages, first.generation)).toBe(true);
       expect(existsSync(projectPaths(app).state)).toBe(true);
       expect(installed(framework, installed(`@webquark/${wrapper}`, app))).toBe(installed(framework, app));
-      expect(installed('@webquark/core', installed(`@webquark/${wrapper}`, app))).toBe(installed('@webquark/core', app));
+      expect(first.entries.map(entry => entry.name)).toEqual(['@webquark/core', '@webquark/browser', '@webquark/tooling', `@webquark/${wrapper}`]);
+      expect(installed('@webquark/browser', installed(`@webquark/${wrapper}`, app))).toBe(installed('@webquark/browser', app));
+      expect(installed('@webquark/browser', installed('@webquark/core', app))).toBe(installed('@webquark/browser', app));
+      expect(installed('@webquark/tooling', installed('@webquark/core', app))).toBe(installed('@webquark/tooling', app));
       const second = stage(app, source); activate(app, second);
       expect(second.generation).not.toBe(first.generation);
       expect(existsSync(join(first.entries[0].target, 'dist/index.js'))).toBe(true);
@@ -96,6 +237,73 @@ describe('wq-switch transactions', () => {
     activate(app, stage(app, source)); restore(app);
     expect(existsSync(join(app, 'node_modules/@webquark/core'))).toBe(false);
     expect(installed('@webquark/core', app)).toBe(original);
+  });
+  it.each(['@webquark/browser', '@webquark/tooling', '@webquark/angular'] as const)('supports a standalone %s consumer and restores all identities', name => {
+    const { app, source } = fixture();
+    const pkg = manifest(app); pkg.dependencies = { [name]: '1.0.0' }; writeJson(join(app, 'package.json'), pkg);
+    const selected = selectedPackages(app);
+    const originals = selected.map(selectedName => installed(selectedName, app));
+    const next = stage(app, source); activate(app, next);
+    expect(next.entries.map(entry => entry.name)).toEqual(name === '@webquark/angular' ? ['@webquark/browser', name] : [name]);
+    expect(next.entries.some(entry => entry.name === '@webquark/core')).toBe(false);
+    restore(app);
+    expect(selected.map(selectedName => installed(selectedName, app))).toEqual(originals);
+  });
+  it('stages nested umbrella dependencies and removes their temporary top-level shadows on restore', () => {
+    const { app, source } = fixture();
+    const pkg = manifest(app); pkg.dependencies = { '@webquark/core': '1.0.0' }; writeJson(join(app, 'package.json'), pkg);
+    mkdirSync(join(app, 'node_modules/@webquark/core/node_modules/@webquark'), { recursive: true });
+    for (const name of ['browser', 'tooling']) {
+      renameSync(join(app, 'node_modules/@webquark', name), join(app, 'node_modules/@webquark/core/node_modules/@webquark', name));
+    }
+    const next = stage(app, source); activate(app, next);
+    expect(next.entries.filter(entry => entry.name !== '@webquark/core').every(entry => !entry.identity && entry.original.includes('core'))).toBe(true);
+    expect(installed('@webquark/browser', installed('@webquark/core', app))).toBe(installed('@webquark/browser', app));
+    activate(app, stage(app, source));
+    restore(app);
+    expect(existsSync(join(app, 'node_modules/@webquark/browser'))).toBe(false);
+    expect(existsSync(join(app, 'node_modules/@webquark/tooling'))).toBe(false);
+    expect(manifest(installed('@webquark/browser', installed('@webquark/core', app))).name).toBe('@webquark/browser');
+  });
+  it('rejects unexpected internal edges instead of mixing local snapshots with registry WebQuark packages', () => {
+    const { app, source } = fixture();
+    const tooling = join(source, packageDirectories['@webquark/tooling']);
+    writeJson(join(tooling, 'package.json'), { ...manifest(tooling), dependencies: { '@webquark/react': '1.0.0' } });
+    expect(() => stage(app, source)).toThrow('Unexpected local WebQuark dependency');
+    expect(readState(app)).toBeNull();
+  });
+  it('migrates an older umbrella runtime graph into the extracted browser and restores its identity', () => {
+    const { app, source } = fixture();
+    for (const name of ['browser', 'tooling']) {
+      const slot = join(app, 'node_modules/@webquark', name);
+      expect(within(app, slot)).toBe(true);
+      rmSync(slot, { recursive: true });
+    }
+    const original = installed('@webquark/core', app);
+    const runtime = join(original, 'node_modules/fixture-runtime');
+    pkg(runtime, 'fixture-runtime');
+    const browser = join(source, packageDirectories['@webquark/browser']);
+    writeJson(join(browser, 'package.json'), { ...manifest(browser), dependencies: { 'fixture-runtime': '1.0.0' } });
+    const before = readFileSync(join(app, 'package.json'), 'utf8');
+    activate(app, stage(app, source));
+    const stagedRuntime = installed('fixture-runtime', installed('@webquark/browser', app));
+    expect(stagedRuntime).toContain('.wq-original-');
+    activate(app, stage(app, source));
+    expect(installed('fixture-runtime', installed('@webquark/browser', app))).toBe(stagedRuntime);
+    restore(app);
+    expect(installed('@webquark/core', app)).toBe(original);
+    expect(installed('fixture-runtime', original)).toBe(runtime);
+    expect(existsSync(join(app, 'node_modules/@webquark/browser'))).toBe(false);
+    expect(existsSync(join(app, 'node_modules/@webquark/tooling'))).toBe(false);
+    expect(readFileSync(join(app, 'package.json'), 'utf8')).toBe(before);
+    expect(readFileSync(join(app, 'bun.lock'), 'utf8')).toBe('unchanged lock');
+  });
+  it('validates the private orchestration root and rejects running inside it', () => {
+    const { source } = fixture();
+    expect(validateSource(source)).toBe(source);
+    expect(() => consumerRoot(source)).toThrow('consuming app');
+    writeJson(join(source, 'package.json'), { ...manifest(source), private: false });
+    expect(() => validateSource(source)).toThrow('private WebQuark repository');
   });
   it('leaves the active snapshot intact when rebuilding fails', async () => {
     const { app, source } = fixture();
@@ -224,14 +432,16 @@ describe('wq-switch transactions', () => {
   it('runs installed wq-setup and generated short scripts through Bun', () => {
     const base = mkdtempSync(join(tmpdir(), 'wq-switch-test-')); temporary.push(base);
     const core = join(base, 'core'), app = join(base, 'app');
-    writeJson(join(core, 'package.json'), { name: '@webquark/core', version: '1.2.3', bin: { 'wq-setup': 'scripts/setup.js', 'wq-switch': 'scripts/index.js', 'wq-sandbox': 'scripts/sandbox.js' } });
+    const fixtureVersion = `1.2.3-fixture.${Date.now()}`;
+    for (const name of ['browser', 'tooling']) pkg(join(base, name), `@webquark/${name}`, { version: fixtureVersion });
+    writeJson(join(core, 'package.json'), { name: '@webquark/core', version: fixtureVersion, bin: { 'wq-setup': 'scripts/setup.js', 'wq-switch': 'scripts/index.js', 'wq-sandbox': 'scripts/sandbox.js' } });
     mkdirSync(join(core, 'scripts'));
     cpSync(resolve('scripts/wq-switch/dist/index.js'), join(core, 'scripts/index.js'));
     cpSync(resolve('scripts/wq-switch/dist/setup.js'), join(core, 'scripts/setup.js'));
     writeFileSync(join(core, 'scripts/sandbox.js'), '#!/usr/bin/env node\nconsole.log("sandbox launcher reached");', { mode: 0o755 });
-    writeJson(join(app, 'package.json'), { name: 'consumer', dependencies: { '@webquark/core': 'file:../core' } });
+    writeJson(join(app, 'package.json'), { name: 'consumer', dependencies: { '@webquark/core': 'file:../core', '@webquark/browser': 'file:../browser', '@webquark/tooling': 'file:../tooling' } });
     const run = (args: string[]) => {
-      const result = spawnSync('bun', args, { cwd: app, encoding: 'utf8', timeout: 20000 });
+      const result = spawnSync('bun', args, { cwd: app, env: { ...process.env, BUN_INSTALL_CACHE_DIR: join(base, 'bun-cache') }, encoding: 'utf8', timeout: 20000 });
       expect(result.status, result.stderr || String(result.error)).toBe(0); return result.stdout;
     };
     run(['install', '--ignore-scripts', '--no-save']);
@@ -287,11 +497,12 @@ describe('WebQuark consumer paths', () => {
 describe('local preflight diagnostics', () => {
   it('reports actual snapshot version separately from preference without writing files', () => {
     const { app, source } = fixture();
-    writeJson(join(source, 'package.json'), {
-      ...manifest(source), version: '2.0.0',
-      exports: { './native-content.css': './dist/webquark/native-content.css' },
-    });
-    put(join(source, 'dist/webquark/native-content.css'), 'body {}');
+    for (const name of names) {
+      const directory = join(source, packageDirectories[name]);
+      const pkg = manifest(directory); pkg.version = '2.0.0';
+      for (const field of [pkg.dependencies, pkg.peerDependencies]) for (const dependency of Object.keys(field ?? {})) if (names.includes(dependency as typeof name)) field![dependency] = '2.0.0';
+      writeJson(join(directory, 'package.json'), pkg);
+    }
     activate(app, stage(app, source));
     const before = readFileSync(projectPaths(app).state, 'utf8');
     const log = vi.spyOn(console, 'log').mockImplementation(() => {});
@@ -306,12 +517,8 @@ describe('local preflight diagnostics', () => {
     expect(process.exitCode ?? 0).toBe(0);
   });
 
-  it('reports a mixed installation even when the core stylesheet resolves', () => {
+  it('reports a mixed installation even when the browser stylesheet resolves', () => {
     const { app, source } = fixture();
-    writeJson(join(source, 'package.json'), {
-      ...manifest(source), exports: { './native-content.css': './dist/webquark/native-content.css' },
-    });
-    put(join(source, 'dist/webquark/native-content.css'), 'body {}');
     const state = stage(app, source);
     activate(app, state);
     const wrapper = state.entries.find(entry => entry.name === '@webquark/angular')!;

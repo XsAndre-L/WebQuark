@@ -18,8 +18,12 @@ active dependencies; keep them while using a local installation.
 
 ## Setup
 
-Install the consumer's dependencies first. Declare matching WebQuark core and
-framework package versions. Then run:
+Install the consumer's dependencies first. Declare matching WebQuark versions:
+`@webquark/core` installs browser and tooling, while `@webquark/browser` and
+`@webquark/tooling` can be used directly. Angular and React remain optional.
+The switcher stages core's browser/tooling dependencies and wrappers' browser
+dependency even when the consumer does not declare those dependencies directly.
+Then run:
 
 ```powershell
 bun run wq-setup --source "D:\Dev\PurelyIT\WebQuark"
@@ -47,7 +51,8 @@ Without `--source`, setup creates an empty source setting. Fill it in before
 running `local` or `build`. Relative source paths resolve from the consuming
 project's package.json directory.
 
-`preferredVersion` is copied from the consumer's `@webquark/core` dependency.
+`preferredVersion` is copied from the consumer's first declared WebQuark dependency
+(core takes precedence, then browser, tooling, Angular and React).
 Setup preserves an existing preference, including ranges, and other top-level
 configuration sections. The preference does not select or download a release;
 `npm` restores the saved installation.
@@ -75,8 +80,8 @@ Restore npm connections before changing configuration for an active local setup.
 | Command | Effect |
 | --- | --- |
 | `setup [--source <path>]` | Creates configuration, records the release preference, and adds scripts and ignore entries |
-| `local` | Builds core, React, and Angular; activates snapshots of the packages declared by the consumer |
-| `build` | Builds all three packages; refreshes snapshots when this consumer is already local |
+| `local` | Builds all five packages; activates snapshots of the consumer's WebQuark dependency closure |
+| `build` | Builds all five packages; refreshes snapshots when this consumer is already local |
 | `npm` | Restores the exact saved npm entries without downloading or upgrading packages |
 | `check` | Verifies native-content.css and reports active local package versions and recovery state |
 | `status` | Reports connections, missing artifacts, mixed installs, and pending recovery |
@@ -108,16 +113,28 @@ node "D:\Dev\PurelyIT\WebQuark\scripts\wq-switch\dist\index.js" npm
 ```
 
 Use the same checkout executable for subsequent commands while testing CLI
-changes. Existing package-manager bin shims are not rewritten by switching.
+changes. Local activation also manages the selected packages' launchers in the
+consumer's `node_modules/.bin`. New or renamed commands work through normal
+`bun run` scripts. Existing Bun launchers with the same target and runtime are
+retained; other local Windows launchers use npm's standard `cmd-shim` generator.
+The bundled CLI includes these helpers, so consumers need no new dependencies.
+Npm restoration restores the exact original launcher artifacts. Unrelated or
+externally changed launchers stop switching before they are overwritten.
+If a currently running Windows executable would need a different target or
+runtime, retry through the checkout executable shown above; switching refuses
+that operation before changing the consumer's active state.
 
 ## Switching and recovery
 
 - Package snapshots are immutable. Build failure leaves active packages intact.
-  Activation records a recovery journal because swapping multiple package links
+  Activation records a recovery journal because swapping package links and launchers
   is not globally atomic; stop and restart the consumer server when switching.
 - Original npm entries are renamed beside themselves in `node_modules/@webquark/`
   to preserve relative Bun links. Hoisted packages receive removable local entries.
-- Framework peers resolve from the consumer. Runtime dependencies resolve from
+- Every selected internal dependency resolves to the same local snapshot set.
+  Each added browser/tooling connection is restored alongside core and wrappers,
+  including removable shadows over nested or hoisted packages.
+- Framework peers resolve from the consumer. External runtime dependencies resolve from
   its installed package graph. Missing required dependencies stop staging; the
   switcher does not install dependencies automatically.
 - Consumer and source locks remain in the OS temp directory so independent
@@ -130,8 +147,10 @@ changes. Existing package-manager bin shims are not rewritten by switching.
 
 ## Preflight checks
 
-Prefix dev/build commands with `bun run wq-check &&` to verify that core exports
-`@webquark/core/native-content.css` and includes its built file. The diagnostic
+Prefix dev/build commands with `bun run wq-check &&` to verify
+`@webquark/browser/native-content.css`, or `@webquark/core/browser/native-content.css`
+for umbrella consumers, and its built file. Tooling-only consumers validate their
+tooling entries without requiring browser CSS. The diagnostic
 explains the separate setup and activation steps. A complete published package
 needs no local checkout.
 
@@ -142,8 +161,9 @@ These checks read configuration and state without changing files.
 
 ## Source and validation
 
-`paths.ts` defines all consumer paths. `config.ts`, `state.ts`, and `packages.ts`
-own configuration, transactions/locks, and snapshots/dependency resolution.
+`paths.ts` defines all consumer paths. `config.ts`, `state.ts`, `packages.ts`,
+and `bins.ts` own configuration, transactions/locks, package snapshots and
+dependency resolution, and launcher staging/ownership.
 `index.ts` routes commands; `setup.ts` exposes the standalone setup executable.
 Bundled files in `dist/` are generated.
 

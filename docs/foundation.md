@@ -3,7 +3,7 @@
 WebQuark provides shared geometry and composition primitives. Import the global
 stylesheet for the theme; components also carry dimension fallbacks when used alone.
 The [generated token reference](theme-tokens.md) and playground theme designer
-read the same definitions in `src/theme/tokens.ts`.
+read the same definitions in `src/browser/theme/tokens.ts`.
 
 ## Choose size once
 
@@ -118,6 +118,6 @@ explicit size. Textarea padding resolves `--q-input-padding` first, then
 sets a root `--q-field-padding` default that would mask that fallback.
 
 Run `bun run packages:build`, `bun run check:prop-order`, and
-`bunx vitest run --project browser src/theme/test/foundation.cmp.test.ts`.
+`bunx vitest run --project browser src/browser/theme/test/foundation.cmp.test.ts`.
 The foundation browser tests import built custom elements, so rebuild before
 running them after source changes.

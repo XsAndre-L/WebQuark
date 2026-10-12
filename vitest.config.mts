@@ -4,16 +4,16 @@ import { playwright } from '@vitest/browser-playwright';
 import { defineVitestConfig } from '@stencil/vitest/config';
 import { stencilVitestPlugin } from '@stencil/vitest/plugin';
 
-// Verify workspace wrappers against the core artifacts built by packages:build.
+// Verify workspace wrappers against the browser artifacts built by packages:build.
 const browserResolve = {
   alias: [
     {
-      find: /^@webquark\/core$/,
-      replacement: fileURLToPath(new URL('./dist/index.js', import.meta.url)),
+      find: /^@webquark\/browser$/,
+      replacement: fileURLToPath(new URL('./packages/browser/components/dist/index.js', import.meta.url)),
     },
     {
-      find: '@webquark/core/dist/components',
-      replacement: fileURLToPath(new URL('./dist/components', import.meta.url)),
+      find: '@webquark/browser/dist/components',
+      replacement: fileURLToPath(new URL('./packages/browser/components/dist/components', import.meta.url)),
     },
   ],
 };
@@ -33,7 +33,7 @@ const browserDependencies = [
 ];
 
 export default defineVitestConfig({
-  stencilConfig: './stencil.config.ts',
+  stencilConfig: './packages/browser/components/stencil.config.ts',
   oxc: false,
   test: {
     projects: [
@@ -57,7 +57,7 @@ export default defineVitestConfig({
         optimizeDeps: { include: browserDependencies },
         test: {
           name: 'carousel-browsers',
-          include: ['src/components/content/carousel/test/transitions.cmp.test.ts'],
+          include: ['src/browser/components/content/carousel/test/transitions.cmp.test.ts'],
           browser: {
             enabled: true, commands: formSubmitCommands,
             provider: playwright(),

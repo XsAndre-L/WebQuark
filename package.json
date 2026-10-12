@@ -1,156 +1,34 @@
 {
-  "name": "@webquark/core",
-  "version": "1.0.2",
+  "name": "@webquark/workspace",
+  "private": true,
   "packageManager": "bun@1.4.2",
-  "description": "WebQuark Core Web Components",
-  "main": "dist/index.cjs.js",
-  "module": "dist/index.js",
-  "types": "dist/types/index.d.ts",
-  "collection": "dist/collection/collection-manifest.json",
-  "collection:main": "dist/collection/index.js",
-  "unpkg": "dist/webquark/webquark.esm.js",
-  "exports": {
-    ".": {
-      "types": "./dist/types/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs.js"
-    },
-    "./components": {
-      "import": "./dist/components/index.js",
-      "types": "./dist/components/index.d.ts",
-      "default": "./dist/components/index.js"
-    },
-    "./components/*": {
-      "import": "./dist/components/*",
-      "types": "./dist/components/*.d.ts",
-      "default": "./dist/components/*"
-    },
-    "./dist/components": {
-      "import": "./dist/components/index.js",
-      "types": "./dist/components/index.d.ts",
-      "default": "./dist/components/index.js"
-    },
-    "./dist/components/*.js": {
-      "import": "./dist/components/*.js",
-      "types": "./dist/components/*.d.ts",
-      "default": "./dist/components/*.js"
-    },
-    "./dist/webquark/webquark.css": "./dist/webquark/webquark.css",
-    "./native-content.css": "./dist/webquark/native-content.css",
-    "./dist/*": {
-      "import": "./dist/*",
-      "types": "./dist/*.d.ts"
-    },
-    "./loader": {
-      "types": "./dist/loader/index.d.ts",
-      "import": "./dist/loader/index.js",
-      "require": "./dist/loader/index.cjs.js"
-    },
-    "./dist/collection/components/layout/card/*.js": {
-      "types": "./dist/types/components/content/card/*.d.ts",
-      "import": "./dist/collection/components/content/card/*.js"
-    },
-    "./dist/collection/components/layout/card/*": {
-      "import": "./dist/collection/components/content/card/*"
-    },
-    "./dist/types/components/layout/card/*": "./dist/types/components/content/card/*",
-    "./dist/collection/components/layout/carousel/*.js": {
-      "types": "./dist/types/components/content/carousel/*.d.ts",
-      "import": "./dist/collection/components/content/carousel/*.js"
-    },
-    "./dist/collection/components/layout/carousel/*": {
-      "import": "./dist/collection/components/content/carousel/*"
-    },
-    "./dist/types/components/layout/carousel/*": "./dist/types/components/content/carousel/*",
-    "./dist/collection/components/layout/form/*.js": {
-      "types": "./dist/types/components/inputs/form/*.d.ts",
-      "import": "./dist/collection/components/inputs/form/*.js"
-    },
-    "./dist/collection/components/layout/form/*": {
-      "import": "./dist/collection/components/inputs/form/*"
-    },
-    "./dist/types/components/layout/form/*": "./dist/types/components/inputs/form/*",
-    "./dist/collection/components/actions/chip/*.js": {
-      "types": "./dist/types/components/data-display/chip/*.d.ts",
-      "import": "./dist/collection/components/data-display/chip/*.js"
-    },
-    "./dist/collection/components/actions/chip/*": {
-      "import": "./dist/collection/components/data-display/chip/*"
-    },
-    "./dist/types/components/actions/chip/*": "./dist/types/components/data-display/chip/*",
-    "./dist/collection/components/data-display/alert/*.js": {
-      "types": "./dist/types/components/communication/alert/*.d.ts",
-      "import": "./dist/collection/components/communication/alert/*.js"
-    },
-    "./dist/collection/components/data-display/alert/*": {
-      "import": "./dist/collection/components/communication/alert/*"
-    },
-    "./dist/types/components/data-display/alert/*": "./dist/types/components/communication/alert/*",
-    "./dist/collection/components/data-display/conversation-bubble/*.js": {
-      "types": "./dist/types/components/communication/conversation-bubble/*.d.ts",
-      "import": "./dist/collection/components/communication/conversation-bubble/*.js"
-    },
-    "./dist/collection/components/data-display/conversation-bubble/*": {
-      "import": "./dist/collection/components/communication/conversation-bubble/*"
-    },
-    "./dist/types/components/data-display/conversation-bubble/*": "./dist/types/components/communication/conversation-bubble/*",
-    "./dist/collection/components/overlays/toast/*.js": {
-      "types": "./dist/types/components/communication/toast/*.d.ts",
-      "import": "./dist/collection/components/communication/toast/*.js"
-    },
-    "./dist/collection/components/overlays/toast/*": {
-      "import": "./dist/collection/components/communication/toast/*"
-    },
-    "./dist/types/components/overlays/toast/*": "./dist/types/components/communication/toast/*"
-  },
   "workspaces": [
-    "packages/react",
-    "packages/angular"
+    "packages/core",
+    "packages/browser/components",
+    "packages/browser/angular",
+    "packages/browser/react",
+    "packages/tooling"
   ],
-  "bin": {
-    "wq-sandbox": "./scripts/webquark-serve.js",
-    "wq-switch": "./scripts/wq-switch/dist/index.js",
-    "wq-setup": "./scripts/wq-switch/dist/setup.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Purely-IT/WebQuark.git"
-  },
-  "files": [
-    "dist/",
-    "scripts/webquark-serve.js",
-    "scripts/wq-switch/dist/index.js",
-    "scripts/wq-switch/dist/setup.js",
-    "scripts/wq-switch/README.md"
-  ],
-  "publishConfig": {
-    "access": "public"
-  },
   "scripts": {
     "theme:generate": "bun scripts/generate-theme.ts",
     "switch:build": "tsc -p scripts/wq-switch/tsconfig.json && bun build scripts/wq-switch/index.ts scripts/wq-switch/setup.ts --outdir=scripts/wq-switch/dist --target=node --format=cjs",
-    "build": "bun run switch:build && bun run theme:generate && bun build src/playground/playground.ts --outfile=src/playground/playground.bundled.js --loader .html:text --loader .css:text && bun build scripts/webquark-serve.ts --outfile=scripts/webquark-serve.js --target=node --format=cjs && stencil build",
+    "build": "bun run browser:build && bun run tooling:build && bun run core:build",
     "start": "bun run scripts/start-playground.ts",
     "dev": "bun run start",
-    "test": "stencil-test --prod",
-    "test:watch": "stencil-test --prod --watch",
-    "generate": "stencil generate",
-    "packages:build": "bun run build && bun run --cwd packages/react build && bun run --cwd packages/angular build",
+    "test": "stencil-test --prod --stencil-config packages/browser/components/stencil.config.ts",
+    "test:watch": "stencil-test --prod --watch --stencil-config packages/browser/components/stencil.config.ts",
+    "generate": "stencil generate --config packages/browser/components/stencil.config.ts",
+    "packages:build": "bun run build && bun run --cwd packages/browser/react build && bun run --cwd packages/browser/angular build",
     "test:carousel:browsers": "bunx vitest run --project carousel-browsers",
     "pr:verify": "bun run check:prop-order && bun run packages:build && bunx vitest run --project tooling && bunx vitest run --project unit",
     "release:prepare": "bun .github/scripts/publishing/prepare-release.ts",
     "release:verify": "bun .github/scripts/publishing/verify-packages.ts",
     "publish-all": "bun .github/scripts/publishing/publish-packages.ts",
     "align-headers": "bun run scripts/align-headers.ts",
-    "check:prop-order": "bun run scripts/component-prop-order/check.ts"
-  },
-  "dependencies": {
-    "@lucide/icons": "1.54.0",
-    "@maplibre/maplibre-gl-leaflet": "0.1.4",
-    "leaflet": "1.9.4",
-    "leaflet.gridlayer.googlemutant": "0.16.0",
-    "maplibre-gl": "6.13.0",
-    "supercluster": "^9.1.0"
+    "check:prop-order": "bun run scripts/component-prop-order/check.ts",
+    "browser:build": "bun run theme:generate && bun build src/playground/playground.ts --outfile=src/playground/playground.bundled.js --loader .html:text --loader .css:text && stencil build --config packages/browser/components/stencil.config.ts",
+    "tooling:build": "bun run --cwd packages/tooling build",
+    "core:build": "bun run switch:build && bun build scripts/webquark-serve.ts --outfile=scripts/webquark-serve.js --target=node --format=cjs && bun run scripts/build-core.ts"
   },
   "devDependencies": {
     "@stencil/angular-output-target": "^1.5.2",
@@ -160,6 +38,7 @@
     "@types/google.maps": "^3.66.5",
     "@types/leaflet": "1.9.22",
     "@types/leaflet.gridlayer.googlemutant": "0.4.11",
+    "@types/bun": "^1.4.3",
     "@types/node": "^26.6.4",
     "@vitest/browser": "4.1.11",
     "@vitest/browser-playwright": "4.1.11",
@@ -168,7 +47,19 @@
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "typescript": "~6.0.3",
-    "vitest": "4.1.11"
+    "vitest": "4.1.11",
+    "@lucide/icons": "1.54.0",
+    "@maplibre/maplibre-gl-leaflet": "0.1.4",
+    "leaflet": "1.9.4",
+    "leaflet.gridlayer.googlemutant": "0.16.0",
+    "maplibre-gl": "6.13.0",
+    "supercluster": "^9.1.0",
+    "@webquark/core": "workspace:*",
+    "@webquark/browser": "workspace:*",
+    "@webquark/tooling": "workspace:*",
+    "sharp": "0.34.5",
+    "cmd-shim": "8.0.0",
+    "read-cmd-shim": "6.0.0"
   },
   "license": "MIT"
 }

@@ -2,9 +2,10 @@ import { spawn } from 'node:child_process';
 import { selectedPackages, sourceFor } from '../config';
 import { stage } from '../packages';
 import { activate, assertActive, locked, readState } from '../state';
+import { stageBins } from '../bins';
 
 export async function compile(source: string): Promise<void> {
-  console.log(`Building core, React, and Angular in ${source}`);
+  console.log(`Building core, browser, tooling, React, and Angular in ${source}`);
   await new Promise<void>((resolve, reject) => {
     const child = spawn('bun', ['run', 'packages:build'], { cwd: source, stdio: 'inherit', shell: false });
     child.on('error', reject);
@@ -22,6 +23,7 @@ export async function build(root: string, connect = false): Promise<void> {
     await compile(source);
     if (connect || readState(root)) {
       const next = stage(root, source);
+      await stageBins(root, next);
       activate(root, next);
       console.log(`LOCAL: ${source}\nBuild activated. Restart the consumer dev server.`);
     } else console.log('Build complete. Package connections unchanged. Use wq-switch local to activate.');

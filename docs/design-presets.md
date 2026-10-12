@@ -26,8 +26,8 @@ The 65 existing density tokens retain their exact values in compact. Component s
 The main stylesheet supplies variables and WebQuark component styles. Native HTML typography is opt-in:
 
 ```css
-@import '@webquark/core/dist/webquark/webquark.css';
-@import '@webquark/core/native-content.css';
+@import '@webquark/browser/dist/webquark/webquark.css';
+@import '@webquark/browser/native-content.css';
 ```
 
 ```html
@@ -59,7 +59,7 @@ Angular uses `<main [attr.data-wq-preset]="preset">`; React uses `<main data-wq-
 
 ## Source and validation
 
-Edit `src/theme/tokens.ts`, then run `bun run theme:generate`. Generated files must not be hand-edited. [The complete value matrix](design-presets-tokens.md) lists compact/comfortable values, including new semantic and component fallback defaults. [The original allocation](design-presets-plan.md) records all 180 historical shared values and component-owned hooks.
+Edit `src/browser/theme/tokens.ts`, then run `bun run theme:generate`. Generated files must not be hand-edited. [The complete value matrix](design-presets-tokens.md) lists compact/comfortable values, including new semantic and component fallback defaults. [The original allocation](design-presets-plan.md) records all 180 historical shared values and component-owned hooks.
 
 The playground's **Design presets** link opens `/presets.html` for side-by-side, nested, runtime, RTL and light/dark examples.
 

@@ -1,0 +1,13 @@
+{
+  "releases": [
+    {
+      "version": "0.1.0",
+      "date": "2026-10-10",
+      "categories": [
+        { "name": "Added", "summaries": ["A fictional release-note example for the tooling documentation."] },
+        { "name": "Changed", "summaries": ["Application paths and version mirrors are configured by the consumer."] }
+      ],
+      "visuals": []
+    }
+  ]
+}

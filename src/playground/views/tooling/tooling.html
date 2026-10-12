@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Changelog tooling · WebQuark</title>
+    <style>
+      :root { color-scheme: light dark; font: 16px/1.6 system-ui, sans-serif; }
+      body { margin: 0; background: light-dark(#f5f7fb, #10151f); color: light-dark(#182337, #e7edf7); }
+      main { max-width: 880px; margin: auto; padding: 40px 24px 64px; }
+      a { color: light-dark(#2754bd, #a0bdff); }
+      a:focus-visible { outline: 3px solid currentColor; outline-offset: 4px; }
+      h1 { font-size: clamp(2rem, 6vw, 3rem); line-height: 1.15; margin: 28px 0 16px; }
+      h2 { margin-top: 36px; font-size: 1.35rem; }
+      .intro { font-size: 1.15rem; max-width: 70ch; }
+      .eyebrow { margin-top: 32px; letter-spacing: .12em; text-transform: uppercase; font-size: .8rem; }
+      pre { padding: 20px; border: 1px solid light-dark(#cad3e3, #354258); border-radius: 12px; overflow-x: auto; background: light-dark(#fff, #171f2d); }
+      code { font-size: .9em; }
+      li + li { margin-top: 8px; }
+      footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid light-dark(#cad3e3, #354258); }
+    </style>
+  </head>
+  <body>
+    <main>
+      <a href="../../index.html">← Component playground</a>
+      <p class="eyebrow">Developer tooling</p>
+      <h1>Release notes from your project</h1>
+      <p class="intro">Generate a content-hashed release feed, keep application versions aligned, and stage reviewed images. Your application owns its routes, authentication, fictional demo data and viewer.</p>
+
+      <h2>Initialize and preview</h2>
+      <p>The initializer is currently local-only. Install the reviewed packed tooling candidate until the coordinated npm release is published.</p>
+      <pre><code>bunx --no-install wq-changelog init
+bun run changelog:preview</code></pre>
+      <p>Use Bun 1.4.2 or later in an application with a stable package version and a declared <code>@webquark/tooling</code> or <code>@webquark/core</code> dependency. Open <code>http://127.0.0.1:4173/changelog/</code>. Init creates a config, empty Unreleased notes, required folders, generator, static viewer and package scripts. Add your actual bullets to <code>CHANGELOG.md</code>.</p>
+      <p>Feed output stays under ignored <code>public/changelog/generated/</code>; the separate browser URL module is <code>public/changelog/feed-url.js</code>. Use <code>init --dry-run</code> to inspect the setup. Existing scaffold paths or conflicting script names stop init before writes; it preserves other package fields and ignore entries. Existing changelog setups use the manual reference. The application controls static hosting and framework routing.</p>
+      <p><code>bun run changelog:generate</code> defaults to production; a fresh starter has an empty production feed. Preview defaults to development and initially shows an empty Unreleased entry. Explicit <code>ENVIRONMENT_TYPE=prod</code> or <code>prod-rehearsal</code> excludes Unreleased even in preview. Init invents no released history and adds no capture configuration.</p>
+
+      <h2>Choose an API entry for custom integration</h2>
+      <pre><code>// Direct tooling dependency
+import { checkVersions, generateWhatsNew } from '@webquark/tooling/changelog';
+
+// The installation umbrella forwards the same separate API
+import { checkVersions as umbrellaCheckVersions } from '@webquark/core/tooling/changelog';</code></pre>
+      <p>Browser components use <code>@webquark/browser</code> or <code>@webquark/core/browser</code>. All five packages share one version and release channel; Angular and React integrations are optional.</p>
+
+      <h2>Start with text notes</h2>
+      <p>Use init for automatic setup, or the installed tooling README's manual reference for custom paths and viewers. Every included dated release needs its matching folder, even when text only. Text and manual images need no metadata adapter.</p>
+      <p>The <a href="adoption/README.md">runnable browser example</a> has a real generator, local server, source notes and a fictional manual SVG image. Run its <code>generate.ts</code> and <code>serve.ts</code> using Bun 1.4.2 or later, then open <code>http://127.0.0.1:4173/</code>. Generated artifacts stay under ignored <code>dist/</code>.</p>
+      <p>The <a href="sample-notes.md">fictional sample notes</a> and <a href="sample-feed.json">sample feed JSON</a> are static format references. The feed keeps <code>{ releases }</code>, Added/Changed/Fixed/Removed summaries and a visuals array. Generation hashes the JSON and image bytes and writes <code>feed-url.ts</code>; the runnable example connects the returned <code>feedUrl</code> to browser code.</p>
+      <pre><code>wq-changelog version check --config ./changelog.config.ts
+wq-changelog notes --config ./changelog.config.ts --include-unreleased</code></pre>
+      <p>The application serves the whole generated folder. The viewer fetches the feed, resolves image URLs relative to its URL, and safely renders notes as plain text with <code>textContent</code>. Browser code imports no runtime tooling. Optional <code>ReleaseFeed</code> TypeScript imports are type only. Version-only checks require no feed or capture setup. Production settings exclude Unreleased.</p>
+
+      <h2>Capture setup stays with the application</h2>
+      <ol>
+        <li>Register reviewed page profiles or custom scenarios and their required fictional seed facts.</li>
+        <li>Supply an adapter for an explicitly owned local/demo environment, real authentication, allowed network operations and cleanup evidence.</li>
+        <li>Install browser binaries explicitly, then stage selected jobs. Lossless WebP is the default; PNG requires an explicit format and matching extension.</li>
+        <li>Inspect staged images and the report, then publish that reviewed run after provenance, bytes, presentation and cleanup are rechecked.</li>
+      </ol>
+      <pre><code>wq-changelog capture stage --config ./changelog.config.ts --scenario release-panel
+wq-changelog capture publish &lt;run-id&gt; --config ./changelog.config.ts</code></pre>
+      <p>Automated capture requires an application metadata adapter, staging path and reviewed capture adapter. Stage writes review artifacts; publishing a reviewed run saves those bytes into Unreleased images. Generate notes afterward. Preparing a release archives notes and synchronizes configured versions. Publishing npm packages and deploying an application remain separate actions.</p>
+      <p>This static documentation page starts no API, browser automation or database.</p>
+
+      <footer>See the installed tooling package README for the complete configuration and adapter contracts.</footer>
+    </main>
+  </body>
+</html>

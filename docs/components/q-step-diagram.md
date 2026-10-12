@@ -20,8 +20,8 @@
 2. In your application entry file, register WebQuark. This assumes a bundler that resolves package imports and CSS imports.
 
 ```javascript
-import '@webquark/core/dist/webquark/webquark.css';
-import { defineCustomElements } from '@webquark/core/loader';
+import '@webquark/browser/dist/webquark/webquark.css';
+import { defineCustomElements } from '@webquark/browser/loader';
 defineCustomElements();
 ```
 
@@ -146,7 +146,7 @@ Shared geometry and theme setup are documented in [Foundation](../foundation.md)
 
 For new code, use `orientation`. The deprecated aliases remain supported. Canonical properties take precedence when set; otherwise the legacy property and its default apply. Set a canonical JavaScript property to `undefined` to restore the fallback.
 
-Cross-check the [generated API](../../src/components/indicators/step-diagram/readme.md) and [implementation](../../src/components/indicators/step-diagram/step-diagram.tsx). Source nullability and actual rendering limitations are preserved below.
+Cross-check the [generated API](../../src/browser/components/indicators/step-diagram/readme.md) and [implementation](../../src/browser/components/indicators/step-diagram/step-diagram.tsx). Source nullability and actual rendering limitations are preserved below.
 
 ### Properties
 

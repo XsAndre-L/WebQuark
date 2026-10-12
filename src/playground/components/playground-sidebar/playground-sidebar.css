@@ -32,6 +32,7 @@ playground-sidebar q-sidepanel {
   cursor: pointer;
   transition: all 0.2s ease;
   box-sizing: border-box;
+  text-decoration: none;
 }
 
 .global-styling-btn:hover {

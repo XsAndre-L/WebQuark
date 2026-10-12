@@ -19,8 +19,8 @@
 Follow the central [installation instructions](../../README.md#1-install-library). In a bundled application that resolves package imports and CSS imports, add this to the JavaScript entry file:
 
 ```javascript
-import '@webquark/core/dist/webquark/webquark.css';
-import { defineCustomElements } from '@webquark/core/loader';
+import '@webquark/browser/dist/webquark/webquark.css';
+import { defineCustomElements } from '@webquark/browser/loader';
 defineCustomElements();
 ```
 
@@ -288,7 +288,7 @@ Add imagery and markers as in the examples. The surface uses map-specific backgr
 
 ## API reference
 
-See the [generated API](../../src/components/data-display/map/readme.md) and [source types](../../src/components/data-display/map/map.types.ts).
+See the [generated API](../../src/browser/components/data-display/map/readme.md) and [source types](../../src/browser/components/data-display/map/map.types.ts).
 
 ### Properties
 
@@ -522,7 +522,7 @@ Wait for registration and `qReady` before relying on map methods. Pass occlusion
 
 #### Package constants
 
-Import these values from `@webquark/core` in a bundled JavaScript module, for example `import { Q_MAP_MARKER_KINDS } from '@webquark/core';`. They expose the supported options for application controls; the arrays are declared as readonly tuples in TypeScript.
+Import these values from `@webquark/browser` in a bundled JavaScript module, for example `import { Q_MAP_MARKER_KINDS } from '@webquark/browser';`. They expose the supported options for application controls; the arrays are declared as readonly tuples in TypeScript.
 
 | Name | Value |
 | :--- | :--- |

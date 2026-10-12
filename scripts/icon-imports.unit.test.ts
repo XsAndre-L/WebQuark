@@ -3,11 +3,11 @@ import { describe, expect, it } from 'vitest';
 
 describe('icon dependency boundaries', () => {
   it('pins the icon data dependency and uses tree-shakable named imports', () => {
-    const packageJson = JSON.parse(readFileSync('package.json', 'utf8')) as {
+    const packageJson = JSON.parse(readFileSync('packages/browser/components/package.json', 'utf8')) as {
       dependencies?: Record<string, string>;
     };
-    const sourceFiles = globSync('src/**/*.{ts,tsx}', {
-      exclude: ['src/**/*.d.ts', 'src/**/*.test.*', 'src/**/*.spec.*'],
+    const sourceFiles = globSync('src/browser/**/*.{ts,tsx}', {
+      exclude: ['src/browser/**/*.d.ts', 'src/browser/**/*.test.*', 'src/browser/**/*.spec.*'],
     });
     const source = sourceFiles.map(file => readFileSync(file, 'utf8')).join('\n');
     const runtimeImports = Array.from(source.matchAll(/from\s+['"](@lucide\/icons[^'"]*)['"]/g))

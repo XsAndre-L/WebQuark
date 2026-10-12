@@ -19,8 +19,8 @@
 Follow the central [installation instructions](../../README.md#1-install-library). In a bundled application that resolves package imports and CSS imports, add this to the JavaScript entry file:
 
 ```javascript
-import '@webquark/core/dist/webquark/webquark.css';
-import { defineCustomElements } from '@webquark/core/loader';
+import '@webquark/browser/dist/webquark/webquark.css';
+import { defineCustomElements } from '@webquark/browser/loader';
 defineCustomElements();
 ```
 
@@ -261,7 +261,7 @@ The optional host class `variant-card-code` adjusts read-only code padding, bord
 
 ## API reference
 
-See the [generated API](../../src/components/data-display/syntax-box/readme.md) and [declared types](../../src/components/data-display/syntax-box/syntax-box.types.ts).
+See the [generated API](../../src/browser/components/data-display/syntax-box/readme.md) and [declared types](../../src/browser/components/data-display/syntax-box/syntax-box.types.ts).
 
 ### Properties
 

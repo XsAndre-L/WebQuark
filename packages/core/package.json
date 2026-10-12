@@ -1,0 +1,68 @@
+{
+  "name": "@webquark/core",
+  "version": "1.0.2",
+  "description": "WebQuark installation umbrella with separate browser and tooling entries",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Purely-IT/WebQuark.git",
+    "directory": "packages/core"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    "./browser": {
+      "types": "./dist/browser/index.d.ts",
+      "import": "./dist/browser/index.js",
+      "require": "./dist/browser/index.cjs"
+    },
+    "./browser/components": {
+      "types": "./dist/browser/components/index.d.ts",
+      "import": "./dist/browser/components/index.js",
+      "default": "./dist/browser/components/index.js"
+    },
+    "./browser/components/*.js": {
+      "types": "./dist/browser/components/*.d.ts",
+      "import": "./dist/browser/components/*.js",
+      "default": "./dist/browser/components/*.js"
+    },
+    "./browser/components/*": {
+      "types": "./dist/browser/components/*.d.ts",
+      "import": "./dist/browser/components/*.js",
+      "default": "./dist/browser/components/*.js"
+    },
+    "./browser/loader": {
+      "types": "./dist/browser/loader/index.d.ts",
+      "import": "./dist/browser/loader/index.js",
+      "require": "./dist/browser/loader/index.cjs"
+    },
+    "./browser/webquark.css": "./dist/browser/webquark.css",
+    "./browser/native-content.css": "./dist/browser/native-content.css",
+    "./tooling/changelog": {
+      "types": "./dist/tooling/changelog/index.d.ts",
+      "import": "./dist/tooling/changelog/index.js",
+      "default": "./dist/tooling/changelog/index.js"
+    }
+  },
+  "bin": {
+    "wq-sandbox": "./scripts/webquark-serve.js",
+    "wq-switch": "./scripts/wq-switch/dist/index.js",
+    "wq-setup": "./scripts/wq-switch/dist/setup.js",
+    "wq-changelog": "./scripts/wq-changelog.js"
+  },
+  "files": [
+    "dist/",
+    "scripts/",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "@webquark/browser": "1.0.2",
+    "@webquark/tooling": "1.0.2"
+  },
+  "scripts": {
+    "build": "bun run --cwd ../.. core:build"
+  }
+}

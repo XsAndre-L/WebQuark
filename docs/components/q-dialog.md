@@ -20,8 +20,8 @@
 2. In your application entry file, register WebQuark. This assumes a bundler that resolves package imports and CSS imports.
 
 ```javascript
-import '@webquark/core/dist/webquark/webquark.css';
-import { defineCustomElements } from '@webquark/core/loader';
+import '@webquark/browser/dist/webquark/webquark.css';
+import { defineCustomElements } from '@webquark/browser/loader';
 defineCustomElements();
 ```
 
@@ -164,7 +164,7 @@ Shared geometry and theme setup are documented in [Foundation](../foundation.md)
 
 For new code, use `heading`, `backdrop`, `closeOnEscape`, `closeOnBackdropClick`. The deprecated aliases remain supported. Canonical properties take precedence when set; otherwise the legacy property and its default apply. Set a canonical JavaScript property to `undefined` to restore the fallback.
 
-Cross-check the [generated API](../../src/components/overlays/dialog/readme.md) and [implementation](../../src/components/overlays/dialog/dialog.tsx). Source nullability and actual rendering limitations are preserved below.
+Cross-check the [generated API](../../src/browser/components/overlays/dialog/readme.md) and [implementation](../../src/browser/components/overlays/dialog/dialog.tsx). Source nullability and actual rendering limitations are preserved below.
 
 ### Properties
 

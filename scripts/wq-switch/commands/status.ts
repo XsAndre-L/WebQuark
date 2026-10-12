@@ -1,7 +1,8 @@
 import { join } from 'node:path';
 import { json, readSwitchConfig, selectedPackages } from '../config';
-import { installed, validatePackage } from '../packages';
+import { installedWebQuark, validatePackage } from '../packages';
 import { hasJournal, linkTarget, readState } from '../state';
+import { assertBins } from '../bins';
 
 export function status(root: string): void {
   const state = readState(root);
@@ -9,12 +10,16 @@ export function status(root: string): void {
   const rows: string[] = [];
   for (const name of selectedPackages(root)) {
     try {
-      const path = installed(name, root);
+      const path = installedWebQuark(name, root);
       const entry = state?.entries.find(entry => entry.name === name);
       if (entry && linkTarget(entry.slot) === entry.target) { validatePackage(path); local++; }
       const version = json<{ version?: string }>(join(path, 'package.json')).version ?? 'unknown';
       rows.push(`${name}@${version} -> ${path}`);
     } catch { broken = true; rows.push(`${name} -> MISSING`); }
+  }
+  if (state) {
+    try { assertBins(state); }
+    catch (error) { broken = true; rows.push((error as Error).message); }
   }
   const pending = hasJournal(root);
   const mode = pending ? 'RECOVERY NEEDED' : broken ? 'BROKEN' : state ? local === state.entries.length ? 'LOCAL' : 'MIXED' : 'NPM / UNMANAGED';

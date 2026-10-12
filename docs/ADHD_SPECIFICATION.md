@@ -18,7 +18,7 @@ Establish a standard and refactor WebQuark components and styling tokens to mini
 Each component directory will contain exactly three files to isolate each language concern:
 
 ```
-src/components/q-[name]/
+src/browser/components/q-[name]/
  ├── q-[name].tsx      ◄── HTML / JSX Layout only (No inline logic, no inline SVGs)
  ├── q-[name].logic.ts ◄── TypeScript Logic only (Pure functions, no HTML)
  └── q-[name].css      ◄── CSS Styling only (Theme mappings and selectors)
@@ -32,7 +32,7 @@ src/components/q-[name]/
 The `.tsx` file will only serve as a template. It maps states to HTML elements and binds event listeners directly to the logic controller.
 
 ```tsx
-// src/components/q-example/q-example.tsx
+// src/browser/components/q-example/q-example.tsx
 import { Component, Prop, State, h } from '@stencil/core';
 import { ExampleController } from './q-example.logic';
 
@@ -71,7 +71,7 @@ export class QExample {
 The `.logic.ts` file holds the state mutations, event handlings, validation logic, and calculations. It has zero HTML/JSX tags.
 
 ```typescript
-// src/components/q-example/q-example.logic.ts
+// src/browser/components/q-example/q-example.logic.ts
 import { QExample } from './q-example';
 
 export class ExampleController {
@@ -99,7 +99,7 @@ export class ExampleController {
 Maps properties and classes to design tokens.
 
 ```css
-/* src/components/q-example/q-example.css */
+/* src/browser/components/q-example/q-example.css */
 :host {
   display: block;
 }
@@ -151,7 +151,7 @@ We will remove the nested "middle-man" variables to make variables instantly tra
 ---
 
 ## Success Criteria
-1. `c:/Dev/DR/WebQuark/src/components/q-input` refactored into three files: `q-input.tsx` (markup), `q-input.logic.ts` (logic), and `q-input.css` (styles).
-2. `c:/Dev/DR/WebQuark/src/components/q-dialog` refactored into three files: `q-dialog.tsx` (markup), `q-dialog.logic.ts` (logic), and `q-dialog.css` (styles).
+1. `c:/Dev/DR/WebQuark/src/browser/components/q-input` refactored into three files: `q-input.tsx` (markup), `q-input.logic.ts` (logic), and `q-input.css` (styles).
+2. `c:/Dev/DR/WebQuark/src/browser/components/q-dialog` refactored into three files: `q-dialog.tsx` (markup), `q-dialog.logic.ts` (logic), and `q-dialog.css` (styles).
 3. The CSS cascade inside `global.css` is flattened to directly bind component overrides to global design tokens.
 4. Next.js and Stencil compile successfully.
