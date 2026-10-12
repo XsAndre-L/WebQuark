@@ -3,6 +3,11 @@ import { normalizeCaptureFormat } from '../shared/capture-format.js';
 import type { ResolvedVisualMetadata, VisualLocation, VisualSubject } from '../adapters/metadata.js';
 export type * from '../adapters/metadata.js';
 
+/** Any contextual declaration opts into the complete metadata contract, including incomplete declarations. */
+export function hasVisualMetadata(record: Record<string, unknown>): boolean {
+  return ['location', 'subject', 'readerSteps', 'capture', 'guidance'].some(key => key in record);
+}
+
 export function validateVisualCapture(record: Record<string, unknown>, context: string): void {
   if (record['format'] !== undefined) throw new Error(`${context}.format: capture format belongs to its custom recipe or capture.format.`);
   for (const key of ['image', 'before', 'after']) if (record[key] && typeof record[key] === 'object' && 'format' in record[key]) throw new Error(`${context}.${key}.format: image references do not own capture format.`);

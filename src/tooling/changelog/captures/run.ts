@@ -24,7 +24,7 @@ export async function captureRun<E extends CaptureJob>(config: ChangelogConfig, 
   for (const id of selected) if (!entries.some(entry => entry.id === id)) throw new Error(`Capture ID is not configured: ${id}`);
   if (new Set(selected).size !== selected.length) throw new Error('Capture selection contains duplicate IDs.');
   const stageOnly = options.stageOnly ?? true;
-  if (entries.some(entry => entry.mode === 'page') && !stageOnly) throw new Error('Generic page captures require --stage-only. Review the staged image/report, then save that exact run with --publish-run <run-id>.');
+  if (entries.some(entry => entry.mode === 'page') && !stageOnly) throw new Error('Generic page captures require capture stage (or --stage-only). Review the staged image/report, then save that exact run with capture publish <run-id> (or --publish-run <run-id>).');
   for (const entry of entries) adapter.validateEntry?.(entry);
   const ownedOutputs = configuration.entries.map(({ id, visualId, output, mode }) => ({ id, visualId, output, mode }));
   const selfTargetOutputs = entries.filter(entry => adapter.repositoryContent(entry)).map(entry => entry.output);

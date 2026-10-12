@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { readFile, realpath, stat } from 'node:fs/promises';
 import { extname, isAbsolute, relative, resolve, sep } from 'node:path';
 import { categoryNames, imageFramingAnchors, type ImageCrop, type ImageReference, type ReleaseEntry, type ReleaseSummaryAnchor } from './types.js';
-import { resolveVisualMetadata, validateVisualMetadata, validateVisualCapture, type ResolvedVisualMetadata } from './location.js';
+import { hasVisualMetadata, resolveVisualMetadata, validateVisualMetadata, validateVisualCapture, type ResolvedVisualMetadata } from './location.js';
 import { projectPath, releaseDirectory, validateChangelogConfig, type ChangelogConfig } from '../config/index.js';
 
 export type AssetEvidence = { path: string; hash: string };
@@ -79,16 +79,20 @@ export async function loadReleaseAssets(
       }
       const afterSummary = resolveSummaryAnchor(record['afterSummary'], `${location}.afterSummary`, release);
       let metadata: ResolvedVisualMetadata | undefined;
-      if (release.unreleased) {
+      const contextual = hasVisualMetadata(record);
+      if (release.unreleased && (contextual || config.requireVisualMetadata)) {
         metadata = await resolveVisualMetadata(config, record, location);
       } else if (locations) {
-        metadata = locations[id];
-        if (!metadata) throw new Error(`${location}: release locations.json is missing visual ${id}.`);
-        const authored = validateVisualMetadata(record, location, config.metadata?.applications ?? [metadata.location.application]);
-        if (authored.location.application !== metadata.location.application || authored.location.route !== metadata.location.route || authored.subject.kind !== metadata.subject.kind) {
-          throw new Error(`${location}: historical location snapshot conflicts with the visual metadata.`);
+        metadata = Object.hasOwn(locations.visuals, id) ? locations.visuals[id] : undefined;
+        if (!metadata && (locations.schemaVersion === 1 || contextual)) throw new Error(`${location}: release locations.json is missing visual ${id}.`);
+        if (metadata) {
+          const authored = validateVisualMetadata(record, location, [metadata.location.application]);
+          if (authored.location.application !== metadata.location.application || authored.location.route !== metadata.location.route || authored.subject.kind !== metadata.subject.kind) {
+            throw new Error(`${location}: historical location snapshot conflicts with the visual metadata.`);
+          }
         }
-      } else if (record['location'] !== undefined || record['subject'] !== undefined) {
+      } else if (!release.unreleased && contextual) {
+        // Legacy archives predate resolved snapshots. Keep complete authored context valid without invoking live metadata.
         const application = object(record['location'], `${location}.location`)['application'];
         validateVisualMetadata(record, location, config.metadata?.applications ?? (typeof application === 'string' ? [application] : []));
       }
@@ -201,9 +205,9 @@ async function resolveImage(
   return { src: outputPath, alt, ...(crop ? { crop } : {}) };
 }
 
-function parseLocationsSnapshot(source: string, context: string): Record<string, ResolvedVisualMetadata> {
+function parseLocationsSnapshot(source: string, context: string): { schemaVersion: 1 | 2; visuals: Record<string, ResolvedVisualMetadata> } {
   const snapshot = object(JSON.parse(source), `${context} locations.json`);
-  if (snapshot['schemaVersion'] !== 1) throw new Error(`${context}: unsupported locations.json schemaVersion.`);
+  if (snapshot['schemaVersion'] !== 1 && snapshot['schemaVersion'] !== 2) throw new Error(`${context}: unsupported locations.json schemaVersion.`);
   const visuals = object(snapshot['visuals'], `${context} locations.json.visuals`);
   for (const [id, value] of Object.entries(visuals)) {
     const metadata = object(value, `${context} locations.json.${id}`);
@@ -215,7 +219,7 @@ function parseLocationsSnapshot(source: string, context: string): Record<string,
     requiredText(guidance['sourceRevision'], `${context} locations.json.${id}.guidance.sourceRevision`);
     requiredText(object(metadata['subject'], `${context} locations.json.${id}.subject`)['label'], `${context} locations.json.${id}.subject.label`);
   }
-  return visuals as Record<string, ResolvedVisualMetadata>;
+  return { schemaVersion: snapshot['schemaVersion'], visuals: visuals as Record<string, ResolvedVisualMetadata> };
 }
 
 function resolveImageCrop(image: Record<string, unknown>, location: string): ImageCrop | undefined {

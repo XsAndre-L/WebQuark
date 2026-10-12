@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, renameSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs';
+import { chmodSync, cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readlinkSync, realpathSync, renameSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, relative, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -11,6 +11,8 @@ import { stage, installed } from './packages';
 import { activate, hasJournal, link, linkTarget, locked, readState, recover, restore, within } from './state';
 import { consumerRoot, json, manifest, names, packageDirectories, selectedPackages, sourceFor, validateSource, writeJson } from './config';
 import { projectPaths } from './paths';
+import { binOperations, changeBin, stageBins } from './bins';
+import cmdShim from 'cmd-shim';
 
 const temporary: string[] = [];
 afterEach(() => {
@@ -68,6 +70,133 @@ function fixture(wrapper: 'angular' | 'react' = 'angular', linked = false, hoist
   setup(app, source);
   return { app, source, wrapper, framework, installedRoot };
 }
+
+async function launcher(app: string, name: string, target: string) {
+  const file = join(app, 'node_modules/.bin', name);
+  if (process.platform === 'win32') await cmdShim(target, file);
+  else { mkdirSync(dirname(file), { recursive: true }); chmodSync(target, 0o755); symlinkSync(relative(dirname(file), target), file); }
+}
+function runConsumer(app: string, args: string[]) {
+  const result = spawnSync('bun', args, { cwd: app, encoding: 'utf8', timeout: 20000 });
+  expect(result.status, result.stderr || String(result.error)).toBe(0);
+  return result.stdout;
+}
+
+describe('wq-switch launchers', () => {
+  it('creates missing launchers, adopts active state, refreshes added/retired names, and restores exact originals', async () => {
+    const { app, source } = fixture();
+    const originalCore = join(app, 'node_modules/@webquark/core');
+    const original = manifest(originalCore); original.bin = { 'webquark-sandbox': './dist/index.js' };
+    writeJson(join(originalCore, 'package.json'), original);
+    put(join(originalCore, 'dist/index.js'), '#!/usr/bin/env node\nconsole.log("original sandbox");');
+    await launcher(app, 'webquark-sandbox', join(originalCore, 'dist/index.js'));
+    const originalFiles = Object.fromEntries((process.platform === 'win32' ? ['', '.cmd', '.ps1'] : ['']).map(extension => {
+      const file = join(app, 'node_modules/.bin/webquark-sandbox' + extension);
+      return [file, lstatSync(file).isSymbolicLink() ? readlinkSync(file) : readFileSync(file)];
+    }));
+    const legacy = stage(app, source); activate(app, legacy);
+    const next = stage(app, source); await stageBins(app, next); activate(app, next);
+    expect(runConsumer(app, ['run', 'wq-switch', 'status'])).toContain('fixture CLI');
+    expect(existsSync(join(app, 'node_modules/.bin/webquark-sandbox'))).toBe(false);
+    const core = join(source, packageDirectories['@webquark/core']);
+    const current = manifest(core); current.bin!['wq-extra'] = current.bin!['wq-switch']; writeJson(join(core, 'package.json'), current);
+    const added = stage(app, source); await stageBins(app, added); activate(app, added);
+    expect(runConsumer(app, ['run', 'wq-extra'])).toContain('fixture CLI');
+    delete current.bin!['wq-extra']; writeJson(join(core, 'package.json'), current);
+    const removed = stage(app, source); await stageBins(app, removed); activate(app, removed);
+    expect(existsSync(join(app, 'node_modules/.bin/wq-extra'))).toBe(false);
+    restore(app);
+    expect(existsSync(join(app, 'node_modules/.bin/wq-switch'))).toBe(false);
+    for (const [file, expected] of Object.entries(originalFiles)) {
+      expect(lstatSync(file).isSymbolicLink() ? readlinkSync(file) : readFileSync(file)).toEqual(expected);
+    }
+    expect(runConsumer(app, ['run', 'webquark-sandbox'])).toContain('original sandbox');
+  });
+  it('gives core ownership of the duplicate changelog binary and preserves its Bun shebang', async () => {
+    const { app, source } = fixture();
+    const consumer = manifest(app); consumer.dependencies!['@webquark/tooling'] = '1.0.0'; writeJson(join(app, 'package.json'), consumer);
+    for (const name of ['core', 'tooling'] as const) {
+      const directory = join(source, packageDirectories[`@webquark/${name}`]);
+      const pkg = manifest(directory); pkg.bin = { ...pkg.bin, 'wq-changelog': './dist/changelog.js' }; writeJson(join(directory, 'package.json'), pkg);
+      put(join(directory, 'dist/changelog.js'), `#!/usr/bin/env bun\nconsole.log("${name} changelog " + Bun.version);`);
+    }
+    const next = stage(app, source); await stageBins(app, next); activate(app, next);
+    expect(runConsumer(app, ['run', 'wq-changelog'])).toContain('core changelog');
+    restore(app);
+  });
+  it('rejects foreign collisions and modified managed launchers without replacing them', async () => {
+    const { app, source } = fixture();
+    const file = join(app, 'node_modules/.bin/wq-switch'); put(file, 'foreign executable');
+    const next = stage(app, source);
+    await expect(stageBins(app, next)).rejects.toThrow('Foreign launcher collision');
+    expect(readFileSync(file, 'utf8')).toBe('foreign executable');
+    unlinkSync(file); await stageBins(app, next); activate(app, next);
+    unlinkSync(file); put(file, 'changed executable');
+    expect(() => restore(app)).toThrow('Launcher changed by another install');
+    expect(readFileSync(file, 'utf8')).toBe('changed executable');
+    expect(readState(app)?.generation).toBe(next.generation);
+    const output = vi.spyOn(console, 'log').mockImplementation(() => {});
+    status(app);
+    expect(output.mock.calls.flat().join('\n')).toContain('Mode: BROKEN');
+    expect(process.exitCode).toBe(1);
+  });
+  it('recovers interrupted launcher refresh and refuses an unrelated replacement during recovery', async () => {
+    const { app, source } = fixture();
+    const previous = stage(app, source); await stageBins(app, previous); activate(app, previous);
+    const core = join(source, packageDirectories['@webquark/core']);
+    const pkg = manifest(core); pkg.bin!['wq-extra'] = pkg.bin!['wq-switch']; writeJson(join(core, 'package.json'), pkg);
+    const next = stage(app, source); await stageBins(app, next);
+    const operations = next.entries.map(entry => ({ slot: entry.slot, before: previous.entries.find(old => old.name === entry.name)!.target, after: entry.target }));
+    const bins = binOperations(previous, next);
+    writeJson(projectPaths(app).journal, { previous, next, operations, bins });
+    const added = bins.find(operation => operation.file.endsWith('wq-extra'))!;
+    changeBin(added); recover(app);
+    expect(existsSync(added.file)).toBe(false);
+    expect(readState(app)?.generation).toBe(previous.generation);
+    writeJson(projectPaths(app).journal, { previous, next, operations, bins });
+    put(added.file, 'unrelated install');
+    expect(() => recover(app)).toThrow('Launcher changed during switching');
+    expect(readFileSync(added.file, 'utf8')).toBe('unrelated install');
+  });
+  it('runs local, refresh, and npm through a fresh Bun-installed CLI without replacing its running PE', async () => {
+    const { app, source } = fixture();
+    const base = dirname(app), originalPackages = join(base, 'npm');
+    const consumer = manifest(app); consumer.dependencies = {};
+    for (const name of ['core', 'browser', 'tooling', 'angular']) {
+      const original = join(originalPackages, name);
+      cpSync(join(app, 'node_modules/@webquark', name), original, { recursive: true });
+      consumer.dependencies[`@webquark/${name}`] = `file:../npm/${name}`;
+    }
+    const core = join(originalPackages, 'core');
+    const pkg = manifest(core); pkg.bin = { 'wq-switch': './dist/cli.js' }; writeJson(join(core, 'package.json'), pkg);
+    cpSync(resolve('scripts/wq-switch/dist/index.js'), join(core, 'dist/cli.js'));
+    const sourceCore = join(source, packageDirectories['@webquark/core']);
+    const sourcePkg = manifest(sourceCore); sourcePkg.bin = { 'wq-switch': './dist/cli.js' }; writeJson(join(sourceCore, 'package.json'), sourcePkg);
+    cpSync(resolve('scripts/wq-switch/dist/index.js'), join(sourceCore, 'dist/cli.js'));
+    writeJson(join(app, 'package.json'), consumer); unlinkSync(join(app, 'bun.lock'));
+    runConsumer(app, ['install', '--ignore-scripts', '--no-save', '--offline']);
+    const lock = existsSync(join(app, 'bun.lock')) ? readFileSync(join(app, 'bun.lock')) : null;
+    const originalShim = process.platform === 'win32' ? readFileSync(join(app, 'node_modules/.bin/wq-switch.exe')) : readlinkSync(join(app, 'node_modules/.bin/wq-switch'));
+    expect(runConsumer(app, ['run', 'wq-switch', 'local'])).toContain('Build activated');
+    expect(runConsumer(app, ['run', 'wq-switch', 'build'])).toContain('Build activated');
+    expect(runConsumer(app, ['run', 'wq-switch', 'npm'])).toContain('original package connections restored');
+    expect(process.platform === 'win32' ? readFileSync(join(app, 'node_modules/.bin/wq-switch.exe')) : readlinkSync(join(app, 'node_modules/.bin/wq-switch'))).toEqual(originalShim);
+    expect(readFileSync(join(app, 'package.json'), 'utf8')).toBe(JSON.stringify(consumer, null, 2) + '\n');
+    expect(existsSync(join(app, 'bun.lock')) ? readFileSync(join(app, 'bun.lock')) : null).toEqual(lock);
+    if (process.platform === 'win32') {
+      sourcePkg.bin!['wq-switch'] = './dist/moved-cli.js'; writeJson(join(sourceCore, 'package.json'), sourcePkg);
+      cpSync(resolve('scripts/wq-switch/dist/index.js'), join(sourceCore, 'dist/moved-cli.js'));
+      const rejected = spawnSync('bun', ['run', 'wq-switch', 'local'], { cwd: app, encoding: 'utf8', timeout: 20000 });
+      expect(rejected.status).toBe(1);
+      expect(rejected.stderr).toContain('currently running Windows launcher would change');
+      expect(readState(app)).toBeNull(); expect(hasJournal(app)).toBe(false);
+      expect(readFileSync(join(app, 'node_modules/.bin/wq-switch.exe'))).toEqual(originalShim);
+      const direct = spawnSync('node', [resolve('scripts/wq-switch/dist/index.js'), 'local'], { cwd: app, encoding: 'utf8', timeout: 20000 });
+      expect(direct.status, direct.stderr).toBe(0);
+      expect(runConsumer(app, ['run', 'wq-switch', 'npm'])).toContain('original package connections restored');
+    }
+  }, 30000);
+});
 
 describe('wq-switch transactions', () => {
   for (const wrapper of ['angular', 'react'] as const) {

@@ -4,6 +4,7 @@ import { parseStableVersion } from '../versioning/stable-version.js';
 import { contentHash, loadReleaseAssets } from './assets.js';
 import { parseReleaseSummaries } from './summaries.js';
 import { capturePreviewAssetOptions, revalidateCapturePreview, type CapturePreview } from './preview.js';
+import type { ReleaseFeed } from './types.js';
 
 import { projectPath, requireNotesConfig, validateChangelogConfig, type ChangelogConfig } from '../config/index.js';
 
@@ -31,7 +32,8 @@ export async function generateWhatsNew(
   const preview = options.capturePreview ? await revalidateCapturePreview(config, options.capturePreview) : undefined;
   if (preview && !includeUnreleased) throw new Error('Capture preview requires includeUnreleased in the managed build.');
   const imageFiles = await loadReleaseAssets(config, releases, preview ? capturePreviewAssetOptions(preview) : {});
-  const feed = `${JSON.stringify({ releases }, null, 2)}\n`;
+  const releaseFeed: ReleaseFeed = { releases };
+  const feed = `${JSON.stringify(releaseFeed, null, 2)}\n`;
   const feedName = `releases.${contentHash(feed)}.json`;
   const feedUrl = `${config.feedPublicPrefix}/${feedName}`;
   const outputDirectory = projectPath(config, config.feedOutputDirectory);

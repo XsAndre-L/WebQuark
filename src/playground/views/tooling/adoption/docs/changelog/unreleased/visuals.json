@@ -1,0 +1,16 @@
+[
+  {
+    "id": "release-panel",
+    "kind": "image",
+    "title": "Release-note panel",
+    "description": "A hand-authored illustration using fictional content.",
+    "afterSummary": {
+      "category": "Added",
+      "summary": "A fictional release-note panel shows text and an illustration."
+    },
+    "image": {
+      "src": "images/release-panel.svg",
+      "alt": "A release-note panel with a heading and two text lines."
+    }
+  }
+]

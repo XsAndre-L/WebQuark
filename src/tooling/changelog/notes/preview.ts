@@ -105,6 +105,7 @@ async function validateOwnership(config: ChangelogConfig, supplied: CaptureOwned
   const expected: CaptureOwnedOutput[] = [];
   const owned = new Map<string, string>();
   for (const visual of visuals) if (visual['capture'] !== undefined) {
+    validateVisualMetadata(visual, `visual ${visual['id']}`, config.metadata.applications);
     const output = outputSource(visual);
     assertCaptureOutput(output, normalizeCaptureFormat((visual['capture'] as Record<string, unknown>)['format'], `visual ${visual['id']}.capture`), `visual ${visual['id']}`);
     expected.push({ id: visual['id'] as string, visualId: visual['id'] as string, output, mode: 'page' });
@@ -118,6 +119,7 @@ async function validateOwnership(config: ChangelogConfig, supplied: CaptureOwned
       if (typeof visualId !== 'string' || !visualById.has(visualId)) throw new Error(`Capture preview ${capture['id']}: unknown linked visual.`);
       if (capture['output'] !== undefined || capture['location'] !== undefined || capture['subject'] !== undefined || capture['application'] !== undefined) throw new Error(`Capture preview ${capture['id']}: linked metadata/output must be owned once by the visual.`);
       const visual = visualById.get(visualId)!;
+      validateVisualMetadata(visual, `visual ${visualId}`, config.metadata.applications);
       if (visual['capture'] !== undefined) throw new Error(`Capture preview ${visualId}: configured as both custom and generic.`);
       const output = outputSource(visual);
       assertCaptureOutput(output, format, `capture ${capture['id']}`);

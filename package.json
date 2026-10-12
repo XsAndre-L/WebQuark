@@ -56,7 +56,9 @@
     "@webquark/core": "workspace:*",
     "@webquark/browser": "workspace:*",
     "@webquark/tooling": "workspace:*",
-    "sharp": "0.34.5"
+    "sharp": "0.34.5",
+    "cmd-shim": "8.0.0",
+    "read-cmd-shim": "6.0.0"
   },
   "license": "MIT"
 }

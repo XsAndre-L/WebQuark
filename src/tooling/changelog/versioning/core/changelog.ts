@@ -90,13 +90,17 @@ export async function archiveReleaseNotes(
   const nextChangelog = archiveChangelog(originalChangelog, version, date, relative(dirname(changelogPath), resolve(targetPath, 'README.md')).replaceAll('\\', '/'));
   const currentRelease = parseReleaseSummaries(originalChangelog, version, true).filter((release) => release.unreleased);
   await loadReleaseAssets(config, currentRelease);
-  const locations = Object.fromEntries(currentRelease.flatMap((release) => release.visuals.map((visual) => [visual.id, {
+  const visuals = currentRelease.flatMap((release) => release.visuals);
+  const contextualVisuals = visuals.filter((visual) => visual.location && visual.subject && visual.guidance);
+  const locations = Object.fromEntries(contextualVisuals.map((visual) => [visual.id, {
     location: visual.location, subject: visual.subject, guidance: visual.guidance,
-  }])));
+  }]));
+  // Version 1 requires a snapshot for every visual; version 2 also permits ordinary metadata-free visuals.
+  const schemaVersion = contextualVisuals.length === visuals.length ? 1 : 2;
 
   await rename(unreleasedPath, targetPath);
   // The release owner's existing directory snapshot/rollback transaction includes this file.
-  await writeFile(resolve(targetPath, 'locations.json'), `${JSON.stringify({ schemaVersion: 1, visuals: locations }, null, 2)}\n`, 'utf8');
+  await writeFile(resolve(targetPath, 'locations.json'), `${JSON.stringify({ schemaVersion, visuals: locations }, null, 2)}\n`, 'utf8');
   await writePreservingLineEndings(
     resolve(targetPath, 'README.md'),
     archiveUnreleasedReadme(originalReadme, version),
