@@ -1,5 +1,7 @@
 # Component Optimizations
 
+> Path note, 14 October 2026: source files have moved. See the [current-path mapping](source-path-migrations.md). Recorded commands, line numbers and validation results describe the original checkout and are retained as historical evidence.
+
 ## Methodology (v2 — comprehensive, all 24 components)
 
 The first pass of this document only audited the 12 largest components by line count and made a real mistake on `q-dialog` (claimed `backdrop-filter` was unconditional when a `backdropEffect` prop already existed — caught and corrected). This version is a full re-audit of **all 24 components**, done in two stages: (1) full-file reads with a mandatory prop/method/event inventory *before* any finding is written, specifically to catch existing escape-hatches that a shallow pass would miss, then (2) an independent adversarial verification pass that re-read every file itself and tried to refute every finding. That process caught its own errors too — see "Corrections caught by verification" below. Every finding here has survived independent re-reading against the actual source; findings that didn't survive are recorded as refuted/revised rather than silently dropped.

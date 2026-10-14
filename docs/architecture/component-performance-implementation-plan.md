@@ -1,5 +1,7 @@
 # Component performance implementation plan
 
+> Path note, 14 October 2026: source files have moved. See the [current-path mapping](source-path-migrations.md). Recorded commands, line numbers and validation results describe the original checkout and are retained as historical evidence.
+
 Refined on 3 October 2026. This plan covers WebQuark syntax highlighting, icon loading, and shared form performance.
 
 ## Ownership and execution

@@ -1,5 +1,7 @@
 # WebQuark component quality review
 
+> Path note, 14 October 2026: source files have moved. See the [current-path mapping](source-path-migrations.md). Recorded commands, line numbers and validation results describe the original checkout and are retained as historical evidence.
+
 Reviewed on 2 October 2026. This report covers all **41 public components**, including the nine absent from the main playground. Three subagents examined component implementations, types, helpers, styles, documentation, and tests. The parent review checked shared contracts, framework integration, and browser reproductions.
 
 **Conclusion:** the property naming cleanup is consistent, but the library still has material behavior, accessibility, and developer experience gaps. Passing the current tests does not establish that these gaps are absent. Eight components had no additional concrete defect identified in this review; the other 33 have defects, incomplete behavior, or integration work worth addressing.
@@ -71,13 +73,13 @@ This is a review and proposed remediation order. **Component implementations hav
 
 **`q-icon`: browser reproduced.** URL-loaded SVG uses a denylist sanitizer. Malformed XML falls back to regex replacement, which does not reliably remove incomplete blocked elements. The valid XML path also permits active SVG elements and attributes outside the static registry's safer contract. Both paths allowed script execution in local browser probes when supplied with unsafe SVG content. This affects untrusted or compromised icon sources; it is not a finding against every registered static icon.
 
-Evidence: [SVG sanitizer](D:/Dev/PurelyIT/WebQuark/src/components/media/icon/internals/sanitize-svg.ts:8), [parse-error fallback](D:/Dev/PurelyIT/WebQuark/src/components/media/icon/internals/sanitize-svg.ts:18), [markup insertion](D:/Dev/PurelyIT/WebQuark/src/components/media/icon/icon.tsx:256).
+Evidence: [SVG sanitizer](../../src/browser/components/media/icon/internals/sanitize-svg.ts), [parse-error fallback](../../src/browser/components/media/icon/internals/sanitize-svg.ts), [markup insertion](../../src/browser/components/media/icon/icon.tsx).
 
 **Correction:** reject malformed SVG; enforce a strict element, attribute, URL, and resource allowlist consistent with registered definitions. Active navigation/animation must not pass through as an icon. Add defensive regression coverage for malformed and well-formed unsafe content.
 
 **`q-syntax-box`: browser reproduced live markup.** `escapeHtml()` assumes the entire source is already escaped whenever it contains any `&lt;`, `&gt;`, or `&amp;`. Mixed raw/escaped source therefore bypasses escaping and is inserted using `innerHTML`. A local probe created an image node where literal code should have been displayed.
 
-Evidence: [escaping shortcut](D:/Dev/PurelyIT/WebQuark/src/utils/syntax.ts:5), [highlight insertion](D:/Dev/PurelyIT/WebQuark/src/components/data-display/syntax-box/syntax-box.tsx:320).
+Evidence: [escaping shortcut](../../src/browser/components/data-display/syntax-box/internals/syntax.ts), [highlight insertion](../../src/browser/components/data-display/syntax-box/syntax-box.tsx).
 
 **Correction:** always treat incoming code as literal source and escape it once. Do not infer whole-input encoding from one entity. Keep generated highlighting markup separate from source text.
 
@@ -85,7 +87,7 @@ Evidence: [escaping shortcut](D:/Dev/PurelyIT/WebQuark/src/utils/syntax.ts:5), [
 
 **Helper reproduced.** Editable initialization and unfocused updates automatically invoke the lightweight formatter. Its global whitespace/semicolon/brace replacements do not respect strings or comments. Valid JavaScript can become invalid, and a line comment can absorb the following statement. This is data corruption, not merely a formatting preference.
 
-Evidence: [initial formatting](D:/Dev/PurelyIT/WebQuark/src/components/data-display/syntax-box/internals/value-sync.ts:43), [formatter](D:/Dev/PurelyIT/WebQuark/src/utils/formatter.ts:154), [value watchers](D:/Dev/PurelyIT/WebQuark/src/components/data-display/syntax-box/syntax-box.tsx:72).
+Evidence: [initial formatting](../../src/browser/components/data-display/syntax-box/internals/value-sync.ts), [formatter](../../src/browser/components/data-display/syntax-box/internals/formatter.ts), [value watchers](../../src/browser/components/data-display/syntax-box/syntax-box.tsx).
 
 **Correction:** preserve source verbatim by default. Make formatting explicit and use a parser-aware formatter. Editable mode must also render an empty textarea without requiring consumers to seed `code=""`; currently an unseeded required editor renders no textarea and reports valid. That last behavior was browser reproduced.
 
@@ -95,7 +97,7 @@ Evidence: [initial formatting](D:/Dev/PurelyIT/WebQuark/src/components/data-disp
 
 **Native submission mode: source confirmed.** With `preventDefault=false`, the handler starts asynchronous validation without synchronously canceling native submission. Returning on invalidity does not cancel the browser's default action. Slotted fields also lack the internal native form's ownership, so native validation cannot repair this boundary automatically.
 
-Evidence: [control discovery](D:/Dev/PurelyIT/WebQuark/src/components/inputs/form/internals/controls.ts:5), [submission/validation](D:/Dev/PurelyIT/WebQuark/src/components/inputs/form/form.tsx:231).
+Evidence: [control discovery](../../src/browser/components/inputs/form/internals/controls.ts), [submission/validation](../../src/browser/components/inputs/form/form.tsx).
 
 **Correction:** distinguish all validatable controls from successful named controls. Cancel the event synchronously, validate, and deliberately perform the requested submission only after success. Test both prevented submission and native-navigation mode.
 
@@ -105,7 +107,7 @@ Evidence: [control discovery](D:/Dev/PurelyIT/WebQuark/src/components/inputs/for
 
 **Browser reproduced.** The unfiltered `[name]` search collects the internal actions slot: an empty form returns `{ actions: null }`. Disabled fieldset descendants are included because the bridge checks `.disabled` rather than effective disabled state. A radio group whose value is no longer in its options contributes no native form value, but the wrapper reads and submits the stale property anyway.
 
-Evidence: [discovery](D:/Dev/PurelyIT/WebQuark/src/components/inputs/form/internals/controls.ts:9), [collection](D:/Dev/PurelyIT/WebQuark/src/components/inputs/form/internals/values.ts:30), [manual append](D:/Dev/PurelyIT/WebQuark/src/components/inputs/form/internals/values.ts:117).
+Evidence: [discovery](../../src/browser/components/inputs/form/internals/controls.ts), [collection](../../src/browser/components/inputs/form/internals/values.ts), [manual append](../../src/browser/components/inputs/form/internals/values.ts).
 
 **Correction:** collect actual controls, honor effective disabling and successful values, and avoid reconstructing a different submission contract from raw component properties.
 
@@ -113,7 +115,7 @@ Evidence: [discovery](D:/Dev/PurelyIT/WebQuark/src/components/inputs/form/intern
 
 **Browser reproduced.** A reset button leaves slotted values changed while `resetForm()` restores them. `setValues()` and reset snapshot restoration reduce arrays to their first value and assign it to every matching control. Radio option values are overwritten instead of checked; multiselects lose selections. Repeated toggles overwrite earlier collected values with a final Boolean.
 
-Evidence: [reset paths](D:/Dev/PurelyIT/WebQuark/src/components/inputs/form/form.tsx:108), [reset action](D:/Dev/PurelyIT/WebQuark/src/components/inputs/form/form.tsx:176), [assignment](D:/Dev/PurelyIT/WebQuark/src/components/inputs/form/internals/values.ts:58).
+Evidence: [reset paths](../../src/browser/components/inputs/form/form.tsx), [reset action](../../src/browser/components/inputs/form/form.tsx), [assignment](../../src/browser/components/inputs/form/internals/values.ts).
 
 **Correction:** use one cancelable reset path and assign according to control type. Preserve radio option values, multiselect selections, and repeated names. Define how toggle groups map to arrays and Boolean values.
 
@@ -121,7 +123,7 @@ Evidence: [reset paths](D:/Dev/PurelyIT/WebQuark/src/components/inputs/form/form
 
 **Native button and layout composition: browser reproduced.** Slotted native submit buttons have no native form owner and are not bridged. `focus-next` and `none` reject Enter whenever an unrelated `q-*` layout appears in the event path, so recommended `q-grid`/`q-stack` wrappers break those policies. The default `submit` policy supplies no text-input Enter bridge; that absence is source confirmed rather than a complete real-key navigation reproduction.
 
-Evidence: [button bridge](D:/Dev/PurelyIT/WebQuark/src/components/inputs/form/form.tsx:191), [Enter policy](D:/Dev/PurelyIT/WebQuark/src/components/inputs/form/internals/enter-behavior.ts:7).
+Evidence: [button bridge](../../src/browser/components/inputs/form/form.tsx), [Enter policy](../../src/browser/components/inputs/form/internals/enter-behavior.ts).
 
 **Correction:** support native and WebQuark submit/reset controls through the same boundary. Apply Enter policies based on the originating control, not layout ancestors. Separately define ordinary native `<form>` support for `q-button`; its inner native button currently does not provide that integration automatically.
 
@@ -131,7 +133,7 @@ Evidence: [button bridge](D:/Dev/PurelyIT/WebQuark/src/components/inputs/form/fo
 
 Form-associated fields lack `formDisabledCallback`, leaving shadow controls interactive under disabled fieldsets. This affects input, textarea, dropdown, radio group, toggle, and editable syntax-box behavior.
 
-Evidence: [input watcher](D:/Dev/PurelyIT/WebQuark/src/components/inputs/input/input.tsx:88), [native validity](D:/Dev/PurelyIT/WebQuark/src/utils/form-control-validity.ts:7).
+Evidence: [input watcher](../../src/browser/components/inputs/input/input.tsx), [native validity](../../src/browser/utils/form-control-validity.ts).
 
 **Correction:** synchronously reconcile current values before validation and implement an effective disabled state that combines the explicit property with inherited form disabling.
 
@@ -139,7 +141,7 @@ Evidence: [input watcher](D:/Dev/PurelyIT/WebQuark/src/components/inputs/input/i
 
 **Browser reproduced and source confirmed.** It has no `disabled`, `name`, form association/reset/validity, configurable label, `ariaLabel`, or focus method. A `disabled` attribute does not prevent incrementing, and every input is permanently named “Quantity”. Multiple quantities cannot be named distinctly through the public API, and forms need hidden inputs/event bridges.
 
-Evidence: [quantity API](D:/Dev/PurelyIT/WebQuark/src/components/inputs/quantity-selector/quantity-selector.tsx:25), [hardcoded name](D:/Dev/PurelyIT/WebQuark/src/components/inputs/quantity-selector/quantity-selector.tsx:200).
+Evidence: [quantity API](../../src/browser/components/inputs/quantity-selector/quantity-selector.tsx), [hardcoded name](../../src/browser/components/inputs/quantity-selector/quantity-selector.tsx).
 
 **Correction:** adopt the shared field contract while retaining its numeric value and orientation. Supply a visible/hidden label and accessible override, disabling, successful form value, reset, validity, and focus behavior.
 
@@ -147,7 +149,7 @@ Evidence: [quantity API](D:/Dev/PurelyIT/WebQuark/src/components/inputs/quantity
 
 **Browser reproduced.** Number-only `min/max` cannot express calendar/time constraints despite those input types being supported. A date minimum is parsed as a number and becomes an invalid native bound. Manually adding a step to an off-grid number preserves the mismatch; decimal arithmetic also exposes long floating-point values. The latter was observed as a data/display artifact, not a validity failure in the aligned case.
 
-Evidence: [bounds](D:/Dev/PurelyIT/WebQuark/src/components/inputs/input/input.tsx:57), [manual stepping](D:/Dev/PurelyIT/WebQuark/src/components/inputs/input/input.tsx:206).
+Evidence: [bounds](../../src/browser/components/inputs/input/input.tsx), [manual stepping](../../src/browser/components/inputs/input/input.tsx).
 
 **Correction:** use bounds compatible with numeric and calendar input types. Use native stepping or a decimal-safe, step-aligned shared helper for numeric controls.
 
@@ -155,7 +157,7 @@ Evidence: [bounds](D:/Dev/PurelyIT/WebQuark/src/components/inputs/input/input.ts
 
 **Browser reproduced.** `error` displays feedback and `aria-invalid=true`, but does not set custom validity. The same nonblank error blocks submission in sibling fields.
 
-Evidence: [toggle validity](D:/Dev/PurelyIT/WebQuark/src/components/inputs/toggle/toggle.tsx:149).
+Evidence: [toggle validity](../../src/browser/components/inputs/toggle/toggle.tsx).
 
 **Correction:** apply the same nonblank-error validity contract across fields. A distinct presentation-only state, if needed, should not reuse the property that means a validation error elsewhere.
 
@@ -163,7 +165,7 @@ Evidence: [toggle validity](D:/Dev/PurelyIT/WebQuark/src/components/inputs/toggl
 
 **Browser reproduced.** Switching from auto growth to fixed/manual mode leaves the previously generated inline height in place. Reducing `rows` does not restore the expected fixed geometry.
 
-Evidence: [resize handling](D:/Dev/PurelyIT/WebQuark/src/components/inputs/textarea/textarea.tsx:238).
+Evidence: [resize handling](../../src/browser/components/inputs/textarea/textarea.tsx).
 
 **Correction:** clear auto-owned height when leaving auto mode, distinguishing it from intentional manual sizing.
 
@@ -171,7 +173,7 @@ Evidence: [resize handling](D:/Dev/PurelyIT/WebQuark/src/components/inputs/texta
 
 **Browser reproduced.** Search-input ArrowDown repeatedly activates the first result; Enter chooses the first result instead of the active result. Disabling an already-open dropdown leaves clickable options that can still change the value.
 
-Evidence: [selection guard](D:/Dev/PurelyIT/WebQuark/src/components/inputs/dropdown/dropdown.tsx:254), [ArrowDown](D:/Dev/PurelyIT/WebQuark/src/components/inputs/dropdown/dropdown.tsx:468), [Enter](D:/Dev/PurelyIT/WebQuark/src/components/inputs/dropdown/dropdown.tsx:508).
+Evidence: [selection guard](../../src/browser/components/inputs/dropdown/dropdown.tsx), [ArrowDown](../../src/browser/components/inputs/dropdown/dropdown.tsx), [Enter](../../src/browser/components/inputs/dropdown/dropdown.tsx).
 
 **Correction:** retain input focus while moving the active option correctly, commit the active option, and guard/cancel all selection paths when disabled. Define whether external search retains its query on reopen or emits a reset; silently clearing only the displayed query can leave stale remote results.
 
@@ -179,7 +181,7 @@ Evidence: [selection guard](D:/Dev/PurelyIT/WebQuark/src/components/inputs/dropd
 
 **Helper reproduced.** Dropdown, radio-group, navbar, and tabs call array methods on parsed JSON without checking its shape. Valid JSON values such as an object or null throw, although invalid JSON safely falls back.
 
-Evidence: [JSON helper](D:/Dev/PurelyIT/WebQuark/src/utils/utils.ts:25), [dropdown options](D:/Dev/PurelyIT/WebQuark/src/components/inputs/dropdown/internals/options.ts:10), [radio options](D:/Dev/PurelyIT/WebQuark/src/components/inputs/radio-group/radio-group.utils.ts:6), [navbar items](D:/Dev/PurelyIT/WebQuark/src/components/layout/navbar/navbar.utils.ts:6), [tab items](D:/Dev/PurelyIT/WebQuark/src/components/layout/tabs/tabs.utils.ts:25).
+Evidence: [JSON helper](../../src/browser/utils/utils.ts), [dropdown options](../../src/browser/components/inputs/dropdown/internals/options.ts), [radio options](../../src/browser/components/inputs/radio-group/radio-group.utils.ts), [navbar items](../../src/browser/components/layout/navbar/navbar.utils.ts), [tab items](../../src/browser/components/layout/tabs/tabs.utils.ts).
 
 **Correction:** validate arrays and item shapes at collection boundaries, with consistent fallback and useful diagnostics. Include non-array values in collection tests.
 
@@ -187,7 +189,7 @@ Evidence: [JSON helper](D:/Dev/PurelyIT/WebQuark/src/utils/utils.ts:25), [dropdo
 
 **Button: browser reproduced.** Loading uses `visibility:hidden` on the label, removing “Save” from the native button's accessible name. Syntax-box Format and Copy controls are icon-only without explicit action names; a tooltip does not substitute for a button name.
 
-Evidence: [loading content](D:/Dev/PurelyIT/WebQuark/src/components/actions/button/button.tsx:185), [editor actions](D:/Dev/PurelyIT/WebQuark/src/components/data-display/syntax-box/syntax-box.tsx:350).
+Evidence: [loading content](../../src/browser/components/actions/button/button.tsx), [editor actions](../../src/browser/components/data-display/syntax-box/syntax-box.tsx).
 
 **Correction:** preserve the existing accessible label while loading and explicitly name built-in icon actions. Restore visible focus indicators for input auxiliary controls and quantity inputs rather than requiring consumer CSS.
 
@@ -195,7 +197,7 @@ Evidence: [loading content](D:/Dev/PurelyIT/WebQuark/src/components/actions/butt
 
 **Source confirmed.** `q-banner.height/alignment`, `q-section.layout/reverse/columns`, `q-accordion.mode`, and `q-media.src/alt/kind/loading` do not implement their advertised behavior. Media and fallback content can both be projected. `q-sidepanel.mode` is never read, so flat/grouped/tree have no distinct behavior.
 
-Evidence: [banner](D:/Dev/PurelyIT/WebQuark/src/components/content/banner/banner.tsx:12), [section](D:/Dev/PurelyIT/WebQuark/src/components/layout/section/section.tsx:12), [accordion](D:/Dev/PurelyIT/WebQuark/src/components/data-display/accordion/accordion.tsx:10), [media](D:/Dev/PurelyIT/WebQuark/src/components/media/media/media.tsx:11), [sidepanel mode](D:/Dev/PurelyIT/WebQuark/src/components/layout/sidepanel/sidepanel.tsx:95).
+Evidence: [banner](../../src/browser/components/content/banner/banner.tsx), [section](../../src/browser/components/layout/section/section.tsx), [accordion](../../src/browser/components/data-display/accordion/accordion.tsx), [media](../../src/browser/components/media/media/media.tsx), [sidepanel mode](../../src/browser/components/layout/sidepanel/sidepanel.tsx).
 
 **Correction:** implement a deliberately defined contract or remove these from the stable usable API until ready. A property should not require consumers to recreate all of its behavior. The guides already acknowledge the scaffolds; that disclosure does not make them complete.
 
@@ -203,7 +205,7 @@ Evidence: [banner](D:/Dev/PurelyIT/WebQuark/src/components/content/banner/banner
 
 **Source confirmed.** Runtime `itemWidth`/`snapAlignment` changes do not resynchronize the host variables. Only the viewport is observed, so late image loading or changing natural slide widths can leave cached offsets and arrow states stale without a viewport resize or slot change.
 
-Evidence: [style synchronization](D:/Dev/PurelyIT/WebQuark/src/components/content/carousel/carousel.tsx:164), [observer](D:/Dev/PurelyIT/WebQuark/src/components/content/carousel/carousel.tsx:145).
+Evidence: [style synchronization](../../src/browser/components/content/carousel/carousel.tsx), [observer](../../src/browser/components/content/carousel/carousel.tsx).
 
 **Correction:** watch the style properties; observe slotted slide geometry; resynchronize before recalculating navigation metrics.
 
@@ -211,7 +213,7 @@ Evidence: [style synchronization](D:/Dev/PurelyIT/WebQuark/src/components/conten
 
 **Source confirmed.** Hidden persistent panels place header/footer collapse controls inside hidden inert content, disabling their own reopen controls. Switching variants does not synchronize drawer visibility with `open`. Default transition declarations append an easing function to a token that already includes one, making the transition invalid.
 
-Evidence: [persistent controls](D:/Dev/PurelyIT/WebQuark/src/components/layout/sidepanel/sidepanel.tsx:475), [drawer lifecycle](D:/Dev/PurelyIT/WebQuark/src/components/layout/sidepanel/sidepanel.tsx:155), [transition](D:/Dev/PurelyIT/WebQuark/src/components/layout/sidepanel/sidepanel.css:40).
+Evidence: [persistent controls](../../src/browser/components/layout/sidepanel/sidepanel.tsx), [drawer lifecycle](../../src/browser/components/layout/sidepanel/sidepanel.tsx), [transition](../../src/browser/components/layout/sidepanel/sidepanel.css).
 
 **Correction:** keep reopening controls reachable, synchronize lifecycle when entering/leaving drawer mode, and use a transition token with one duration/easing pair.
 
@@ -221,7 +223,7 @@ Evidence: [persistent controls](D:/Dev/PurelyIT/WebQuark/src/components/layout/s
 
 Dialog, reel, and drawer behavior also lack shared topmost-modal coordination and background inertness. Multiple global Escape/Tab listeners can compete. Focus discovery needs to exclude inaccessible ancestor subtrees consistently.
 
-Evidence: [reel open/focus](D:/Dev/PurelyIT/WebQuark/src/components/media/reel/reel.tsx:63), [shared trap](D:/Dev/PurelyIT/WebQuark/src/utils/dom.ts:105), [drawer keyboard](D:/Dev/PurelyIT/WebQuark/src/components/layout/sidepanel/sidepanel.tsx:220).
+Evidence: [reel open/focus](../../src/browser/components/media/reel/reel.tsx), [shared trap](../../src/browser/utils/dom.ts), [drawer keyboard](../../src/browser/components/layout/sidepanel/sidepanel.tsx).
 
 **Correction:** share modal registration, active-layer keyboard handling, focus capture/restore, empty-surface trapping, and background/scroll policy. Resolve rendered focus targets after rendering.
 
@@ -229,7 +231,7 @@ Evidence: [reel open/focus](D:/Dev/PurelyIT/WebQuark/src/components/media/reel/r
 
 **Source confirmed.** Escape restores focus only in the collision path, while the ordinary small-screen path can hide the focused menu item. Custom desktop navigation/actions disappear at the mobile breakpoint without fallback, requiring duplicated content even when no mobile override exists. Optional empty branding still renders an unnamed focusable anchor.
 
-Evidence: [Escape](D:/Dev/PurelyIT/WebQuark/src/components/layout/navbar/navbar.tsx:335), [mobile slots](D:/Dev/PurelyIT/WebQuark/src/components/layout/navbar/navbar.css:403), [brand rendering](D:/Dev/PurelyIT/WebQuark/src/components/layout/navbar/navbar.tsx:397).
+Evidence: [Escape](../../src/browser/components/layout/navbar/navbar.tsx), [mobile slots](../../src/browser/components/layout/navbar/navbar.css), [brand rendering](../../src/browser/components/layout/navbar/navbar.tsx).
 
 **Correction:** restore focus whenever closing hides the current target; reuse original slot content unless explicitly replaced; omit branding links without meaningful content.
 
@@ -237,7 +239,7 @@ Evidence: [Escape](D:/Dev/PurelyIT/WebQuark/src/components/layout/navbar/navbar.
 
 **Source confirmed; metrics helper reproduced.** The scrolling class is on the custom-element host, but CSS looks for it on the inner wrapper. `autoHide=false` lacks a persistent visibility rule, and keyboard focus can remain on a transparent thumb. Disconnect cleans up observers and target styling without a corresponding reconnect initializer. In short viewports, the minimum thumb exceeds its track and cannot move.
 
-Evidence: [host state](D:/Dev/PurelyIT/WebQuark/src/components/layout/scrollable/scrollable.tsx:419), [visibility selectors](D:/Dev/PurelyIT/WebQuark/src/components/layout/scrollable/scrollable.css:99), [cleanup](D:/Dev/PurelyIT/WebQuark/src/components/layout/scrollable/scrollable.tsx:80), [metrics](D:/Dev/PurelyIT/WebQuark/src/components/layout/scrollable/internals/metrics.ts:49).
+Evidence: [host state](../../src/browser/components/layout/scrollable/scrollable.tsx), [visibility selectors](../../src/browser/components/layout/scrollable/scrollable.css), [cleanup](../../src/browser/components/layout/scrollable/scrollable.tsx), [metrics](../../src/browser/components/layout/scrollable/internals/metrics.ts).
 
 **Correction:** bind visibility to actual state and focus, restore resources on reconnect, and cap proportional thumb geometry to the usable track.
 
@@ -245,7 +247,7 @@ Evidence: [host state](D:/Dev/PurelyIT/WebQuark/src/components/layout/scrollable
 
 **Source confirmed.** A later `.is-scrollable .panel-body` rule overrides sticky mode's `overflow:visible`, so both the panel and body can own scrolling. Sticky header/footer flags cannot reliably select the intended container.
 
-Evidence: [sticky scrolling](D:/Dev/PurelyIT/WebQuark/src/components/layout/panel/panel.css:69), [later body scrolling](D:/Dev/PurelyIT/WebQuark/src/components/layout/panel/panel.css:95).
+Evidence: [sticky scrolling](../../src/browser/components/layout/panel/panel.css), [later body scrolling](../../src/browser/components/layout/panel/panel.css).
 
 **Correction:** choose one scroll container per mode and apply keyboard scrolling/focus to that container.
 
@@ -255,7 +257,7 @@ Evidence: [sticky scrolling](D:/Dev/PurelyIT/WebQuark/src/components/layout/pane
 
 The wrapper also declares a grid without implementing grid cell keyboard navigation, and keyboard row activation toggles selection while equivalent pointer activation does not.
 
-Evidence: [row model](D:/Dev/PurelyIT/WebQuark/src/components/data-display/data-table/internals/table-model.ts:106), [selection detail](D:/Dev/PurelyIT/WebQuark/src/components/data-display/data-table/data-table.tsx:135), [row keyboard](D:/Dev/PurelyIT/WebQuark/src/components/data-display/data-table/data-table.tsx:183).
+Evidence: [row model](../../src/browser/components/data-display/data-table/internals/table-model.ts), [selection detail](../../src/browser/components/data-display/data-table/data-table.tsx), [row keyboard](../../src/browser/components/data-display/data-table/data-table.tsx).
 
 **Correction:** establish identity before sorting, or reject unsupported combinations clearly. Match native table semantics to the actual keyboard model, and define pointer/keyboard selection consistently.
 
@@ -263,7 +265,7 @@ Evidence: [row model](D:/Dev/PurelyIT/WebQuark/src/components/data-display/data-
 
 **Browser reproduced.** Positive fractions below one are floored to zero. A fractional page size can produce an infinite page count and an inverted item range; a fractional current page can produce zero.
 
-Evidence: [integer normalization](D:/Dev/PurelyIT/WebQuark/src/components/data-display/pagination/pagination.tsx:127).
+Evidence: [integer normalization](../../src/browser/components/data-display/pagination/pagination.tsx).
 
 **Correction:** clamp the normalized integer to at least one after flooring, and use the same effective values for summaries and events.
 
@@ -271,7 +273,7 @@ Evidence: [integer normalization](D:/Dev/PurelyIT/WebQuark/src/components/data-d
 
 **Source confirmed.** Thumbnail always uses `src` for an image, while the video viewer uses that same URL for video. A conventional video URL is not also a thumbnail image URL, so the public contract cannot express an ordinary video poster plus playable source.
 
-Evidence: [thumbnail image](D:/Dev/PurelyIT/WebQuark/src/components/media/thumbnail/thumbnail.tsx:67), [viewer media](D:/Dev/PurelyIT/WebQuark/src/components/media/reel/reel.tsx:236).
+Evidence: [thumbnail image](../../src/browser/components/media/thumbnail/thumbnail.tsx), [viewer media](../../src/browser/components/media/reel/reel.tsx).
 
 **Correction:** expose separate media and poster/preview sources and carry both through maximize events. Include loading/failure behavior for each.
 
@@ -279,7 +281,7 @@ Evidence: [thumbnail image](D:/Dev/PurelyIT/WebQuark/src/components/media/thumbn
 
 **Pending activation: browser reproduced.** Pending items announce `aria-disabled=true` but still emit activation on click and keyboard. The parent declares a list, but children do not declare list items. Consumers manually remove the final connector.
 
-Evidence: [item activation](D:/Dev/PurelyIT/WebQuark/src/components/indicators/step-diagram-item/step-diagram-item.tsx:37), [item disabled state](D:/Dev/PurelyIT/WebQuark/src/components/indicators/step-diagram-item/step-diagram-item.tsx:75), [parent list](D:/Dev/PurelyIT/WebQuark/src/components/indicators/step-diagram/step-diagram.tsx:62).
+Evidence: [item activation](../../src/browser/components/indicators/step-diagram-item/step-diagram-item.tsx), [item disabled state](../../src/browser/components/indicators/step-diagram-item/step-diagram-item.tsx), [parent list](../../src/browser/components/indicators/step-diagram/step-diagram.tsx).
 
 **Correction:** enforce the disabled contract or separate pending from disabling, establish complete list semantics, and let the parent determine connector termination.
 
@@ -287,7 +289,7 @@ Evidence: [item activation](D:/Dev/PurelyIT/WebQuark/src/components/indicators/s
 
 **Source confirmed.** There is no Escape dismissal, it immediately hides when leaving the trigger and cannot remain hovered, placement can overflow, and visible position changes do not recalculate coordinates.
 
-Evidence: [trigger listeners](D:/Dev/PurelyIT/WebQuark/src/components/overlays/tooltip/tooltip.tsx:46), [positioning](D:/Dev/PurelyIT/WebQuark/src/components/overlays/tooltip/tooltip.tsx:75), [pointer behavior](D:/Dev/PurelyIT/WebQuark/src/components/overlays/tooltip/tooltip.css:3).
+Evidence: [trigger listeners](../../src/browser/components/overlays/tooltip/tooltip.tsx), [positioning](../../src/browser/components/overlays/tooltip/tooltip.tsx), [pointer behavior](../../src/browser/components/overlays/tooltip/tooltip.css).
 
 **Correction:** implement coordinated hover/focus persistence, Escape dismissal, collision handling, and recalculation for live property/geometry changes. Keep content noninteractive.
 
@@ -295,15 +297,15 @@ Evidence: [trigger listeners](D:/Dev/PurelyIT/WebQuark/src/components/overlays/t
 
 **Browser stylesheet reproduced.** Logical `inset-inline-start:50%` is combined with physical `translateX(-50%)`. In RTL this shifts the toast away from the center and can clip it outside the viewport.
 
-Evidence: [centering](D:/Dev/PurelyIT/WebQuark/src/components/communication/toast/toast.css:29).
+Evidence: [centering](../../src/browser/components/communication/toast/toast.css).
 
 **Correction:** use physical centering or direction-aware translation; preserve logical start/end positioning elsewhere.
 
 ### F28 Visual and motion contracts differ unnecessarily
 
-- **Contrast:** outgoing conversation text is white on the default primary blue, with a calculated contrast of about 2.54:1. Primary actions share a similar palette issue. Use a shared accessible on-accent pairing and check themes and states. [Bubble styles](D:/Dev/PurelyIT/WebQuark/src/components/communication/conversation-bubble/conversation-bubble.css:107), [palette](D:/Dev/PurelyIT/WebQuark/src/theme/tokens.css:9).
-- **Sizing:** `q-avatar size="48"` becomes invalid unitless CSS, while icon/progress normalize it to pixels. Share normalization for numeric and CSS-length sizes. [Avatar sizing](D:/Dev/PurelyIT/WebQuark/src/components/media/avatar/avatar.tsx:91).
-- **Thumbnail highlighting:** the theme's border shorthand resolves a transparent root color before local hover/highlight changes, masking the requested border. Resolve state colors locally while preserving explicit border overrides. [Thumbnail border](D:/Dev/PurelyIT/WebQuark/src/components/media/thumbnail/thumbnail.css:15).
+- **Contrast:** outgoing conversation text is white on the default primary blue, with a calculated contrast of about 2.54:1. Primary actions share a similar palette issue. Use a shared accessible on-accent pairing and check themes and states. [Bubble styles](../../src/browser/components/communication/conversation-bubble/conversation-bubble.css), [palette](../../src/browser/theme/tokens.css).
+- **Sizing:** `q-avatar size="48"` becomes invalid unitless CSS, while icon/progress normalize it to pixels. Share normalization for numeric and CSS-length sizes. [Avatar sizing](../../src/browser/components/media/avatar/avatar.tsx).
+- **Thumbnail highlighting:** the theme's border shorthand resolves a transparent root color before local hover/highlight changes, masking the requested border. Resolve state colors locally while preserving explicit border overrides. [Thumbnail border](../../src/browser/components/media/thumbnail/thumbnail.css).
 - **Reduced motion:** toast/map/progress have handling, but dialog/reel/step animations do not consistently honor it. Adopt one motion policy and test default and reduced-motion behavior.
 
 These are source-confirmed findings; contrast is calculated from current default colors. They are not claims about arbitrary consumer theme overrides.
@@ -312,7 +314,7 @@ These are source-confirmed findings; contrast is calculated from current default
 
 **Source/documentation comparison.** The carousel guide omits `transition`, `transitionDuration`, newer transition behavior and `controls-extra`, and its reduced-motion statement contradicts the current implementation. The navbar guide omits `navAlign`, `navCenterWithin`, and collision behavior. Generated API pages cover these additions, but developers following the primary guides miss useful capabilities.
 
-Evidence: [carousel guide](D:/Dev/PurelyIT/WebQuark/docs/components/q-carousel.md), [navbar guide](D:/Dev/PurelyIT/WebQuark/docs/components/q-navbar.md), [carousel API](D:/Dev/PurelyIT/WebQuark/src/components/content/carousel/readme.md), [navbar API](D:/Dev/PurelyIT/WebQuark/src/components/layout/navbar/readme.md).
+Evidence: [carousel guide](../components/q-carousel.md), [navbar guide](../components/q-navbar.md), [carousel API](../../src/browser/components/content/carousel/readme.md), [navbar API](../../src/browser/components/layout/navbar/readme.md).
 
 **Correction:** update examples and behavior guidance with API additions, and automatically check property/slot coverage against generated metadata without replacing authored explanations with generated tables.
 
@@ -325,15 +327,15 @@ These recommendations are integration/capability gaps, rather than interchangeab
 | Area | Current burden | Recommended contract |
 | --- | --- | --- |
 | Field capabilities | Input/textarea lack common native constraints and hints; host attributes do not reach shadow controls. Toggle lacks the same `ariaLabel`/focus API as siblings; quantity is substantially less complete. | Define a supported native-field capability matrix: label/accessible override, description/error, focus, disabling, readonly where meaningful, autocomplete/input mode, string/length/pattern constraints, reset, and validity. Keep domain-appropriate value types. |
-| Angular forms | Value accessors cover input/textarea, dropdown/radio, and toggle; quantity and editable syntax boxes require custom adapters. | Add supported numeric/editor accessors and consumer compilation/interaction tests. [Configuration](D:/Dev/PurelyIT/WebQuark/stencil.config.ts:57). |
-| Search naming | Dropdown search is not explicitly named consistently with the field. | Use a coherent select-combobox naming and active-descendant model. [Search input](D:/Dev/PurelyIT/WebQuark/src/components/inputs/dropdown/dropdown.tsx:644). |
-| Sidepanel navigation | Leaf records lack native destinations, target, disabled state, and original event detail; consumers implement routing manually and lose native link affordances. | Align navigation leaf capabilities with navbar where applicable, keeping group expansion separate. [Item contract](D:/Dev/PurelyIT/WebQuark/src/components/layout/sidepanel/sidepanel.types.ts:1). |
-| Tabs and panels | Internal tab IDs/ARIA strings cannot by themselves establish relationships with consumer panels outside the shadow root. | Provide a supported panel association strategy or companion panels; validate it in browser accessibility checks. Continue to support intentional controlled selection. [Tab rendering](D:/Dev/PurelyIT/WebQuark/src/components/layout/tabs/tabs.tsx:129). |
-| Asynchronous confirmation | Default dialog confirmation closes immediately and cannot defer or honor cancellation. Apps rebuild a footer despite the existing confirmation/loading API. | Decide on an explicit controlled/deferred confirmation contract and keep built-in actions usable for async work. [Confirmation](D:/Dev/PurelyIT/WebQuark/src/components/overlays/dialog/dialog.tsx:184). |
-| Dialog slots | Custom header/body content can replace fallback nodes while ARIA still references their IDs, requiring duplicated naming and cleared fallback properties. | Track actual rendered slot/fallback content and avoid dangling references. [Dialog relationships](D:/Dev/PurelyIT/WebQuark/src/components/overlays/dialog/dialog.tsx:274). |
-| Chip removal | Specific remove names require repeating slotted text in `label`; otherwise controls use generic names. | Derive a meaningful name from content when possible and offer an explicit override. [Removal label](D:/Dev/PurelyIT/WebQuark/src/components/data-display/chip/chip.tsx:64). |
-| Icon URLs | Image URLs with a query/hash are classified by the complete string, fetched as SVG text, and fail. | Classify the pathname while preserving the full load URL. [URL classification](D:/Dev/PurelyIT/WebQuark/src/components/media/icon/internals/url.ts:19). |
-| Map readiness | Google provider loading has no readiness timeout, unlike other readiness paths. | Add bounded readiness with an actionable error and preserve the existing transactional provider replacement. [Google loader](D:/Dev/PurelyIT/WebQuark/src/components/data-display/map/internals/google-maps.ts:93). |
+| Angular forms | Value accessors cover input/textarea, dropdown/radio, and toggle; quantity and editable syntax boxes require custom adapters. | Add supported numeric/editor accessors and consumer compilation/interaction tests. [Configuration](../../stencil.config.ts). |
+| Search naming | Dropdown search is not explicitly named consistently with the field. | Use a coherent select-combobox naming and active-descendant model. [Search input](../../src/browser/components/inputs/dropdown/dropdown.tsx). |
+| Sidepanel navigation | Leaf records lack native destinations, target, disabled state, and original event detail; consumers implement routing manually and lose native link affordances. | Align navigation leaf capabilities with navbar where applicable, keeping group expansion separate. [Item contract](../../src/browser/components/layout/sidepanel/sidepanel.types.ts). |
+| Tabs and panels | Internal tab IDs/ARIA strings cannot by themselves establish relationships with consumer panels outside the shadow root. | Provide a supported panel association strategy or companion panels; validate it in browser accessibility checks. Continue to support intentional controlled selection. [Tab rendering](../../src/browser/components/layout/tabs/tabs.tsx). |
+| Asynchronous confirmation | Default dialog confirmation closes immediately and cannot defer or honor cancellation. Apps rebuild a footer despite the existing confirmation/loading API. | Decide on an explicit controlled/deferred confirmation contract and keep built-in actions usable for async work. [Confirmation](../../src/browser/components/overlays/dialog/dialog.tsx). |
+| Dialog slots | Custom header/body content can replace fallback nodes while ARIA still references their IDs, requiring duplicated naming and cleared fallback properties. | Track actual rendered slot/fallback content and avoid dangling references. [Dialog relationships](../../src/browser/components/overlays/dialog/dialog.tsx). |
+| Chip removal | Specific remove names require repeating slotted text in `label`; otherwise controls use generic names. | Derive a meaningful name from content when possible and offer an explicit override. [Removal label](../../src/browser/components/data-display/chip/chip.tsx). |
+| Icon URLs | Image URLs with a query/hash are classified by the complete string, fetched as SVG text, and fail. | Classify the pathname while preserving the full load URL. [URL classification](../../src/browser/components/media/icon/internals/url.ts). |
+| Map readiness | Google provider loading has no readiness timeout, unlike other readiness paths. | Add bounded readiness with an actionable error and preserve the existing transactional provider replacement. [Google loader](../../src/browser/components/data-display/map/internals/google-maps.ts). |
 | Map view state | Consumers cannot receive or read the public viewport state for persistence or viewport-based data queries. | Consider one viewport-change event and view getter if this use case is supported; avoid exposing internal Leaflet objects as the default integration. |
 
 ## Recommended implementation order

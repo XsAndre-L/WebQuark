@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { shouldWarnForMissingButtonAccessibleName } from './button.utils';
+import { shouldWarnForMissingButtonAccessibleName } from '../button.utils';
 
 describe('q-button accessible-name validation', () => {
   it('warns for icon-only controls without an aria-label', () => {

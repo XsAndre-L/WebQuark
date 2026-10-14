@@ -47,14 +47,17 @@ src/
       versioning/
       adapters/
       shared/
+    wq-switch/                  local package switching and setup
+    sandbox/                    playground HTTP server
 packages/
   core/                         @webquark/core umbrella manifest
   browser/
     components/                 @webquark/browser: manifest, generated dist
     angular/                    existing handwritten/generated src, dist, manifest
     react/                      existing handwritten/generated src, dist, manifest
-  tooling/                      manifest, generated dist/changelog
-scripts/                        repository build/maintenance and existing developer CLIs
+  tooling/                      manifest, generated changelog/switcher/sandbox outputs
+examples/changelog-adoption/    standalone changelog application
+scripts/                        repository build and maintenance
 .stencil/
   .build/                       existing compiler cache
   dist/playground/              repository demo output (root dist relocated)
@@ -62,7 +65,7 @@ scripts/                        repository build/maintenance and existing develo
 
 The browser package has no second browser source tree. Angular and React are intentional exceptions: their handwritten integrations and Stencil-generated wrappers remain together in each integration package's `src/`. Their npm names remain `@webquark/angular` and `@webquark/react`, with generated/handwritten imports targeting the browser package. `src/playground` remains a sibling with component demos and static tooling documentation. The documentation starts no API/database and supplies no packaged changelog viewer. Browser runtime exports never import capture, filesystem, database or CLI code.
 
-**Approved CLI placement:** retain existing `scripts/wq-switch` and `scripts/webquark-serve.ts` source. Stage their generated binaries into the umbrella package at the current package-relative `scripts/` paths, preserving `wq-switch`, `wq-setup` and `wq-sandbox`. Adapt package discovery to the split; core does not own browser dist. Stage the single `.stencil/dist/playground` build into `packages/core/dist/playground` for the packaged sandbox.
+**Current CLI placement (14 October 2026):** `src/tooling/wq-switch/` and `src/tooling/sandbox/` own CLI implementation. Tooling builds the switcher bundles and sandbox module. Core retains its package-relative `scripts/` launchers, forwarding to tooling; `wq-switch`, `wq-setup` and `wq-sandbox` remain available. Core owns the packaged playground assets and passes their directory to the sandbox server. The playground bundle is generated directly in `.stencil/dist/playground/`. See the [source-path migration record](source-path-migrations.md) for previous locations.
 
 ## Pre-migration contracts that constrain the move
 

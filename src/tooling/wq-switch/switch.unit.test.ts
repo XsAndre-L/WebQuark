@@ -111,17 +111,18 @@ describe('wq-switch launchers', () => {
       expect(lstatSync(file).isSymbolicLink() ? readlinkSync(file) : readFileSync(file)).toEqual(expected);
     }
     expect(runConsumer(app, ['run', 'webquark-sandbox'])).toContain('original sandbox');
-  });
-  it('gives core ownership of the duplicate changelog binary and preserves its Bun shebang', async () => {
+  }, 30000); // Exercises multiple filesystem transactions and subprocesses alongside browser tests.
+  it.each(['wq-changelog', 'wq-switch', 'wq-setup'])('gives core ownership of the shared %s binary and preserves its shebang', async command => {
     const { app, source } = fixture();
     const consumer = manifest(app); consumer.dependencies!['@webquark/tooling'] = '1.0.0'; writeJson(join(app, 'package.json'), consumer);
     for (const name of ['core', 'tooling'] as const) {
       const directory = join(source, packageDirectories[`@webquark/${name}`]);
-      const pkg = manifest(directory); pkg.bin = { ...pkg.bin, 'wq-changelog': './dist/changelog.js' }; writeJson(join(directory, 'package.json'), pkg);
-      put(join(directory, 'dist/changelog.js'), `#!/usr/bin/env bun\nconsole.log("${name} changelog " + Bun.version);`);
+      const pkg = manifest(directory); pkg.bin = { ...pkg.bin, [command]: './dist/shared-cli.js' }; writeJson(join(directory, 'package.json'), pkg);
+      const runtime = command === 'wq-changelog' ? 'bun' : 'node';
+      put(join(directory, 'dist/shared-cli.js'), `#!/usr/bin/env ${runtime}\nconsole.log("${name} ${command} " + ${runtime === 'bun' ? 'Bun.version' : 'process.version'});`);
     }
     const next = stage(app, source); await stageBins(app, next); activate(app, next);
-    expect(runConsumer(app, ['run', 'wq-changelog'])).toContain('core changelog');
+    expect(runConsumer(app, ['run', command])).toContain(`core ${command}`);
     restore(app);
   });
   it('rejects foreign collisions and modified managed launchers without replacing them', async () => {
@@ -169,10 +170,10 @@ describe('wq-switch launchers', () => {
     }
     const core = join(originalPackages, 'core');
     const pkg = manifest(core); pkg.bin = { 'wq-switch': './dist/cli.js' }; writeJson(join(core, 'package.json'), pkg);
-    cpSync(resolve('scripts/wq-switch/dist/index.js'), join(core, 'dist/cli.js'));
+    cpSync(resolve('packages/tooling/dist/wq-switch/index.cjs'), join(core, 'dist/cli.js'));
     const sourceCore = join(source, packageDirectories['@webquark/core']);
     const sourcePkg = manifest(sourceCore); sourcePkg.bin = { 'wq-switch': './dist/cli.js' }; writeJson(join(sourceCore, 'package.json'), sourcePkg);
-    cpSync(resolve('scripts/wq-switch/dist/index.js'), join(sourceCore, 'dist/cli.js'));
+    cpSync(resolve('packages/tooling/dist/wq-switch/index.cjs'), join(sourceCore, 'dist/cli.js'));
     writeJson(join(app, 'package.json'), consumer); unlinkSync(join(app, 'bun.lock'));
     runConsumer(app, ['install', '--ignore-scripts', '--no-save', '--offline']);
     const lock = existsSync(join(app, 'bun.lock')) ? readFileSync(join(app, 'bun.lock')) : null;
@@ -185,13 +186,13 @@ describe('wq-switch launchers', () => {
     expect(existsSync(join(app, 'bun.lock')) ? readFileSync(join(app, 'bun.lock')) : null).toEqual(lock);
     if (process.platform === 'win32') {
       sourcePkg.bin!['wq-switch'] = './dist/moved-cli.js'; writeJson(join(sourceCore, 'package.json'), sourcePkg);
-      cpSync(resolve('scripts/wq-switch/dist/index.js'), join(sourceCore, 'dist/moved-cli.js'));
+      cpSync(resolve('packages/tooling/dist/wq-switch/index.cjs'), join(sourceCore, 'dist/moved-cli.js'));
       const rejected = spawnSync('bun', ['run', 'wq-switch', 'local'], { cwd: app, encoding: 'utf8', timeout: 20000 });
       expect(rejected.status).toBe(1);
       expect(rejected.stderr).toContain('currently running Windows launcher would change');
       expect(readState(app)).toBeNull(); expect(hasJournal(app)).toBe(false);
       expect(readFileSync(join(app, 'node_modules/.bin/wq-switch.exe'))).toEqual(originalShim);
-      const direct = spawnSync('node', [resolve('scripts/wq-switch/dist/index.js'), 'local'], { cwd: app, encoding: 'utf8', timeout: 20000 });
+      const direct = spawnSync('node', [resolve('packages/tooling/dist/wq-switch/index.cjs'), 'local'], { cwd: app, encoding: 'utf8', timeout: 20000 });
       expect(direct.status, direct.stderr).toBe(0);
       expect(runConsumer(app, ['run', 'wq-switch', 'npm'])).toContain('original package connections restored');
     }
@@ -383,7 +384,7 @@ describe('wq-switch transactions', () => {
   });
   it('ships a self-contained CLI that runs from outside the source repository', () => {
     const { app } = fixture();
-    const entry = resolve('scripts/wq-switch/dist/index.js');
+    const entry = resolve('packages/tooling/dist/wq-switch/index.cjs');
     const copy = join(app, 'switch.cjs'); cpSync(entry, copy);
     const result = spawnSync('node', [copy, '--help'], { cwd: app, encoding: 'utf8' });
     expect(result.status, result.stderr).toBe(0);
@@ -436,8 +437,18 @@ describe('wq-switch transactions', () => {
     for (const name of ['browser', 'tooling']) pkg(join(base, name), `@webquark/${name}`, { version: fixtureVersion });
     writeJson(join(core, 'package.json'), { name: '@webquark/core', version: fixtureVersion, bin: { 'wq-setup': 'scripts/setup.js', 'wq-switch': 'scripts/index.js', 'wq-sandbox': 'scripts/sandbox.js' } });
     mkdirSync(join(core, 'scripts'));
-    cpSync(resolve('scripts/wq-switch/dist/index.js'), join(core, 'scripts/index.js'));
-    cpSync(resolve('scripts/wq-switch/dist/setup.js'), join(core, 'scripts/setup.js'));
+    cpSync(resolve('packages/core/scripts/wq-switch/dist/index.js'), join(core, 'scripts/index.js'));
+    cpSync(resolve('packages/core/scripts/wq-switch/dist/setup.js'), join(core, 'scripts/setup.js'));
+    const tooling = join(base, 'tooling');
+    const toolingManifest = manifest(tooling);
+    toolingManifest.exports = { './wq-switch': './dist/index.cjs', './wq-setup': './dist/setup.cjs' };
+    toolingManifest.bin = { 'wq-switch': './dist/index.cjs', 'wq-setup': './dist/setup.cjs' };
+    writeJson(join(tooling, 'package.json'), toolingManifest);
+    cpSync(resolve('packages/tooling/dist/wq-switch/index.cjs'), join(tooling, 'dist/index.cjs'));
+    cpSync(resolve('packages/tooling/dist/wq-switch/setup.cjs'), join(tooling, 'dist/setup.cjs'));
+    // Bun links file: packages to their source; expose the tooling dependency there.
+    mkdirSync(join(core, 'node_modules/@webquark'), { recursive: true });
+    symlinkSync(tooling, join(core, 'node_modules/@webquark/tooling'), process.platform === 'win32' ? 'junction' : 'dir');
     writeFileSync(join(core, 'scripts/sandbox.js'), '#!/usr/bin/env node\nconsole.log("sandbox launcher reached");', { mode: 0o755 });
     writeJson(join(app, 'package.json'), { name: 'consumer', dependencies: { '@webquark/core': 'file:../core', '@webquark/browser': 'file:../browser', '@webquark/tooling': 'file:../tooling' } });
     const run = (args: string[]) => {

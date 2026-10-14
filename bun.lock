@@ -111,6 +111,8 @@
       "name": "@webquark/tooling",
       "version": "1.0.2",
       "bin": {
+        "wq-switch": "./dist/wq-switch/index.cjs",
+        "wq-setup": "./dist/wq-switch/setup.cjs",
         "wq-changelog": "./dist/changelog/cli/index.js",
       },
       "dependencies": {

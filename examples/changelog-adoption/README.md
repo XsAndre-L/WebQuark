@@ -1,15 +1,15 @@
 # Runnable changelog adoption example
 
 This example generates its own feed from `CHANGELOG.md`; it does not render the
-hand-authored `../sample-feed.json`. It is a small application example, not a
+hand-authored playground sample feed. It is a small application example, not a
 viewer package, scaffold command, capture adapter, or framework integration.
 
 With Bun 1.4.2 or later, run from the WebQuark repository root after building
 tooling:
 
 ```sh
-bun src/playground/views/tooling/adoption/generate.ts
-bun src/playground/views/tooling/adoption/serve.ts
+bun examples/changelog-adoption/generate.ts
+bun examples/changelog-adoption/serve.ts
 ```
 
 Open `http://127.0.0.1:4173/`. The browser shows an Unreleased manual image and a
@@ -42,6 +42,6 @@ For a real application at `/app/`, use prefix `app/release-notes` and serve that
 path; the viewer resolves the prefix from the origin root. The local example's
 server routes serve the root configuration only.
 
-The [installed-package README](../../../../../packages/tooling/README.md)
+The [installed-package README](../../packages/tooling/README.md)
 contains the complete copyable setup, manual-image contract, versioning,
 optional contextual metadata and explicit capture stage/publish workflow.

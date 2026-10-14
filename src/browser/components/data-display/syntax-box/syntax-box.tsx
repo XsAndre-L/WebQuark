@@ -2,9 +2,9 @@ import { isFieldDisabled, syncFieldHost } from '../../../utils/form-field-state'
 import { registerFormField } from '../../../utils/form-field-adapter';
 import { AttachInternals, Component, Element, Event, EventEmitter, Host, Method, Prop, State, Watch, h } from '@stencil/core';
 import { Braces, Check, Copy } from '@lucide/icons';
-import { formatSource, isFormatSupported } from '../../../utils/formatter';
+import { formatSource, isFormatSupported } from './internals/formatter';
 import { syncNativeControlValidity } from '../../../utils/form-control-validity';
-import { tokenizeSyntax } from '../../../utils/syntax';
+import { tokenizeSyntax } from './internals/syntax';
 
 import type { QSyntaxBoxLanguage, QSyntaxBoxVariant } from './syntax-box.types';
 import { getSyntaxBoxCopyText, writeClipboardText } from './internals/clipboard';
