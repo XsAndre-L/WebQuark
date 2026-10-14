@@ -45,7 +45,7 @@ import { checkVersions as umbrellaCheckVersions } from '@webquark/core/tooling/c
 
       <h2>Start with text notes</h2>
       <p>Use init for automatic setup, or the installed tooling README's manual reference for custom paths and viewers. Every included dated release needs its matching folder, even when text only. Text and manual images need no metadata adapter.</p>
-      <p>The <a href="adoption/README.md">runnable browser example</a> has a real generator, local server, source notes and a fictional manual SVG image. Run its <code>generate.ts</code> and <code>serve.ts</code> using Bun 1.4.2 or later, then open <code>http://127.0.0.1:4173/</code>. Generated artifacts stay under ignored <code>dist/</code>.</p>
+      <p>The <a href="https://github.com/Purely-IT/WebQuark/tree/main/examples/changelog-adoption">runnable browser example</a> lives in <code>examples/changelog-adoption/</code> and has a real generator, local server, source notes and a fictional manual SVG image. Run its <code>generate.ts</code> and <code>serve.ts</code> using Bun 1.4.2 or later, then open <code>http://127.0.0.1:4173/</code>. Generated artifacts stay under ignored <code>dist/</code>.</p>
       <p>The <a href="sample-notes.md">fictional sample notes</a> and <a href="sample-feed.json">sample feed JSON</a> are static format references. The feed keeps <code>{ releases }</code>, Added/Changed/Fixed/Removed summaries and a visuals array. Generation hashes the JSON and image bytes and writes <code>feed-url.ts</code>; the runnable example connects the returned <code>feedUrl</code> to browser code.</p>
       <pre><code>wq-changelog version check --config ./changelog.config.ts
 wq-changelog notes --config ./changelog.config.ts --include-unreleased</code></pre>

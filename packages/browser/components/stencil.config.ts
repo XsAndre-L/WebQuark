@@ -46,7 +46,6 @@ export const config: Config = {
         { src: 'theme/behaviors/native-content.css', dest: 'native-content.css' },
         { src: '../playground/logo.svg', dest: 'logo.svg' },
         { src: '../playground/playground.css', dest: 'playground.css' },
-        { src: '../playground/playground.bundled.js', dest: 'playground.js' },
         { src: '../playground/components.manifest.json', dest: 'playground/components.manifest.json' },
         { src: '../playground/specs', dest: 'playground/specs' },
         { src: '../playground/css', dest: 'css' },

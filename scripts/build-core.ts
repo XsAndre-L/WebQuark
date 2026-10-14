@@ -40,11 +40,14 @@ for (const file of ['webquark.css', 'native-content.css']) {
 }
 cpSync(resolve(root, '.stencil/dist/playground'), ownedPath('dist/playground'), { recursive: true });
 write('scripts/package.json', '{ "type": "commonjs" }\n');
-for (const file of ['webquark-serve.js', 'wq-switch/dist/index.js', 'wq-switch/dist/setup.js', 'wq-switch/README.md']) {
-  const output = ownedPath(`scripts/${file}`);
-  mkdirSync(dirname(output), { recursive: true });
-  cpSync(resolve(root, 'scripts', file), output);
-}
+write('scripts/webquark-serve.js', `#!/usr/bin/env node
+import('@webquark/tooling/sandbox').then(({ startSandbox }) => {
+  startSandbox(require('node:path').resolve(__dirname, '../dist/playground'));
+}).catch(error => { console.error(error); process.exitCode = 1; });
+`);
+write('scripts/wq-switch/dist/index.js', "#!/usr/bin/env node\nrequire('@webquark/tooling/wq-switch');\n");
+write('scripts/wq-switch/dist/setup.js', "#!/usr/bin/env node\nrequire('@webquark/tooling/wq-setup');\n");
+cpSync(resolve(root, 'src/tooling/wq-switch/README.md'), ownedPath('scripts/wq-switch/README.md'));
 write('scripts/wq-changelog.js', `#!/usr/bin/env bun
 import('@webquark/tooling/changelog').then(async ({ runChangelogCli }) => {
   process.exitCode = await runChangelogCli(process.argv.slice(2));

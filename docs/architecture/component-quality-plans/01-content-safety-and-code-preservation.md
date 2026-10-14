@@ -1,17 +1,19 @@
 # Plan 1: Content safety and code preservation
 
+> Path note, 14 October 2026: source files have moved. See the [current-path mapping](../source-path-migrations.md). Recorded commands, line numbers and validation results describe the original checkout and are retained as historical evidence.
+
 Status: proposed implementation plan. No component changes have been implemented by this plan.
 
 ## Outcome and scope
 
 An icon source can only produce supported inert icon content. A syntax box displays, edits, copies, and resets exactly the source supplied by the consumer unless the consumer explicitly requests formatting. An empty editable syntax box is a functioning field.
 
-Owns audit findings F01–F02 and the icon URL portion of F30; recommendation IDs **1–4, 45** in the [plan index](D:/Dev/PurelyIT/WebQuark/docs/architecture/component-quality-plans/README.md). This is the first implementation batch. It can proceed independently of the form redesign.
+Owns audit findings F01–F02 and the icon URL portion of F30; recommendation IDs **1–4, 45** in the [plan index](README.md). This is the first implementation batch. It can proceed independently of the form redesign.
 
 ## Implementation locations
 
-- [SVG sanitizer](D:/Dev/PurelyIT/WebQuark/src/components/media/icon/internals/sanitize-svg.ts), [definition registry](D:/Dev/PurelyIT/WebQuark/src/components/media/icon/internals/registry.ts), [URL handling](D:/Dev/PurelyIT/WebQuark/src/components/media/icon/internals/url.ts), and [icon renderer](D:/Dev/PurelyIT/WebQuark/src/components/media/icon/icon.tsx).
-- [Syntax escaping/highlighting](D:/Dev/PurelyIT/WebQuark/src/utils/syntax.ts), [formatter](D:/Dev/PurelyIT/WebQuark/src/utils/formatter.ts), [value synchronization](D:/Dev/PurelyIT/WebQuark/src/components/data-display/syntax-box/internals/value-sync.ts), and [syntax box](D:/Dev/PurelyIT/WebQuark/src/components/data-display/syntax-box/syntax-box.tsx).
+- [SVG sanitizer](../../../src/browser/components/media/icon/internals/sanitize-svg.ts), [definition registry](../../../src/browser/components/media/icon/internals/registry.ts), [URL handling](../../../src/browser/components/media/icon/internals/url.ts), and [icon renderer](../../../src/browser/components/media/icon/icon.tsx).
+- [Syntax escaping/highlighting](../../../src/browser/components/data-display/syntax-box/internals/syntax.ts), [formatter](../../../src/browser/components/data-display/syntax-box/internals/formatter.ts), [value synchronization](../../../src/browser/components/data-display/syntax-box/internals/value-sync.ts), and [syntax box](../../../src/browser/components/data-display/syntax-box/syntax-box.tsx).
 - Extend existing icon registry, icon, syntax-box, and formatter tests; add focused sanitizer/highlighting helper tests and browser regressions where DOM behavior is essential.
 
 ## Contract decisions

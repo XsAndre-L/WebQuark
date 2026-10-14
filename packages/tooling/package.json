@@ -1,7 +1,7 @@
 {
   "name": "@webquark/tooling",
   "version": "1.0.2",
-  "description": "WebQuark changelog, versioning and capture developer tooling",
+  "description": "WebQuark local switching, changelog, versioning and capture developer tooling",
   "repository": {
     "type": "git",
     "url": "https://github.com/Purely-IT/WebQuark.git",
@@ -13,6 +13,13 @@
   "license": "MIT",
   "type": "module",
   "exports": {
+    "./sandbox": {
+      "types": "./dist/sandbox/webquark-serve.d.ts",
+      "import": "./dist/sandbox/webquark-serve.js",
+      "default": "./dist/sandbox/webquark-serve.js"
+    },
+    "./wq-switch": "./dist/wq-switch/index.cjs",
+    "./wq-setup": "./dist/wq-switch/setup.cjs",
     "./changelog": {
       "types": "./dist/changelog/index.d.ts",
       "import": "./dist/changelog/index.js",
@@ -20,6 +27,8 @@
     }
   },
   "bin": {
+    "wq-switch": "./dist/wq-switch/index.cjs",
+    "wq-setup": "./dist/wq-switch/setup.cjs",
     "wq-changelog": "./dist/changelog/cli/index.js"
   },
   "files": [
@@ -28,7 +37,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.json"
+    "build": "tsc -p tsconfig.json && bun run --cwd ../.. switch:build"
   },
   "engines": {
     "bun": ">=1.4.2"

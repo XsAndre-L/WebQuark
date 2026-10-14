@@ -7,8 +7,8 @@ import {
   generateWhatsNew, parseArguments, prepareCapturePreview, readCaptureConfiguration, runCaptureCommand,
   runChangelogCli, type CaptureAdapter, type CaptureJob, type ChangelogConfig, type ReleaseFeed,
   type ResolvedVisualMetadata, type VisualMetadataAdapter,
-} from '../src/tooling/changelog/index.js';
-import { archiveReleaseNotes } from '../src/tooling/changelog/versioning/core/changelog.js';
+} from '../index.js';
+import { archiveReleaseNotes } from '../versioning/core/changelog.js';
 
 const roots: string[] = [];
 const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl6b9sAAAAASUVORK5CYII=', 'base64');

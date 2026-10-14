@@ -96,7 +96,8 @@ Original package backups depend on the installed package graph remaining intact.
 
 ## Developing the CLI
 
-Core exposes bundled Node executables as `wq-switch` and `wq-setup`. Build them
+Tooling owns the bundled Node executables `wq-switch` and `wq-setup`; core
+preserves its existing executable paths through forwarding launchers. Build them
 from the current WebQuark checkout:
 
 ```powershell
@@ -106,10 +107,10 @@ bun run --cwd "D:\Dev\PurelyIT\WebQuark" switch:build
 To exercise that exact build, invoke it directly from the consuming project:
 
 ```powershell
-node "D:\Dev\PurelyIT\WebQuark\scripts\wq-switch\dist\index.js" setup --source "D:\Dev\PurelyIT\WebQuark"
-node "D:\Dev\PurelyIT\WebQuark\scripts\wq-switch\dist\index.js" local
-node "D:\Dev\PurelyIT\WebQuark\scripts\wq-switch\dist\index.js" status
-node "D:\Dev\PurelyIT\WebQuark\scripts\wq-switch\dist\index.js" npm
+node "D:\Dev\PurelyIT\WebQuark\packages\tooling\dist\wq-switch\index.cjs" setup --source "D:\Dev\PurelyIT\WebQuark"
+node "D:\Dev\PurelyIT\WebQuark\packages\tooling\dist\wq-switch\index.cjs" local
+node "D:\Dev\PurelyIT\WebQuark\packages\tooling\dist\wq-switch\index.cjs" status
+node "D:\Dev\PurelyIT\WebQuark\packages\tooling\dist\wq-switch\index.cjs" npm
 ```
 
 Use the same checkout executable for subsequent commands while testing CLI
@@ -165,9 +166,10 @@ These checks read configuration and state without changing files.
 and `bins.ts` own configuration, transactions/locks, package snapshots and
 dependency resolution, and launcher staging/ownership.
 `index.ts` routes commands; `setup.ts` exposes the standalone setup executable.
-Bundled files in `dist/` are generated.
+Bundled files in `packages/tooling/dist/wq-switch/` are generated.
 
 ```powershell
 bun run switch:build
-bunx vitest run --project tooling scripts/wq-switch/switch.unit.test.ts scripts/wq-switch/check.unit.test.ts
+bun run core:build
+bunx vitest run --project tooling src/tooling/wq-switch/switch.unit.test.ts src/tooling/wq-switch/check.unit.test.ts
 ```

@@ -1,5 +1,7 @@
 # Component performance implementation plan
 
+> Path note, 14 October 2026: source files have moved. See the [current-path mapping](source-path-migrations.md). Recorded commands, line numbers and validation results describe the original checkout and are retained as historical evidence.
+
 Refined on 3 October 2026. This plan addresses the five performance findings reviewed in chat across WebQuark and the Darling Romery frontend. Execute in the order below, with a source review and relevant verification after each step. Preserve existing public component APIs and the repository's unrelated local work.
 
 ## Ownership and execution

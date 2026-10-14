@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { escapeHtml, highlight, tokenizeSyntax } from './syntax';
-import { LANGUAGE_SOURCE, LITERAL_SOURCES, SYNTAX_LANGUAGES } from '../components/data-display/syntax-box/test/syntax-fixtures';
+import { LANGUAGE_SOURCE, LITERAL_SOURCES, SYNTAX_LANGUAGES } from '../test/syntax-fixtures';
 
 describe('literal syntax helpers', () => {
   it('highlights HTML names, values and comments without scanning quoted markup as tags', () => {

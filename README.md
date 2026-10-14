@@ -50,7 +50,8 @@ webquark/ (Root)
  │    │    ├── components/  ◄── @webquark/browser
  │    │    ├── angular/     ◄── @webquark/angular (handwritten and generated src)
  │    │    └── react/       ◄── @webquark/react (handwritten and generated src)
- │    └── tooling/          ◄── @webquark/tooling (dist/changelog)
+ │    └── tooling/          ◄── @webquark/tooling (changelog, switcher and sandbox)
+ ├── examples/              ◄── Standalone applications, including changelog-adoption
  ├── docs/                  ◄── Design guides & API specs
  │    ├── components/       ◄── Component-specific specifications (e.g. q-card.md)
  │    ├── components.md     ◄── Roadmap implementation status dashboard
@@ -67,7 +68,10 @@ webquark/ (Root)
  │    │    ├── assets/      ◄── Browser assets
  │    │    └── utils/       ◄── Browser utilities
  │    ├── playground/      ◄── Shared demonstrations and documentation
- │    └── tooling/changelog/◄── Notes, versioning and capture mechanisms
+ │    └── tooling/          ◄── Developer tooling
+ │         ├── changelog/   ◄── Notes, versioning and capture mechanisms
+ │         ├── wq-switch/   ◄── Local package switching and setup
+ │         └── sandbox/     ◄── Playground HTTP server
  └── readme.md              ◄── This file
 ```
 
@@ -106,9 +110,9 @@ existing value. It does not select or download a release.
 
 Then run `bun run wq-switch local`. The switcher builds the workspace packages and
 activates the project's selected packages with their local dependency closure. Run `bun run wq-switch npm` to
-restore the original installed packages. See [the switcher guide](scripts/wq-switch/README.md).
+restore the original installed packages. See [the switcher guide](src/tooling/wq-switch/README.md).
 
-For CLI development, use the [rebuilt checkout commands](scripts/wq-switch/README.md#developing-the-cli)
+For CLI development, use the [rebuilt checkout commands](src/tooling/wq-switch/README.md#developing-the-cli)
 to exercise the current tooling directly.
 
 ## 🧪 WebQuark Component Sandbox
@@ -149,7 +153,7 @@ bun install
 | :--- | :--- | :--- |
 | **`bun start`** | **Run Playground** | Starts a local hot-reloading component sandbox at `http://localhost:3333`. |
 | **`bun run build`** | **Build Library** | Runs Stencil compiler to output production bundles inside `dist/`. |
-| **`bun test`** | **Run Test Suites** | Runs unit test suites using Vitest. |
+| **`bun run test`** | **Build and Test** | Builds all five packages, then runs every Vitest project, including browser tests on IPv4 loopback. |
 | **`bun run test:watch`**| **Watch Tests** | Runs tests in interactive watcher mode. |
 
 ---

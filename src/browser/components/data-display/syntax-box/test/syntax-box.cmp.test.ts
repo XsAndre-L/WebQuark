@@ -5,7 +5,7 @@ import { defineCustomElements } from '../../../../../../packages/browser/compone
 // @ts-ignore - use the production component theme for the guide preview.
 import '../../../../../../packages/browser/components/dist/webquark/webquark.css';
 import { LANGUAGE_SOURCE, LITERAL_SOURCES, normalizeDomNewlines, SYNTAX_LANGUAGES } from './syntax-fixtures';
-import { highlight } from '../../../../utils/syntax';
+import { highlight } from '../internals/syntax';
 
 defineCustomElements();
 afterEach(() => { document.body.replaceChildren(); vi.restoreAllMocks(); });

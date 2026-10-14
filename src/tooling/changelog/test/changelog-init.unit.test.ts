@@ -4,12 +4,12 @@ import { tmpdir } from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { initializeChangelog } from '../src/tooling/changelog/init/index.js';
-import { runChangelogCli } from '../src/tooling/changelog/index.js';
+import { initializeChangelog } from '../init/index.js';
+import { runChangelogCli } from '../index.js';
 
 const roots: string[] = [];
-const sourceEntry = pathToFileURL(fileURLToPath(new URL('../src/tooling/changelog/index.ts', import.meta.url))).href;
-const repositoryRoot = fileURLToPath(new URL('../', import.meta.url));
+const sourceEntry = pathToFileURL(fileURLToPath(new URL('../index.ts', import.meta.url))).href;
+const repositoryRoot = fileURLToPath(new URL('../../../../', import.meta.url));
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -144,7 +144,7 @@ describe('changelog starter initialization', () => {
   it('typechecks the generated script/config and actual example server using installed Bun types', async () => {
     const root = fixture();
     await initializeChangelog(root);
-    const declarations = fileURLToPath(new URL('../src/tooling/changelog/index.ts', import.meta.url)).replaceAll('\\', '/');
+    const declarations = fileURLToPath(new URL('../index.ts', import.meta.url)).replaceAll('\\', '/');
     // Resolve the real API types, rather than inventing a declaration for a runtime global.
     put(root, 'node_modules/@webquark/tooling/index.d.ts', `export * from ${JSON.stringify(declarations)};\n`);
     put(root, 'tsconfig.tooling.json', JSON.stringify({ compilerOptions: {
@@ -152,7 +152,7 @@ describe('changelog starter initialization', () => {
       allowImportingTsExtensions: true, skipLibCheck: true, types: ['node'],
       typeRoots: [join(repositoryRoot, 'node_modules/@types')],
     }, files: [join(root, 'scripts/generate-changelog.ts'), join(root, 'changelog.config.ts'),
-      join(repositoryRoot, 'src/playground/views/tooling/adoption/serve.ts')] }));
+      join(repositoryRoot, 'examples/changelog-adoption/serve.ts')] }));
     const result = spawnSync('bun', [join(repositoryRoot, 'node_modules/typescript/bin/tsc'), '--project', join(root, 'tsconfig.tooling.json')], { encoding: 'utf8', timeout: 15_000 });
     expect(result.status, result.stdout + result.stderr).toBe(0);
   }, 20_000);

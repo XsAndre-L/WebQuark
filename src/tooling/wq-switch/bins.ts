@@ -69,9 +69,9 @@ function targets(state: State, originals = false): Map<string, string> {
       if (!validName(name)) throw new Error(`Invalid package binary name: ${name}`);
       const target = resolve(directory, path);
       if (!within(directory, target) || !existsSync(target) || !statSync(target).isFile()) throw new Error(`Invalid package binary target: ${target}`);
-      // Core is selected first and forwards its changelog command to tooling.
+      // Core is selected first and forwards these shared commands to tooling.
       if (!bins.has(name)) bins.set(name, target);
-      else if (name !== 'wq-changelog' || entry.name !== '@webquark/tooling') throw new Error(`Duplicate package binary: ${name}`);
+      else if (!['wq-changelog', 'wq-switch', 'wq-setup'].includes(name) || entry.name !== '@webquark/tooling') throw new Error(`Duplicate package binary: ${name}`);
     }
   }
   return bins;
@@ -123,7 +123,7 @@ export async function stageBins(root: string, next: State): Promise<void> {
     const running = process.argv[1] && existsSync(process.argv[1]) ? realpathSync(process.argv[1]) : '';
     if (process.platform === 'win32' && !retainBun && present(join(root, 'node_modules', '.bin', name + '.exe')) &&
         [...allowed].some(target => existsSync(target) && realpathSync(target) === running)) {
-      throw new Error(`The currently running Windows launcher would change: ${name}. Run the checkout's scripts/wq-switch/dist/index.js with node and retry.`);
+      throw new Error(`The currently running Windows launcher would change: ${name}. Run the checkout's packages/tooling/dist/wq-switch/index.cjs with node and retry.`);
     }
     for (const extension of extensions) {
       const file = join(root, 'node_modules', '.bin', name + extension), current = snapshot(file);

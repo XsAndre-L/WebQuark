@@ -1,5 +1,5 @@
 import { fileURLToPath } from 'node:url';
-import { formSubmitCommands } from './scripts/browser/form-submit-commands.mts';
+import { formSubmitCommands } from './src/browser/components/inputs/form/test/form-submit-commands.mts';
 import { playwright } from '@vitest/browser-playwright';
 import { defineVitestConfig } from '@stencil/vitest/config';
 import { stencilVitestPlugin } from '@stencil/vitest/plugin';
@@ -32,22 +32,35 @@ const browserDependencies = [
   '@webquark/react',
 ];
 
+// Keep browser servers on IPv4 loopback; the default IPv6 port can be blocked on Windows.
+const browserApi = { host: '127.0.0.1', port: 4179 };
+
 export default defineVitestConfig({
   stencilConfig: './packages/browser/components/stencil.config.ts',
   oxc: false,
   test: {
+    browser: { api: browserApi },
     projects: [
       {
         test: {
           name: 'tooling',
-          include: ['scripts/**/*.unit.test.ts'],
+          attachmentsDir: 'node_modules/.cache/vitest/attachments',
+          include: [
+            'scripts/**/*.unit.test.ts',
+            'src/tooling/**/*.unit.test.ts',
+            'src/browser/theme/test/presets.unit.test.ts',
+            'packages/browser/angular/scripts/**/*.unit.test.ts',
+            'packages/browser/components/test/**/*.unit.test.ts',
+          ],
           environment: 'node',
         },
       },
       {
         test: {
           name: 'unit',
-          include: ['src/**/*.unit.test.{ts,tsx}', 'src/**/*.spec.{ts,tsx}'],
+          attachmentsDir: 'node_modules/.cache/vitest/attachments',
+          include: ['src/browser/**/*.unit.test.{ts,tsx}', 'src/browser/**/*.spec.{ts,tsx}'],
+          exclude: ['src/browser/theme/test/presets.unit.test.ts'],
           environment: 'stencil',
         },
       },
@@ -57,8 +70,12 @@ export default defineVitestConfig({
         optimizeDeps: { include: browserDependencies },
         test: {
           name: 'carousel-browsers',
+          // Start timing-sensitive browser tests after the tooling and unit projects.
+          sequence: { groupOrder: 1 },
+          attachmentsDir: 'node_modules/.cache/vitest/attachments',
           include: ['src/browser/components/content/carousel/test/transitions.cmp.test.ts'],
           browser: {
+            api: browserApi,
             enabled: true, commands: formSubmitCommands,
             provider: playwright(),
             headless: true,
@@ -74,8 +91,11 @@ export default defineVitestConfig({
         },
         test: {
           name: 'browser',
+          sequence: { groupOrder: 1 },
+          attachmentsDir: 'node_modules/.cache/vitest/attachments',
           include: ['src/**/*.cmp.test.{ts,tsx}'],
           browser: {
+            api: browserApi,
             enabled: true, commands: formSubmitCommands,
             provider: playwright(),
             headless: true,
