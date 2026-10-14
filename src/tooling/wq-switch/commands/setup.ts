@@ -14,11 +14,7 @@ export function setup(root: string, source?: string): void {
   const document = readWebQuarkConfig(root);
   const previous = resolved?.config;
   const pkg = manifest(root);
-  const explicitToolingSwitch = 'node node_modules/@webquark/tooling/dist/wq-switch/index.cjs';
-  // Bun patches do not add new launchers from a patched package's bin metadata.
-  // Preserve this exact installed-package entrypoint when the consumer uses it.
-  const directTooling = pkg.scripts?.['wq-switch'] === explicitToolingSwitch;
-  const scripts = { 'wq-sandbox': 'wq-sandbox', 'wq-switch': directTooling ? explicitToolingSwitch : 'wq-switch', 'wq-check': directTooling ? 'bun run wq-switch check' : 'wq-switch check' };
+  const scripts = { 'wq-sandbox': 'wq-sandbox', 'wq-switch': 'wq-switch', 'wq-check': 'wq-switch check' };
   for (const [name, command] of Object.entries(scripts)) {
     if (pkg.scripts?.[name] && pkg.scripts[name] !== command) throw new Error(`package.json already has a custom ${name} script. Rename it before running setup; no files were changed.`);
   }

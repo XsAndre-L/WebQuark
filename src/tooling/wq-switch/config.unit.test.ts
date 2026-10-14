@@ -117,15 +117,3 @@ it('reports the exact shared configuration path and resolved source', () => {
   expect(output.mock.calls.flat().join('\n')).toContain(`Configuration: ${projectPaths(root).config}`);
   expect(output.mock.calls.flat().join('\n')).toContain(`Source: ${source}`);
 });
-
-it('preserves the explicit installed tooling command used by patched consumers', () => {
-  const { root } = fixture();
-  const file = join(root, 'package.json'), pkg = JSON.parse(readFileSync(file, 'utf8'));
-  pkg.scripts = { 'wq-switch': 'node node_modules/@webquark/tooling/dist/wq-switch/index.cjs', 'wq-setup': 'node node_modules/@webquark/tooling/dist/wq-switch/setup.cjs' };
-  writeJson(file, pkg); setup(root);
-  const scripts = JSON.parse(readFileSync(file, 'utf8')).scripts;
-  expect(scripts['wq-switch']).toBe(pkg.scripts['wq-switch']);
-  expect(scripts['wq-setup']).toBe(pkg.scripts['wq-setup']);
-  expect(scripts['wq-check']).toBe('bun run wq-switch check');
-  setup(root);
-});

@@ -1,7 +1,7 @@
 # WebQuark local tooling
 
 Run the commands in the **consuming project**, in the directory containing its
-package.json. The tooling is being rebuilt before full release and uses one
+package.json. CLI execution requires Node.js 24 or newer. The tooling is being rebuilt before full release and uses one
 supported consumer layout:
 
 ```text
@@ -49,7 +49,31 @@ Setup writes `.webquark/.webquark.json` with settings inside `"wq-switch"`:
 
 Without `--source`, setup creates an empty source setting. Fill it in before
 running `local` or `build`. Relative source paths resolve from the consuming
-project's package.json directory.
+configuration owner's directory (the parent of `.webquark`), even when a child
+consumer inherits that configuration.
+
+### Shared workspace configuration
+
+A consumer first uses its own `wq-switch` configuration, then the nearest
+ancestor configuration up to its declared workspace root. Workspace membership
+comes from `package.json` `workspaces` arrays or `workspaces.packages`, with
+relative positive glob patterns. A nested workspace root is a boundary; a
+consumer not included in the nearest workspace does not inherit its settings.
+Standalone projects never inherit configuration merely because a parent has one.
+Invalid nearer configuration fails explicitly. Configurations are not merged.
+
+Keep a single `.webquark/.webquark.json` at the workspace root to share settings.
+Each consumer still owns its own `.webquark/state/`, `.webquark/generated/packages/`,
+package connections, and two-snapshot limit. Commands continue to identify the
+consumer using its nearest `package.json`. `status` prints the exact configuration
+file and resolved source directory.
+
+Running `setup` in a child reuses inherited settings and adds only that consumer's
+scripts and ignore entries; it does not create another configuration file.
+Change shared settings from their owning project. Setup refuses a child request
+to change an inherited source, and refuses shared-setting changes while an
+affected workspace member has active state or pending recovery. If no applicable
+configuration exists, setup creates one in the current consumer as before.
 
 `preferredVersion` is copied from the consumer's first declared WebQuark dependency
 (core takes precedence, then browser, tooling, Angular and React).
@@ -142,9 +166,18 @@ that operation before changing the consumer's active state.
   projects coordinate builds of the same checkout. Interrupted operations roll
   back before the next modifying command. Connections changed by another install
   are detected and are not overwritten.
-- Previous build snapshots remain available for existing processes and recovery.
+- Each consumer retains at most two completed snapshots: its active generation
+  and the newest remaining fallback. Successful activation, recovery, and npm
+  restoration delete older generations automatically, oldest first; npm mode
+  keeps the newest two. A third generation may exist temporarily while staging
+  and switching. Active and recovery-journal generations are never pruned.
+  Failed staging removes its partial generation. Cleanup failures fail the command
+  explicitly; retry after resolving the reported filesystem error. A committed
+  activation stays active even when its subsequent cleanup fails.
+- Restart consumer servers after every activation. Processes using snapshots
+  older than the retained fallback must be stopped before the next switch.
   After restoring npm and stopping those processes, `.webquark/generated/` can
-  be removed to reclaim disk space. Keep `.webquark/.webquark.json` for future use.
+  still be removed manually. Keep `.webquark/.webquark.json` for future use.
 
 ## Preflight checks
 
