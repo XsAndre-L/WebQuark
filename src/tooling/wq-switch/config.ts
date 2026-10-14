@@ -1,5 +1,5 @@
-import { existsSync, mkdirSync, readFileSync, realpathSync, renameSync, writeFileSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { existsSync, globSync, mkdirSync, readFileSync, realpathSync, renameSync, writeFileSync } from 'node:fs';
+import { dirname, isAbsolute, join, posix, relative, resolve } from 'node:path';
 import { projectPaths } from './paths';
 
 export const names = ['@webquark/core', '@webquark/browser', '@webquark/tooling', '@webquark/angular', '@webquark/react'] as const;
@@ -28,17 +28,65 @@ export function readWebQuarkConfig(root: string): WebQuarkConfig {
   return value as WebQuarkConfig;
 }
 
-export function readSwitchConfig(root: string): SwitchConfig | undefined {
-  const document = readWebQuarkConfig(root);
+function switchConfig(document: WebQuarkConfig, file: string): SwitchConfig | undefined {
   const value = document['wq-switch'];
   if (value === undefined) return undefined;
   if (!value || typeof value !== 'object' || Array.isArray(value) || value.version !== 1 || typeof value.source !== 'string' ||
       (value.preferredVersion !== undefined && typeof value.preferredVersion !== 'string')) {
-    throw new Error(`Invalid WebQuark wq-switch configuration; existing configuration was not overwritten.`);
+    throw new Error(`Invalid WebQuark wq-switch configuration in ${file}; existing configuration was not overwritten.`);
   }
   return value;
 }
-export type Manifest = { name: string; version: string; private?: boolean; main?: string; module?: string; types?: string; exports?: Record<string, unknown>; files?: string[]; bin?: Record<string, string>; dependencies?: Record<string, string>; devDependencies?: Record<string, string>; peerDependencies?: Record<string, string>; peerDependenciesMeta?: Record<string, { optional?: boolean }>; scripts?: Record<string, string> };
+export type Manifest = { name: string; version: string; private?: boolean; workspaces?: string[] | { packages: string[] }; main?: string; module?: string; types?: string; exports?: Record<string, unknown>; files?: string[]; bin?: Record<string, string>; dependencies?: Record<string, string>; devDependencies?: Record<string, string>; peerDependencies?: Record<string, string>; peerDependenciesMeta?: Record<string, { optional?: boolean }>; scripts?: Record<string, string> };
+export function workspacePatterns(root: string): string[] | undefined {
+  const value = manifest(root).workspaces;
+  if (value === undefined) return undefined;
+  const patterns = Array.isArray(value) ? value : value?.packages;
+  if (!Array.isArray(patterns) || patterns.some(pattern => typeof pattern !== 'string' || !pattern || isAbsolute(pattern) || pattern.startsWith('!') || pattern.split(/[\\/]/).includes('..'))) {
+    throw new Error(`Invalid or unsupported workspaces in ${join(root, 'package.json')}; use relative positive workspace patterns.`);
+  }
+  return patterns.map(pattern => pattern.replaceAll('\\', '/').replace(/^\.\//, '').replace(/\/$/, ''));
+}
+export function workspaceRoot(root: string): string {
+  // A workspace root owns its own config, even if nested in another workspace.
+  if (workspacePatterns(root)) return root;
+  for (let directory = dirname(root); ; directory = dirname(directory)) {
+    if (existsSync(join(directory, 'package.json'))) {
+      const patterns = workspacePatterns(directory);
+      if (patterns) {
+        const member = relative(directory, root).replaceAll('\\', '/');
+        return patterns.some(pattern => posix.matchesGlob(member, pattern)) ? directory : root;
+      }
+    }
+    if (dirname(directory) === directory) return root;
+  }
+}
+/** Bounded discovery only for shared-setting write safety; never inspect dependency trees. */
+export function workspaceMembers(root: string): string[] {
+  const patterns = workspacePatterns(root) ?? [];
+  const files = globSync(patterns.map(pattern => `${pattern}/package.json`), {
+    cwd: root, exclude: ['**/node_modules/**', '**/.webquark/**', '**/.git/**'],
+  });
+  return [...new Set(files.map(file => realpathSync(dirname(resolve(root, file)))))].filter(member => {
+    const path = relative(root, member);
+    return path !== '' && !path.startsWith('..') && !isAbsolute(path);
+  });
+}
+export interface ResolvedSwitchConfig { root: string; file: string; config: SwitchConfig; }
+export function resolveSwitchConfig(root: string): ResolvedSwitchConfig | undefined {
+  const localFile = projectPaths(root).config;
+  const local = switchConfig(readWebQuarkConfig(root), localFile);
+  if (local) return { root, file: localFile, config: local };
+  const boundary = workspaceRoot(root);
+  if (boundary === root) return undefined;
+  for (let directory = dirname(root); ; directory = dirname(directory)) {
+    const file = projectPaths(directory).config;
+    const config = switchConfig(readWebQuarkConfig(directory), file);
+    if (config) return { root: directory, file, config };
+    if (directory === boundary) return undefined;
+  }
+}
+export function readSwitchConfig(root: string): SwitchConfig | undefined { return resolveSwitchConfig(root)?.config; }
 export function json<T>(file: string): T { return JSON.parse(readFileSync(file, 'utf8')) as T; }
 export function manifest(root: string): Manifest { return json(join(root, 'package.json')); }
 export function writeJson(file: string, value: unknown): void {
@@ -69,10 +117,11 @@ export function validateSource(source: string): string {
   return root;
 }
 export function sourceFor(root: string): string {
-  const config = readSwitchConfig(root);
-  if (!config) throw new Error('First run: wq-setup');
+  const resolved = resolveSwitchConfig(root);
+  if (!resolved) throw new Error('First run: wq-setup');
+  const { config } = resolved;
   if (!config.source.trim()) throw new Error('Set source inside "wq-switch" in .webquark/.webquark.json to your WebQuark repository, or run wq-setup --source "path/to/WebQuark".');
-  return validateSource(resolve(root, config.source));
+  return validateSource(resolve(resolved.root, config.source));
 }
 export function selectedPackages(root: string): PackageName[] {
   const pkg = manifest(root);
