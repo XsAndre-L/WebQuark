@@ -1,7 +1,7 @@
 import { spawn } from 'node:child_process';
 import { selectedPackages, sourceFor } from '../config';
 import { stage } from '../packages';
-import { activate, assertActive, locked, readState } from '../state';
+import { activate, assertActive, discardSnapshot, hasJournal, locked, pruneSnapshots, readState } from '../state';
 import { stageBins } from '../bins';
 
 export async function compile(source: string): Promise<void> {
@@ -20,11 +20,22 @@ export async function build(root: string, connect = false): Promise<void> {
     if (active.source !== source || active.entries.map(e => e.name).join() !== selectedPackages(root).join()) throw new Error('Configuration changed. Run wq-switch npm before switching again.');
   }
   await locked(`source:${source}`, async () => {
+    pruneSnapshots(root);
     await compile(source);
     if (connect || readState(root)) {
       const next = stage(root, source);
-      await stageBins(root, next);
-      activate(root, next);
+      try {
+        await stageBins(root, next);
+        activate(root, next);
+      } catch (error) {
+        // A committed activation may report a pruning error. Never discard it,
+        // or a generation still referenced by an interrupted recovery journal.
+        if (!hasJournal(root) && readState(root)?.generation !== next.generation) {
+          try { discardSnapshot(root, next.generation); }
+          catch (cleanupError) { throw new AggregateError([error, cleanupError], 'Local activation failed and its unused snapshot could not be removed.'); }
+        }
+        throw error;
+      }
       console.log(`LOCAL: ${source}\nBuild activated. Restart the consumer dev server.`);
     } else console.log('Build complete. Package connections unchanged. Use wq-switch local to activate.');
   });

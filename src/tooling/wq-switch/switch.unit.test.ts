@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { chmodSync, cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readlinkSync, realpathSync, renameSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs';
+import { chmodSync, cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, readlinkSync, realpathSync, renameSync, rmSync, symlinkSync, unlinkSync, utimesSync, writeFileSync } from 'node:fs';
+import * as fs from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, relative, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -8,11 +9,16 @@ import { build } from './commands/build';
 import { status } from './commands/status';
 import { check } from './commands/check';
 import { stage, installed } from './packages';
-import { activate, hasJournal, link, linkTarget, locked, readState, recover, restore, within } from './state';
+import { activate, discardSnapshot, hasJournal, link, linkTarget, locked, pruneSnapshots, readState, recover, restore, within } from './state';
 import { consumerRoot, json, manifest, names, packageDirectories, selectedPackages, sourceFor, validateSource, writeJson } from './config';
 import { projectPaths } from './paths';
 import { binOperations, changeBin, stageBins } from './bins';
 import cmdShim from 'cmd-shim';
+
+vi.mock('node:fs', async importOriginal => {
+  const original = await importOriginal<typeof import('node:fs')>();
+  return { ...original, rmdirSync: vi.fn(original.rmdirSync) };
+});
 
 const temporary: string[] = [];
 afterEach(() => {
@@ -81,6 +87,89 @@ function runConsumer(app: string, args: string[]) {
   expect(result.status, result.stderr || String(result.error)).toBe(0);
   return result.stdout;
 }
+
+describe('snapshot retention', () => {
+  it('retains the active snapshot and newest fallback, then newest two after npm restore', () => {
+    const { app, source } = fixture();
+    const active = stage(app, source); activate(app, active);
+    utimesSync(active.generation, 1, 1);
+    const older = stage(app, source); utimesSync(older.generation, 2, 2);
+    const newer = stage(app, source); utimesSync(newer.generation, 3, 3);
+    pruneSnapshots(app);
+    expect(existsSync(active.generation)).toBe(true);
+    expect(existsSync(older.generation)).toBe(false);
+    expect(existsSync(newer.generation)).toBe(true);
+    expect(() => discardSnapshot(app, active.generation)).toThrow('still needed');
+    const latest = stage(app, source); utimesSync(latest.generation, 4, 4);
+    restore(app);
+    expect(readdirSync(projectPaths(app).packages).sort()).toEqual([newer.generation, latest.generation].map(path => path.split(/[\\/]/).at(-1)!).sort());
+  });
+
+  it('prunes on successful activation without following external dependency links', () => {
+    const { app, source } = fixture();
+    const first = stage(app, source); activate(app, first); utimesSync(first.generation, 1, 1);
+    const external = join(source, 'external'); put(join(external, 'keep.txt'), 'keep');
+    link(external, join(first.generation, 'dependency'));
+    utimesSync(first.generation, 1, 1);
+    const second = stage(app, source); activate(app, second); utimesSync(second.generation, 2, 2);
+    const third = stage(app, source); activate(app, third);
+    expect(readdirSync(projectPaths(app).packages)).toHaveLength(2);
+    expect(existsSync(first.generation)).toBe(false);
+    expect(readFileSync(join(external, 'keep.txt'), 'utf8')).toBe('keep');
+    expect(readState(app)?.generation).toBe(third.generation);
+  });
+
+  it('protects both journal generations and removes an aborted generation after recovery', () => {
+    const { app, source } = fixture();
+    const previous = stage(app, source); activate(app, previous);
+    const next = stage(app, source);
+    const unused = stage(app, source);
+    writeJson(projectPaths(app).journal, { previous, next, operations: [] });
+    pruneSnapshots(app);
+    expect(existsSync(unused.generation)).toBe(false);
+    expect(() => discardSnapshot(app, next.generation)).toThrow('still needed');
+    recover(app);
+    expect(existsSync(next.generation)).toBe(false);
+    expect(readState(app)?.generation).toBe(previous.generation);
+  });
+
+  it('removes partially staged packages after a missing dependency fails staging', () => {
+    const { app, source } = fixture();
+    const directory = join(source, packageDirectories['@webquark/angular']);
+    const value = manifest(directory); value.dependencies!['missing-required-package'] = '1'; writeJson(join(directory, 'package.json'), value);
+    expect(() => stage(app, source)).toThrow('Cannot resolve');
+    expect(readdirSync(projectPaths(app).packages)).toEqual([]);
+  });
+
+  it('reports deletion failure after activation while preserving committed state for retry', () => {
+    const { app, source } = fixture();
+    const first = stage(app, source); activate(app, first); utimesSync(first.generation, 1, 1);
+    const second = stage(app, source); activate(app, second); utimesSync(second.generation, 2, 2);
+    const third = stage(app, source);
+    const failure = vi.mocked(fs.rmdirSync);
+    const realRemove = failure.getMockImplementation()!;
+    failure.mockImplementation((path, options) => {
+      if (String(path) === first.generation) throw new Error('simulated sharing violation');
+      return realRemove(path, options);
+    });
+    expect(() => activate(app, third)).toThrow('Snapshot cleanup failed');
+    expect(readState(app)?.generation).toBe(third.generation);
+    expect(hasJournal(app)).toBe(false);
+    failure.mockImplementation(realRemove); pruneSnapshots(app);
+    expect(readdirSync(projectPaths(app).packages)).toHaveLength(2);
+    expect(existsSync(first.generation)).toBe(false);
+    expect(existsSync(join(second.generation, 'node_modules/@webquark/core/package.json'))).toBe(true);
+    expect(existsSync(join(third.generation, 'node_modules/@webquark/core/package.json'))).toBe(true);
+  });
+
+  it('refuses a linked snapshot storage directory', () => {
+    const { app, source } = fixture();
+    mkdirSync(projectPaths(app).directory, { recursive: true });
+    link(source, join(projectPaths(app).directory, 'generated'));
+    expect(() => pruneSnapshots(app)).toThrow('not a physical directory');
+    expect(existsSync(join(source, 'package.json'))).toBe(true);
+  });
+});
 
 describe('wq-switch launchers', () => {
   it('creates missing launchers, adopts active state, refreshes added/retired names, and restores exact originals', async () => {

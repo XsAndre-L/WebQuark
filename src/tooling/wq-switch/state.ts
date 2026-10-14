@@ -1,4 +1,4 @@
-import { existsSync, lstatSync, mkdirSync, readFileSync, readlinkSync, realpathSync, renameSync, statSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs';
+import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, readlinkSync, realpathSync, renameSync, rmdirSync, statSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs';
 import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
 import { tmpdir } from 'node:os';
@@ -48,6 +48,60 @@ export function assertActive(state: State): void {
   assertBins(state);
 }
 export function hasJournal(root: string): boolean { return existsSync(projectPaths(root).journal); }
+
+function snapshotDirectory(root: string): string {
+  const paths = projectPaths(root);
+  for (const directory of [paths.directory, dirname(paths.packages), paths.packages]) {
+    if (present(directory) && (!lstatSync(directory).isDirectory() || lstatSync(directory).isSymbolicLink())) {
+      throw new Error(`Snapshot directory is not a physical directory: ${directory}`);
+    }
+  }
+  return paths.packages;
+}
+function protectedGenerations(root: string): Set<string> {
+  const protectedPaths = new Set<string>();
+  const active = readState(root);
+  if (active) { assertActive(active); protectedPaths.add(active.generation); }
+  const paths = projectPaths(root);
+  if (hasJournal(root)) {
+    const journal = json<Journal>(paths.journal); validateJournal(root, journal, paths);
+    for (const state of [journal.previous, journal.next]) if (state) protectedPaths.add(state.generation);
+  }
+  return protectedPaths;
+}
+/** Remove links themselves, never the installed dependency directories they reference. */
+function removeSnapshotTree(directory: string): void {
+  const stat = lstatSync(directory);
+  if (stat.isSymbolicLink() || !stat.isDirectory()) { unlinkSync(directory); return; }
+  for (const child of readdirSync(directory)) removeSnapshotTree(join(directory, child));
+  rmdirSync(directory);
+}
+export function discardSnapshot(root: string, generation: string): void {
+  const directory = snapshotDirectory(root);
+  if (dirname(generation) !== directory) throw new Error('Invalid snapshot path; refusing cleanup.');
+  if (protectedGenerations(root).has(generation)) throw new Error(`Snapshot is still needed by active state or recovery: ${generation}`);
+  if (present(generation)) removeSnapshotTree(generation);
+}
+/** Called under the consumer lock, after a transaction has committed or recovered. */
+export function pruneSnapshots(root: string): void {
+  const directory = snapshotDirectory(root);
+  if (!present(directory)) return;
+  const keep = protectedGenerations(root);
+  const snapshots = readdirSync(directory).map(name => {
+    const path = join(directory, name), stat = lstatSync(path);
+    if (!stat.isDirectory() || stat.isSymbolicLink()) throw new Error(`Unexpected snapshot entry; refusing cleanup: ${path}`);
+    // Deleting children changes mtime even when deletion later fails. Birthtime
+    // keeps an older, partially removed generation older on the next retry.
+    return { path, created: stat.birthtimeMs };
+  }).sort((a, b) => b.created - a.created || b.path.localeCompare(a.path));
+  if (keep.size > 2) throw new Error('More than two snapshots are required for recovery; recover before cleanup.');
+  for (const snapshot of snapshots) if (keep.size < 2) keep.add(snapshot.path);
+  for (const snapshot of [...snapshots].reverse()) {
+    if (keep.has(snapshot.path)) continue;
+    try { removeSnapshotTree(snapshot.path); }
+    catch (error) { throw new Error(`Snapshot cleanup failed: ${snapshot.path}. Active connections are unchanged; retry the command to enforce the two-snapshot limit.`, { cause: error }); }
+  }
+}
 function removeExpectedLink(slot: string, expected: string): void {
   if (linkTarget(slot) !== expected) throw new Error(`Package connection changed: ${slot}`);
   unlinkSync(slot); // Never recurse into a package, junction, or shared package store.
@@ -98,6 +152,8 @@ export function recover(root: string): void {
   }
   saveState(journal.previous, paths);
   unlinkSync(paths.journal);
+  if (journal.next && journal.next.generation !== journal.previous?.generation) discardSnapshot(root, journal.next.generation);
+  pruneSnapshots(root);
 }
 export function activate(root: string, next: State): void {
   const paths = projectPaths(root);
@@ -120,10 +176,11 @@ export function activate(root: string, next: State): void {
     for (const operation of bins) changeBin(operation);
     saveState(next, paths); unlinkSync(paths.journal);
   } catch (error) { recover(root); throw error; }
+  pruneSnapshots(root);
 }
 export function restore(root: string): void {
   const paths = projectPaths(root);
-  const previous = readState(root); if (!previous) return;
+  const previous = readState(root); if (!previous) { pruneSnapshots(root); return; }
   assertActive(previous);
   const operations = previous.entries.map(entry => ({ slot: entry.slot, before: entry.target, after: null }));
   const bins = binOperations(previous, null);
@@ -133,6 +190,7 @@ export function restore(root: string): void {
     for (const operation of bins) changeBin(operation);
     saveState(null, paths); unlinkSync(paths.journal);
   } catch (error) { recover(root); throw error; }
+  pruneSnapshots(root);
 }
 export function originalEntry(root: string, name: PackageName, target: string): Entry {
   const slot = join(root, 'node_modules', name);

@@ -3,7 +3,7 @@ import { createRequire } from 'node:module';
 import { join, relative, resolve } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { localDependencies, manifest, names, packageDirectories, selectedPackages, type PackageName } from './config';
-import { assertActive, link, originalEntry, readState, within, type State } from './state';
+import { assertActive, discardSnapshot, link, originalEntry, readState, within, type State } from './state';
 import { projectPaths } from './paths';
 
 export function installed(name: string, from: string): string {
@@ -38,13 +38,21 @@ export function validatePackage(directory: string): void {
   if (pkg.name === '@webquark/core' && !pkg.bin?.['wq-switch']) throw new Error('Local WebQuark must include the wq-switch CLI. Update the checkout first.');
 }
 export function stage(root: string, source: string): State {
+  const generation = join(projectPaths(root).packages, randomUUID());
+  try { return stageGeneration(root, source, generation); }
+  catch (error) {
+    try { discardSnapshot(root, generation); }
+    catch (cleanupError) { throw new AggregateError([error, cleanupError], 'Snapshot staging failed and its partial snapshot could not be removed.'); }
+    throw error;
+  }
+}
+function stageGeneration(root: string, source: string, generation: string): State {
   const selected = selectedPackages(root);
   const previous = readState(root);
   if (previous) {
     assertActive(previous);
     if (previous.source !== source || previous.entries.map(e => e.name).join() !== selected.join()) throw new Error('Source or selected dependencies changed. Run wq-switch npm before switching again.');
   }
-  const generation = join(projectPaths(root).packages, randomUUID());
   const targets = new Map<PackageName, string>();
   for (const name of selected) {
     const directory = join(source, packageDirectories[name]);
