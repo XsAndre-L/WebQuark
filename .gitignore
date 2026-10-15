@@ -28,12 +28,6 @@ UserInterfaceState.xcuserstate
 
 agents/
 
-# Compiled Playground Bundle
-src/playground/playground.bundled.js
-
-# Compiled CLI Sandbox Server
-scripts/webquark-serve.js
-
 # Generated framework wrappers
 packages/browser/angular/src/stencil-generated/
 packages/browser/react/src/stencil-generated/

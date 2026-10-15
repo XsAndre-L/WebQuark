@@ -54,7 +54,7 @@ the complete config, files, generation and server code. The existing browser
 example below remains a separate fictional reference.
 
 The existing [playground documentation](../../src/playground/views/tooling/tooling.html)
-links to a [runnable adoption example](../../src/playground/views/tooling/adoption).
+links to a [runnable adoption example](../../examples/changelog-adoption).
 That example generates its feed using the installed tooling API; its browser code
 fetches JSON and uses `textContent` for summaries and descriptions. It resolves
 image paths against the fetched feed URL and imports no runtime tooling. The
@@ -67,13 +67,13 @@ static format references, not generator acceptance evidence.
 From the repository root, after `bun run tooling:build`:
 
 ```sh
-bun src/playground/views/tooling/adoption/generate.ts
-bun src/playground/views/tooling/adoption/serve.ts
+bun examples/changelog-adoption/generate.ts
+bun examples/changelog-adoption/serve.ts
 ```
 
 Open `http://127.0.0.1:4173/`. The example shows an Unreleased manual-image entry
 and a dated text-only release. To verify installed-package adoption, copy the
-`adoption/` directory into a separate application, install the reviewed tooling
+`examples/changelog-adoption/` directory into a separate application, install the reviewed tooling
 package or packed candidate there, then run `bun generate.ts` and `bun serve.ts`.
 It needs Bun 1.4.2 or later. All generated JSON, image copies and URL integration
 files stay under ignored `dist/`, outside the source notes. The build script uses

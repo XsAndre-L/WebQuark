@@ -1,5 +1,7 @@
 # WebQuark component quality execution status
 
+> Path note, 14 October 2026: source files have moved. See the [current-path mapping](source-path-migrations.md). Recorded commands, line numbers and validation results describe the original checkout and are retained as historical evidence.
+
 Status: Tasks01-08 **verified** by parent review for their accepted scope; quantity remains OPEN. Task09 **in progress**. Tasks10-39 await their own assignments.
 
 Updated: 2026-10-03T13:31:29.117Z. Checkout: `D:/Dev/PurelyIT/WebQuark`; branch `a_dev`; baseline HEAD `dec92666b7eed7b7c76817897265f5abfee9e372`.

@@ -11,11 +11,11 @@
   ],
   "scripts": {
     "theme:generate": "bun scripts/generate-theme.ts",
-    "switch:build": "tsc -p scripts/wq-switch/tsconfig.json && bun build scripts/wq-switch/index.ts scripts/wq-switch/setup.ts --outdir=scripts/wq-switch/dist --target=node --format=cjs",
+    "switch:build": "tsc -p src/tooling/wq-switch/tsconfig.json && bun build src/tooling/wq-switch/index.ts src/tooling/wq-switch/setup.ts --outdir=packages/tooling/dist/wq-switch --entry-naming=[name].cjs --target=node --format=cjs",
     "build": "bun run browser:build && bun run tooling:build && bun run core:build",
     "start": "bun run scripts/start-playground.ts",
     "dev": "bun run start",
-    "test": "stencil-test --prod --stencil-config packages/browser/components/stencil.config.ts",
+    "test": "bun run packages:build && STENCIL_PROD=true vitest run",
     "test:watch": "stencil-test --prod --watch --stencil-config packages/browser/components/stencil.config.ts",
     "generate": "stencil generate --config packages/browser/components/stencil.config.ts",
     "packages:build": "bun run build && bun run --cwd packages/browser/react build && bun run --cwd packages/browser/angular build",
@@ -26,9 +26,9 @@
     "publish-all": "bun .github/scripts/publishing/publish-packages.ts",
     "align-headers": "bun run scripts/align-headers.ts",
     "check:prop-order": "bun run scripts/component-prop-order/check.ts",
-    "browser:build": "bun run theme:generate && bun build src/playground/playground.ts --outfile=src/playground/playground.bundled.js --loader .html:text --loader .css:text && stencil build --config packages/browser/components/stencil.config.ts",
+    "browser:build": "bun run theme:generate && bun build src/playground/playground.ts --outfile=.stencil/dist/playground/playground.js --loader .html:text --loader .css:text && stencil build --config packages/browser/components/stencil.config.ts",
     "tooling:build": "bun run --cwd packages/tooling build",
-    "core:build": "bun run switch:build && bun build scripts/webquark-serve.ts --outfile=scripts/webquark-serve.js --target=node --format=cjs && bun run scripts/build-core.ts"
+    "core:build": "bun run scripts/build-core.ts"
   },
   "devDependencies": {
     "@stencil/angular-output-target": "^1.5.2",

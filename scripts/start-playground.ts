@@ -32,7 +32,7 @@ const prebuild = spawnSync([
   "bun",
   "build",
   "src/playground/playground.ts",
-  "--outfile=src/playground/playground.bundled.js",
+  "--outfile=.stencil/dist/playground/playground.js",
   "--loader",
   ".html:text",
   "--loader",

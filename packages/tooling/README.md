@@ -1,4 +1,15 @@
-# WebQuark changelog tooling
+# WebQuark developer tooling
+
+This package owns `wq-switch` and `wq-setup`, alongside the changelog tools.
+Their source is in `src/tooling/wq-switch/`; `bun run tooling:build` at the
+repository root builds the Node CLI bundles. Core keeps its existing commands
+as forwarding launchers. See the [switcher guide](https://github.com/Purely-IT/WebQuark/blob/main/src/tooling/wq-switch/README.md).
+
+The sandbox server implementation lives in `src/tooling/sandbox/` and is
+exported as `@webquark/tooling/sandbox`. Core's `wq-sandbox` launcher supplies
+the path to its packaged playground assets.
+
+## Changelog tooling
 
 Generate release-note JSON from your application's changelog, add manual images
 when needed, and optionally configure version mirrors or automated capture.
@@ -420,7 +431,7 @@ behavior remain available. Prefer explicit `stage` and `publish` for new adoptio
 legacy custom capture without `--stage-only` may save images immediately.
 
 The repository also has a
-[runnable browser example](https://github.com/Purely-IT/WebQuark/tree/main/src/playground/views/tooling/adoption)
+[runnable browser example](https://github.com/Purely-IT/WebQuark/tree/main/examples/changelog-adoption)
 and [additional adoption notes](https://github.com/Purely-IT/WebQuark/blob/main/docs/tooling/README.md).
 Those examples are repository files; the installed package ships this README,
 compiled `dist/`, and its license.

@@ -5,7 +5,7 @@ import { defineCustomElements } from '../../../../../../packages/browser/compone
 // @ts-ignore - real guide previews use the production theme.
 import '../../../../../../packages/browser/components/dist/webquark/webquark.css';
 import { INVALID_JSON, JSON_EXPECTED, JSON_SOURCE, jsonTokens, UNSUPPORTED_SOURCE } from './format-fixtures';
-import { MAX_JSON_FORMAT_DEPTH } from '../../../../utils/formatter';
+import { MAX_JSON_FORMAT_DEPTH } from '../internals/formatter';
 import { normalizeDomNewlines } from './syntax-fixtures';
 
 defineCustomElements();
