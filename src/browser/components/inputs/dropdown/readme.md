@@ -1,5 +1,7 @@
 # q-dropdown
 
+Searchable dropdowns use the main editable control by default. Set `search-mode="menu"` to retain the separate popup search. Typed queries do not commit values; Escape, Tab or leaving restores the selected label. See the [component guide](../../../../../docs/components/q-dropdown.md) for external search, keyboard, form and accessibility contracts.
+
 The option menu uses viewport-aware floating placement. Its default `auto` placement opens below
 when space permits, flips above near the viewport edge, and stays clear of clipping ancestors by
 using the browser top layer when supported. Keyboard option changes scroll only the internal list,
@@ -34,6 +36,7 @@ and externally loaded option pages.
 | `placement`        | `placement`         | `auto` uses a side with sufficient viewport space.                                                     | `"auto" \| "bottom" \| "top"`       | `'auto'`                |
 | `required`         | `required`          |                                                                                                        | `boolean`                           | `false`                 |
 | `reserveFeedback`  | `reserve-feedback`  | Omitted inherits the enclosing form; false cancels reservation.                                        | `boolean`                           | `undefined`             |
+| `searchMode`       | `search-mode`       | Search in the main editable control (default) or a separate menu field. Applies only when searchable.  | `"default" \| "menu"`               | `'default'`             |
 | `searchable`       | `searchable`        |                                                                                                        | `boolean`                           | `false`                 |
 | `size`             | `size`              |                                                                                                        | `"inherit" \| "lg" \| "md" \| "sm"` | `'inherit'`             |
 | `value`            | `value`             |                                                                                                        | `string`                            | `''`                    |
@@ -94,11 +97,11 @@ Type: `Promise<boolean>`
 
 ## Shadow Parts
 
-| Part        | Description                        |
-| ----------- | ---------------------------------- |
-| `"label"`   | Optional field label.              |
-| `"menu"`    | Floating option menu.              |
-| `"trigger"` | Button that opens the option menu. |
+| Part        | Description                                        |
+| ----------- | -------------------------------------------------- |
+| `"label"`   | Optional field label.                              |
+| `"menu"`    | Floating option menu.                              |
+| `"trigger"` | Active input or button that opens the option menu. |
 
 
 ----------------------------------------------
