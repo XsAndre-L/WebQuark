@@ -519,6 +519,14 @@ describe('wq-switch transactions', () => {
     expect(readFileSync(projectPaths(app).config, 'utf8')).toBe(config);
     expect(manifest(app).scripts!['wq-switch']).toBe('custom-command');
   });
+  it.skipIf(process.platform === 'win32')('marks every generated core CLI executable on POSIX', () => {
+    const core = resolve('packages/core');
+    for (const entry of Object.values(manifest(core).bin ?? {})) {
+      const file = resolve(core, entry);
+      expect(readFileSync(file, 'utf8').startsWith('#!'), entry).toBe(true);
+      expect(fs.statSync(file).mode & 0o111, entry).toBe(0o111);
+    }
+  });
   it('runs installed wq-setup and generated short scripts through Bun', () => {
     const base = mkdtempSync(join(tmpdir(), 'wq-switch-test-')); temporary.push(base);
     const core = join(base, 'core'), app = join(base, 'app');
