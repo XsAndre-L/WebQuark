@@ -54,7 +54,7 @@ Use the registration above first. Each HTML block belongs in the page body; its 
 
 ### Search a known set of options
 
-Enable searchable to filter supplied option labels in the menu.
+Enable searchable to filter supplied option labels by typing in the main control. `searchMode="default"` is the default for searchable dropdowns. Typing changes only a draft query; selecting an option commits its value. Escape, Tab or leaving the control restores the selected label without committing the draft.
 
 ![Open Destination menu filtered to Cape Town](./assets/q-dropdown-local-search.png)
 
@@ -63,7 +63,14 @@ Enable searchable to filter supplied option labels in the menu.
   options='[{"label":"Cape Town","value":"CPT"},{"label":"Durban","value":"DUR"},{"label":"Johannesburg","value":"JNB"}]'></q-dropdown>
 ```
 
-Open Destination and type Cape to reach the screenshot; the crop includes the floating menu.
+Type Cape in Destination to filter the floating menu. The existing screenshot illustrates the equivalent menu search layout. To retain a separate search field inside the popup, use `search-mode="menu"`:
+
+```html
+<q-dropdown label="Destination" searchable search-mode="menu"
+  options='["Cape Town","Durban","Johannesburg"]'></q-dropdown>
+```
+
+The mode has no effect when searchable is false. Neither mode accepts free-text values.
 
 ### Let the application provide search results
 
@@ -127,11 +134,13 @@ Effective disabling blocks opening, searching and selection. Setting disabled or
 
 ### Keyboard and focus
 
-ArrowDown/ArrowUp open the menu. Nonsearchable trigger navigation moves the active index; Home/End jump within currently rendered options. Enter/Space chooses an active option or toggles the menu. Escape closes and focuses the trigger; Tab closes while allowing normal focus traversal. Searchable opening moves focus to its text input. In that input, Enter chooses the first match; ArrowDown sets the first active index but leaves DOM focus in the input, so repeated ArrowDown there does not advance through the whole list.
+ArrowDown/ArrowUp open the menu and move the active option. In searchable default mode DOM focus remains in the main input; menu mode moves focus to the popup search input. Repeated arrows move through results and Enter commits only the active option. Native text-editing keys remain available in inputs. Nonsearchable Home/End jump within rendered options; Enter/Space choose an active option or toggle the menu. Escape cancels the query and restores the selected label; Tab cancels while allowing natural focus traversal. Clicking an option commits before blur can discard the draft. IME composition does not select an option or emit intermediate external queries.
 
 ### Labels and announcements
 
-Label names the trigger; nonblank ariaLabel is forwarded and names the list too. labelHidden keeps label accessible. The trigger exposes aria-haspopup=listbox, aria-expanded, and conditional aria-controls/aria-activedescendant; the menu/options use listbox/option and aria-selected. The search input has combobox attributes and a Search... placeholder, but no separate durable label property.
+Label names the active input or button; nonblank ariaLabel is forwarded and names the list too. labelHidden keeps label accessible. The main editable input uses role=combobox and aria-autocomplete=list; the active control exposes aria-haspopup=listbox, aria-expanded, and conditional aria-controls/aria-activedescendant. The menu/options use listbox/option and aria-selected. Menu search receives the explicit accessible name or visible label, falling back to Search options. Focus, validity reporting, disabling and popup positioning use the actual active control. See the [WAI-ARIA combobox pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/).
+
+External qSearch remains immediate: one event per completed changed query, including a user clearing the field to an empty string. Opening, cancellation and form reset emit no search. Loaded results may replace the current page without losing a previously known label for the same committed remote value. An external value change or clearing value never retains another value's cached label. Local removal keeps the existing invalid-selection policy without synthesizing qChange. Draft text has no submitted name: native forms and q-form collect only the committed selection. Mode/searchable changes cancel an open draft and reconcile focus.
 
 Description is replaced by error feedback. The feedback span always exists with aria-live=polite and is described by the trigger when text exists. This is DOM/ARIA behavior, not a screen-reader conformance claim. reserveFeedback inherits a form setting when omitted; true reserves 1rem and false opts out.
 
@@ -214,6 +223,7 @@ All properties are optional in the TypeScript component contract. Required conte
 | `required` | `false` | Requires any truthy value, independently of option membership.<br>**Type:** `boolean`. **HTML attribute:** `required`. **Required:** No. |
 | `reserveFeedback` | `undefined` | undefined inherits the form; true reserves 1rem; false opts out.<br>**Type:** `boolean`. **HTML attribute:** `reserve-feedback`. **Required:** No. |
 | `searchable` | `false` | Adds a text search input; local filtering unless externalSearch.<br>**Type:** `boolean`. **HTML attribute:** `searchable`. **Required:** No. |
+| `searchMode` | `'default'` | Search in the main editable control (`default`) or in a separate popup field (`menu`). Applies only when searchable.<br>**Type:** `'default' \| 'menu'`. **HTML attribute:** `search-mode`. **Required:** No. |
 | `size` | `'inherit'` | Inherited or explicit geometry; see [Sizes](#sizes).<br>**Type:** `'inherit' \| 'sm' \| 'md' \| 'lg'`. **HTML attribute:** `size`. **Required:** No. |
 | `value` | `''` | Mutable stored string; unmatched values show placeholder but remain valid when required.<br>**Type:** `string`. **HTML attribute:** `value`. **Required:** No. |
 

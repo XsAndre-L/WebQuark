@@ -16,8 +16,9 @@
     "searchable": {
       "type": "boolean",
       "default": false,
-      "desc": "Enables search filter bar inside dropdown popup menu"
+      "desc": "Enables local or external option search"
     },
+    "searchMode": { "type": "select", "default": "default", "options": ["default", "menu"], "desc": "Type in the main control, or use a separate search inside the menu" },
     "label": {
       "type": "string",
       "default": "Environment Server",
@@ -82,13 +83,14 @@
       }
     },
     {
-      "name": "Searchable Dropdown",
+      "name": "Search in main control (default)",
       "props": {
         "label": "Searchable Options",
         "searchable": true,
         "value": "staging"
       }
     },
+    { "name": "Search inside menu", "props": { "label": "Menu Search", "searchable": true, "searchMode": "menu", "value": "staging" } },
     {
       "name": "Small Dropdown",
       "props": {

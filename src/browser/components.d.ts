@@ -675,6 +675,31 @@ export namespace Components {
         "size": 'sm' | 'md' | 'lg' | 'full';
     }
     /**
+     * Static, container-relative separator.
+     */
+    interface QDivider {
+        /**
+          * Hide a purely visual separator from assistive technology.
+          * @default false
+         */
+        "decorative": boolean;
+        /**
+          * CSS length or percentage, capped to the allocated extent minus endpoint insets.
+          * @default 'auto'
+         */
+        "length": string;
+        /**
+          * Physical direction of the separator.
+          * @default 'horizontal'
+         */
+        "orientation": 'horizontal' | 'vertical';
+        /**
+          * Symmetric external spacing perpendicular to the line.
+          * @default 'lg'
+         */
+        "spacing": QSpace;
+    }
+    /**
      * Form-associated dropdown/select control with optional search, incremental option rendering,
      * and externally loaded option pages.
      */
@@ -747,6 +772,11 @@ export namespace Components {
           * Omitted inherits the enclosing form; false cancels reservation.
          */
         "reserveFeedback"?: boolean;
+        /**
+          * Search in the main editable control (default) or a separate menu field. Applies only when searchable.
+          * @default 'default'
+         */
+        "searchMode": 'default' | 'menu';
         /**
           * @default false
          */
@@ -2507,6 +2537,15 @@ declare global {
         prototype: HTMLQDialogElement;
         new (): HTMLQDialogElement;
     };
+    /**
+     * Static, container-relative separator.
+     */
+    interface HTMLQDividerElement extends Components.QDivider, HTMLStencilElement {
+    }
+    var HTMLQDividerElement: {
+        prototype: HTMLQDividerElement;
+        new (): HTMLQDividerElement;
+    };
     interface HTMLQDropdownElementEventMap {
         "qChange": string;
         "qSelect": Option;
@@ -3078,6 +3117,7 @@ declare global {
         "q-conversation-bubble": HTMLQConversationBubbleElement;
         "q-data-table": HTMLQDataTableElement;
         "q-dialog": HTMLQDialogElement;
+        "q-divider": HTMLQDividerElement;
         "q-dropdown": HTMLQDropdownElement;
         "q-form": HTMLQFormElement;
         "q-grid": HTMLQGridElement;
@@ -3715,6 +3755,31 @@ declare namespace LocalJSX {
         "size"?: 'sm' | 'md' | 'lg' | 'full';
     }
     /**
+     * Static, container-relative separator.
+     */
+    interface QDivider {
+        /**
+          * Hide a purely visual separator from assistive technology.
+          * @default false
+         */
+        "decorative"?: boolean;
+        /**
+          * CSS length or percentage, capped to the allocated extent minus endpoint insets.
+          * @default 'auto'
+         */
+        "length"?: string;
+        /**
+          * Physical direction of the separator.
+          * @default 'horizontal'
+         */
+        "orientation"?: 'horizontal' | 'vertical';
+        /**
+          * Symmetric external spacing perpendicular to the line.
+          * @default 'lg'
+         */
+        "spacing"?: QSpace;
+    }
+    /**
      * Form-associated dropdown/select control with optional search, incremental option rendering,
      * and externally loaded option pages.
      */
@@ -3810,6 +3875,11 @@ declare namespace LocalJSX {
           * Omitted inherits the enclosing form; false cancels reservation.
          */
         "reserveFeedback"?: boolean;
+        /**
+          * Search in the main editable control (default) or a separate menu field. Applies only when searchable.
+          * @default 'default'
+         */
+        "searchMode"?: 'default' | 'menu';
         /**
           * @default false
          */
@@ -5419,6 +5489,12 @@ declare namespace LocalJSX {
         "open": boolean;
         "closeLabel": string;
     }
+    interface QDividerAttributes {
+        "orientation": 'horizontal' | 'vertical';
+        "length": string;
+        "spacing": QSpace;
+        "decorative": boolean;
+    }
     interface QDropdownAttributes {
         "label": string;
         "ariaLabel": string | null;
@@ -5430,6 +5506,7 @@ declare namespace LocalJSX {
         "reserveFeedback": boolean;
         "size": QDropdownSize;
         "searchable": boolean;
+        "searchMode": 'default' | 'menu';
         "externalSearch": boolean;
         "hasMore": boolean;
         "loading": boolean;
@@ -5784,6 +5861,7 @@ declare namespace LocalJSX {
         "q-conversation-bubble": Omit<QConversationBubble, keyof QConversationBubbleAttributes> & { [K in keyof QConversationBubble & keyof QConversationBubbleAttributes]?: QConversationBubble[K] } & { [K in keyof QConversationBubble & keyof QConversationBubbleAttributes as `attr:${K}`]?: QConversationBubbleAttributes[K] } & { [K in keyof QConversationBubble & keyof QConversationBubbleAttributes as `prop:${K}`]?: QConversationBubble[K] };
         "q-data-table": Omit<QDataTable, keyof QDataTableAttributes> & { [K in keyof QDataTable & keyof QDataTableAttributes]?: QDataTable[K] } & { [K in keyof QDataTable & keyof QDataTableAttributes as `attr:${K}`]?: QDataTableAttributes[K] } & { [K in keyof QDataTable & keyof QDataTableAttributes as `prop:${K}`]?: QDataTable[K] };
         "q-dialog": Omit<QDialog, keyof QDialogAttributes> & { [K in keyof QDialog & keyof QDialogAttributes]?: QDialog[K] } & { [K in keyof QDialog & keyof QDialogAttributes as `attr:${K}`]?: QDialogAttributes[K] } & { [K in keyof QDialog & keyof QDialogAttributes as `prop:${K}`]?: QDialog[K] };
+        "q-divider": Omit<QDivider, keyof QDividerAttributes> & { [K in keyof QDivider & keyof QDividerAttributes]?: QDivider[K] } & { [K in keyof QDivider & keyof QDividerAttributes as `attr:${K}`]?: QDividerAttributes[K] } & { [K in keyof QDivider & keyof QDividerAttributes as `prop:${K}`]?: QDivider[K] };
         "q-dropdown": Omit<QDropdown, keyof QDropdownAttributes> & { [K in keyof QDropdown & keyof QDropdownAttributes]?: QDropdown[K] } & { [K in keyof QDropdown & keyof QDropdownAttributes as `attr:${K}`]?: QDropdownAttributes[K] } & { [K in keyof QDropdown & keyof QDropdownAttributes as `prop:${K}`]?: QDropdown[K] };
         "q-form": Omit<QForm, keyof QFormAttributes> & { [K in keyof QForm & keyof QFormAttributes]?: QForm[K] } & { [K in keyof QForm & keyof QFormAttributes as `attr:${K}`]?: QFormAttributes[K] } & { [K in keyof QForm & keyof QFormAttributes as `prop:${K}`]?: QForm[K] };
         "q-grid": Omit<QGrid, keyof QGridAttributes> & { [K in keyof QGrid & keyof QGridAttributes]?: QGrid[K] } & { [K in keyof QGrid & keyof QGridAttributes as `attr:${K}`]?: QGridAttributes[K] } & { [K in keyof QGrid & keyof QGridAttributes as `prop:${K}`]?: QGrid[K] };
@@ -5882,6 +5960,10 @@ declare module "@stencil/core" {
              * Modal confirmation or message dialog with focus trapping and safe solid backdrops.
              */
             "q-dialog": LocalJSX.IntrinsicElements["q-dialog"] & JSXBase.HTMLAttributes<HTMLQDialogElement>;
+            /**
+             * Static, container-relative separator.
+             */
+            "q-divider": LocalJSX.IntrinsicElements["q-divider"] & JSXBase.HTMLAttributes<HTMLQDividerElement>;
             /**
              * Form-associated dropdown/select control with optional search, incremental option rendering,
              * and externally loaded option pages.

@@ -50,6 +50,7 @@ describe('q-dropdown', () => {
   it('filters searchable JSON options without crashing on missing labels', async () => {
     const el = await createComponent({
       searchable: true,
+      searchMode: 'menu',
       options: JSON.stringify([{ value: 'missing-label' }, { label: 'Alpha', value: 'alpha' }]),
     });
     const trigger = el.shadowRoot.querySelector('.dropdown-trigger') as HTMLElement;
@@ -102,7 +103,7 @@ describe('q-dropdown', () => {
   });
 
   it('emits external search terms without filtering the supplied page locally', async () => {
-    const el = await createComponent({ searchable: true, externalSearch: true, options });
+    const el = await createComponent({ searchable: true, searchMode: 'menu', externalSearch: true, options });
     const searchHandler = vi.fn();
     el.addEventListener('qSearch', searchHandler);
 
