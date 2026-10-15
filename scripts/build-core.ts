@@ -1,4 +1,4 @@
-import { cpSync, mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { chmodSync, cpSync, mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, resolve, sep } from 'node:path';
 
 const root = resolve(import.meta.dir, '..');
@@ -15,6 +15,8 @@ function write(path: string, contents: string): void {
   const output = ownedPath(path);
   mkdirSync(dirname(output), { recursive: true });
   writeFileSync(output, contents);
+  // Linked package binaries must be executable before a package manager installs them.
+  if (contents.startsWith('#!')) chmodSync(output, 0o755);
 }
 
 function forward(path: string, entry: string, commonjs = false): void {
