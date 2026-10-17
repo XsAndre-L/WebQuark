@@ -1,3 +1,4 @@
+import type { QInputWidth } from '../../../theme/tokens';
 import { isFieldDisabled, syncFieldHost } from '../../../utils/form-field-state';
 import { registerFormField } from '../../../utils/form-field-adapter';
 import { fieldFeedback, feedbackStyle } from '../../shared/field';
@@ -42,6 +43,8 @@ export class QDropdown {
   /** Omitted inherits the enclosing form; false cancels reservation. */
   @Prop() reserveFeedback?: boolean;
   @Prop({ reflect: true }) size: QDropdownSize = 'inherit';
+  /** Opt-in horizontal width; independent of size. Omitted uses the existing full-width layout. */
+  @Prop({ reflect: true }) width?: QInputWidth;
 
   @Prop() searchable: boolean = false;
   /** Search in the main editable control (default) or a separate menu field. Applies only when searchable. */

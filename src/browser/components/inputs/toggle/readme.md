@@ -2,6 +2,26 @@
 
 
 
+## Label and control layout
+
+Switches (the default `type="switch"`) place the label at the inline start and
+switch at the inline end of the available row. Checkboxes (`type="checkbox"`)
+keep the checkbox before its label. Both layouts follow the inherited text
+direction, including RTL. The existing host sizing is unchanged: use a stretched
+grid item or a host width when a full-width setting row is wanted.
+
+Property labels, slotted labels and visually hidden labels retain the same
+accessible name and click/keyboard behavior. Feedback remains below the row.
+For a deliberate control-first switch layout, existing parts allow a local
+CSS override without another component property:
+
+```css
+q-toggle.control-first::part(control) {
+  order: 0;
+  margin-inline-start: 0;
+}
+```
+
 <!-- Auto Generated Below -->
 
 

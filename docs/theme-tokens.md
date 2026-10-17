@@ -6,6 +6,11 @@ Generated from `src/browser/theme/tokens.ts`. Dimensions use rem; default root s
 
 | Token | Default | Light override |
 | --- | --- | --- |
+| `--q-input-width-xs` | `5rem` | — |
+| `--q-input-width-sm` | `10rem` | — |
+| `--q-input-width-md` | `15rem` | — |
+| `--q-input-width-lg` | `20rem` | — |
+| `--q-input-width-xl` | `22.5rem` | — |
 | `--q-space-none` | `0rem` | — |
 | `--q-space-xs` | `0.25rem` | — |
 | `--q-space-sm` | `0.5rem` | — |

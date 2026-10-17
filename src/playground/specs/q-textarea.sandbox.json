@@ -2,6 +2,12 @@
   "name": "Textarea",
   "tag": "q-textarea",
   "props": {
+    "width": {
+      "type": "select",
+      "default": "",
+      "options": ["", "xs", "sm", "md", "lg", "xl", "full"],
+      "desc": "Horizontal width independent of size; empty preserves existing layout"
+    },
     "rows": {
       "type": "number",
       "default": 3,

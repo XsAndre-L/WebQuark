@@ -12,7 +12,7 @@ import { QBannerAlignment, QBannerHeight } from "./components/content/banner/ban
 import { QIconColor, QIconDefinition, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
 import { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
 import { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/inputs/form/form.types";
-import { QControlSize, QSpace, QSurface } from "./theme/tokens";
+import { QControlSize, QInputWidth, QSpace, QSurface } from "./theme/tokens";
 import { QCardElevation } from "./components/content/card/card.types";
 import { QCarouselAutoplayChangeDetail, QCarouselLayout, QCarouselSlideChangeDetail, QCarouselSnapAlignment, QCarouselTransition } from "./components/content/carousel/carousel.types";
 import { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/data-display/chip/chip.types";
@@ -51,7 +51,7 @@ export { QBannerAlignment, QBannerHeight } from "./components/content/banner/ban
 export { QIconColor, QIconDefinition, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
 export { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
 export { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/inputs/form/form.types";
-export { QControlSize, QSpace, QSurface } from "./theme/tokens";
+export { QControlSize, QInputWidth, QSpace, QSurface } from "./theme/tokens";
 export { QCardElevation } from "./components/content/card/card.types";
 export { QCarouselAutoplayChangeDetail, QCarouselLayout, QCarouselSlideChangeDetail, QCarouselSnapAlignment, QCarouselTransition } from "./components/content/carousel/carousel.types";
 export { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/data-display/chip/chip.types";
@@ -789,6 +789,10 @@ export namespace Components {
           * @default ''
          */
         "value": string;
+        /**
+          * Opt-in horizontal width; independent of size. Omitted uses the existing full-width layout.
+         */
+        "width"?: QInputWidth;
     }
     /**
      * Form wrapper that bridges slotted WebQuark controls to a native form element.
@@ -1102,6 +1106,10 @@ export namespace Components {
           * @default ""
          */
         "value": string;
+        /**
+          * Opt-in horizontal width; independent of size. Omitted uses the existing full-width layout.
+         */
+        "width"?: QInputWidth;
     }
     /**
      * Inline link with disabled handling, external-link affordances, and optional icon slots.
@@ -2057,6 +2065,10 @@ export namespace Components {
           * @default ""
          */
         "value": string;
+        /**
+          * Opt-in horizontal width; independent of size. Omitted uses the existing full-width layout.
+         */
+        "width"?: QInputWidth;
     }
     /**
      * Media thumbnail that emits qMaximize for gallery and reel lightbox workflows.
@@ -3892,6 +3904,10 @@ declare namespace LocalJSX {
           * @default ''
          */
         "value"?: string;
+        /**
+          * Opt-in horizontal width; independent of size. Omitted uses the existing full-width layout.
+         */
+        "width"?: QInputWidth;
     }
     /**
      * Form wrapper that bridges slotted WebQuark controls to a native form element.
@@ -4189,6 +4205,10 @@ declare namespace LocalJSX {
           * @default ""
          */
         "value"?: string;
+        /**
+          * Opt-in horizontal width; independent of size. Omitted uses the existing full-width layout.
+         */
+        "width"?: QInputWidth;
     }
     /**
      * Inline link with disabled handling, external-link affordances, and optional icon slots.
@@ -5191,6 +5211,10 @@ declare namespace LocalJSX {
           * @default ""
          */
         "value"?: string;
+        /**
+          * Opt-in horizontal width; independent of size. Omitted uses the existing full-width layout.
+         */
+        "width"?: QInputWidth;
     }
     /**
      * Media thumbnail that emits qMaximize for gallery and reel lightbox workflows.
@@ -5505,6 +5529,7 @@ declare namespace LocalJSX {
         "labelHidden": boolean;
         "reserveFeedback": boolean;
         "size": QDropdownSize;
+        "width": QInputWidth;
         "searchable": boolean;
         "searchMode": 'default' | 'menu';
         "externalSearch": boolean;
@@ -5577,6 +5602,7 @@ declare namespace LocalJSX {
         "labelHidden": boolean;
         "reserveFeedback": boolean;
         "size": QInputSize;
+        "width": QInputWidth;
         "clearable": boolean;
         "disabled": boolean;
         "required": boolean;
@@ -5797,6 +5823,7 @@ declare namespace LocalJSX {
         "ariaLabel": string | null;
         "description": string;
         "size": QControlSize;
+        "width": QInputWidth;
         "labelHidden": boolean;
         "reserveFeedback": boolean;
         "rows": number;

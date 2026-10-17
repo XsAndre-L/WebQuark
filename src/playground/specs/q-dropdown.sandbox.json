@@ -2,6 +2,12 @@
   "name": "Dropdown",
   "tag": "q-dropdown",
   "props": {
+    "width": {
+      "type": "select",
+      "default": "",
+      "options": ["", "xs", "sm", "md", "lg", "xl", "full"],
+      "desc": "Horizontal width independent of size; empty preserves existing layout"
+    },
     "size": {
       "type": "select",
       "default": "inherit",
