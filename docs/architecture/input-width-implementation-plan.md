@@ -6,20 +6,23 @@ Authenticated Tasks visual acceptance remains a manual check.
 GPT-6.1 Sol xhigh approved the runtime.
 Date: 2026-10-17.
 
+Latest scale revision: XS80, SM120, MD180, LG240, XL290 and XXL360. The XXL extension and revised scale are implemented; consumer snapshot activation is pending validation. Earlier activation notes below describe the original five-width rollout.
+
 ## Outcome and public contract
 
 Add a shared horizontal width scale, independent of the existing control `size`
 property. `size` continues to govern height, typography, padding and density.
-For example, `<q-dropdown size="sm" width="lg" />` is compact and 320px wide at
+For example, `<q-dropdown size="sm" width="lg" />` is compact and 240px wide at
 the default root font size.
 
 | Public token | Default at 16px root | Generated value |
 | --- | --- | --- |
 | `--q-input-width-xs` | 80px | 5rem |
-| `--q-input-width-sm` | 160px | 10rem |
-| `--q-input-width-md` | 240px | 15rem |
-| `--q-input-width-lg` | 320px | 20rem |
-| `--q-input-width-xl` | 360px | 22.5rem |
+| `--q-input-width-sm` | 120px | 7.5rem |
+| `--q-input-width-md` | 180px | 11.25rem |
+| `--q-input-width-lg` | 240px | 15rem |
+| `--q-input-width-xl` | 290px | 18.125rem |
+| `--q-input-width-xxl` | 360px | 22.5rem |
 
 Follow WebQuark's existing rem-based dimension generation; pixel values describe
 the standard 16px baseline. InStoreFocus may explicitly use the requested pixel
@@ -27,7 +30,7 @@ values in its overrides. Width tokens do not change between light/dark or densit
 presets. They remain overridable globally and within a local container.
 
 Add a reflected optional `width?: QInputWidth` property with the public union
-`'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'full'`. Omitted or unsupported runtime values
+`'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl' | 'full'`. Omitted or unsupported runtime values
 use existing component sizing. Do not add `auto`, arbitrary CSS strings, numeric
 pixel properties, or width inheritance from `q-form` in this change. Explicit CSS
 on the host remains the escape hatch for custom widths.
@@ -82,9 +85,9 @@ All consumers loading the updated WebQuark theme receive defaults. A project
 override stylesheet loaded after WebQuark can redeclare these tokens. Existing
 projects' private files are not automatically rewritten by installation or
 `wq-switch`; the inspected switcher configures package connections, not theme
-file synchronization. Document an override block for all five widths.
+file synchronization. Document an override block for all six widths.
 
-For the initial InStoreFocus integration, add the five requested pixel-valued
+For the initial InStoreFocus integration, add the six requested pixel-valued
 declarations to `frontend/libs/shared/ui-foundation/styles/webquark-theme.css`
 under the common root block, shared by both applications. Do not duplicate them
 in light/dark branches. Preserve all existing customizations.
@@ -98,7 +101,7 @@ in light/dark branches. Preserve all existing customizations.
    `presets.unit.test.ts` compares the entire catalog against the historical
    180-token `compact-baseline.json`; preserve that fixture unchanged. Adjust the
    assertion to prove all original 180 values remain identical, and separately
-   verify exactly the five newly introduced width tokens and their defaults.
+   verify exactly the six newly introduced width tokens and their defaults.
    Do not regenerate the historical fixture to accept a changed baseline.
 2. **Three field controls — WebQuark.** Add reflected optional props and shared
    behavior, following `.agents/skills/organize-stencil-props/SKILL.md` and the

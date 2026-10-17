@@ -173,10 +173,27 @@ describe('originating Enter and native dialog submission',()=>{
     for(const target of [form.querySelector('textarea')!,form.querySelector('q-textarea')!.shadowRoot!.querySelector('textarea')!,form.querySelector('q-syntax-box')!.shadowRoot!.querySelector('textarea')!,form.querySelector('[contenteditable]')!,form.querySelector('a')!,form.querySelector('button')!]){const ev=new KeyboardEvent('keydown',{key:'Enter',bubbles:true,composed:true,cancelable:true});target.dispatchEvent(ev);expect(ev.defaultPrevented).toBe(false);}
     const input=form.querySelector('input')!;input.addEventListener('keydown',ev=>ev.preventDefault(),{once:true});const ev=new KeyboardEvent('keydown',{key:'Enter',bubbles:true,composed:true,cancelable:true});input.dispatchEvent(ev);expect(ev.defaultPrevented).toBe(true);
   });
-  it('never borrows an unrelated active field for popup or unowned Enter',async()=>{
-    const form=await create('<input name="a"><q-dropdown name="choice" searchable></q-dropdown><q-input name="foreign" form="missing"></q-input>');form.enterBehavior='none';form.querySelector('input')!.focus();
-    const dropdown=form.querySelector('q-dropdown')!;dropdown.shadowRoot!.querySelector<HTMLButtonElement>('button')!.click();await new Promise(requestAnimationFrame);form.querySelector('input')!.focus();const search=dropdown.shadowRoot!.querySelector('input');expect(search).not.toBeNull();
-    for(const target of [search!,form.querySelector('q-input')!.shadowRoot!.querySelector('input')!,form]){const ev=new KeyboardEvent('keydown',{key:'Enter',bubbles:true,composed:true,cancelable:true});target.dispatchEvent(ev);expect(ev.defaultPrevented).toBe(false);}
+  it.each(['default', 'menu'] as const)('never borrows an unrelated active field for popup or unowned Enter in %s search mode', async searchMode => {
+    const form = await create(`<input name="a"><q-dropdown name="choice" searchable search-mode="${searchMode}"></q-dropdown><q-input name="foreign" form="missing"></q-input>`);
+    form.enterBehavior = 'none';
+    const activeField = form.querySelector('input')!;
+    activeField.focus();
+    const dropdown = form.querySelector('q-dropdown')!;
+    const trigger = dropdown.shadowRoot!.querySelector<HTMLElement>('[part="trigger"]');
+    expect(trigger).not.toBeNull();
+    await userEvent.click(trigger!);
+    const searchSelector = searchMode === 'menu' ? '.dropdown-search-input' : '.dropdown-main-input';
+    await vi.waitFor(() => {
+      expect(trigger!.getAttribute('aria-expanded')).toBe('true');
+      expect(dropdown.shadowRoot!.querySelector(searchSelector)).not.toBeNull();
+    });
+    const search = dropdown.shadowRoot!.querySelector(searchSelector)!;
+    activeField.focus();
+    for (const target of [search, form.querySelector('q-input')!.shadowRoot!.querySelector('input')!, form]) {
+      const ev = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, composed: true, cancelable: true });
+      target.dispatchEvent(ev);
+      expect(ev.defaultPrevented).toBe(false);
+    }
   });
   it('focus-next includes unnamed controls, skips invisible/inherited-disabled controls and reverses Shift+Enter',async()=>{
     const form=await create('<q-grid><input id="first"><div hidden><input id="hidden"></div><fieldset disabled><input id="disabled"></fieldset><input id="last" readonly></q-grid>');form.enterBehavior='focus-next';const first=form.querySelector<HTMLInputElement>('#first')!,last=form.querySelector<HTMLInputElement>('#last')!;first.focus();await userEvent.keyboard('{Enter}');expect(document.activeElement).toBe(last);expect(last.readOnly).toBe(true);

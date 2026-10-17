@@ -28,7 +28,7 @@ describe.each(tags)('%s horizontal width', tag => {
         field.dir = direction;
         for (const size of ['sm', 'lg']) {
           field.setAttribute('size', size);
-          for (const [name, expected] of Object.entries({ xs: 80, sm: 160, md: 240, lg: 320, xl: 360, full: 600 })) {
+          for (const [name, expected] of Object.entries({ xs: 80, sm: 120, md: 180, lg: 240, xl: 290, xxl: 360, full: 600 })) {
             field.setAttribute('width', name);
             await expect.poll(() => width(field)).toBe(expected);
           }
@@ -43,13 +43,14 @@ describe.each(tags)('%s horizontal width', tag => {
     expect(width(field)).toBe(500);
     field.width = 'sm';
     await expect.poll(() => field.getAttribute('width')).toBe('sm');
-    expect(width(field)).toBe(160);
+    expect(width(field)).toBe(120);
     for (const value of ['invalid', '']) {
       field.setAttribute('width', value);
       await expect.poll(() => width(field)).toBe(500);
     }
-    field.width = 'lg';
-    await expect.poll(() => width(field)).toBe(320);
+    field.width = 'xxl';
+    await expect.poll(() => field.getAttribute('width')).toBe('xxl');
+    await expect.poll(() => width(field)).toBe(360);
     field.removeAttribute('width');
     await expect.poll(() => width(field)).toBe(500);
   });
@@ -76,7 +77,7 @@ describe.each(tags)('%s horizontal width', tag => {
   });
 
   it('fits narrow, flex and grid containers with long content', async () => {
-    await fixture(['block', 'flex', 'grid'].map(display => `<div style="display:${display};width:110px;grid-template-columns:minmax(0,1fr)"><${tag} width="xl" label="A lengthy visible field label" description="Supporting details wrap within available space" placeholder="An extremely long unbroken label that must not enlarge the container" value="A long selection or entered field value"></${tag}></div>`).join(''));
+    await fixture(['block', 'flex', 'grid'].map(display => `<div style="display:${display};width:110px;grid-template-columns:minmax(0,1fr)"><${tag} width="xxl" label="A lengthy visible field label" description="Supporting details wrap within available space" placeholder="An extremely long unbroken label that must not enlarge the container" value="A long selection or entered field value"></${tag}></div>`).join(''));
     for (const field of Array.from(document.querySelectorAll(tag))) {
       expect(width(field)).toBe(110);
       expect(field.scrollWidth).toBeLessThanOrEqual(110);
@@ -92,9 +93,9 @@ it('keeps the open dropdown menu aligned as width and container change', async (
   field.shadowRoot!.querySelector<HTMLButtonElement>('.dropdown-trigger')!.click();
   await frame();
   const menu = () => field.shadowRoot!.querySelector('.dropdown-menu')!;
-  await expect.poll(() => width(menu())).toBe(160);
-  field.width = 'lg';
-  await expect.poll(() => width(menu())).toBe(320);
+  await expect.poll(() => width(menu())).toBe(120);
+  field.width = 'xxl';
+  await expect.poll(() => width(menu())).toBe(360);
   document.getElementById('scope')!.style.width = '120px';
   await expect.poll(() => width(menu())).toBe(120);
 });
