@@ -1,0 +1,44 @@
+:host {
+  display: block;
+  width: 100%;
+  font-family: var(--q-font-family, inherit);
+  --_primary: var(--q-slider-thumb-color, var(--q-color-primary, #6365f4));
+  --_hover: var(--q-slider-thumb-hover-color, color-mix(in srgb, var(--_primary) 80%, white));
+  --_track: var(--q-slider-track-color, color-mix(in srgb, var(--q-fg-base, #e2e8f0) 8%, transparent));
+}
+.field { display: flex; flex-direction: column; gap: 8px; }
+.label-row { display: flex; justify-content: space-between; align-items: center; color: var(--q-fg-base, #e2e8f0); font-size: .85rem; }
+.badge {
+  margin-inline-start: auto;
+  background: color-mix(in srgb, var(--_primary) 15%, transparent);
+  color: var(--_hover);
+  border: 1px solid color-mix(in srgb, var(--_primary) 30%, transparent);
+  padding: .1rem .4rem;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: .75rem;
+}
+input {
+  appearance: none; width: 100%; box-sizing: border-box; margin: 2px;
+  height: 6px; border-radius: 3px; background: var(--_track); outline: none;
+}
+input::-webkit-slider-thumb {
+  appearance: none; width: 16px; height: 16px; border-radius: 50%; border: none;
+  background: var(--_primary);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--_primary) 80%, transparent); cursor: pointer;
+}
+input::-moz-range-thumb {
+  width: 16px; height: 16px; border-radius: 50%; border: none;
+  background: var(--_primary);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--_primary) 80%, transparent); cursor: pointer;
+}
+input::-moz-range-track { height: 6px; background: transparent; border: none; }
+input:enabled::-webkit-slider-thumb:hover { transform: scale(1.2); background: var(--_hover); }
+input:enabled::-moz-range-thumb:hover { transform: scale(1.2); background: var(--_hover); }
+input:focus-visible { outline: 2px solid var(--_primary); outline-offset: 4px; }
+input:disabled { opacity: var(--q-disabled-opacity, .5); cursor: not-allowed; }
+input:disabled::-webkit-slider-thumb { cursor: not-allowed; }
+input:disabled::-moz-range-thumb { cursor: not-allowed; }
+@media (forced-colors: active) {
+  input { appearance: auto; }
+}
