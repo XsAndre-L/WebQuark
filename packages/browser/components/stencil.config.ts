@@ -67,6 +67,7 @@ export const config: Config = {
       outputType: 'standalone',
       inlineProperties: true,
       valueAccessorConfigs: [
+        { elementSelectors: ['q-slider'], event: 'qInput', targetAttr: 'value', type: 'number' },
         {
           elementSelectors: ['q-input', 'q-textarea'],
           event: 'qInput',

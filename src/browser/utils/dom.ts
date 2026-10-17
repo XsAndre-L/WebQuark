@@ -56,7 +56,7 @@ export function getDeepActiveElement(): Element | null {
 export function getFocusableElements(container: HTMLElement): HTMLElement[] {
   if (!container) return [];
 
-  const selector = 'button, [href], input, select, textarea, [tabindex="0"], q-button, q-input, q-textarea, q-dropdown, q-radio-group';
+  const selector = 'button, [href], input, select, textarea, [tabindex="0"], q-button, q-slider, q-input, q-textarea, q-dropdown, q-radio-group';
   const focusables: HTMLElement[] = [];
 
   const traverse = (node: Node) => {
