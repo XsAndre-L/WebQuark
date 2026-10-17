@@ -12,9 +12,9 @@ not the surrounding page or panel.
 
 See the [shared width guide](../../../../../docs/input-widths.md) for a copyable project override block.
 
-Use `width="xs|sm|md|lg|xl|full"` to opt into a shared field width. The five widths default to 5rem, 10rem, 15rem, 20rem and 22.5rem. `full` fills the available width. Omitted, empty or unsupported values preserve the existing 100% layout. `size` still controls height and internal density independently.
+Use `width="xs|sm|md|lg|xl|xxl|full"` to opt into a shared field width. The six widths default to 5rem, 7.5rem, 11.25rem, 15rem, 18.125rem and 22.5rem. `full` fills the available width. Omitted, empty or unsupported values preserve the existing 100% layout. `size` still controls height and internal density independently.
 
-Override `--q-input-width-xs` through `--q-input-width-xl` at the document or a local container. Widths are identical in compact/comfortable presets and light/dark themes, and rem values follow the root font size. Valid widths are capped to their containing block; flex/grid parents still control available space. Long content may wrap or truncate within that space rather than expanding the field.
+Override `--q-input-width-xs` through `--q-input-width-xxl` at the document or a local container. Widths are identical in compact/comfortable presets and light/dark themes, and rem values follow the root font size. Valid widths are capped to their containing block; flex/grid parents still control available space. Long content may wrap or truncate within that space rather than expanding the field.
 
 Normal consumer CSS on the host (for example `q-dropdown { width: 18rem; }`) takes precedence over these shadow styles; removing that rule restores the attribute-selected width. No inline style or JavaScript sizing is applied by the width API.
 
@@ -28,29 +28,29 @@ and externally loaded option pages.
 
 ## Properties
 
-| Property           | Attribute           | Description                                                                                            | Type                                             | Default                 |
-| ------------------ | ------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------ | ----------------------- |
-| `ariaLabel`        | `aria-label`        | Accessible name for the trigger and option list when no visible label is available.                    | `string`                                         | `null`                  |
-| `collisionPadding` | `collision-padding` | Minimum distance maintained between the open menu and viewport edges.                                  | `number`                                         | `8`                     |
-| `description`      | `description`       | Supporting text, replaced by an active error.                                                          | `string`                                         | `undefined`             |
-| `disabled`         | `disabled`          |                                                                                                        | `boolean`                                        | `false`                 |
-| `error`            | `error`             | Custom validation error; independent of currently loaded options.                                      | `string`                                         | `undefined`             |
-| `externalSearch`   | `external-search`   | Delegates filtering and pagination to the consumer.                                                    | `boolean`                                        | `false`                 |
-| `hasMore`          | `has-more`          | Indicates another externally loaded option page is available.                                          | `boolean`                                        | `false`                 |
-| `label`            | `label`             |                                                                                                        | `string`                                         | `undefined`             |
-| `labelHidden`      | `label-hidden`      | Keep the label accessible without displaying it.                                                       | `boolean`                                        | `false`                 |
-| `loading`          | `loading`           |                                                                                                        | `boolean`                                        | `false`                 |
-| `name`             | `name`              |                                                                                                        | `string`                                         | `undefined`             |
-| `options`          | `options`           | Options to render; strings use the same text for label and value, while objects allow separate values. | `DropdownOptionInput[] \| string`                | `[]`                    |
-| `placeholder`      | `placeholder`       |                                                                                                        | `string`                                         | `'Select an option...'` |
-| `placement`        | `placement`         | `auto` uses a side with sufficient viewport space.                                                     | `"auto" \| "bottom" \| "top"`                    | `'auto'`                |
-| `required`         | `required`          |                                                                                                        | `boolean`                                        | `false`                 |
-| `reserveFeedback`  | `reserve-feedback`  | Omitted inherits the enclosing form; false cancels reservation.                                        | `boolean`                                        | `undefined`             |
-| `searchMode`       | `search-mode`       | Search in the main editable control (default) or a separate menu field. Applies only when searchable.  | `"default" \| "menu"`                            | `'default'`             |
-| `searchable`       | `searchable`        |                                                                                                        | `boolean`                                        | `false`                 |
-| `size`             | `size`              |                                                                                                        | `"inherit" \| "lg" \| "md" \| "sm"`              | `'inherit'`             |
-| `value`            | `value`             |                                                                                                        | `string`                                         | `''`                    |
-| `width`            | `width`             | Opt-in horizontal width; independent of size. Omitted uses the existing full-width layout.             | `"full" \| "lg" \| "md" \| "sm" \| "xl" \| "xs"` | `undefined`             |
+| Property           | Attribute           | Description                                                                                            | Type                                                      | Default                 |
+| ------------------ | ------------------- | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------- | ----------------------- |
+| `ariaLabel`        | `aria-label`        | Accessible name for the trigger and option list when no visible label is available.                    | `string`                                                  | `null`                  |
+| `collisionPadding` | `collision-padding` | Minimum distance maintained between the open menu and viewport edges.                                  | `number`                                                  | `8`                     |
+| `description`      | `description`       | Supporting text, replaced by an active error.                                                          | `string`                                                  | `undefined`             |
+| `disabled`         | `disabled`          |                                                                                                        | `boolean`                                                 | `false`                 |
+| `error`            | `error`             | Custom validation error; independent of currently loaded options.                                      | `string`                                                  | `undefined`             |
+| `externalSearch`   | `external-search`   | Delegates filtering and pagination to the consumer.                                                    | `boolean`                                                 | `false`                 |
+| `hasMore`          | `has-more`          | Indicates another externally loaded option page is available.                                          | `boolean`                                                 | `false`                 |
+| `label`            | `label`             |                                                                                                        | `string`                                                  | `undefined`             |
+| `labelHidden`      | `label-hidden`      | Keep the label accessible without displaying it.                                                       | `boolean`                                                 | `false`                 |
+| `loading`          | `loading`           |                                                                                                        | `boolean`                                                 | `false`                 |
+| `name`             | `name`              |                                                                                                        | `string`                                                  | `undefined`             |
+| `options`          | `options`           | Options to render; strings use the same text for label and value, while objects allow separate values. | `DropdownOptionInput[] \| string`                         | `[]`                    |
+| `placeholder`      | `placeholder`       |                                                                                                        | `string`                                                  | `'Select an option...'` |
+| `placement`        | `placement`         | `auto` uses a side with sufficient viewport space.                                                     | `"auto" \| "bottom" \| "top"`                             | `'auto'`                |
+| `required`         | `required`          |                                                                                                        | `boolean`                                                 | `false`                 |
+| `reserveFeedback`  | `reserve-feedback`  | Omitted inherits the enclosing form; false cancels reservation.                                        | `boolean`                                                 | `undefined`             |
+| `searchMode`       | `search-mode`       | Search in the main editable control (default) or a separate menu field. Applies only when searchable.  | `"default" \| "menu"`                                     | `'default'`             |
+| `searchable`       | `searchable`        |                                                                                                        | `boolean`                                                 | `false`                 |
+| `size`             | `size`              |                                                                                                        | `"inherit" \| "lg" \| "md" \| "sm"`                       | `'inherit'`             |
+| `value`            | `value`             |                                                                                                        | `string`                                                  | `''`                    |
+| `width`            | `width`             | Opt-in horizontal width; independent of size. Omitted uses the existing full-width layout.             | `"full" \| "lg" \| "md" \| "sm" \| "xl" \| "xs" \| "xxl"` | `undefined`             |
 
 
 ## Events

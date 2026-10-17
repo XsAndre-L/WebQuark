@@ -6,7 +6,7 @@ export const controls = {
   lg: { height: 44, font: 16, line: 24, padding: 16, icon: 20, radius: 8.5 },
 } as const;
 // Horizontal field widths are independent of control height and density.
-export const inputWidths = { xs: 80, sm: 160, md: 240, lg: 320, xl: 360 } as const;
+export const inputWidths = { xs: 80, sm: 120, md: 180, lg: 240, xl: 290, xxl: 360 } as const;
 export type QInputWidth = keyof typeof inputWidths | 'full';
 
 export type QSpace = keyof typeof spaces;
