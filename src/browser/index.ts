@@ -138,4 +138,4 @@ export type { QBannerHeight, QBannerAlignment } from './components/content/banne
 export type { QSectionLayout } from './components/layout/section/section.types';
 export type { QMediaKind, QMediaLoading } from './components/media/media/media.types';
 export type { QAccordionMode } from './components/data-display/accordion/accordion.types';
-export type { QSpace, QSize, QControlSize, QSurface, QPreset } from './theme/tokens';
+export type { QSpace, QSize, QControlSize, QInputWidth, QSurface, QPreset } from './theme/tokens';

@@ -27,17 +27,51 @@
     <article class="q-prose q-content-section" data-wq-preset="compact">
       <small>COMPACT — existing defaults</small><h1>Work with clarity</h1>
       <p>Compact text, controls and spacing for everyday application work.</p>
-      <q-form size="md" reserve-feedback><q-input label="Project" placeholder="Project name"></q-input><q-button size="sm">Small</q-button> <q-button>Medium</q-button> <q-button size="lg">Large</q-button></q-form>
+      <q-form size="md" reserve-feedback><q-input label="Project" placeholder="Project name"></q-input>
+      <q-button size="sm">Small</q-button> <q-button>Medium</q-button> <q-button size="lg">Large</q-button></q-form>
       <q-card><span slot="header">Card title</span>Compact card padding and body text.</q-card>
     </article>
     <article id="preview" class="q-prose q-content-section" data-wq-preset="comfortable">
       <small>COMFORTABLE — balanced reading</small><h1>Give your ideas room</h1>
       <p>Readable text, responsive headings and comfortable controls for a public website.</p>
-      <q-form size="md" reserve-feedback><q-input label="Email" placeholder="you@example.com"></q-input><q-button size="sm">Small</q-button> <q-button>Medium</q-button> <q-button size="lg">Large</q-button></q-form>
+      <q-form size="md" reserve-feedback><q-input label="Email" placeholder="you@example.com"></q-input>
+      <q-button size="sm">Small</q-button> <q-button>Medium</q-button> <q-button size="lg">Large</q-button></q-form>
       <q-card><span slot="header">Card title</span>Comfortable card padding and body text.</q-card>
-      <aside data-wq-preset="compact"><h2>Nested compact section</h2><q-input label="Filter"></q-input><q-button>Apply</q-button></aside>
+      <aside data-wq-preset="compact"><h2>Nested compact section</h2><q-input label="Filter"></q-input>
+      <q-button>Apply</q-button></aside>
     </article>
   </div>
+  <section class="q-prose q-content-section"><h2>Independent input widths</h2><p>Named widths are shared across all three fields; size controls height independently. Change theme and direction above to compare.</p>
+    <h3>q-input</h3><div style="display:grid;gap:12px"><q-input width="xs" size="sm" placeholder="xs width, small size"></q-input>
+      <q-input width="sm" size="sm" placeholder="sm width, small size"></q-input>
+      <q-input width="md" size="sm" placeholder="md width, small size"></q-input>
+      <q-input width="lg" size="sm" placeholder="lg width, small size"></q-input>
+      <q-input width="xl" size="sm" placeholder="xl width, small size"></q-input>
+      <q-input width="full" size="sm" placeholder="full width, small size"></q-input>
+      <q-input  size="sm" placeholder="omitted width, small size"></q-input>
+      </div>
+    <h3>q-dropdown</h3><div style="display:grid;gap:12px"><q-dropdown width="xs" size="sm" placeholder="xs width, small size"></q-dropdown>
+      <q-dropdown width="sm" size="sm" placeholder="sm width, small size"></q-dropdown>
+      <q-dropdown width="md" size="sm" placeholder="md width, small size"></q-dropdown>
+      <q-dropdown width="lg" size="sm" placeholder="lg width, small size"></q-dropdown>
+      <q-dropdown width="xl" size="sm" placeholder="xl width, small size"></q-dropdown>
+      <q-dropdown width="full" size="sm" placeholder="full width, small size"></q-dropdown>
+      <q-dropdown  size="sm" placeholder="omitted width, small size"></q-dropdown>
+      </div>
+    <h3>q-textarea</h3><div style="display:grid;gap:12px"><q-textarea width="xs" size="sm" placeholder="xs width, small size"></q-textarea>
+      <q-textarea width="sm" size="sm" placeholder="sm width, small size"></q-textarea>
+      <q-textarea width="md" size="sm" placeholder="md width, small size"></q-textarea>
+      <q-textarea width="lg" size="sm" placeholder="lg width, small size"></q-textarea>
+      <q-textarea width="xl" size="sm" placeholder="xl width, small size"></q-textarea>
+      <q-textarea width="full" size="sm" placeholder="full width, small size"></q-textarea>
+      <q-textarea  size="sm" placeholder="omitted width, small size"></q-textarea>
+      </div>
+<h3>Scoped override and narrow parent</h3><div style="--q-input-width-md:18rem;max-width:200px"><q-input width="md" size="lg" placeholder="md overridden, large size"></q-input>
+      </div>
+<h3>Flex and grid constraints</h3><div style="display:flex;max-width:200px"><q-dropdown width="xl" placeholder="Long selected labels stay within the container"></q-dropdown>
+      </div><div style="display:grid;grid-template-columns:minmax(0,1fr);max-width:200px"><q-textarea width="xl" placeholder="Grid-constrained textarea"></q-textarea>
+      </div>
+</section>
   <script>
     document.querySelector('#theme').onchange = event => document.documentElement.dataset.theme = event.target.value;
     document.querySelector('#direction').onchange = event => document.documentElement.dir = event.target.value;

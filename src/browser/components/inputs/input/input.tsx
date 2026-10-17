@@ -1,3 +1,4 @@
+import type { QInputWidth } from '../../../theme/tokens';
 import { isFieldDisabled, syncFieldHost, syncNativeAttribute } from '../../../utils/form-field-state';
 import { registerFormField } from '../../../utils/form-field-adapter';
 import { fieldFeedback, feedbackStyle } from '../../shared/field';
@@ -43,6 +44,8 @@ export class QInput {
   /** Omitted inherits the enclosing form; false cancels reservation. */
   @Prop() reserveFeedback?: boolean;
   @Prop() size: QInputSize = 'inherit';
+  /** Opt-in horizontal width; independent of size. Omitted uses the existing full-width layout. */
+  @Prop({ reflect: true }) width?: QInputWidth;
 
   /** Shows a clear button when the field has a value. */
   @Prop() clearable: boolean = false;

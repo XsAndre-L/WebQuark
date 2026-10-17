@@ -54,6 +54,7 @@
 }
 
 .toggle-control {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -183,3 +184,7 @@
 .switch-thumb { width: var(--_q-thumb-size); height: var(--_q-thumb-size); }
 .type-switch.is-checked .switch-thumb { transform: translate(calc(var(--_q-switch-width) - var(--_q-thumb-size) - 6px), -50%); }
 .checkbox-box { width: var(--q-toggle-checkbox-size, var(--q-toggle-box-size, var(--_q-control-icon))); height: var(--q-toggle-checkbox-size, var(--q-toggle-box-size, var(--_q-control-icon))); }
+
+/* Switch settings read label-first; checkbox choices retain control-first order. */
+.type-switch .toggle-control { order: 1; margin-inline-start: auto; }
+.toggle-label-text { min-width: 0; overflow-wrap: anywhere; }

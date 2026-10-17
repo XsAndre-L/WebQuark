@@ -130,6 +130,7 @@ export const DEFAULT_CLASSIFICATIONS: readonly ClassificationEntry[] = [
       'shape',
       'side',
       'size',
+      'width',
       'snapAlignment',
       'sticky',
       'stickyFooter',

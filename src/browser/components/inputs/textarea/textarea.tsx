@@ -1,7 +1,7 @@
 import { isFieldDisabled, syncFieldHost, syncNativeAttribute } from '../../../utils/form-field-state';
 import { registerFormField } from '../../../utils/form-field-adapter';
 import { fieldFeedback, feedbackStyle } from '../../shared/field';
-import type { QControlSize } from '../../../theme/tokens';
+import type { QControlSize, QInputWidth } from '../../../theme/tokens';
 import { Component, Prop, State, Event, EventEmitter, Method, Element, AttachInternals, Watch, h } from '@stencil/core';
 
 import { syncNativeControlValidity } from '../../../utils/form-control-validity';
@@ -34,6 +34,8 @@ export class QTextarea {
   @Prop() description?: string;
 
   @Prop() size: QControlSize = 'inherit';
+  /** Opt-in horizontal width; independent of size. Omitted uses the existing full-width layout. */
+  @Prop({ reflect: true }) width?: QInputWidth;
   /** Keep the label accessible without displaying it. */
   @Prop() labelHidden: boolean = false;
   /** Omitted inherits the enclosing form; false cancels reservation. */

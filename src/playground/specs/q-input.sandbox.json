@@ -2,6 +2,12 @@
   "name": "Input Field",
   "tag": "q-input",
   "props": {
+    "width": {
+      "type": "select",
+      "default": "",
+      "options": ["", "xs", "sm", "md", "lg", "xl", "full"],
+      "desc": "Horizontal width independent of size; empty preserves existing layout"
+    },
     "type": {
       "type": "select",
       "options": [
