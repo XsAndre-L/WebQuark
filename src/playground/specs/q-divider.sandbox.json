@@ -1,0 +1,20 @@
+{
+  "name": "Divider",
+  "tag": "q-divider",
+  "props": {
+    "orientation": { "type": "select", "default": "horizontal", "options": ["horizontal", "vertical"] },
+    "length": { "type": "string", "default": "auto" },
+    "spacing": { "type": "select", "default": "lg", "options": ["none", "xs", "sm", "md", "lg", "xl", "2xl", "3xl"] },
+    "decorative": { "type": "boolean", "default": false }
+  },
+  "variants": [
+    { "name": "Container width", "props": {} },
+    { "name": "Vertical allocated host", "props": { "orientation": "vertical", "style": "height:80px" } },
+    { "name": "Half width", "props": { "length": "50%", "spacing": "md" } },
+    { "name": "Decorative", "props": { "decorative": true } }
+  ],
+  "edgeCases": [
+    { "name": "Oversized length stays bounded", "props": { "length": "9999px" } },
+    { "name": "Too small for endpoint insets", "props": { "style": "width:10px" } }
+  ]
+}

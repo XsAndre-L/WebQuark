@@ -1,9 +1,10 @@
 import { h } from '../../dom-factory';
 import { theme, effect } from '../../state';
 import './token-section';
+import { dimensionTokenItems } from './dimension-tokens';
 import css from './theme-designer.css';
 import { TokenItem } from './token-row';
-import { dimensionTokens, themeGroups } from '../../../browser/theme/tokens';
+import { themeGroups } from '../../../browser/theme/tokens';
 
 export interface TokenCategory {
   category: string;
@@ -13,7 +14,7 @@ export interface TokenCategory {
 const THEME_TOKENS: TokenCategory[] = [
   {
     category: 'Spacing & Control Sizing',
-    tokens: dimensionTokens.map(token => ({ ...token, type: 'dimension', min: 0, max: 64, desc: token.name })),
+    tokens: dimensionTokenItems,
   },
   ...themeGroups.map(group => ({
     category: group.category,

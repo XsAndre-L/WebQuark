@@ -72,6 +72,7 @@ Choose a component's primary category by the situation in which developers usual
 | `q-icon` | Media | [Guide](./q-icon.md) | [API](../../src/browser/components/media/icon/readme.md) |
 | `q-image-comparison` | Media | [Guide](./q-image-comparison.md) | [API](../../src/browser/components/media/image-comparison/readme.md) |
 | `q-inline` | Layout | [Guide](./q-inline.md) | [API](../../src/browser/components/layout/inline/readme.md) |
+| `q-divider` | Layout | [Guide](./q-divider.md) | [API](../../src/browser/components/layout/divider/readme.md) |
 | `q-input` | Forms & inputs | [Guide](./q-input.md) | [API](../../src/browser/components/inputs/input/readme.md) |
 | `q-link` | Actions | [Guide](./q-link.md) | [API](../../src/browser/components/actions/link/readme.md) |
 | `q-map` | Data display | [Guide](./q-map.md) | [API](../../src/browser/components/data-display/map/readme.md) |

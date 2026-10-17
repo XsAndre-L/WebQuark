@@ -1,3 +1,4 @@
+import type { QInputWidth } from '../../../theme/tokens';
 import { isFieldDisabled, syncFieldHost } from '../../../utils/form-field-state';
 import { registerFormField } from '../../../utils/form-field-adapter';
 import { fieldFeedback, feedbackStyle } from '../../shared/field';
@@ -14,7 +15,7 @@ const MENU_OFFSET = 4;
  * and externally loaded option pages.
  * @slot icon-left - Optional leading content rendered inside the trigger.
  * @part label - Optional field label.
- * @part trigger - Button that opens the option menu.
+ * @part trigger - Active input or button that opens the option menu.
  * @part menu - Floating option menu.
  */
 @Component({
@@ -42,8 +43,12 @@ export class QDropdown {
   /** Omitted inherits the enclosing form; false cancels reservation. */
   @Prop() reserveFeedback?: boolean;
   @Prop({ reflect: true }) size: QDropdownSize = 'inherit';
+  /** Opt-in horizontal width; independent of size. Omitted uses the existing full-width layout. */
+  @Prop({ reflect: true }) width?: QInputWidth;
 
   @Prop() searchable: boolean = false;
+  /** Search in the main editable control (default) or a separate menu field. Applies only when searchable. */
+  @Prop() searchMode: 'default' | 'menu' = 'default';
   /** Delegates filtering and pagination to the consumer. */
   @Prop() externalSearch: boolean = false;
   /** Indicates another externally loaded option page is available. */
@@ -100,7 +105,7 @@ export class QDropdown {
     return isFieldDisabled(this.el, this.disabled);
   }
 
-  private triggerEl?: HTMLButtonElement;
+  private triggerEl?: HTMLButtonElement | HTMLInputElement;
   private searchInputEl?: HTMLInputElement;
   private menuEl?: HTMLDivElement;
   private itemsListEl?: HTMLUListElement;
@@ -109,6 +114,42 @@ export class QDropdown {
   private positionFrame: number | null = null;
   private floatingCleanup?: () => void;
   private floatingResizeObserver?: ResizeObserver;
+  @State() private draftEdited = false;
+  @State() private selectedLabelCache?: { value: string; label: string };
+  private composing = false;
+  private lastSearchValue?: string;
+
+  private get editableSearch(): boolean { return this.searchable && this.searchMode !== 'menu'; }
+
+  private reconcileSelectedLabel(): void {
+    const selected = this.getSelectedOption();
+    if (selected) this.selectedLabelCache = { value: this.value, label: this.getOptionLabel(selected) };
+    else if (!this.value || !this.externalSearch || this.selectedLabelCache?.value !== this.value) this.selectedLabelCache = undefined;
+  }
+
+  private closeMenu(): void {
+    this.isOpen = false;
+    this.focusedIndex = -1;
+    this.searchTerm = '';
+    this.lastSearchValue = undefined;
+    this.draftEdited = false;
+    this.composing = false;
+    this.visibleCount = 20;
+    this.clearScrollLoading();
+    if (this.triggerEl?.tagName === 'INPUT') {
+      const selected = this.getSelectedOption();
+      this.triggerEl.value = this.getOptionLabel(selected) || (this.externalSearch && this.selectedLabelCache?.value === this.value ? this.selectedLabelCache.label : '');
+    }
+  }
+
+  @Watch('searchMode')
+  @Watch('searchable')
+  watchSearchMode(): void {
+    const hadFocus = Boolean(this.el.shadowRoot?.activeElement);
+    this.closeMenu();
+    this.searchInputEl = undefined;
+    if (hadFocus) requestAnimationFrame(() => focusWithoutScroll(this.triggerEl));
+  }
 
   // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
@@ -148,6 +189,8 @@ export class QDropdown {
 
   @Watch('value')
   watchValue(newValue: string) {
+    this.reconcileSelectedLabel();
+    this.closeMenu();
     if (this.internals && typeof this.internals.setFormValue === 'function') {
       this.internals.setFormValue(newValue);
     }
@@ -165,7 +208,7 @@ export class QDropdown {
     if (this.triggerEl) this.triggerEl.disabled = disabled;
     if (this.searchInputEl) this.searchInputEl.disabled = disabled;
     if (disabled && this.isOpen) {
-      this.isOpen = false;
+      this.closeMenu();
       this.stopFloatingUpdates();
     }
     const selected = this.getFormSelection();
@@ -198,6 +241,8 @@ export class QDropdown {
 
   @Watch('options')
   watchOptions() {
+    this.reconcileSelectedLabel();
+    this.focusedIndex = -1;
     this.syncValidity();
     if (this.externalSearch) {
       this.isScrollingLoading = false;
@@ -212,6 +257,7 @@ export class QDropdown {
   }
 
   componentWillLoad() {
+    this.reconcileSelectedLabel();
     this.initialValue = this.value || '';
     if (this.internals && typeof this.internals.setFormValue === 'function') {
       this.internals.setFormValue(this.value);
@@ -223,6 +269,7 @@ export class QDropdown {
   }
 
   formResetCallback() {
+    this.closeMenu();
     this.value = this.initialValue;
     if (this.internals && typeof this.internals.setFormValue === 'function') {
       this.internals.setFormValue(this.value);
@@ -283,16 +330,14 @@ export class QDropdown {
       this.visibleCount = 20;
       if (this.searchable) {
         this.focusedIndex = -1;
-        requestAnimationFrame(() => focusWithoutScroll(this.searchInputEl));
+        requestAnimationFrame(() => focusWithoutScroll(this.editableSearch ? this.triggerEl : this.searchInputEl));
       } else {
         const activeIdx = this.parsedOptions.findIndex(opt => opt.value === this.value);
         const nextIdx = activeIdx >= 0 ? activeIdx : 0;
         this.updateFocusedIndex(nextIdx);
       }
     } else {
-      this.focusedIndex = -1;
-      this.searchTerm = '';
-      this.visibleCount = 20;
+      this.closeMenu();
       requestAnimationFrame(() => focusWithoutScroll(this.triggerEl));
     }
   };
@@ -300,10 +345,8 @@ export class QDropdown {
   private handleSelect = (option: Option) => {
     if (this.isDisabled) return;
     this.value = option.value;
-    this.isOpen = false;
-    this.focusedIndex = -1;
-    this.searchTerm = '';
-    this.clearScrollLoading();
+    this.selectedLabelCache = { value: option.value, label: this.getOptionLabel(option) };
+    this.closeMenu();
     this.qChange.emit(option.value);
     this.qSelect.emit(option);
     requestAnimationFrame(() => focusWithoutScroll(this.triggerEl));
@@ -317,6 +360,23 @@ export class QDropdown {
     this.qBlur.emit(ev);
   };
 
+  private handleFocusOut = (ev: FocusEvent) => {
+    const next = ev.relatedTarget as Node | null;
+    if (!next || (!this.el.contains(next) && !this.el.shadowRoot?.contains(next))) this.closeMenu();
+  };
+
+  private handleEditableClick = (ev: MouseEvent) => {
+    if (this.isDisabled) return;
+    this.qClick.emit(ev);
+    if (!this.isOpen) this.toggleMenu();
+  };
+
+  private handleCompositionStart = () => { this.composing = true; };
+  private handleCompositionEnd = (ev: CompositionEvent) => {
+    this.composing = false;
+    this.handleSearchInput(ev);
+  };
+
   private handleTriggerClick = (ev: MouseEvent) => {
     if (this.isDisabled) return;
     this.qClick.emit(ev);
@@ -326,12 +386,16 @@ export class QDropdown {
   private handleSearchInput = (ev: Event) => {
     if (this.isDisabled) return;
     const target = ev.target as HTMLInputElement;
+    if (this.composing || (ev as InputEvent).isComposing) return;
+    this.draftEdited = true;
     this.searchTerm = target.value || '';
+    this.isOpen = true;
     this.focusedIndex = -1;
     this.visibleCount = 20;
     this.clearScrollLoading();
 
-    if (this.externalSearch) {
+    if (this.externalSearch && this.searchTerm !== this.lastSearchValue) {
+      this.lastSearchValue = this.searchTerm;
       this.qSearch.emit(this.searchTerm);
     }
   };
@@ -493,121 +557,70 @@ export class QDropdown {
   }
 
   private handleKeyDown = (ev: KeyboardEvent) => {
-    if (this.isDisabled) return;
-
-    const target = ev.target as HTMLElement;
-    const isInput = target && target.tagName && target.tagName.toLowerCase() === 'input';
+    if (this.isDisabled || this.composing || ev.isComposing || ev.keyCode === 229) return;
+    const isInput = (ev.target as HTMLElement)?.tagName?.toLowerCase() === 'input';
     const maxIndex = this.parsedOptions.length - 1;
-
     switch (ev.key) {
       case 'ArrowDown':
+      case 'ArrowUp': {
         ev.preventDefault();
-        if (!this.isOpen) {
-          this.isOpen = true;
-          if (this.searchable) {
-            this.focusedIndex = -1;
-            requestAnimationFrame(() => focusWithoutScroll(this.searchInputEl));
-          } else {
-            const activeIdx = this.parsedOptions.findIndex(opt => opt.value === this.value);
-            const nextIdx = activeIdx >= 0 ? activeIdx : 0;
-            this.updateFocusedIndex(nextIdx);
-          }
+        const opening = !this.isOpen;
+        this.isOpen = true;
+        if (opening && this.searchable && !this.editableSearch) {
+          this.focusedIndex = -1;
+          requestAnimationFrame(() => focusWithoutScroll(this.searchInputEl));
+        } else if (ev.key === 'ArrowDown') {
+          const selected = opening && !isInput ? this.parsedOptions.findIndex(option => option.value === this.value) : -1;
+          this.updateFocusedIndex(selected >= 0 ? selected : Math.min(this.focusedIndex + 1, maxIndex));
         } else {
-          if (isInput) {
-            if (maxIndex >= 0) {
-              this.updateFocusedIndex(0);
-            }
-          } else {
-            const nextIdx = Math.min(this.focusedIndex + 1, maxIndex);
-            this.updateFocusedIndex(nextIdx);
-          }
+          this.updateFocusedIndex(this.focusedIndex < 0 ? maxIndex : Math.max(-1, this.focusedIndex - 1));
         }
         break;
-      case 'ArrowUp':
-        ev.preventDefault();
-        if (!this.isOpen) {
-          this.isOpen = true;
-          const activeIdx = this.parsedOptions.findIndex(opt => opt.value === this.value);
-          const nextIdx = activeIdx >= 0 ? activeIdx : maxIndex;
-          this.updateFocusedIndex(nextIdx);
-        } else {
-          if (this.focusedIndex === 0 && this.searchable) {
-            this.focusedIndex = -1;
-            requestAnimationFrame(() => focusWithoutScroll(this.searchInputEl));
-          } else if (this.focusedIndex > 0) {
-            const nextIdx = this.focusedIndex - 1;
-            this.updateFocusedIndex(nextIdx);
-          }
-        }
-        break;
+      }
       case 'Home':
-        if (this.isOpen && !isInput) {
-          ev.preventDefault();
-          this.updateFocusedIndex(0);
-        }
-        break;
       case 'End':
         if (this.isOpen && !isInput) {
           ev.preventDefault();
-          this.updateFocusedIndex(maxIndex);
+          this.updateFocusedIndex(ev.key === 'Home' ? 0 : maxIndex);
         }
         break;
       case 'Enter':
         if (isInput) {
-          if (this.parsedOptions.length > 0) {
+          if (this.isOpen) {
             ev.preventDefault();
-            this.handleSelect(this.parsedOptions[0]);
+            if (this.focusedIndex >= 0 && this.focusedIndex <= maxIndex) this.handleSelect(this.parsedOptions[this.focusedIndex]);
           }
         } else {
           ev.preventDefault();
-          if (this.isOpen && this.focusedIndex >= 0 && this.focusedIndex < this.parsedOptions.length) {
-            this.handleSelect(this.parsedOptions[this.focusedIndex]);
-          } else {
-            this.toggleMenu();
-          }
+          if (this.isOpen && this.focusedIndex >= 0 && this.focusedIndex <= maxIndex) this.handleSelect(this.parsedOptions[this.focusedIndex]);
+          else this.toggleMenu();
         }
         break;
       case ' ':
         if (!isInput) {
           ev.preventDefault();
-          if (this.isOpen && this.focusedIndex >= 0 && this.focusedIndex < this.parsedOptions.length) {
-            this.handleSelect(this.parsedOptions[this.focusedIndex]);
-          } else {
-            this.toggleMenu();
-          }
+          if (this.isOpen && this.focusedIndex >= 0 && this.focusedIndex <= maxIndex) this.handleSelect(this.parsedOptions[this.focusedIndex]);
+          else this.toggleMenu();
         }
         break;
       case 'Escape':
-        if (this.isOpen) {
+        if (this.isOpen || this.draftEdited) {
           ev.preventDefault();
-          this.isOpen = false;
-          this.focusedIndex = -1;
-          this.searchTerm = '';
-          this.clearScrollLoading();
+          this.closeMenu();
           requestAnimationFrame(() => focusWithoutScroll(this.triggerEl));
         }
         break;
       case 'Tab':
-        if (this.isOpen) {
-          this.isOpen = false;
-          this.focusedIndex = -1;
-          this.searchTerm = '';
-          this.clearScrollLoading();
-        }
+        this.closeMenu();
         break;
     }
   };
-
   // Close dropdown if user clicks outside of the element
   @Listen('click', { target: 'window' })
   handleClickOutside(ev: MouseEvent) {
     const path = ev.composedPath();
     if (this.el && !path.includes(this.el)) {
-      this.isOpen = false;
-      this.focusedIndex = -1;
-      this.searchTerm = '';
-      this.visibleCount = 20;
-      this.clearScrollLoading();
+      this.closeMenu();
     }
   }
 
@@ -620,9 +633,9 @@ export class QDropdown {
       warningContext: 'q-dropdown options',
     });
     const selectedOption = this.getSelectedOption(allOptions);
-    const selectedLabel = this.getOptionLabel(selectedOption);
-    const displayLabel = selectedOption && selectedLabel ? selectedLabel : this.placeholder;
-    const hasSelection = selectedOption !== undefined;
+    const selectedLabel = this.getOptionLabel(selectedOption) || (this.externalSearch && this.selectedLabelCache?.value === this.value ? this.selectedLabelCache.label : '');
+    const displayLabel = selectedLabel || this.placeholder;
+    const hasSelection = selectedOption !== undefined || Boolean(this.externalSearch && this.selectedLabelCache?.value === this.value);
     const ariaLabel = this.ariaLabel?.trim() || undefined;
 
     return (
@@ -635,6 +648,7 @@ export class QDropdown {
           [`size-${this.size}`]: true
         }}
         onKeyDown={this.handleKeyDown}
+        onFocusout={this.handleFocusOut}
       >
         {/* Optional Header Label */}
         {this.label && (
@@ -644,7 +658,37 @@ export class QDropdown {
         )}
 
         {/* Custom Trigger Box (Renders as standard button for click stability) */}
-        <button
+        {this.editableSearch ? <div class={{ 'editable-trigger': true, 'has-leading-icon': Boolean(this.el.querySelector('[slot="icon-left"]')) }}>
+          <span class="editable-leading"><slot name="icon-left" /></span>
+          <input
+            ref={el => (this.triggerEl = el)}
+            id="q-field"
+            class="dropdown-trigger dropdown-main-input"
+            part="trigger"
+            type="text"
+            role="combobox"
+            autocomplete="off"
+            disabled={this.isDisabled}
+            value={this.composing ? this.triggerEl?.value ?? selectedLabel : this.draftEdited ? this.searchTerm : selectedLabel}
+            placeholder={this.placeholder}
+            onClick={this.handleEditableClick}
+            onFocus={this.handleFocus}
+            onBlur={this.handleBlur}
+            onInput={this.handleSearchInput}
+            onCompositionstart={this.handleCompositionStart}
+            onCompositionend={this.handleCompositionEnd}
+            aria-autocomplete="list"
+            aria-haspopup="listbox"
+            aria-required={this.required ? 'true' : 'false'}
+            aria-invalid={this.error || (this.required && !this.value) ? 'true' : 'false'}
+            aria-describedby={this.error || this.description ? 'q-field-error' : undefined}
+            aria-label={ariaLabel}
+            aria-expanded={this.isOpen ? 'true' : 'false'}
+            aria-controls={this.isOpen ? 'q-field-menu' : undefined}
+            aria-activedescendant={this.isOpen && this.focusedIndex >= 0 ? `q-field-item-${this.focusedIndex}` : undefined}
+          />
+          <svg class="chevron-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9" /></svg>
+        </div> : <button
           ref={(el) => (this.triggerEl = el)}
           id="q-field"
           class="dropdown-trigger"
@@ -672,7 +716,7 @@ export class QDropdown {
           <svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="6 9 12 15 18 9" />
           </svg>
-        </button>
+        </button>}
 
         {fieldFeedback('q-field-error', this.error, this.description)}
 
@@ -687,7 +731,7 @@ export class QDropdown {
             popover="manual"
             aria-label={ariaLabel || this.label || 'Options'}
           >
-            {this.searchable && (
+            {this.searchable && !this.editableSearch && (
               <div class="dropdown-search-container">
                 <input
                   ref={(el) => (this.searchInputEl = el)}
@@ -696,6 +740,9 @@ export class QDropdown {
                   placeholder="Search..."
                   value={this.searchTerm}
                   onInput={this.handleSearchInput}
+                  onCompositionstart={this.handleCompositionStart}
+                  onCompositionend={this.handleCompositionEnd}
+                  aria-label={ariaLabel || this.label || 'Search options'}
                   role="combobox"
                   aria-autocomplete="list"
                   aria-controls="q-field-menu"
@@ -726,6 +773,7 @@ export class QDropdown {
                     role="option"
                     aria-selected={option.value === this.value ? 'true' : 'false'}
                     onClick={() => this.handleSelect(option)}
+                    onMouseDown={ev => ev.preventDefault()}
                   >
                     {this.getOptionLabel(option)}
                   </li>

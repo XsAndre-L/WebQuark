@@ -1,0 +1,40 @@
+:host {
+  --_q-divider-inset: var(--q-divider-inset, var(--q-space-sm, .5rem));
+  --_q-divider-usable: max(0px, calc(100% - var(--_q-divider-inset) - var(--_q-divider-inset)));
+  --_q-divider-thickness: var(--q-divider-thickness, 1px);
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 0;
+  height: var(--_q-divider-thickness);
+  align-self: stretch;
+  flex: 0 0 auto;
+  margin-block: var(--_q-divider-spacing, 0px);
+}
+[part='line'] {
+  position: absolute;
+  box-sizing: border-box;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(0px, var(--_q-divider-length, 100%), var(--_q-divider-usable));
+  height: 0;
+  border: 0 solid var(--q-divider-color, var(--q-border-color, #374151));
+  border-top-width: var(--_q-divider-thickness);
+}
+:host([orientation='vertical']) {
+  width: var(--_q-divider-thickness);
+  height: auto;
+  margin-block: 0;
+  margin-inline: var(--_q-divider-spacing, 0px);
+}
+:host([orientation='vertical']) [part='line'] {
+  width: 0;
+  height: clamp(0px, var(--_q-divider-length, 100%), var(--_q-divider-usable));
+  border-top-width: 0;
+  border-left-width: var(--_q-divider-thickness);
+}
+@media (forced-colors: active) {
+  [part='line'] { border-color: CanvasText; }
+}

@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 
 import '../dropdown';
+import dropdownCss from '../dropdown.css?inline';
 
 async function nextFrame(): Promise<void> {
   await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
@@ -13,12 +14,40 @@ async function createDropdown(options: Array<{ label: string; value: string }>):
   document.body.append(element);
   await customElements.whenDefined('q-dropdown');
   await nextFrame();
+  const style = document.createElement('style'); style.textContent = dropdownCss; element.shadowRoot!.append(style);
   return element;
 }
 
 describe('q-dropdown floating menu in Chromium', () => {
   afterEach(() => {
     document.body.replaceChildren();
+  });
+
+  it.each(['sm', 'md', 'lg', 'inherit'] as const)('keeps search spacing even at size %s', async size => {
+    const element = await createDropdown([{ label: 'Option', value: 'option' }]);
+    element.size = size;
+    element.searchable = true;
+    element.searchMode = 'menu';
+    await nextFrame();
+    element.shadowRoot?.querySelector<HTMLButtonElement>('.dropdown-trigger')?.click();
+    await nextFrame();
+    await nextFrame();
+
+    const menu = element.shadowRoot!.querySelector<HTMLElement>('.dropdown-menu')!;
+    const container = element.shadowRoot!.querySelector<HTMLElement>('.dropdown-search-container')!;
+    const input = element.shadowRoot!.querySelector<HTMLInputElement>('.dropdown-search-input')!;
+    const menuBounds = menu.getBoundingClientRect();
+    const inputBounds = input.getBoundingClientRect();
+    const menuStyle = getComputedStyle(menu);
+    const topGap = inputBounds.top - menuBounds.top - parseFloat(menuStyle.borderTopWidth);
+    const leftGap = inputBounds.left - menuBounds.left - parseFloat(menuStyle.borderLeftWidth);
+    const rightGap = menuBounds.right - inputBounds.right - parseFloat(menuStyle.borderRightWidth);
+    const bottomGap = container.getBoundingClientRect().bottom - inputBounds.bottom
+      - parseFloat(getComputedStyle(container).borderBottomWidth);
+
+    expect(topGap).toBeCloseTo(leftGap, 0);
+    expect(topGap).toBeCloseTo(rightGap, 0);
+    expect(topGap).toBeCloseTo(bottomGap, 0);
   });
 
   it('keeps focus and scroll position on the trigger while opening', async () => {

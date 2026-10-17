@@ -1,3 +1,4 @@
+@import '../../../theme/behaviors/input-width.css';
 @import '../../../theme/behaviors/control-sizing.css';
 :host {
   display: block;
@@ -55,6 +56,14 @@
   box-shadow: 0 0 0 1px var(--q-color-primary, #60a5fa);
 }
 
+.editable-trigger { position: relative; width: 100%; }
+.dropdown-main-input { display: block; cursor: text; padding-inline-end: 38px !important; text-overflow: ellipsis; }
+.dropdown-main-input::placeholder { color: var(--q-fg-muted, #9ca3af); opacity: .8; }
+.editable-trigger > .chevron-icon { position: absolute; inset-inline-end: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+.is-open .editable-trigger > .chevron-icon { transform: translateY(-50%) rotate(180deg); }
+.editable-leading { position: absolute; inset-inline-start: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+.has-leading-icon .dropdown-main-input { padding-inline-start: 40px !important; }
+
 .trigger-content {
   display: flex;
   flex: 1;
@@ -111,6 +120,11 @@
   border-radius: var(--q-dropdown-radius, var(--q-radius-md, 8px));
   box-shadow: var(--q-shadow-medium, 0 8px 16px rgba(0, 0, 0, 0.3));
   box-sizing: border-box;
+}
+
+/* The search container already supplies spacing on every side of the input. */
+.dropdown-menu:has(> .dropdown-search-container) {
+  padding-top: 0;
 }
 
 .dropdown-menu[data-placement='top'] {

@@ -12,7 +12,7 @@ import { QBannerAlignment, QBannerHeight } from "./components/content/banner/ban
 import { QIconColor, QIconDefinition, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
 import { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
 import { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/inputs/form/form.types";
-import { QControlSize, QSpace, QSurface } from "./theme/tokens";
+import { QControlSize, QInputWidth, QSpace, QSurface } from "./theme/tokens";
 import { QCardElevation } from "./components/content/card/card.types";
 import { QCarouselAutoplayChangeDetail, QCarouselLayout, QCarouselSlideChangeDetail, QCarouselSnapAlignment, QCarouselTransition } from "./components/content/carousel/carousel.types";
 import { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/data-display/chip/chip.types";
@@ -51,7 +51,7 @@ export { QBannerAlignment, QBannerHeight } from "./components/content/banner/ban
 export { QIconColor, QIconDefinition, QIconLibrary, QIconLocalPath, QIconName, QIconSize } from "./components/media/icon/icon.types";
 export { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant } from "./components/actions/button/button.types";
 export { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/inputs/form/form.types";
-export { QControlSize, QSpace, QSurface } from "./theme/tokens";
+export { QControlSize, QInputWidth, QSpace, QSurface } from "./theme/tokens";
 export { QCardElevation } from "./components/content/card/card.types";
 export { QCarouselAutoplayChangeDetail, QCarouselLayout, QCarouselSlideChangeDetail, QCarouselSnapAlignment, QCarouselTransition } from "./components/content/carousel/carousel.types";
 export { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/data-display/chip/chip.types";
@@ -675,6 +675,31 @@ export namespace Components {
         "size": 'sm' | 'md' | 'lg' | 'full';
     }
     /**
+     * Static, container-relative separator.
+     */
+    interface QDivider {
+        /**
+          * Hide a purely visual separator from assistive technology.
+          * @default false
+         */
+        "decorative": boolean;
+        /**
+          * CSS length or percentage, capped to the allocated extent minus endpoint insets.
+          * @default 'auto'
+         */
+        "length": string;
+        /**
+          * Physical direction of the separator.
+          * @default 'horizontal'
+         */
+        "orientation": 'horizontal' | 'vertical';
+        /**
+          * Symmetric external spacing perpendicular to the line.
+          * @default 'lg'
+         */
+        "spacing": QSpace;
+    }
+    /**
      * Form-associated dropdown/select control with optional search, incremental option rendering,
      * and externally loaded option pages.
      */
@@ -748,6 +773,11 @@ export namespace Components {
          */
         "reserveFeedback"?: boolean;
         /**
+          * Search in the main editable control (default) or a separate menu field. Applies only when searchable.
+          * @default 'default'
+         */
+        "searchMode": 'default' | 'menu';
+        /**
           * @default false
          */
         "searchable": boolean;
@@ -759,6 +789,10 @@ export namespace Components {
           * @default ''
          */
         "value": string;
+        /**
+          * Opt-in horizontal width; independent of size. Omitted uses the existing full-width layout.
+         */
+        "width"?: QInputWidth;
     }
     /**
      * Form wrapper that bridges slotted WebQuark controls to a native form element.
@@ -1072,6 +1106,10 @@ export namespace Components {
           * @default ""
          */
         "value": string;
+        /**
+          * Opt-in horizontal width; independent of size. Omitted uses the existing full-width layout.
+         */
+        "width"?: QInputWidth;
     }
     /**
      * Inline link with disabled handling, external-link affordances, and optional icon slots.
@@ -2027,6 +2065,10 @@ export namespace Components {
           * @default ""
          */
         "value": string;
+        /**
+          * Opt-in horizontal width; independent of size. Omitted uses the existing full-width layout.
+         */
+        "width"?: QInputWidth;
     }
     /**
      * Media thumbnail that emits qMaximize for gallery and reel lightbox workflows.
@@ -2506,6 +2548,15 @@ declare global {
     var HTMLQDialogElement: {
         prototype: HTMLQDialogElement;
         new (): HTMLQDialogElement;
+    };
+    /**
+     * Static, container-relative separator.
+     */
+    interface HTMLQDividerElement extends Components.QDivider, HTMLStencilElement {
+    }
+    var HTMLQDividerElement: {
+        prototype: HTMLQDividerElement;
+        new (): HTMLQDividerElement;
     };
     interface HTMLQDropdownElementEventMap {
         "qChange": string;
@@ -3078,6 +3129,7 @@ declare global {
         "q-conversation-bubble": HTMLQConversationBubbleElement;
         "q-data-table": HTMLQDataTableElement;
         "q-dialog": HTMLQDialogElement;
+        "q-divider": HTMLQDividerElement;
         "q-dropdown": HTMLQDropdownElement;
         "q-form": HTMLQFormElement;
         "q-grid": HTMLQGridElement;
@@ -3715,6 +3767,31 @@ declare namespace LocalJSX {
         "size"?: 'sm' | 'md' | 'lg' | 'full';
     }
     /**
+     * Static, container-relative separator.
+     */
+    interface QDivider {
+        /**
+          * Hide a purely visual separator from assistive technology.
+          * @default false
+         */
+        "decorative"?: boolean;
+        /**
+          * CSS length or percentage, capped to the allocated extent minus endpoint insets.
+          * @default 'auto'
+         */
+        "length"?: string;
+        /**
+          * Physical direction of the separator.
+          * @default 'horizontal'
+         */
+        "orientation"?: 'horizontal' | 'vertical';
+        /**
+          * Symmetric external spacing perpendicular to the line.
+          * @default 'lg'
+         */
+        "spacing"?: QSpace;
+    }
+    /**
      * Form-associated dropdown/select control with optional search, incremental option rendering,
      * and externally loaded option pages.
      */
@@ -3811,6 +3888,11 @@ declare namespace LocalJSX {
          */
         "reserveFeedback"?: boolean;
         /**
+          * Search in the main editable control (default) or a separate menu field. Applies only when searchable.
+          * @default 'default'
+         */
+        "searchMode"?: 'default' | 'menu';
+        /**
           * @default false
          */
         "searchable"?: boolean;
@@ -3822,6 +3904,10 @@ declare namespace LocalJSX {
           * @default ''
          */
         "value"?: string;
+        /**
+          * Opt-in horizontal width; independent of size. Omitted uses the existing full-width layout.
+         */
+        "width"?: QInputWidth;
     }
     /**
      * Form wrapper that bridges slotted WebQuark controls to a native form element.
@@ -4119,6 +4205,10 @@ declare namespace LocalJSX {
           * @default ""
          */
         "value"?: string;
+        /**
+          * Opt-in horizontal width; independent of size. Omitted uses the existing full-width layout.
+         */
+        "width"?: QInputWidth;
     }
     /**
      * Inline link with disabled handling, external-link affordances, and optional icon slots.
@@ -5121,6 +5211,10 @@ declare namespace LocalJSX {
           * @default ""
          */
         "value"?: string;
+        /**
+          * Opt-in horizontal width; independent of size. Omitted uses the existing full-width layout.
+         */
+        "width"?: QInputWidth;
     }
     /**
      * Media thumbnail that emits qMaximize for gallery and reel lightbox workflows.
@@ -5419,6 +5513,12 @@ declare namespace LocalJSX {
         "open": boolean;
         "closeLabel": string;
     }
+    interface QDividerAttributes {
+        "orientation": 'horizontal' | 'vertical';
+        "length": string;
+        "spacing": QSpace;
+        "decorative": boolean;
+    }
     interface QDropdownAttributes {
         "label": string;
         "ariaLabel": string | null;
@@ -5429,7 +5529,9 @@ declare namespace LocalJSX {
         "labelHidden": boolean;
         "reserveFeedback": boolean;
         "size": QDropdownSize;
+        "width": QInputWidth;
         "searchable": boolean;
+        "searchMode": 'default' | 'menu';
         "externalSearch": boolean;
         "hasMore": boolean;
         "loading": boolean;
@@ -5500,6 +5602,7 @@ declare namespace LocalJSX {
         "labelHidden": boolean;
         "reserveFeedback": boolean;
         "size": QInputSize;
+        "width": QInputWidth;
         "clearable": boolean;
         "disabled": boolean;
         "required": boolean;
@@ -5720,6 +5823,7 @@ declare namespace LocalJSX {
         "ariaLabel": string | null;
         "description": string;
         "size": QControlSize;
+        "width": QInputWidth;
         "labelHidden": boolean;
         "reserveFeedback": boolean;
         "rows": number;
@@ -5784,6 +5888,7 @@ declare namespace LocalJSX {
         "q-conversation-bubble": Omit<QConversationBubble, keyof QConversationBubbleAttributes> & { [K in keyof QConversationBubble & keyof QConversationBubbleAttributes]?: QConversationBubble[K] } & { [K in keyof QConversationBubble & keyof QConversationBubbleAttributes as `attr:${K}`]?: QConversationBubbleAttributes[K] } & { [K in keyof QConversationBubble & keyof QConversationBubbleAttributes as `prop:${K}`]?: QConversationBubble[K] };
         "q-data-table": Omit<QDataTable, keyof QDataTableAttributes> & { [K in keyof QDataTable & keyof QDataTableAttributes]?: QDataTable[K] } & { [K in keyof QDataTable & keyof QDataTableAttributes as `attr:${K}`]?: QDataTableAttributes[K] } & { [K in keyof QDataTable & keyof QDataTableAttributes as `prop:${K}`]?: QDataTable[K] };
         "q-dialog": Omit<QDialog, keyof QDialogAttributes> & { [K in keyof QDialog & keyof QDialogAttributes]?: QDialog[K] } & { [K in keyof QDialog & keyof QDialogAttributes as `attr:${K}`]?: QDialogAttributes[K] } & { [K in keyof QDialog & keyof QDialogAttributes as `prop:${K}`]?: QDialog[K] };
+        "q-divider": Omit<QDivider, keyof QDividerAttributes> & { [K in keyof QDivider & keyof QDividerAttributes]?: QDivider[K] } & { [K in keyof QDivider & keyof QDividerAttributes as `attr:${K}`]?: QDividerAttributes[K] } & { [K in keyof QDivider & keyof QDividerAttributes as `prop:${K}`]?: QDivider[K] };
         "q-dropdown": Omit<QDropdown, keyof QDropdownAttributes> & { [K in keyof QDropdown & keyof QDropdownAttributes]?: QDropdown[K] } & { [K in keyof QDropdown & keyof QDropdownAttributes as `attr:${K}`]?: QDropdownAttributes[K] } & { [K in keyof QDropdown & keyof QDropdownAttributes as `prop:${K}`]?: QDropdown[K] };
         "q-form": Omit<QForm, keyof QFormAttributes> & { [K in keyof QForm & keyof QFormAttributes]?: QForm[K] } & { [K in keyof QForm & keyof QFormAttributes as `attr:${K}`]?: QFormAttributes[K] } & { [K in keyof QForm & keyof QFormAttributes as `prop:${K}`]?: QForm[K] };
         "q-grid": Omit<QGrid, keyof QGridAttributes> & { [K in keyof QGrid & keyof QGridAttributes]?: QGrid[K] } & { [K in keyof QGrid & keyof QGridAttributes as `attr:${K}`]?: QGridAttributes[K] } & { [K in keyof QGrid & keyof QGridAttributes as `prop:${K}`]?: QGrid[K] };
@@ -5882,6 +5987,10 @@ declare module "@stencil/core" {
              * Modal confirmation or message dialog with focus trapping and safe solid backdrops.
              */
             "q-dialog": LocalJSX.IntrinsicElements["q-dialog"] & JSXBase.HTMLAttributes<HTMLQDialogElement>;
+            /**
+             * Static, container-relative separator.
+             */
+            "q-divider": LocalJSX.IntrinsicElements["q-divider"] & JSXBase.HTMLAttributes<HTMLQDividerElement>;
             /**
              * Form-associated dropdown/select control with optional search, incremental option rendering,
              * and externally loaded option pages.

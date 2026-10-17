@@ -1,3 +1,4 @@
+@import '../../../theme/behaviors/input-width.css';
 @import '../../../theme/behaviors/control-sizing.css';
 :host {
   display: block;

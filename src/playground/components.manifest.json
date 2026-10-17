@@ -26,6 +26,7 @@
 
   { "tag": "q-grid"                 , "name": "Grid"                 , "category": "layout" },
   { "tag": "q-inline"               , "name": "Inline"               , "category": "layout" },
+  { "tag": "q-divider"              , "name": "Divider"              , "category": "layout" },
   { "tag": "q-navbar"               , "name": "Navbar"               , "category": "layout" },
   { "tag": "q-panel"                , "name": "Panel"                , "category": "layout" },
   { "tag": "q-scrollable"           , "name": "Scrollable"           , "category": "layout" },

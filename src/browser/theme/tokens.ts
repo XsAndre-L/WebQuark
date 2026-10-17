@@ -5,6 +5,10 @@ export const controls = {
   md: { height: 36, font: 14, line: 20, padding: 12, icon: 16, radius: 7 },
   lg: { height: 44, font: 16, line: 24, padding: 16, icon: 20, radius: 8.5 },
 } as const;
+// Horizontal field widths are independent of control height and density.
+export const inputWidths = { xs: 80, sm: 160, md: 240, lg: 320, xl: 360 } as const;
+export type QInputWidth = keyof typeof inputWidths | 'full';
+
 export type QSpace = keyof typeof spaces;
 export type QSize = keyof typeof controls;
 export type QControlSize = QSize | 'inherit';
@@ -12,6 +16,7 @@ export type QPreset = 'compact' | 'comfortable';
 export type QSurface = 'canvas' | 'panel' | 'card' | 'field' | 'floating' | 'transparent';
 export const rem = (pixels: number): string => `${pixels / 16}rem`;
 export const dimensionTokens = [
+  ...Object.entries(inputWidths).map(([size, value]) => ({ name: `--q-input-width-${size}`, value: rem(value), label: `Input width ${size}` })),
   ...Object.entries(spaces).map(([key, value]) => ({ name: `--q-space-${key}`, value: rem(value), label: `Space ${key}` })),
   ...Object.entries(controls).flatMap(([size, metrics]) => Object.entries(metrics).map(([key, value]) => ({
     name: `--q-control-${key}-${size}`, value: rem(value), label: `${size} control ${key}`,
