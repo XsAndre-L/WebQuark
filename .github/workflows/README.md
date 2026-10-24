@@ -83,7 +83,7 @@ A publish run installs dependencies with the frozen lockfile, audits the locked 
 
 The workflow pins its GitHub Actions and Bun versions for reproducible runs. Dev and production publishing remain independently controlled by repository variables and protected environments.
 
-The toolchain uses Bun 1.4.2, Node.js 24.21.0 LTS, and TypeScript 6.0.3 across all three packages. Angular wrappers compile with Angular 21.2.25 in partial-Ivy mode and are checked with packed Angular 21.2.25 and 22.2.2 consumers. React wrappers compile and check consumer types with React 19.3.0. Stencil's test adapter supports Vitest 4, so its three Vitest packages stay aligned at 4.1.11. TypeScript 7 is outside the Angular compiler peer ranges and lacks the compiler API used by repository tooling. The dependency graph uses upstream dependency ranges without overrides or patches.
+The toolchain uses Bun 1.4.2, Node.js 24.21.0 LTS, and TypeScript 6.0.3 across all three packages. Angular wrappers compile with Angular 21.2.25 in partial-Ivy mode and are checked with packed Angular 21.2.25 and 22.2.2 consumers. React wrappers compile and check consumer types with React 19.3.0. Stencil's test adapter supports Vitest 4, so its three Vitest packages stay aligned at 4.1.12. TypeScript 7 is outside the Angular compiler peer ranges and lacks the compiler API used by repository tooling. The dependency graph uses upstream dependency ranges without overrides or patches.
 
 ## Local safe checks
 
