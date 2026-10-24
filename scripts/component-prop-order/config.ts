@@ -300,6 +300,8 @@ export const DEFAULT_PROP_ORDER_CONFIG: PropOrderConfig = {
   groups: PROP_GROUPS,
   classifications: DEFAULT_CLASSIFICATIONS,
   overrides: [
+    { scope: 'q-slider', prop: 'suffix', group: 'content-data-identity' },
+    { scope: 'q-slider', prop: 'showValue', group: 'appearance-layout' },
     { scope: 'q-image-comparison', prop: 'beforeSrc', group: 'content-data-identity' },
     { scope: 'q-image-comparison', prop: 'afterSrc', group: 'content-data-identity' },
     { scope: 'q-image-comparison', prop: 'beforeLabel', group: 'content-data-identity' },

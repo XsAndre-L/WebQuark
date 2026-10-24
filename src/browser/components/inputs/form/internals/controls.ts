@@ -4,7 +4,7 @@ import type { NamedFormControl } from '../form.types';
 
 const skippedInputTypes = new Set(['button', 'checkbox', 'color', 'file', 'hidden', 'image', 'radio', 'range', 'reset', 'submit']);
 
-const customFieldTags = new Set(['q-input', 'q-textarea', 'q-dropdown', 'q-radio-group', 'q-toggle', 'q-syntax-box']);
+const customFieldTags = new Set(['q-slider', 'q-input', 'q-textarea', 'q-dropdown', 'q-radio-group', 'q-toggle', 'q-syntax-box']);
 const actionInputTypes = new Set(['button', 'image', 'reset', 'submit']);
 
 function supported(element: Element): element is NamedFormControl {

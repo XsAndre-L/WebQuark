@@ -1825,6 +1825,47 @@ export namespace Components {
         "variant": QSidepanelVariant;
     }
     /**
+     * Single-value range input with a themed track, glowing thumb and optional value badge.
+     */
+    interface QSlider {
+        /**
+          * @default null
+         */
+        "ariaLabel": string | null;
+        /**
+          * @default false
+         */
+        "disabled": boolean;
+        "focusElement": () => Promise<void>;
+        "label"?: string;
+        /**
+          * @default 100
+         */
+        "max": number;
+        /**
+          * @default 0
+         */
+        "min": number;
+        "name"?: string;
+        /**
+          * @default true
+         */
+        "showValue": boolean;
+        /**
+          * @default 1
+         */
+        "step": number;
+        /**
+          * Suffix for the displayed value, such as px or %.
+          * @default ''
+         */
+        "suffix": string;
+        /**
+          * Current value. Defaults to the minimum when omitted.
+         */
+        "value"?: number;
+    }
+    /**
      * Vertical layout without surface or landmark semantics.
      */
     interface QStack {
@@ -2317,6 +2358,10 @@ export interface QScrollableCustomEvent<T> extends CustomEvent<T> {
 export interface QSidepanelCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLQSidepanelElement;
+}
+export interface QSliderCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQSliderElement;
 }
 export interface QStepDiagramItemCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -2938,6 +2983,27 @@ declare global {
         prototype: HTMLQSidepanelElement;
         new (): HTMLQSidepanelElement;
     };
+    interface HTMLQSliderElementEventMap {
+        "qInput": number;
+        "qChange": number;
+    }
+    /**
+     * Single-value range input with a themed track, glowing thumb and optional value badge.
+     */
+    interface HTMLQSliderElement extends Components.QSlider, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQSliderElementEventMap>(type: K, listener: (this: HTMLQSliderElement, ev: QSliderCustomEvent<HTMLQSliderElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQSliderElementEventMap>(type: K, listener: (this: HTMLQSliderElement, ev: QSliderCustomEvent<HTMLQSliderElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLQSliderElement: {
+        prototype: HTMLQSliderElement;
+        new (): HTMLQSliderElement;
+    };
     /**
      * Vertical layout without surface or landmark semantics.
      */
@@ -3150,6 +3216,7 @@ declare global {
         "q-scrollable": HTMLQScrollableElement;
         "q-section": HTMLQSectionElement;
         "q-sidepanel": HTMLQSidepanelElement;
+        "q-slider": HTMLQSliderElement;
         "q-stack": HTMLQStackElement;
         "q-step-diagram": HTMLQStepDiagramElement;
         "q-step-diagram-item": HTMLQStepDiagramItemElement;
@@ -4970,6 +5037,58 @@ declare namespace LocalJSX {
         "variant"?: QSidepanelVariant;
     }
     /**
+     * Single-value range input with a themed track, glowing thumb and optional value badge.
+     */
+    interface QSlider {
+        /**
+          * @default null
+         */
+        "ariaLabel"?: string | null;
+        /**
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        "label"?: string;
+        /**
+          * @default 100
+         */
+        "max"?: number;
+        /**
+          * @default 0
+         */
+        "min"?: number;
+        "name"?: string;
+        /**
+          * Numeric value emitted when the interaction is committed.
+         */
+        "onQChange"?: (event: QSliderCustomEvent<number>) => void;
+        /**
+          * Numeric value emitted continuously while dragging or using the keyboard.
+         */
+        "onQInput"?: (event: QSliderCustomEvent<number>) => void;
+        /**
+          * @default true
+         */
+        "showValue"?: boolean;
+        /**
+          * @default 1
+         */
+        "step"?: number;
+        /**
+          * Suffix for the displayed value, such as px or %.
+          * @default ''
+         */
+        "suffix"?: string;
+        /**
+          * Current value. Defaults to the minimum when omitted.
+         */
+        "value"?: number;
+    }
+    /**
      * Vertical layout without surface or landmark semantics.
      */
     interface QStack {
@@ -5778,6 +5897,18 @@ declare namespace LocalJSX {
         "collapseLabel": string;
         "ariaLabel": string | null;
     }
+    interface QSliderAttributes {
+        "value": number;
+        "label": string;
+        "suffix": string;
+        "showValue": boolean;
+        "disabled": boolean;
+        "min": number;
+        "max": number;
+        "step": number;
+        "name": string;
+        "ariaLabel": string | null;
+    }
     interface QStackAttributes {
         "gap": QSpace;
         "align": 'stretch' | 'start' | 'center' | 'end';
@@ -5909,6 +6040,7 @@ declare namespace LocalJSX {
         "q-scrollable": Omit<QScrollable, keyof QScrollableAttributes> & { [K in keyof QScrollable & keyof QScrollableAttributes]?: QScrollable[K] } & { [K in keyof QScrollable & keyof QScrollableAttributes as `attr:${K}`]?: QScrollableAttributes[K] } & { [K in keyof QScrollable & keyof QScrollableAttributes as `prop:${K}`]?: QScrollable[K] };
         "q-section": Omit<QSection, keyof QSectionAttributes> & { [K in keyof QSection & keyof QSectionAttributes]?: QSection[K] } & { [K in keyof QSection & keyof QSectionAttributes as `attr:${K}`]?: QSectionAttributes[K] } & { [K in keyof QSection & keyof QSectionAttributes as `prop:${K}`]?: QSection[K] };
         "q-sidepanel": Omit<QSidepanel, keyof QSidepanelAttributes> & { [K in keyof QSidepanel & keyof QSidepanelAttributes]?: QSidepanel[K] } & { [K in keyof QSidepanel & keyof QSidepanelAttributes as `attr:${K}`]?: QSidepanelAttributes[K] } & { [K in keyof QSidepanel & keyof QSidepanelAttributes as `prop:${K}`]?: QSidepanel[K] };
+        "q-slider": Omit<QSlider, keyof QSliderAttributes> & { [K in keyof QSlider & keyof QSliderAttributes]?: QSlider[K] } & { [K in keyof QSlider & keyof QSliderAttributes as `attr:${K}`]?: QSliderAttributes[K] } & { [K in keyof QSlider & keyof QSliderAttributes as `prop:${K}`]?: QSlider[K] };
         "q-stack": Omit<QStack, keyof QStackAttributes> & { [K in keyof QStack & keyof QStackAttributes]?: QStack[K] } & { [K in keyof QStack & keyof QStackAttributes as `attr:${K}`]?: QStackAttributes[K] } & { [K in keyof QStack & keyof QStackAttributes as `prop:${K}`]?: QStack[K] };
         "q-step-diagram": Omit<QStepDiagram, keyof QStepDiagramAttributes> & { [K in keyof QStepDiagram & keyof QStepDiagramAttributes]?: QStepDiagram[K] } & { [K in keyof QStepDiagram & keyof QStepDiagramAttributes as `attr:${K}`]?: QStepDiagramAttributes[K] } & { [K in keyof QStepDiagram & keyof QStepDiagramAttributes as `prop:${K}`]?: QStepDiagram[K] };
         "q-step-diagram-item": Omit<QStepDiagramItem, keyof QStepDiagramItemAttributes> & { [K in keyof QStepDiagramItem & keyof QStepDiagramItemAttributes]?: QStepDiagramItem[K] } & { [K in keyof QStepDiagramItem & keyof QStepDiagramItemAttributes as `attr:${K}`]?: QStepDiagramItemAttributes[K] } & { [K in keyof QStepDiagramItem & keyof QStepDiagramItemAttributes as `prop:${K}`]?: QStepDiagramItem[K] };
@@ -6101,6 +6233,10 @@ declare module "@stencil/core" {
              * Drawer, persistent panel, or hierarchical navigation side panel.
              */
             "q-sidepanel": LocalJSX.IntrinsicElements["q-sidepanel"] & JSXBase.HTMLAttributes<HTMLQSidepanelElement>;
+            /**
+             * Single-value range input with a themed track, glowing thumb and optional value badge.
+             */
+            "q-slider": LocalJSX.IntrinsicElements["q-slider"] & JSXBase.HTMLAttributes<HTMLQSliderElement>;
             /**
              * Vertical layout without surface or landmark semantics.
              */
