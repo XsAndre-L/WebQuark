@@ -225,3 +225,5 @@ input.input-box[type="color"]::-moz-color-swatch {
 .input-wrapper .clear-btn svg, .input-wrapper .password-toggle-btn svg { width: var(--_q-control-icon); height: var(--_q-control-icon); }
 
 @import '../../../theme/behaviors/field-feedback.css';
+
+@import '../../shared/control-group-surface.css';

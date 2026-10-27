@@ -25,6 +25,7 @@
   { "tag": "q-progress"             , "name": "Progress"             , "category": "indicators" },
   { "tag": "q-step-diagram"         , "name": "Step Diagram"         , "category": "indicators" },
 
+  { "tag": "q-control-group", "name": "Control Group", "category": "layout" },
   { "tag": "q-grid"                 , "name": "Grid"                 , "category": "layout" },
   { "tag": "q-inline"               , "name": "Inline"               , "category": "layout" },
   { "tag": "q-divider"              , "name": "Divider"              , "category": "layout" },

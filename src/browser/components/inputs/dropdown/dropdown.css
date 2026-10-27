@@ -7,6 +7,50 @@
   box-sizing: border-box;
 }
 
+:host([width='fit-options']) {
+  width: var(--_q-dropdown-options-width, max-content);
+  max-width: 100%;
+}
+
+:host([width='fit-options']) .dropdown-trigger {
+  column-gap: var(--q-dropdown-icon-gap, 10px);
+}
+
+.fit-options-clip {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  contain: strict;
+}
+
+.dropdown-wrapper .fit-options-measure {
+  position: absolute;
+  display: grid;
+  grid-template-columns: max-content max-content;
+  width: max-content;
+  max-width: none;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.fit-options-labels {
+  display: grid;
+  white-space: pre;
+}
+
+.fit-options-labels > span {
+  grid-area: 1 / 1;
+}
+
+:host([width='fit-options']) .chevron-icon {
+  flex-shrink: 0;
+}
+
+:host([width='fit-options']) .dropdown-main-input {
+  padding-inline-end: calc(14px + var(--_q-control-icon) + var(--q-dropdown-icon-gap, 10px)) !important;
+}
+
 .dropdown-wrapper {
   display: flex;
   flex-direction: column;
@@ -332,3 +376,5 @@
 .dropdown-trigger[aria-invalid='true'] { border-color: var(--q-color-danger, #f87171); }
 
 @import '../../../theme/behaviors/field-feedback.css';
+
+@import '../../shared/control-group-surface.css';

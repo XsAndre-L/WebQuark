@@ -135,3 +135,5 @@
 .variant-horizontal .quantity-btn { width: var(--q-quantity-selector-height, var(--_q-control-height)); min-height: calc(var(--_q-control-height) - 2px); }
 .variant-vertical .quantity-btn { height: var(--q-quantity-selector-height, var(--_q-control-height)); }
 .btn-icon { width: var(--_q-control-icon); height: var(--_q-control-icon); }
+
+@import '../../shared/control-group-surface.css';

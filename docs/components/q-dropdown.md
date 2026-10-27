@@ -165,6 +165,12 @@ Use size and placement. The menu background has a separate hook from the field t
 
 ### Sizes
 
+Width is separate from size. Omitted width or `width="full"` fills the available
+space. `width="fit-options"` fits the longest loaded option, including padding
+and arrow spacing; selection and local filtering leave that width stable. Use
+`xs`, `sm`, `md`, `lg`, `xl` or `xxl` for a theme width. See [input widths](../input-widths.md)
+for empty-option behavior, dynamic updates and parent/CSS constraints.
+
 `size="inherit"` is the declared default: it uses the nearest [q-form](./q-form.md) or [q-toolbar](./q-toolbar.md) scope, with `md` geometry when no scope exists. Explicit `sm`, `md`, or `lg` overrides that scope. Changing a scope updates inherited dimensions without changing the child's size property.
 
 | Effective size | Minimum control height | Text / line height | Horizontal padding | Radius |
@@ -226,6 +232,7 @@ All properties are optional in the TypeScript component contract. Required conte
 | `searchMode` | `'default'` | Search in the main editable control (`default`) or in a separate popup field (`menu`). Applies only when searchable.<br>**Type:** `'default' \| 'menu'`. **HTML attribute:** `search-mode`. **Required:** No. |
 | `size` | `'inherit'` | Inherited or explicit geometry; see [Sizes](#sizes).<br>**Type:** `'inherit' \| 'sm' \| 'md' \| 'lg'`. **HTML attribute:** `size`. **Required:** No. |
 | `value` | `''` | Mutable stored string; unmatched values show placeholder but remain valid when required.<br>**Type:** `string`. **HTML attribute:** `value`. **Required:** No. |
+| `width` | `undefined` | Horizontal sizing independent of size; omitted fills available space. `fit-options` measures loaded options plus trigger padding and arrow spacing.<br>**Type:** `QInputWidth \| 'fit-options'`. **HTML attribute:** `width`. **Required:** No. |
 
 Boolean attributes use Stencil coercion: presence/empty string is true, the literal string `"false"` is false, and removing the attribute supplies false rather than restoring a true or undefined initializer. Prefer explicit JavaScript `true`/`false` for updates; an optional Boolean can be reset to `undefined` through its property to recover inheritance/detection. String attributes remain strings; numeric attributes are parsed as numbers, so invalid text can become `NaN`. Setting a property to `undefined` or removing a string/number attribute does not rerun its initializer. Keep values within the documented types.
 

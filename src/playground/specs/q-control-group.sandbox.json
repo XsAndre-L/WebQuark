@@ -1,0 +1,20 @@
+{
+  "name": "Control Group",
+  "tag": "q-control-group",
+  "props": {
+    "size": { "type": "select", "default": "inherit", "options": ["inherit", "sm", "md", "lg"] },
+    "orientation": { "type": "select", "default": "horizontal", "options": ["horizontal", "vertical"] },
+    "ariaLabel": { "type": "string", "default": "Sync interval" }
+  },
+  "slots": {
+    "default": {
+      "type": "html",
+      "default": "<q-toggle label=\"Enabled\" checked></q-toggle><q-input label=\"Amount\" label-hidden type=\"number\" value=\"5\" min=\"1\" width=\"xs\"></q-input><q-dropdown label=\"Unit\" label-hidden value=\"minutes\" options='[{\"label\":\"Seconds\",\"value\":\"seconds\"},{\"label\":\"Minutes\",\"value\":\"minutes\"},{\"label\":\"Hours\",\"value\":\"hours\"}]'></q-dropdown>",
+      "desc": "Direct controls in display and keyboard order"
+    }
+  },
+  "variants": [
+    { "name": "Sync interval", "props": {} },
+    { "name": "Vertical", "props": { "orientation": "vertical" } }
+  ]
+}

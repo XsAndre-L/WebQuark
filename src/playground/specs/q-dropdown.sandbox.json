@@ -5,7 +5,7 @@
     "width": {
       "type": "select",
       "default": "",
-      "options": ["", "xs", "sm", "md", "lg", "xl", "xxl", "full"],
+      "options": ["", "xs", "sm", "md", "lg", "xl", "xxl", "full", "fit-options"],
       "desc": "Horizontal width independent of size; empty preserves existing layout"
     },
     "size": {

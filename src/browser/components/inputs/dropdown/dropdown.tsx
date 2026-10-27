@@ -43,8 +43,8 @@ export class QDropdown {
   /** Omitted inherits the enclosing form; false cancels reservation. */
   @Prop() reserveFeedback?: boolean;
   @Prop({ reflect: true }) size: QDropdownSize = 'inherit';
-  /** Opt-in horizontal width; independent of size. Omitted uses the existing full-width layout. */
-  @Prop({ reflect: true }) width?: QInputWidth;
+  /** Opt-in horizontal width; fit-options sizes to loaded option labels. Omitted keeps the full-width layout. */
+  @Prop({ reflect: true }) width?: QInputWidth | 'fit-options';
 
   @Prop() searchable: boolean = false;
   /** Search in the main editable control (default) or a separate menu field. Applies only when searchable. */
@@ -114,6 +114,8 @@ export class QDropdown {
   private positionFrame: number | null = null;
   private floatingCleanup?: () => void;
   private floatingResizeObserver?: ResizeObserver;
+  private fitOptionsMeasure?: HTMLElement;
+  private fitOptionsObserver?: ResizeObserver;
   @State() private draftEdited = false;
   @State() private selectedLabelCache?: { value: string; label: string };
   private composing = false;
@@ -153,9 +155,14 @@ export class QDropdown {
 
   // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
+  connectedCallback() {
+    this.observeFitOptions();
+  }
+
   disconnectedCallback() {
     this.clearScrollLoading();
     this.stopFloatingUpdates();
+    this.fitOptionsObserver?.disconnect();
   }
 
   formDisabledCallback() {
@@ -179,6 +186,7 @@ export class QDropdown {
 
   componentDidRender() {
     this.syncValidity();
+    this.observeFitOptions();
     if (this.isOpen) {
       this.openFloatingMenu();
       return;
@@ -186,6 +194,42 @@ export class QDropdown {
 
     this.stopFloatingUpdates();
   }
+
+  private observeFitOptions = () => {
+    this.fitOptionsObserver?.disconnect();
+    if (this.width !== 'fit-options' || !this.fitOptionsMeasure) {
+      this.el.style.removeProperty('--_q-dropdown-options-width');
+      return;
+    }
+
+    this.fitOptionsObserver ??= new ResizeObserver(this.updateFitOptionsWidth);
+    this.fitOptionsObserver.observe(this.fitOptionsMeasure, { box: 'border-box' });
+    for (const icon of Array.from(this.el.querySelectorAll('[slot="icon-left"]'))) {
+      this.fitOptionsObserver.observe(icon);
+    }
+    this.updateFitOptionsWidth();
+  };
+
+  private updateFitOptionsWidth = () => {
+    if (this.width !== 'fit-options' || !this.fitOptionsMeasure || !this.triggerEl) return;
+
+    const icons = Array.from(this.el.querySelectorAll<HTMLElement>('[slot="icon-left"]'));
+    const triggerStyle = getComputedStyle(this.triggerEl);
+    const gap = parseFloat(triggerStyle.columnGap) || 0;
+    const leadingWidth = icons.reduce((total, icon) => {
+      const style = getComputedStyle(icon);
+      return total + icon.getBoundingClientRect().width + (parseFloat(style.marginInlineStart) || 0) + (parseFloat(style.marginInlineEnd) || 0);
+    }, 0);
+    const labelWidth = this.fitOptionsMeasure.querySelector('.fit-options-labels')!.getBoundingClientRect().width;
+    const arrowWidth = this.fitOptionsMeasure.querySelector('.chevron-icon')!.getBoundingClientRect().width;
+    const frameWidth = (['paddingInlineStart', 'paddingInlineEnd', 'borderInlineStartWidth', 'borderInlineEndWidth'] as const)
+      .reduce((total, property) => total + (parseFloat(triggerStyle[property]) || 0), 0);
+    const adornmentWidth = this.editableSearch ? 0 : arrowWidth + gap + leadingWidth + (leadingWidth ? gap : 0);
+    const width = `${Math.ceil(labelWidth + frameWidth + adornmentWidth)}px`;
+    if (this.el.style.getPropertyValue('--_q-dropdown-options-width') !== width) {
+      this.el.style.setProperty('--_q-dropdown-options-width', width);
+    }
+  };
 
   @Watch('value')
   watchValue(newValue: string) {
@@ -658,8 +702,18 @@ export class QDropdown {
         )}
 
         {/* Custom Trigger Box (Renders as standard button for click stability) */}
+        {this.width === 'fit-options' && (
+          <span class="fit-options-clip" aria-hidden="true">
+            <span class="dropdown-trigger fit-options-measure" ref={el => (this.fitOptionsMeasure = el)}>
+              <span class="fit-options-labels">
+                {(allOptions.length ? allOptions.map(option => this.getOptionLabel(option)) : [selectedLabel || this.placeholder]).map(text => <span>{text}</span>)}
+              </span>
+              <span class="chevron-icon" />
+            </span>
+          </span>
+        )}
         {this.editableSearch ? <div class={{ 'editable-trigger': true, 'has-leading-icon': Boolean(this.el.querySelector('[slot="icon-left"]')) }}>
-          <span class="editable-leading"><slot name="icon-left" /></span>
+          <span class="editable-leading"><slot name="icon-left" onSlotchange={this.observeFitOptions} /></span>
           <input
             ref={el => (this.triggerEl = el)}
             id="q-field"
@@ -708,7 +762,7 @@ export class QDropdown {
           aria-activedescendant={this.isOpen && this.focusedIndex >= 0 ? `q-field-item-${this.focusedIndex}` : undefined}
         >
           <span class="trigger-content">
-            <slot name="icon-left" />
+            <slot name="icon-left" onSlotchange={this.observeFitOptions} />
             <span class={{ 'trigger-text': true, 'is-placeholder': !hasSelection }}>
               {displayLabel}
             </span>

@@ -195,11 +195,13 @@ These checks read configuration and state without changing files.
 
 ## Source and validation
 
-`paths.ts` defines all consumer paths. `config.ts`, `state.ts`, `packages.ts`,
-and `bins.ts` own configuration, transactions/locks, package snapshots and
-dependency resolution, and launcher staging/ownership.
-`index.ts` routes commands; `setup.ts` exposes the standalone setup executable.
-Bundled files in `packages/tooling/dist/wq-switch/` are generated.
+`cli/` routes user inputs; `commands/` coordinates distinct command intents;
+`workflows/` orchestrates atomic snapshot activation, npm restoration, crash recovery,
+and snapshot pruning; `domains/` owns workspace discovery, immutable snapshots,
+transactions, and launcher binaries; `infrastructure/` provides filesystem safety and
+concurrency locking.
+
+`index.ts` and `setup.ts` serve as entrypoints. Bundled files in `packages/tooling/dist/wq-switch/` are generated.
 
 ```powershell
 bun run switch:build

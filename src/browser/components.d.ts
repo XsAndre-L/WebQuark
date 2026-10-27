@@ -438,6 +438,24 @@ export namespace Components {
         "variant": QChipVariant;
     }
     /**
+     * Visually joined controls with consumer-owned values and interactions.
+     */
+    interface QControlGroup {
+        /**
+          * Name of the group; each child still needs its own accessible name.
+          * @default null
+         */
+        "ariaLabel": string | null;
+        /**
+          * @default 'horizontal'
+         */
+        "orientation": 'horizontal' | 'vertical';
+        /**
+          * @default 'inherit'
+         */
+        "size": QControlSize;
+    }
+    /**
      * Semantic conversation message with optional identity, metadata, and actions.
      */
     interface QConversationBubble {
@@ -790,9 +808,9 @@ export namespace Components {
          */
         "value": string;
         /**
-          * Opt-in horizontal width; independent of size. Omitted uses the existing full-width layout.
+          * Opt-in horizontal width; fit-options sizes to loaded option labels. Omitted keeps the full-width layout.
          */
-        "width"?: QInputWidth;
+        "width"?: QInputWidth | 'fit-options';
     }
     /**
      * Form wrapper that bridges slotted WebQuark controls to a native form element.
@@ -2523,6 +2541,15 @@ declare global {
         new (): HTMLQChipElement;
     };
     /**
+     * Visually joined controls with consumer-owned values and interactions.
+     */
+    interface HTMLQControlGroupElement extends Components.QControlGroup, HTMLStencilElement {
+    }
+    var HTMLQControlGroupElement: {
+        prototype: HTMLQControlGroupElement;
+        new (): HTMLQControlGroupElement;
+    };
+    /**
      * Semantic conversation message with optional identity, metadata, and actions.
      */
     interface HTMLQConversationBubbleElement extends Components.QConversationBubble, HTMLStencilElement {
@@ -3192,6 +3219,7 @@ declare global {
         "q-card": HTMLQCardElement;
         "q-carousel": HTMLQCarouselElement;
         "q-chip": HTMLQChipElement;
+        "q-control-group": HTMLQControlGroupElement;
         "q-conversation-bubble": HTMLQConversationBubbleElement;
         "q-data-table": HTMLQDataTableElement;
         "q-dialog": HTMLQDialogElement;
@@ -3596,6 +3624,24 @@ declare namespace LocalJSX {
         "variant"?: QChipVariant;
     }
     /**
+     * Visually joined controls with consumer-owned values and interactions.
+     */
+    interface QControlGroup {
+        /**
+          * Name of the group; each child still needs its own accessible name.
+          * @default null
+         */
+        "ariaLabel"?: string | null;
+        /**
+          * @default 'horizontal'
+         */
+        "orientation"?: 'horizontal' | 'vertical';
+        /**
+          * @default 'inherit'
+         */
+        "size"?: QControlSize;
+    }
+    /**
      * Semantic conversation message with optional identity, metadata, and actions.
      */
     interface QConversationBubble {
@@ -3972,9 +4018,9 @@ declare namespace LocalJSX {
          */
         "value"?: string;
         /**
-          * Opt-in horizontal width; independent of size. Omitted uses the existing full-width layout.
+          * Opt-in horizontal width; fit-options sizes to loaded option labels. Omitted keeps the full-width layout.
          */
-        "width"?: QInputWidth;
+        "width"?: QInputWidth | 'fit-options';
     }
     /**
      * Form wrapper that bridges slotted WebQuark controls to a native form element.
@@ -5583,6 +5629,11 @@ declare namespace LocalJSX {
         "selected": boolean;
         "target": QChipTarget;
     }
+    interface QControlGroupAttributes {
+        "size": QControlSize;
+        "orientation": 'horizontal' | 'vertical';
+        "ariaLabel": string | null;
+    }
     interface QConversationBubbleAttributes {
         "sender": string;
         "timestamp": string;
@@ -5648,7 +5699,7 @@ declare namespace LocalJSX {
         "labelHidden": boolean;
         "reserveFeedback": boolean;
         "size": QDropdownSize;
-        "width": QInputWidth;
+        "width": QInputWidth | 'fit-options';
         "searchable": boolean;
         "searchMode": 'default' | 'menu';
         "externalSearch": boolean;
@@ -6016,6 +6067,7 @@ declare namespace LocalJSX {
         "q-card": Omit<QCard, keyof QCardAttributes> & { [K in keyof QCard & keyof QCardAttributes]?: QCard[K] } & { [K in keyof QCard & keyof QCardAttributes as `attr:${K}`]?: QCardAttributes[K] } & { [K in keyof QCard & keyof QCardAttributes as `prop:${K}`]?: QCard[K] };
         "q-carousel": Omit<QCarousel, keyof QCarouselAttributes> & { [K in keyof QCarousel & keyof QCarouselAttributes]?: QCarousel[K] } & { [K in keyof QCarousel & keyof QCarouselAttributes as `attr:${K}`]?: QCarouselAttributes[K] } & { [K in keyof QCarousel & keyof QCarouselAttributes as `prop:${K}`]?: QCarousel[K] };
         "q-chip": Omit<QChip, keyof QChipAttributes> & { [K in keyof QChip & keyof QChipAttributes]?: QChip[K] } & { [K in keyof QChip & keyof QChipAttributes as `attr:${K}`]?: QChipAttributes[K] } & { [K in keyof QChip & keyof QChipAttributes as `prop:${K}`]?: QChip[K] };
+        "q-control-group": Omit<QControlGroup, keyof QControlGroupAttributes> & { [K in keyof QControlGroup & keyof QControlGroupAttributes]?: QControlGroup[K] } & { [K in keyof QControlGroup & keyof QControlGroupAttributes as `attr:${K}`]?: QControlGroupAttributes[K] } & { [K in keyof QControlGroup & keyof QControlGroupAttributes as `prop:${K}`]?: QControlGroup[K] };
         "q-conversation-bubble": Omit<QConversationBubble, keyof QConversationBubbleAttributes> & { [K in keyof QConversationBubble & keyof QConversationBubbleAttributes]?: QConversationBubble[K] } & { [K in keyof QConversationBubble & keyof QConversationBubbleAttributes as `attr:${K}`]?: QConversationBubbleAttributes[K] } & { [K in keyof QConversationBubble & keyof QConversationBubbleAttributes as `prop:${K}`]?: QConversationBubble[K] };
         "q-data-table": Omit<QDataTable, keyof QDataTableAttributes> & { [K in keyof QDataTable & keyof QDataTableAttributes]?: QDataTable[K] } & { [K in keyof QDataTable & keyof QDataTableAttributes as `attr:${K}`]?: QDataTableAttributes[K] } & { [K in keyof QDataTable & keyof QDataTableAttributes as `prop:${K}`]?: QDataTable[K] };
         "q-dialog": Omit<QDialog, keyof QDialogAttributes> & { [K in keyof QDialog & keyof QDialogAttributes]?: QDialog[K] } & { [K in keyof QDialog & keyof QDialogAttributes as `attr:${K}`]?: QDialogAttributes[K] } & { [K in keyof QDialog & keyof QDialogAttributes as `prop:${K}`]?: QDialog[K] };
@@ -6090,6 +6142,10 @@ declare module "@stencil/core" {
              * Compact label, link, filter, or removable token.
              */
             "q-chip": LocalJSX.IntrinsicElements["q-chip"] & JSXBase.HTMLAttributes<HTMLQChipElement>;
+            /**
+             * Visually joined controls with consumer-owned values and interactions.
+             */
+            "q-control-group": LocalJSX.IntrinsicElements["q-control-group"] & JSXBase.HTMLAttributes<HTMLQControlGroupElement>;
             /**
              * Semantic conversation message with optional identity, metadata, and actions.
              */

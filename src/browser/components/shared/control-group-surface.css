@@ -1,0 +1,20 @@
+/* Shared opt-in presentation; standalone surfaces retain their existing rules. */
+:host([data-q-control-group]) :is(.input-control, .dropdown-trigger, .quantity-selector, .btn, .toggle-wrapper) {
+  border-start-start-radius: var(--_q-group-start-start, 0px);
+  border-start-end-radius: var(--_q-group-start-end, 0px);
+  border-end-start-radius: var(--_q-group-end-start, 0px);
+  border-end-end-radius: var(--_q-group-end-end, 0px);
+}
+
+:host([data-q-control-group]) .toggle-wrapper {
+  box-sizing: border-box;
+  min-height: var(--_q-control-height);
+  padding-inline: var(--_q-control-padding);
+  border: var(--q-border, 1px solid var(--q-border-color, #4b5563));
+  background: var(--q-bg-field, var(--q-bg-surface-3, #22304d));
+}
+
+:host([data-q-control-group]) :is(.btn, .toggle-wrapper, .quantity-selector) {
+  width: 100%;
+}
+

@@ -1,0 +1,74 @@
+@import '../../../theme/behaviors/control-sizing.css';
+
+:host {
+  display: block;
+  min-width: 0;
+}
+
+[part='group'] {
+  display: flex;
+  align-items: start;
+  isolation: isolate;
+}
+
+::slotted([hidden]) { display: none !important; }
+
+::slotted([data-q-control-group]) {
+  min-width: 0;
+  --_q-group-start-start: 0px;
+  --_q-group-start-end: 0px;
+  --_q-group-end-start: 0px;
+  --_q-group-end-end: 0px;
+}
+
+::slotted([data-q-control-group='first']),
+::slotted([data-q-control-group='only']) {
+  --_q-group-start-start: var(--q-control-group-radius, var(--_q-control-radius));
+  --_q-group-end-start: var(--q-control-group-radius, var(--_q-control-radius));
+}
+
+::slotted([data-q-control-group='last']),
+::slotted([data-q-control-group='only']) {
+  --_q-group-start-end: var(--q-control-group-radius, var(--_q-control-radius));
+  --_q-group-end-end: var(--q-control-group-radius, var(--_q-control-radius));
+}
+
+::slotted([data-q-control-group='middle']),
+::slotted([data-q-control-group='last']) { margin-inline-start: -1px; }
+
+::slotted(q-input:not([width])),
+::slotted(q-dropdown:not([width])),
+::slotted(q-dropdown[width="fit-options"]) { flex: 0 1 auto; }
+
+::slotted(q-input[width]:not([width="full"])),
+::slotted(q-dropdown[width]:not([width="full"]):not([width="fit-options"])),
+::slotted(q-toggle),
+::slotted(q-button),
+::slotted(q-quantity-selector) { flex: 0 0 auto; }
+
+::slotted(:focus-within) { position: relative; z-index: 1; }
+
+:host([orientation='vertical']) [part='group'] { flex-direction: column; align-items: stretch; }
+
+:host([orientation='vertical']) ::slotted([data-q-control-group]) {
+  --_q-group-start-start: 0px;
+  --_q-group-start-end: 0px;
+  --_q-group-end-start: 0px;
+  --_q-group-end-end: 0px;
+  margin-inline-start: 0;
+}
+
+:host([orientation='vertical']) ::slotted([data-q-control-group='first']),
+:host([orientation='vertical']) ::slotted([data-q-control-group='only']) {
+  --_q-group-start-start: var(--q-control-group-radius, var(--_q-control-radius));
+  --_q-group-start-end: var(--q-control-group-radius, var(--_q-control-radius));
+}
+
+:host([orientation='vertical']) ::slotted([data-q-control-group='last']),
+:host([orientation='vertical']) ::slotted([data-q-control-group='only']) {
+  --_q-group-end-start: var(--q-control-group-radius, var(--_q-control-radius));
+  --_q-group-end-end: var(--q-control-group-radius, var(--_q-control-radius));
+}
+
+:host([orientation='vertical']) ::slotted([data-q-control-group='middle']),
+:host([orientation='vertical']) ::slotted([data-q-control-group='last']) { margin-block-start: -1px; }

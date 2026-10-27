@@ -3,6 +3,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import {
   BooleanValueAccessor,
   QButton,
+  QControlGroup,
   QDropdown,
   QInput,
   QImageComparison,
@@ -18,6 +19,7 @@ import {
   imports: [
     ReactiveFormsModule,
     QButton,
+    QControlGroup,
     QDropdown,
     QInput,
     QImageComparison,
@@ -29,6 +31,11 @@ import {
     TextValueAccessor,
   ],
   template: `
+    <q-control-group ariaLabel="Sync interval" orientation="horizontal" size="sm">
+      <q-toggle label="Enabled" [formControl]="enabled" />
+      <q-input label="Amount" [labelHidden]="true" type="number" value="5" />
+      <q-dropdown label="Unit" [labelHidden]="true" [options]="['Minutes', 'Hours']" />
+    </q-control-group>
     <q-navbar navAlign="center" navCenterWithin="container" [sticky]="true" />
     <q-image-comparison beforeSrc="before.png" afterSrc="after.png"
       beforeAlt="Original view" afterAlt="Updated view" beforeLabel="Original" afterLabel="Updated"

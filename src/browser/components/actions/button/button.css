@@ -206,3 +206,5 @@
 
 .btn { max-width: 100%; }
 .btn-content-wrap, .btn-label { min-width: 0; overflow-wrap: anywhere; }
+
+@import '../../shared/control-group-surface.css';

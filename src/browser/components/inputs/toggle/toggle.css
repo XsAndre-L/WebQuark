@@ -188,3 +188,5 @@
 /* Switch settings read label-first; checkbox choices retain control-first order. */
 .type-switch .toggle-control { order: 1; margin-inline-start: auto; }
 .toggle-label-text { min-width: 0; overflow-wrap: anywhere; }
+
+@import '../../shared/control-group-surface.css';
