@@ -1,13 +1,13 @@
 /** Private FACE protocol. No consumer shadow traversal or parallel value store. */
 export const formFieldProtocol = Symbol.for('webquark.form-field.v1');
 
-export type CustomFieldKind = 'text' | 'selection' | 'toggle';
+export type CustomFieldKind = 'text' | 'selection' | 'toggle' | 'multiselect';
 export interface CustomFormField {
   kind: CustomFieldKind;
   owner(): HTMLFormElement | null;
   active(): boolean;
-  value(): string | boolean | null;
-  assign(value: string | boolean): void;
+  value(): string | string[] | boolean | null;
+  assign(value: string | string[] | boolean): void;
   reconcile(): void;
   reset(): void;
   validate(report: boolean): boolean;

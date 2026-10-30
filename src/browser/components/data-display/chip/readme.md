@@ -56,6 +56,19 @@ Compact label, link, filter, or removable token.
 | `"remove-icon"`   | Remove action icon.   |
 
 
+## Dependencies
+
+### Used by
+
+ - [q-dropdown](../../inputs/dropdown)
+
+### Graph
+```mermaid
+graph TD;
+  q-dropdown --> q-chip
+  style q-chip fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

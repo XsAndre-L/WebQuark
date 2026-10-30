@@ -2,7 +2,7 @@ import type { QInputWidth } from '../../../theme/tokens';
 import { isFieldDisabled, syncFieldHost } from '../../../utils/form-field-state';
 import { registerFormField } from '../../../utils/form-field-adapter';
 import { fieldFeedback, feedbackStyle } from '../../shared/field';
-import { Component, Prop, State, Event, EventEmitter, Element, AttachInternals, Watch, Listen, Method, h } from '@stencil/core';
+import { Component, Prop, State, Event, EventEmitter, Element, AttachInternals, Watch, Listen, Method, Fragment, h } from '@stencil/core';
 import { identifyItems } from '../../../utils/collection-identity';
 import type { DropdownOptionInput, Option, QDropdownPlacement, QDropdownSize } from './dropdown.types';
 import { getDropdownOptions, getFilteredOptions, getOptionLabel, getSelectedOption, getVisibleOptions } from './internals/options';
@@ -37,6 +37,10 @@ export class QDropdown {
   /** Options to render; strings use the same text for label and value, while objects allow separate values. */
   @Prop() options: DropdownOptionInput[] | string = [];
   @Prop({ mutable: true }) value: string = '';
+  /** Select several options. Uses values/qValuesChange instead of value/qChange. */
+  @Prop({ reflect: true }) multiple: boolean = false;
+  /** Selected identities in multiple mode. Replace the array to update selections. */
+  @Prop({ mutable: true }) values: string[] = [];
 
   /** Keep the label accessible without displaying it. */
   @Prop() labelHidden: boolean = false;
@@ -81,6 +85,9 @@ export class QDropdown {
   /** Emitted with the selected option value when selection changes. */
   @Event() qChange!: EventEmitter<string>;
 
+  /** Complete selected identities after an add or removal in multiple mode. */
+  @Event() qValuesChange!: EventEmitter<string[]>;
+
   /** Emitted with the selected option object when selection changes. */
   @Event() qSelect!: EventEmitter<Option>;
 
@@ -120,8 +127,19 @@ export class QDropdown {
   @State() private selectedLabelCache?: { value: string; label: string };
   private composing = false;
   private lastSearchValue?: string;
+  private initialValues: string[] = [];
+  private multipleLabels = new Map<string, string>();
+  private multipleFrame?: HTMLElement;
+  private chipMeasure?: HTMLElement;
+  private multipleObserver?: ResizeObserver;
+  @State() private visibleChips = 0;
+  @State() private selectedPanel = false;
 
-  private get editableSearch(): boolean { return this.searchable && this.searchMode !== 'menu'; }
+  private get editableSearch(): boolean { return this.multiple || this.searchable && this.searchMode !== 'menu'; }
+
+  private get selectedValues(): string[] {
+    return Array.isArray(this.values) ? [...new Set(this.values.filter(value => typeof value === 'string'))] : [];
+  }
 
   private reconcileSelectedLabel(): void {
     const selected = this.getSelectedOption();
@@ -131,6 +149,7 @@ export class QDropdown {
 
   private closeMenu(): void {
     this.isOpen = false;
+    this.selectedPanel = false;
     this.focusedIndex = -1;
     this.searchTerm = '';
     this.lastSearchValue = undefined;
@@ -140,7 +159,7 @@ export class QDropdown {
     this.clearScrollLoading();
     if (this.triggerEl?.tagName === 'INPUT') {
       const selected = this.getSelectedOption();
-      this.triggerEl.value = this.getOptionLabel(selected) || (this.externalSearch && this.selectedLabelCache?.value === this.value ? this.selectedLabelCache.label : '');
+      this.triggerEl.value = this.multiple ? '' : this.getOptionLabel(selected) || (this.externalSearch && this.selectedLabelCache?.value === this.value ? this.selectedLabelCache.label : '');
     }
   }
 
@@ -163,6 +182,7 @@ export class QDropdown {
     this.clearScrollLoading();
     this.stopFloatingUpdates();
     this.fitOptionsObserver?.disconnect();
+    this.multipleObserver?.disconnect();
   }
 
   formDisabledCallback() {
@@ -170,12 +190,16 @@ export class QDropdown {
   }
 
   componentDidLoad() {
+    const dropdown = this;
     registerFormField(this.el, {
-      kind: 'selection',
+      get kind() { return dropdown.multiple ? 'multiselect' : 'selection'; },
       owner: () => this.internals?.form ?? null,
       active: () => true,
-      value: () => this.getFormSelection(),
-      assign: value => { this.value = value as string; },
+      value: () => this.multiple ? this.getMultipleFormSelection() : this.getFormSelection(),
+      assign: value => {
+        if (this.multiple) this.values = Array.isArray(value) ? [...value] : [];
+        else this.value = value as string;
+      },
       reconcile: () => {
         this.syncValidity();
       },
@@ -187,6 +211,7 @@ export class QDropdown {
   componentDidRender() {
     this.syncValidity();
     this.observeFitOptions();
+    this.observeMultipleLayout();
     if (this.isOpen) {
       this.openFloatingMenu();
       return;
@@ -233,11 +258,25 @@ export class QDropdown {
 
   @Watch('value')
   watchValue(newValue: string) {
+    if (this.multiple) return;
     this.reconcileSelectedLabel();
     this.closeMenu();
     if (this.internals && typeof this.internals.setFormValue === 'function') {
       this.internals.setFormValue(newValue);
     }
+    this.syncValidity();
+  }
+
+  @Watch('values')
+  watchValues(): void {
+    this.reconcileMultipleLabels();
+    this.focusedIndex = -1;
+    this.syncValidity();
+  }
+
+  @Watch('multiple')
+  watchMultiple(): void {
+    this.closeMenu();
     this.syncValidity();
   }
 
@@ -256,16 +295,21 @@ export class QDropdown {
       this.stopFloatingUpdates();
     }
     const selected = this.getFormSelection();
-    this.internals?.setFormValue?.(disabled ? null : selected);
+    const selectedValues = this.getMultipleFormSelection();
+    const data = new FormData();
+    if (this.name) for (const value of selectedValues) data.append(this.name, value);
+    this.internals?.setFormValue?.(disabled ? null : this.multiple ? data : selected);
     if (typeof this.internals?.setValidity !== 'function') return;
-    const message = this.isDisabled ? '' : this.error?.trim() || (this.required && (!this.value || selected === null) ? 'Please select an option.' : '');
+    const missing = this.multiple ? !selectedValues.length : !this.value || selected === null;
+    const message = this.isDisabled ? '' : this.error?.trim() || (this.required && missing ? 'Please select an option.' : '');
     this.internals.setValidity(message ? this.error?.trim() ? { customError: true } : { valueMissing: true } : {}, message, this.triggerEl);
   }
 
   @Method()
   async checkValidity(): Promise<boolean> {
     this.syncValidity();
-    return this.isDisabled || !(this.error?.trim() || (this.required && (!this.value || this.getFormSelection() === null)));
+    const missing = this.multiple ? !this.getMultipleFormSelection().length : !this.value || this.getFormSelection() === null;
+    return this.isDisabled || !(this.error?.trim() || (this.required && missing));
   }
 
   @Method()
@@ -286,6 +330,7 @@ export class QDropdown {
   @Watch('options')
   watchOptions() {
     this.reconcileSelectedLabel();
+    this.reconcileMultipleLabels();
     this.focusedIndex = -1;
     this.syncValidity();
     if (this.externalSearch) {
@@ -302,7 +347,9 @@ export class QDropdown {
 
   componentWillLoad() {
     this.reconcileSelectedLabel();
+    this.reconcileMultipleLabels();
     this.initialValue = this.value || '';
+    this.initialValues = [...this.selectedValues];
     if (this.internals && typeof this.internals.setFormValue === 'function') {
       this.internals.setFormValue(this.value);
     }
@@ -315,6 +362,7 @@ export class QDropdown {
   formResetCallback() {
     this.closeMenu();
     this.value = this.initialValue;
+    this.values = [...this.initialValues];
     if (this.internals && typeof this.internals.setFormValue === 'function') {
       this.internals.setFormValue(this.value);
     }
@@ -328,6 +376,76 @@ export class QDropdown {
     if (selected && (selected as Option & { disabled?: boolean }).disabled !== true) return selected.value;
     return this.externalSearch && !selected && this.value ? this.value : null;
   }
+
+  private getMultipleFormSelection(): string[] {
+    const options = this.getAllOptions();
+    return this.selectedValues.filter(value => {
+      const option = getSelectedOption(options, value);
+      return option ? (option as Option & { disabled?: boolean }).disabled !== true : this.externalSearch;
+    });
+  }
+
+  private reconcileMultipleLabels(): void {
+    const next = new Map<string, string>();
+    for (const value of this.selectedValues) {
+      const option = getSelectedOption(this.getAllOptions(), value);
+      next.set(value, option ? this.getOptionLabel(option) : this.multipleLabels.get(value) ?? value);
+    }
+    this.multipleLabels = next;
+  }
+
+  private removeValue = (value: string, event?: Event) => {
+    event?.stopPropagation();
+    if (this.isDisabled) return;
+    this.values = this.selectedValues.filter(selected => selected !== value);
+    this.qValuesChange.emit([...this.values]);
+    if (!this.values.length) this.closeMenu();
+    requestAnimationFrame(() => focusWithoutScroll(this.selectedPanel
+      ? this.menuEl?.querySelector<HTMLElement>('q-chip')?.shadowRoot?.querySelector<HTMLElement>('button') ?? this.triggerEl
+      : this.triggerEl));
+  };
+
+  private observeMultipleLayout(): void {
+    this.multipleObserver?.disconnect();
+    if (!this.multiple || !this.multipleFrame || !this.chipMeasure) return;
+    this.multipleObserver ??= new ResizeObserver(this.measureMultipleLayout);
+    this.multipleObserver.observe(this.multipleFrame);
+    this.multipleObserver.observe(this.chipMeasure);
+    this.measureMultipleLayout();
+  }
+
+  private measureMultipleLayout = () => {
+    if (!this.multipleFrame || !this.chipMeasure) return;
+    const style = getComputedStyle(this.multipleFrame);
+    const gap = parseFloat(style.columnGap) || 0;
+    const frame = ['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth']
+      .reduce((sum, key) => sum + (parseFloat(style.getPropertyValue(key.replace(/[A-Z]/g, letter => '-' + letter.toLowerCase()))) || 0), 0);
+    const searchWidth = parseFloat(getComputedStyle(this.triggerEl!).minWidth) || 64;
+    const iconWidth = this.multipleFrame.querySelector('.chevron-icon')?.getBoundingClientRect().width ?? 16;
+    const leadingWidth = Array.from(this.el.querySelectorAll<HTMLElement>('[slot="icon-left"]')).reduce((sum, node) => sum + node.getBoundingClientRect().width + gap, 0);
+    const available = this.multipleFrame.getBoundingClientRect().width - frame - searchWidth - iconWidth - leadingWidth - gap * 2;
+    const chips = Array.from(this.chipMeasure.querySelectorAll('q-chip'));
+    const widths = chips.map(chip => chip.getBoundingClientRect().width + gap);
+    const overflowWidth = this.chipMeasure.querySelector('.multiple-more')!.getBoundingClientRect().width + gap;
+    const allFit = widths.reduce((sum, width) => sum + width, 0) <= available;
+    let remaining = available - (allFit ? 0 : overflowWidth);
+    let count = 0;
+    for (const width of widths) {
+      if (width > remaining) break;
+      count++;
+      remaining -= width;
+    }
+    if (count !== this.visibleChips) this.visibleChips = count;
+  };
+
+  private openSelectedPanel = (event: MouseEvent) => {
+    event.stopPropagation();
+    if (this.isDisabled) return;
+    this.closeMenu();
+    this.selectedPanel = true;
+    this.isOpen = true;
+    requestAnimationFrame(() => focusWithoutScroll(this.menuEl?.querySelector<HTMLElement>('q-chip')?.shadowRoot?.querySelector<HTMLElement>('button')));
+  };
 
   private clearScrollLoading() {
     this.isScrollingLoading = false;
@@ -350,11 +468,12 @@ export class QDropdown {
   }
 
   private getFilteredOptions(): Option[] {
+    const available = this.multiple ? this.getAllOptions().filter(option => !this.selectedValues.includes(option.value)) : this.getAllOptions();
     if (this.externalSearch) {
-      return this.getAllOptions();
+      return available;
     }
 
-    return getFilteredOptions(this.getAllOptions(), this.searchTerm, this.searchable);
+    return getFilteredOptions(available, this.searchTerm, this.multiple || this.searchable);
   }
 
   private get parsedOptions(): Option[] {
@@ -372,7 +491,7 @@ export class QDropdown {
     if (this.isOpen) {
       this.searchTerm = '';
       this.visibleCount = 20;
-      if (this.searchable) {
+      if (this.multiple || this.searchable) {
         this.focusedIndex = -1;
         requestAnimationFrame(() => focusWithoutScroll(this.editableSearch ? this.triggerEl : this.searchInputEl));
       } else {
@@ -388,6 +507,20 @@ export class QDropdown {
 
   private handleSelect = (option: Option) => {
     if (this.isDisabled) return;
+    if (this.multiple) {
+      if (this.selectedValues.includes(option.value)) return;
+      this.values = [...this.selectedValues, option.value];
+      this.multipleLabels.set(option.value, this.getOptionLabel(option));
+      this.searchTerm = '';
+      this.draftEdited = false;
+      this.focusedIndex = -1;
+      this.qValuesChange.emit([...this.values]);
+      this.qSelect.emit(option);
+      if (this.externalSearch && this.lastSearchValue) this.qSearch.emit('');
+      this.lastSearchValue = '';
+      requestAnimationFrame(() => focusWithoutScroll(this.triggerEl));
+      return;
+    }
     this.value = option.value;
     this.selectedLabelCache = { value: option.value, label: this.getOptionLabel(option) };
     this.closeMenu();
@@ -412,6 +545,7 @@ export class QDropdown {
   private handleEditableClick = (ev: MouseEvent) => {
     if (this.isDisabled) return;
     this.qClick.emit(ev);
+    if (this.selectedPanel) this.closeMenu();
     if (!this.isOpen) this.toggleMenu();
   };
 
@@ -432,6 +566,7 @@ export class QDropdown {
     const target = ev.target as HTMLInputElement;
     if (this.composing || (ev as InputEvent).isComposing) return;
     this.draftEdited = true;
+    this.selectedPanel = false;
     this.searchTerm = target.value || '';
     this.isOpen = true;
     this.focusedIndex = -1;
@@ -527,7 +662,7 @@ export class QDropdown {
 
     if (typeof ResizeObserver !== 'undefined') {
       this.floatingResizeObserver = new ResizeObserver(update);
-      this.floatingResizeObserver.observe(this.triggerEl);
+      this.floatingResizeObserver.observe(this.multiple ? this.multipleFrame! : this.triggerEl);
       this.floatingResizeObserver.observe(this.menuEl);
     }
 
@@ -567,7 +702,7 @@ export class QDropdown {
   }
 
   private positionFloatingMenu() {
-    const trigger = this.triggerEl;
+    const trigger = this.multiple ? this.multipleFrame : this.triggerEl;
     const menu = this.menuEl;
     if (!this.isOpen || !trigger || !menu) {
       return;
@@ -602,12 +737,20 @@ export class QDropdown {
 
   private handleKeyDown = (ev: KeyboardEvent) => {
     if (this.isDisabled || this.composing || ev.isComposing || ev.keyCode === 229) return;
+    const source = ev.composedPath()[0];
+    if (this.multiple && source !== this.triggerEl && ev.key !== 'Escape') return;
+    if (this.multiple && ev.key === 'Backspace' && !this.searchTerm && this.selectedValues.length && source === this.triggerEl) {
+      ev.preventDefault();
+      this.removeValue(this.selectedValues[this.selectedValues.length - 1]);
+      return;
+    }
     const isInput = (ev.target as HTMLElement)?.tagName?.toLowerCase() === 'input';
     const maxIndex = this.parsedOptions.length - 1;
     switch (ev.key) {
       case 'ArrowDown':
       case 'ArrowUp': {
         ev.preventDefault();
+        this.selectedPanel = false;
         const opening = !this.isOpen;
         this.isOpen = true;
         if (opening && this.searchable && !this.editableSearch) {
@@ -712,7 +855,35 @@ export class QDropdown {
             </span>
           </span>
         )}
-        {this.editableSearch ? <div class={{ 'editable-trigger': true, 'has-leading-icon': Boolean(this.el.querySelector('[slot="icon-left"]')) }}>
+        {this.multiple ? <div class="dropdown-trigger multiple-trigger" part="trigger" ref={el => this.multipleFrame = el}>
+          <slot name="icon-left" onSlotchange={this.measureMultipleLayout} />
+          {this.selectedValues.slice(0, this.visibleChips).map(value =>
+            <q-chip key={value} size="sm" removable label={this.multipleLabels.get(value) ?? value} value={value}
+              disabled={this.isDisabled} onQRemove={event => this.removeValue(value, event)} />)}
+          {this.visibleChips < this.selectedValues.length && <button type="button" class="multiple-more"
+            disabled={this.isDisabled} aria-haspopup="dialog" aria-expanded={this.selectedPanel && this.isOpen ? 'true' : 'false'}
+            aria-controls={this.selectedPanel && this.isOpen ? 'q-field-menu' : undefined}
+            aria-label={`${this.selectedValues.length - this.visibleChips} more selected options`}
+            onClick={this.openSelectedPanel}>+{this.selectedValues.length - this.visibleChips} more</button>}
+          <input ref={el => this.triggerEl = el} id="q-field" class="multiple-input" type="text" role="combobox"
+            autocomplete="off" disabled={this.isDisabled}
+            value={this.searchTerm} placeholder={this.selectedValues.length ? 'Search…' : this.placeholder}
+            onClick={this.handleEditableClick} onInput={this.handleSearchInput}
+            onFocus={this.handleFocus} onBlur={this.handleBlur}
+            onCompositionstart={this.handleCompositionStart} onCompositionend={this.handleCompositionEnd}
+            aria-label={ariaLabel} aria-autocomplete="list" aria-haspopup="listbox"
+            aria-required={this.required ? 'true' : 'false'}
+            aria-invalid={this.error || this.required && !this.getMultipleFormSelection().length ? 'true' : 'false'}
+            aria-describedby={this.error || this.description ? 'q-field-error' : undefined}
+            aria-expanded={this.isOpen && !this.selectedPanel ? 'true' : 'false'}
+            aria-controls={this.isOpen && !this.selectedPanel ? 'q-field-menu' : undefined}
+            aria-activedescendant={this.isOpen && !this.selectedPanel && this.focusedIndex >= 0 ? `q-field-item-${this.focusedIndex}` : undefined} />
+          <svg class="chevron-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9" /></svg>
+          <span class="multiple-measure" aria-hidden="true" inert ref={el => this.chipMeasure = el}>
+            {this.selectedValues.map(value => <q-chip key={value} size="sm" removable label={this.multipleLabels.get(value) ?? value} />)}
+            <button type="button" class="multiple-more" tabindex={-1}>+{this.selectedValues.length} more</button>
+          </span>
+        </div> : this.editableSearch ? <div class={{ 'editable-trigger': true, 'has-leading-icon': Boolean(this.el.querySelector('[slot="icon-left"]')) }}>
           <span class="editable-leading"><slot name="icon-left" onSlotchange={this.observeFitOptions} /></span>
           <input
             ref={el => (this.triggerEl = el)}
@@ -781,10 +952,17 @@ export class QDropdown {
             id="q-field-menu"
             class="dropdown-menu" 
             part="menu" 
-            role="listbox"
+            role={this.selectedPanel ? 'dialog' : 'listbox'}
             popover="manual"
-            aria-label={ariaLabel || this.label || 'Options'}
+            aria-label={this.selectedPanel ? 'Selected options' : ariaLabel || this.label || 'Options'}
+            aria-multiselectable={this.multiple && !this.selectedPanel ? 'true' : undefined}
           >
+            {this.selectedPanel ? <div class="selected-options">
+              <strong>Selected options</strong>
+              {this.selectedValues.map(value => <q-chip key={value} size="sm" removable label={this.multipleLabels.get(value) ?? value}
+                value={value} disabled={this.isDisabled} onQRemove={event => this.removeValue(value, event)} />)}
+              <button type="button" class="multiple-more" onClick={() => { this.closeMenu(); focusWithoutScroll(this.triggerEl); }}>Done</button>
+            </div> : <Fragment>
             {this.searchable && !this.editableSearch && (
               <div class="dropdown-search-container">
                 <input
@@ -819,13 +997,13 @@ export class QDropdown {
                     id={`q-field-item-${index}`}
                     class={{
                       'menu-item': true,
-                      'is-selected': option.value === this.value,
+                      'is-selected': !this.multiple && option.value === this.value,
                       'is-focused': index === this.focusedIndex
                     }}
                     tabindex={-1}
-                    part={`item ${option.value === this.value ? 'selected-item' : ''} ${index === this.focusedIndex ? 'focused-item' : ''}`}
+                    part={`item ${!this.multiple && option.value === this.value ? 'selected-item' : ''} ${index === this.focusedIndex ? 'focused-item' : ''}`}
                     role="option"
-                    aria-selected={option.value === this.value ? 'true' : 'false'}
+                    aria-selected={!this.multiple && option.value === this.value ? 'true' : 'false'}
                     onClick={() => this.handleSelect(option)}
                     onMouseDown={ev => ev.preventDefault()}
                   >
@@ -840,6 +1018,7 @@ export class QDropdown {
                 </li>
               )}
             </ul>
+            </Fragment>}
           </div>
         )}
       </div>

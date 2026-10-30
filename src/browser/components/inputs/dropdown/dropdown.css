@@ -378,3 +378,52 @@
 @import '../../../theme/behaviors/field-feedback.css';
 
 @import '../../shared/control-group-surface.css';
+
+/* Multi-selection shares the field geometry; selection count never grows its height. */
+.dropdown-wrapper .multiple-trigger {
+  height: var(--q-dropdown-height, var(--_q-control-height));
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  gap: 4px;
+  position: relative;
+}
+.multiple-trigger:focus-within {
+  border-color: var(--q-color-primary, #60a5fa);
+  box-shadow: 0 0 0 1px var(--q-color-primary, #60a5fa);
+}
+.multiple-trigger > q-chip, .multiple-trigger > .multiple-more, .multiple-trigger > .chevron-icon { flex: 0 0 auto; }
+.multiple-trigger > q-chip { max-width: 45%; }
+.multiple-input {
+  flex: 1 1 64px;
+  min-width: 64px;
+  width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  outline: none;
+  color: inherit;
+  font: inherit;
+}
+.multiple-input::placeholder { color: var(--q-fg-muted, #9ca3af); }
+.multiple-more {
+  padding: 2px 4px;
+  border: 0;
+  border-radius: var(--q-radius-sm, 4px);
+  background: transparent;
+  color: var(--q-color-primary, #60a5fa);
+  font: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.multiple-more:focus-visible { outline: 2px solid var(--q-color-primary, #60a5fa); }
+.multiple-measure {
+  position: absolute;
+  display: flex;
+  width: max-content;
+  visibility: hidden;
+  pointer-events: none;
+  inset: 0 auto auto 0;
+  gap: 4px;
+}
+.selected-options { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 12px; overflow: auto; }
+.selected-options q-chip { max-width: 100%; }

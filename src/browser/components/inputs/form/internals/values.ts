@@ -154,6 +154,10 @@ function prepareGroup(name: string, fields: FieldState[], value: QFormValue): Ar
   if (kind === 'multiselect') {
     if (fields.length !== 1) return fail(name, 'repeated multiselect containers have an ambiguous assignment shape');
     const selected = identities(value, name);
+    if (fields[0].custom) return [() => {
+      fields[0].custom!.assign(selected);
+      fields[0].custom!.reconcile();
+    }];
     const select = fields[0].control as HTMLSelectElement;
     return [() => { Array.from(select.options).forEach(option => { option.selected = selected.includes(option.value); }); }];
   }

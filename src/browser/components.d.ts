@@ -766,6 +766,11 @@ export namespace Components {
           * @default false
          */
         "loading": boolean;
+        /**
+          * Select several options. Uses values/qValuesChange instead of value/qChange.
+          * @default false
+         */
+        "multiple": boolean;
         "name"?: string;
         /**
           * Options to render; strings use the same text for label and value, while objects allow separate values.
@@ -807,6 +812,11 @@ export namespace Components {
           * @default ''
          */
         "value": string;
+        /**
+          * Selected identities in multiple mode. Replace the array to update selections.
+          * @default []
+         */
+        "values": string[];
         /**
           * Opt-in horizontal width; fit-options sizes to loaded option labels. Omitted keeps the full-width layout.
          */
@@ -2632,6 +2642,7 @@ declare global {
     };
     interface HTMLQDropdownElementEventMap {
         "qChange": string;
+        "qValuesChange": string[];
         "qSelect": Option;
         "qSearch": string;
         "qLoadMore": void;
@@ -3955,6 +3966,11 @@ declare namespace LocalJSX {
           * @default false
          */
         "loading"?: boolean;
+        /**
+          * Select several options. Uses values/qValuesChange instead of value/qChange.
+          * @default false
+         */
+        "multiple"?: boolean;
         "name"?: string;
         "onQBlur"?: (event: QDropdownCustomEvent<FocusEvent>) => void;
         /**
@@ -3978,6 +3994,10 @@ declare namespace LocalJSX {
           * Emitted with the selected option object when selection changes.
          */
         "onQSelect"?: (event: QDropdownCustomEvent<Option>) => void;
+        /**
+          * Complete selected identities after an add or removal in multiple mode.
+         */
+        "onQValuesChange"?: (event: QDropdownCustomEvent<string[]>) => void;
         /**
           * Options to render; strings use the same text for label and value, while objects allow separate values.
           * @default []
@@ -4017,6 +4037,11 @@ declare namespace LocalJSX {
           * @default ''
          */
         "value"?: string;
+        /**
+          * Selected identities in multiple mode. Replace the array to update selections.
+          * @default []
+         */
+        "values"?: string[];
         /**
           * Opt-in horizontal width; fit-options sizes to loaded option labels. Omitted keeps the full-width layout.
          */
@@ -5696,6 +5721,7 @@ declare namespace LocalJSX {
         "placeholder": string;
         "options": DropdownOptionInput[] | string;
         "value": string;
+        "multiple": boolean;
         "labelHidden": boolean;
         "reserveFeedback": boolean;
         "size": QDropdownSize;
