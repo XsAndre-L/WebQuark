@@ -2,7 +2,16 @@ import { Component, Prop, Element, Event, EventEmitter, State, Method, Watch, h 
 import { CarouselSlideState } from './internals/slide-state';
 import { CarouselAutoplay } from './internals/autoplay';
 import { getSlottedElements } from '../../../utils/dom';
-import type { QCarouselAutoplayChangeDetail, QCarouselLayout, QCarouselSlideChangeDetail, QCarouselSnapAlignment, QCarouselTransition } from './carousel.types';
+import type {
+  QCarouselAutoplayBehavior,
+  QCarouselSlideTiming,
+  QCarouselPlaybackChangeDetail,
+  QCarouselAutoplayChangeDetail,
+  QCarouselLayout,
+  QCarouselSlideChangeDetail,
+  QCarouselSnapAlignment,
+  QCarouselTransition,
+} from './carousel.types';
 import { getCarouselEdgeState, getCarouselMetrics, getClosestCarouselIndex, resolveCarouselTargetIndex } from './internals/metrics';
 
 /**
@@ -40,12 +49,21 @@ export class QCarousel {
   @Prop({ reflect: true }) transition: QCarouselTransition = 'slide';
   /** Crossfade duration in milliseconds; native sliding keeps browser-controlled timing. */
   @Prop() transitionDuration: number = 500;
-  /** Enables rotation; user interaction pauses until explicitly restarted. */
+  /** Enables rotation with the configured interaction behavior. */
   @Prop() autoplay: boolean = false;
+  /** Continuous rotation ignores hover and interaction; explicit pause remains available. */
+  @Prop() autoplayBehavior: QCarouselAutoplayBehavior = 'pauseOnInteraction';
   /** Finite positive interval in milliseconds; invalid values use 5000. */
   @Prop() autoplayInterval: number = 5000;
   /** Temporarily suspends requested playback without changing the button action. */
   @Prop() autoplaySuspended: boolean = false;
+
+  /** Finish-videos delegates each active visit's timing to setSlidePlayback(). */
+  @Prop() slideTiming: QCarouselSlideTiming = 'fixedInterval';
+  /** Holds advancement for loading without pausing the active media. */
+  @Prop() autoplayAdvanceSuspended: boolean = false;
+  /** Overlay keeps playback separate from the indicators/extra-controls panel. */
+  @Prop({ reflect: true }) rotationPlacement: 'controls' | 'overlay' = 'controls';
 
   /** Accessible name forwarded to the slide viewport. */
   @Prop({ attribute: 'aria-label' }) ariaLabel: string = 'Carousel content';
@@ -63,6 +81,9 @@ export class QCarousel {
   /** Actual running state, including temporary suspension. */
   @Event() qAutoplayChange!: EventEmitter<QCarouselAutoplayChangeDetail>;
 
+  /** Playback intent and eligibility, independent of an image-readiness advance hold. */
+  @Event() qPlaybackChange!: EventEmitter<QCarouselPlaybackChangeDetail>;
+
   @Element() el!: HTMLElement;
 
   private slideState = new CarouselSlideState();
@@ -78,6 +99,11 @@ export class QCarousel {
 
   private get navigable(): boolean {
     return this.isScrollable && this.maxIndex > 0;
+  }
+
+  private get rotationVisible(): boolean {
+    return this.autoplay && (this.navigable ||
+      (this.slideTiming === 'finishVideos' && this.slidePlayback?.mode === 'completion'));
   }
 
   private get arrowsVisible(): boolean {
@@ -114,13 +140,17 @@ export class QCarousel {
   private programmaticScrollToken = 0;
   private connected = false;
   private hovered = false;
+  private selectedElement?: HTMLElement;
+  private selectionGeneration = 0;
+  private slidePlayback?: { element: HTMLElement; key: string; mode: 'interval' | 'completion'; ended: boolean };
+  private playbackState = '';
   private reducedMotion = false;
   private motionPreference?: MediaQueryList;
   private rotationButton?: HTMLButtonElement;
   private rotationPointerAction?: boolean;
   private readonly autoplayController = new CarouselAutoplay(
     () => {
-      if (!this.repeat && this.activeIndex >= this.maxIndex)
+      if (!this.navigable || (!this.repeat && this.activeIndex >= this.maxIndex))
         return false;
       this.scrollToIndex(this.activeIndex + 1);
       return true;
@@ -131,6 +161,11 @@ export class QCarousel {
       this.autoplayPlaying = playing;
       if (changed)
         this.qAutoplayChange.emit({ playing });
+      const state = `${playing}:${requested}`;
+      if (state !== this.playbackState) {
+        this.playbackState = state;
+        this.qPlaybackChange.emit({ playing, requested });
+      }
     },
   );
 
@@ -147,8 +182,11 @@ export class QCarousel {
   }
 
   @Watch('autoplay')
+  @Watch('autoplayBehavior')
   @Watch('autoplayInterval')
   @Watch('autoplaySuspended')
+  @Watch('autoplayAdvanceSuspended')
+  @Watch('slideTiming')
   protected autoplayChanged() {
     this.syncAutoplay();
   }
@@ -221,6 +259,12 @@ export class QCarousel {
     this.calculateLimits();
     if (this.autoplay && this.navigable && !this.repeat && this.activeIndex >= this.maxIndex)
       this.scrollToIndex(0);
+    if (this.slideTiming === 'finishVideos' && !this.navigable && this.slidePlayback?.ended) {
+      this.slidePlayback = undefined;
+      this.selectionGeneration += 1;
+      this.syncAutoplay();
+      this.qSlideChange.emit({ index: this.activeIndex, element: this.cachedChildren[this.activeIndex] });
+    }
     this.autoplayController.play();
   }
 
@@ -228,6 +272,28 @@ export class QCarousel {
   @Method()
   async pause(): Promise<void> {
     this.autoplayController.pause();
+  }
+
+  /** Registers timing for the current slide and responsive-media visit only. */
+  @Method()
+  async setSlidePlayback(element: HTMLElement, key: string, mode: 'interval' | 'completion'): Promise<void> {
+    if (this.slideTiming !== 'finishVideos' || element !== this.cachedChildren[this.activeIndex])
+      return;
+    if (this.slidePlayback?.key === key && this.slidePlayback.mode === mode)
+      return;
+
+    this.slidePlayback = { element, key, mode, ended: false };
+    this.syncAutoplay();
+  }
+
+  /** Completes the registered visit; stale or duplicate media events are ignored. */
+  @Method()
+  async completeSlide(key: string): Promise<void> {
+    if (this.slideTiming !== 'finishVideos' || this.slidePlayback?.key !== key || this.slidePlayback.ended)
+      return;
+
+    this.slidePlayback.ended = true;
+    this.autoplayController.complete(key);
   }
 
   /** Recalculates slide offsets, scroll bounds, and navigation states. */
@@ -241,8 +307,17 @@ export class QCarousel {
   private syncAutoplay = () => {
     this.autoplayController.configure({
       enabled: this.autoplay,
-      navigable: this.navigable,
-      suspended: !this.connected || this.hovered || document.hidden || this.autoplaySuspended,
+      navigable: this.navigable || this.rotationVisible,
+      timing: this.slideTiming === 'finishVideos' ? (this.slidePlayback?.mode ?? 'pending') : 'interval',
+      visitKey: this.slideTiming === 'finishVideos'
+        ? (this.slidePlayback?.key ?? `pending:${this.selectionGeneration}`)
+        : undefined,
+      advanceSuspended: this.autoplayAdvanceSuspended,
+      suspended:
+        !this.connected ||
+        (this.autoplayBehavior !== 'continuous' && this.hovered) ||
+        document.hidden ||
+        this.autoplaySuspended,
       reducedMotion: this.reducedMotion,
       interval: this.autoplayInterval,
     });
@@ -264,10 +339,15 @@ export class QCarousel {
 
   private handleInteraction = (event: Event) => {
     if (!this.isRotationEvent(event))
+      this.pauseOnInteraction();
+  };
+
+  private pauseOnInteraction = () => {
+    if (this.autoplayBehavior !== 'continuous')
       this.autoplayController.pause();
   };
 
-  private handleFocus = () => this.autoplayController.pause();
+  private handleFocus = () => this.pauseOnInteraction();
 
   private handleRotationClick = () => {
     const play = this.rotationPointerAction ?? !this.autoplayRequested;
@@ -279,6 +359,14 @@ export class QCarousel {
   };
 
   private updateSlideState() {
+    const selected = this.cachedChildren[this.activeIndex];
+    if (selected !== this.selectedElement) {
+      this.selectedElement = selected;
+      this.selectionGeneration += 1;
+      this.slidePlayback = undefined;
+      this.syncAutoplay();
+    }
+
     if (this.managesSlides)
       this.slideState.update(this.cachedChildren, this.activeIndex, () => this.recoverSlideFocus());
     else
@@ -529,7 +617,7 @@ export class QCarousel {
   private handleIndicatorKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
       e.preventDefault();
-      this.autoplayController.pause();
+      this.pauseOnInteraction();
 
       const dots = Array.from(this.el.shadowRoot?.querySelectorAll('.indicator-dot') || []) as HTMLButtonElement[];
       if (dots.length === 0) return;
@@ -559,7 +647,7 @@ export class QCarousel {
     if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
     event.preventDefault();
     event.stopPropagation();
-    this.autoplayController.pause();
+    this.pauseOnInteraction();
     this.scrollToIndex(this.activeIndex + (event.key === 'ArrowRight' ? 1 : -1));
     if (!this.viewportFocusable)
       this.recoverSlideFocus();
@@ -590,6 +678,23 @@ export class QCarousel {
 
   // ===================== [6] RENDER (Visual Template Only) =====================
 
+  private renderRotationButton() {
+    return (
+      <button
+        class={{ 'rotation-btn': true, 'is-overlay': this.rotationPlacement === 'overlay' }}
+        aria-label={this.autoplayRequested ? 'Pause slideshow' : 'Play slideshow'}
+        part="rotation-button"
+        type="button"
+        onPointerDown={() => { this.rotationPointerAction = !this.autoplayRequested; }}
+        onPointerCancel={() => { this.rotationPointerAction = undefined; }}
+        onClick={this.handleRotationClick}
+        ref={element => { this.rotationButton = element ?? undefined; }}
+      >
+        {this.rotationPlacement === 'overlay' ? (this.autoplayRequested ? 'Ⅱ' : '▶') : (this.autoplayRequested ? 'Pause slideshow' : 'Play slideshow')}
+      </button>
+    );
+  }
+
   render() {
     const isFirst = this.repeat ? (!this.isScrollable || this.maxIndex <= 0) : (this.isAtStart || !this.isScrollable);
     const isLast = this.repeat ? (!this.isScrollable || this.maxIndex <= 0) : (this.isAtEnd || !this.isScrollable);
@@ -603,24 +708,13 @@ export class QCarousel {
         onPointerDown={this.handleInteraction}
         onClick={this.handleInteraction}
       >
+        {this.rotationVisible && this.rotationPlacement === 'overlay' && this.renderRotationButton()}
         <div
           class="carousel-controls"
           part="controls"
-          hidden={!this.indicatorsVisible && !(this.autoplay && this.navigable) && !this.hasExtraControls}
+          hidden={!this.indicatorsVisible && !(this.rotationVisible && this.rotationPlacement === 'controls') && !this.hasExtraControls}
         >
-          {this.autoplay && this.navigable && (
-            <button
-              class="rotation-btn"
-              part="rotation-button"
-              type="button"
-              onPointerDown={() => { this.rotationPointerAction = !this.autoplayRequested; }}
-              onPointerCancel={() => { this.rotationPointerAction = undefined; }}
-              onClick={this.handleRotationClick}
-              ref={element => { this.rotationButton = element ?? undefined; }}
-            >
-              {this.autoplayRequested ? 'Pause slideshow' : 'Play slideshow'}
-            </button>
-          )}
+          {this.rotationVisible && this.rotationPlacement === 'controls' && this.renderRotationButton()}
           {this.indicatorsVisible && (
             <div class="carousel-indicators" role="group" aria-label="Carousel slide controls" onKeyDown={this.handleIndicatorKeyDown}>
               {Array.from({ length: this.maxIndex + 1 }).map((_, idx) => (

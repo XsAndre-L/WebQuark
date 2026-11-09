@@ -12,14 +12,20 @@ type CarouselTestElement = Omit<HTMLQCarouselElement, 'showArrows' | 'showIndica
   showArrows: boolean | undefined;
   showIndicators: boolean | undefined;
   autoplay: boolean;
+  autoplayBehavior: 'pauseOnInteraction' | 'continuous';
   autoplayInterval: number;
+  slideTiming: 'fixedInterval' | 'finishVideos';
+  rotationPlacement: 'controls' | 'overlay';
+  autoplayAdvanceSuspended: boolean;
+  setSlidePlayback(element: HTMLElement, key: string, mode: 'interval' | 'completion'): Promise<void>;
+  completeSlide(key: string): Promise<void>;
   autoplaySuspended: boolean;
   ariaLabel: string;
   play(): Promise<void>;
   pause(): Promise<void>;
 };
 type CarouselTestOptions = Partial<Pick<CarouselTestElement,
-  'layout' | 'itemWidth' | 'showArrows' | 'showIndicators' | 'autoplay' | 'autoplayInterval' | 'autoplaySuspended' | 'repeat'
+  'layout' | 'itemWidth' | 'showArrows' | 'showIndicators' | 'autoplay' | 'autoplayInterval' | 'autoplaySuspended' | 'autoplayBehavior' | 'repeat' | 'slideTiming' | 'rotationPlacement'
 >>;
 
 async function create(transition: 'slide' | 'crossfade' | 'instant' = 'crossfade', parent: HTMLElement | ShadowRoot = document.body, options: CarouselTestOptions = {}) {
@@ -353,4 +359,133 @@ it('preserves original dot styling while controls fit the available container wi
   expect(dots[1].getBoundingClientRect().height).toBe(6);
   expect(getComputedStyle(dots[1]).backgroundColor).toBe('rgb(156, 163, 175)');
   await vi.waitFor(() => expect(getComputedStyle(dots[1]).opacity).toBe('0.5'));
+});
+
+
+it('keeps continuous rotation running through hover, focus, pointer and keyboard navigation', async () => {
+  const el = await create('instant', document.body, {
+    layout: 'slideshow', autoplay: true, autoplayBehavior: 'continuous',
+    autoplayInterval: 150, repeat: true,
+  });
+  const viewport = el.shadowRoot!.querySelector<HTMLElement>('.carousel-viewport')!;
+  const rotation = el.shadowRoot!.querySelector<HTMLButtonElement>('.rotation-btn')!;
+  await userEvent.hover(el);
+  const action = el.children[0].querySelector('button')!;
+  action.focus();
+  action.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, composed: true }));
+  action.click();
+  await frame();
+  expect(rotation.textContent?.trim()).toBe('Pause slideshow');
+  expect(viewport.getAttribute('aria-live')).toBe('off');
+
+  await vi.waitFor(() => expect(el.children[0].getAttribute('data-q-carousel-active')).toBe('false'));
+  expect((el.children[0] as HTMLElement).inert).toBe(true);
+  expect(el.shadowRoot!.activeElement).toBeTruthy();
+  const dot = el.shadowRoot!.querySelector<HTMLButtonElement>('.indicator-dot')!;
+  dot.focus();
+  dot.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, composed: true }));
+  viewport.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, composed: true }));
+  (el.shadowRoot!.querySelector('.arrow-right') as HTMLButtonElement).click();
+  await frame();
+  expect(rotation.textContent?.trim()).toBe('Pause slideshow');
+  expect(viewport.getAttribute('aria-live')).toBe('off');
+  await el.pause();
+});
+
+it('preserves explicit pause and external suspension in continuous mode', async () => {
+  const el = await create('instant', document.body, {
+    layout: 'slideshow', autoplay: true, autoplayBehavior: 'continuous',
+    autoplayInterval: 150, repeat: true,
+  });
+  const rotation = el.shadowRoot!.querySelector<HTMLButtonElement>('.rotation-btn')!;
+  const viewport = el.shadowRoot!.querySelector('.carousel-viewport')!;
+  await userEvent.hover(el);
+  el.autoplaySuspended = true;
+  await frame();
+  expect(viewport.getAttribute('aria-live')).toBe('polite');
+  expect(rotation.textContent?.trim()).toBe('Pause slideshow');
+  rotation.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, composed: true }));
+  rotation.focus();
+  rotation.click();
+  el.autoplaySuspended = false;
+  el.autoplayBehavior = 'pauseOnInteraction';
+  await frame();
+  el.autoplayBehavior = 'continuous';
+  await userEvent.unhover(el);
+  await frame();
+  expect(rotation.textContent?.trim()).toBe('Play slideshow');
+  const active = el.querySelector('[data-q-carousel-active="true"]');
+  await new Promise(resolve => setTimeout(resolve, 350));
+  expect(el.querySelector('[data-q-carousel-active="true"]')).toBe(active);
+  await el.play();
+  await vi.waitFor(() => expect(viewport.getAttribute('aria-live')).toBe('off'));
+  await el.pause();
+});
+
+it('keeps autoplay disabled when only continuous behavior is selected', async () => {
+  const el = await create('instant', document.body, {
+    layout: 'slideshow', autoplayBehavior: 'continuous', autoplayInterval: 100, repeat: true,
+  });
+  await el.play();
+  await new Promise(resolve => setTimeout(resolve, 250));
+  expect(el.children[0].getAttribute('data-q-carousel-active')).toBe('true');
+  expect(el.shadowRoot!.querySelector('.rotation-btn')).toBeNull();
+});
+
+
+it('separates overlay playback from an empty indicator panel', async () => {
+  const el = await create('instant', document.body, {
+    autoplay: true, autoplayBehavior: 'continuous', showIndicators: false,
+    rotationPlacement: 'overlay', repeat: true,
+  });
+  expect(el.shadowRoot!.querySelector<HTMLElement>('[part="controls"]')!.hidden).toBe(true);
+  expect(el.shadowRoot!.querySelector('[part="controls"] .rotation-btn')).toBeNull();
+  expect(el.shadowRoot!.querySelector('.rotation-btn.is-overlay')).not.toBeNull();
+  await el.pause();
+});
+
+it('waits for active video completion and ignores stale completion after navigation', async () => {
+  const el = await create('instant', document.body, {
+    autoplay: true, autoplayBehavior: 'continuous', autoplayInterval: 80,
+    slideTiming: 'finishVideos', repeat: true,
+  });
+  await el.setSlidePlayback(el.children[0] as HTMLElement, 'first', 'completion');
+  await new Promise(resolve => setTimeout(resolve, 180));
+  expect(el.children[0].getAttribute('data-q-carousel-active')).toBe('true');
+  el.autoplayAdvanceSuspended = true;
+  await frame();
+  await el.completeSlide('first');
+  expect(el.children[0].getAttribute('data-q-carousel-active')).toBe('true');
+  el.autoplayAdvanceSuspended = false;
+  await frame();
+  expect(el.children[1].getAttribute('data-q-carousel-active')).toBe('true');
+  await el.setSlidePlayback(el.children[1] as HTMLElement, 'second', 'completion');
+  await el.completeSlide('first');
+  expect(el.children[1].getAttribute('data-q-carousel-active')).toBe('true');
+  await el.completeSlide('second');
+  await frame();
+  expect(el.children[2].getAttribute('data-q-carousel-active')).toBe('true');
+  await el.pause();
+});
+
+it('offers playback for a single video and starts a fresh visit only on explicit replay', async () => {
+  const el = await create('instant', document.body, {
+    autoplay: true, autoplayBehavior: 'continuous', slideTiming: 'finishVideos', rotationPlacement: 'overlay',
+  });
+  el.children[2].remove();
+  el.children[1].remove();
+  await frame();
+  await el.updateLimits();
+  await el.setSlidePlayback(el.children[0] as HTMLElement, 'only', 'completion');
+  await frame();
+  expect(el.shadowRoot!.querySelector('[part="controls"]')!.hasAttribute('hidden')).toBe(true);
+  expect(el.shadowRoot!.querySelector('.rotation-btn')!.getAttribute('aria-label')).toBe('Pause slideshow');
+  await el.completeSlide('only');
+  await frame();
+  expect(el.shadowRoot!.querySelector('.rotation-btn')!.getAttribute('aria-label')).toBe('Play slideshow');
+  const changed = vi.fn();
+  el.addEventListener('qSlideChange', changed);
+  await el.play();
+  expect(changed).toHaveBeenCalledTimes(1);
+  await el.pause();
 });

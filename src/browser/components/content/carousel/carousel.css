@@ -252,3 +252,10 @@
 @media (hover: none), (pointer: coarse) {
   .arrow-btn { opacity: 1; }
 }
+
+.rotation-btn.is-overlay {
+  position: absolute;
+  inset-block-end: var(--q-padding-md, 1rem);
+  inset-inline-end: var(--q-padding-md, 1rem);
+  z-index: 3;
+}

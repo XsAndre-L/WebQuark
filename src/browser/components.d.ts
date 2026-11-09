@@ -14,7 +14,7 @@ import { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant }
 import { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/inputs/form/form.types";
 import { QControlSize, QInputWidth, QSpace, QSurface } from "./theme/tokens";
 import { QCardElevation } from "./components/content/card/card.types";
-import { QCarouselAutoplayChangeDetail, QCarouselLayout, QCarouselSlideChangeDetail, QCarouselSnapAlignment, QCarouselTransition } from "./components/content/carousel/carousel.types";
+import { QCarouselAutoplayBehavior, QCarouselAutoplayChangeDetail, QCarouselLayout, QCarouselPlaybackChangeDetail, QCarouselSlideChangeDetail, QCarouselSlideTiming, QCarouselSnapAlignment, QCarouselTransition } from "./components/content/carousel/carousel.types";
 import { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/data-display/chip/chip.types";
 import { QConversationBubbleVariant } from "./components/communication/conversation-bubble/conversation-bubble.types";
 import { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableRowGutter, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
@@ -53,7 +53,7 @@ export { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant }
 export { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/inputs/form/form.types";
 export { QControlSize, QInputWidth, QSpace, QSurface } from "./theme/tokens";
 export { QCardElevation } from "./components/content/card/card.types";
-export { QCarouselAutoplayChangeDetail, QCarouselLayout, QCarouselSlideChangeDetail, QCarouselSnapAlignment, QCarouselTransition } from "./components/content/carousel/carousel.types";
+export { QCarouselAutoplayBehavior, QCarouselAutoplayChangeDetail, QCarouselLayout, QCarouselPlaybackChangeDetail, QCarouselSlideChangeDetail, QCarouselSlideTiming, QCarouselSnapAlignment, QCarouselTransition } from "./components/content/carousel/carousel.types";
 export { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/data-display/chip/chip.types";
 export { QConversationBubbleVariant } from "./components/communication/conversation-bubble/conversation-bubble.types";
 export { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableRowGutter, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
@@ -315,10 +315,20 @@ export namespace Components {
          */
         "ariaLabel": string;
         /**
-          * Enables rotation; user interaction pauses until explicitly restarted.
+          * Enables rotation with the configured interaction behavior.
           * @default false
          */
         "autoplay": boolean;
+        /**
+          * Holds advancement for loading without pausing the active media.
+          * @default false
+         */
+        "autoplayAdvanceSuspended": boolean;
+        /**
+          * Continuous rotation ignores hover and interaction; explicit pause remains available.
+          * @default 'pauseOnInteraction'
+         */
+        "autoplayBehavior": QCarouselAutoplayBehavior;
         /**
           * Finite positive interval in milliseconds; invalid values use 5000.
           * @default 5000
@@ -329,6 +339,10 @@ export namespace Components {
           * @default false
          */
         "autoplaySuspended": boolean;
+        /**
+          * Completes the registered visit; stale or duplicate media events are ignored.
+         */
+        "completeSlide": (key: string) => Promise<void>;
         /**
           * `auto` preserves each slotted item's natural width.
           * @default 'auto'
@@ -353,6 +367,15 @@ export namespace Components {
          */
         "repeat": boolean;
         /**
+          * Overlay keeps playback separate from the indicators/extra-controls panel.
+          * @default 'controls'
+         */
+        "rotationPlacement": 'controls' | 'overlay';
+        /**
+          * Registers timing for the current slide and responsive-media visit only.
+         */
+        "setSlidePlayback": (element: HTMLElement, key: string, mode: "interval" | "completion") => Promise<void>;
+        /**
           * Omitted controls are enabled for navigable slideshows and disabled for strips.
          */
         "showArrows"?: boolean;
@@ -360,6 +383,11 @@ export namespace Components {
           * Shows clickable slide indicator dots when the carousel can scroll.
          */
         "showIndicators"?: boolean;
+        /**
+          * Finish-videos delegates each active visit's timing to setSlidePlayback().
+          * @default 'fixedInterval'
+         */
+        "slideTiming": QCarouselSlideTiming;
         /**
           * Scrolls the carousel to a zero-based slide index.
          */
@@ -2509,6 +2537,7 @@ declare global {
     interface HTMLQCarouselElementEventMap {
         "qSlideChange": QCarouselSlideChangeDetail;
         "qAutoplayChange": QCarouselAutoplayChangeDetail;
+        "qPlaybackChange": QCarouselPlaybackChangeDetail;
     }
     /**
      * A carousel with sliding, crossfade or instant transitions and shared navigation.
@@ -3513,10 +3542,20 @@ declare namespace LocalJSX {
          */
         "ariaLabel"?: string;
         /**
-          * Enables rotation; user interaction pauses until explicitly restarted.
+          * Enables rotation with the configured interaction behavior.
           * @default false
          */
         "autoplay"?: boolean;
+        /**
+          * Holds advancement for loading without pausing the active media.
+          * @default false
+         */
+        "autoplayAdvanceSuspended"?: boolean;
+        /**
+          * Continuous rotation ignores hover and interaction; explicit pause remains available.
+          * @default 'pauseOnInteraction'
+         */
+        "autoplayBehavior"?: QCarouselAutoplayBehavior;
         /**
           * Finite positive interval in milliseconds; invalid values use 5000.
           * @default 5000
@@ -3541,12 +3580,21 @@ declare namespace LocalJSX {
           * Actual running state, including temporary suspension.
          */
         "onQAutoplayChange"?: (event: QCarouselCustomEvent<QCarouselAutoplayChangeDetail>) => void;
+        /**
+          * Playback intent and eligibility, independent of an image-readiness advance hold.
+         */
+        "onQPlaybackChange"?: (event: QCarouselCustomEvent<QCarouselPlaybackChangeDetail>) => void;
         "onQSlideChange"?: (event: QCarouselCustomEvent<QCarouselSlideChangeDetail>) => void;
         /**
           * Wraps arrow and programmatic navigation at either end.
           * @default false
          */
         "repeat"?: boolean;
+        /**
+          * Overlay keeps playback separate from the indicators/extra-controls panel.
+          * @default 'controls'
+         */
+        "rotationPlacement"?: 'controls' | 'overlay';
         /**
           * Omitted controls are enabled for navigable slideshows and disabled for strips.
          */
@@ -3555,6 +3603,11 @@ declare namespace LocalJSX {
           * Shows clickable slide indicator dots when the carousel can scroll.
          */
         "showIndicators"?: boolean;
+        /**
+          * Finish-videos delegates each active visit's timing to setSlidePlayback().
+          * @default 'fixedInterval'
+         */
+        "slideTiming"?: QCarouselSlideTiming;
         /**
           * @default 'start'
          */
@@ -5636,8 +5689,12 @@ declare namespace LocalJSX {
         "transition": QCarouselTransition;
         "transitionDuration": number;
         "autoplay": boolean;
+        "autoplayBehavior": QCarouselAutoplayBehavior;
         "autoplayInterval": number;
         "autoplaySuspended": boolean;
+        "slideTiming": QCarouselSlideTiming;
+        "autoplayAdvanceSuspended": boolean;
+        "rotationPlacement": 'controls' | 'overlay';
         "ariaLabel": string;
     }
     interface QChipAttributes {

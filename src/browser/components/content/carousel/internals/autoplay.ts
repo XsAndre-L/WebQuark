@@ -4,6 +4,9 @@ export interface CarouselAutoplayConfig {
   suspended: boolean;
   reducedMotion: boolean;
   interval: number;
+  timing?: 'interval' | 'completion' | 'pending';
+  visitKey?: string;
+  advanceSuspended?: boolean;
 }
 
 /** Separates persistent playback intent from temporary hover/visibility suspension. */
@@ -16,7 +19,8 @@ export class CarouselAutoplay {
     interval: 5000,
   };
   private requested = false;
-  private timer?: ReturnType<typeof setInterval>;
+  private timer?: ReturnType<typeof setTimeout>;
+  private completed = false;
 
   constructor(
     private readonly advance: () => boolean,
@@ -25,7 +29,10 @@ export class CarouselAutoplay {
 
   configure(config: CarouselAutoplayConfig): void {
     const interval = Number.isFinite(config.interval) && config.interval > 0 ? config.interval : 5000;
-    const timingChanged = interval !== this.config.interval;
+    const visitChanged = config.visitKey !== this.config.visitKey;
+    const timingChanged = interval !== this.config.interval || config.timing !== this.config.timing || visitChanged;
+    if (visitChanged)
+      this.completed = false;
     if (!config.enabled)
       this.requested = false;
     else if (!this.config.enabled)
@@ -57,24 +64,50 @@ export class CarouselAutoplay {
     this.sync();
   }
 
+  complete(visitKey: string): void {
+    if (this.config.timing !== 'completion' || visitKey !== this.config.visitKey)
+      return;
+
+    this.completed = true;
+    this.sync();
+  }
+
   private sync(): void {
     const playing = this.requested && this.config.enabled && this.config.navigable && !this.config.suspended;
-    if (!playing)
+    const advancing = playing && !this.config.advanceSuspended;
+    this.changed(playing, this.requested);
+
+    if (!advancing || this.config.timing === 'pending') {
       this.clearTimer();
-    else if (this.timer === undefined) {
-      this.timer = setInterval(() => {
+      return;
+    }
+
+    if (this.config.timing === 'completion') {
+      this.clearTimer();
+      if (this.completed) {
+        this.completed = false;
         if (!this.advance())
           this.pause();
+      }
+      return;
+    }
+
+    if (this.timer === undefined) {
+      this.timer = setTimeout(() => {
+        this.timer = undefined;
+        if (!this.advance())
+          this.pause();
+        else
+          this.sync();
       }, this.config.interval);
     }
-    this.changed(playing, this.requested);
   }
 
   private clearTimer(): void {
     if (this.timer === undefined)
       return;
 
-    clearInterval(this.timer);
+    clearTimeout(this.timer);
     this.timer = undefined;
   }
 }

@@ -31,3 +31,6 @@ agents/
 # Generated framework wrappers
 packages/browser/angular/src/stencil-generated/
 packages/browser/react/src/stencil-generated/
+
+# Agent temporary outputs
+**/build/.tmp/
