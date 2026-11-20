@@ -58,8 +58,13 @@ const dryRun = hasFlag('--dry-run');
 if (npmTag !== 'dev' && npmTag !== 'latest') {
   throw new Error('--tag must be dev or latest');
 }
-if (!dryRun && !process.env.NODE_AUTH_TOKEN) {
-  throw new Error('NODE_AUTH_TOKEN is required for a real npm publish');
+
+const hasGitHubOidc =
+  process.env.GITHUB_ACTIONS === 'true' &&
+  Boolean(process.env.ACTIONS_ID_TOKEN_REQUEST_URL && process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN);
+
+if (!dryRun && !hasGitHubOidc && !process.env.NODE_AUTH_TOKEN) {
+  throw new Error('Publishing requires GitHub Actions OIDC or an explicit NODE_AUTH_TOKEN.');
 }
 
 const manifests = packages.map((definition) => readPackage(definition.directory));
