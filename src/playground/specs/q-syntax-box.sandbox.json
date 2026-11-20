@@ -17,10 +17,29 @@
         "html",
         "javascript",
         "css",
-        "json"
+        "json",
+        "typescript",
+        "jsx",
+        "tsx",
+        "flow",
+        "json5",
+        "jsonc",
+        "json-stringify",
+        "postcss",
+        "less",
+        "scss",
+        "angular",
+        "vue",
+        "lwc",
+        "mjml",
+        "handlebars",
+        "graphql",
+        "markdown",
+        "mdx",
+        "yaml"
       ],
       "default": "html",
-      "desc": "The programming language highlighting rules to apply"
+      "desc": "Language used to format the editor content"
     },
     "height": {
       "type": "string",
@@ -232,13 +251,13 @@
       }
     },
     {
-      "name": "Unsupported JavaScript Format",
+      "name": "Preserve Spaces in a JavaScript Template",
       "props": {
         "variant": "panel",
         "language": "javascript",
         "editable": true,
         "heading": "LITERAL JAVASCRIPT",
-        "code": "const message = `keep  spaces; { braces }`;",
+        "code": "const message=`keep  spaces; { braces }`",
         "height": "110px"
       }
     },

@@ -26,6 +26,10 @@
     "supercluster": "^9.1.0"
   },
   "exports": {
+    "./formatters/runtime": {
+      "types": "./dist/formatters/prettier/runtime.d.mts",
+      "import": "./dist/formatters/prettier/runtime.mjs"
+    },
     ".": {
       "types": "./dist/types/index.d.ts",
       "import": "./dist/index.js",

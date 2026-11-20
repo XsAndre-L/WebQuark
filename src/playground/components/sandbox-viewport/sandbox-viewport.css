@@ -58,15 +58,21 @@ viewport-tabs q-tabs {
 }
 
 .sandbox-main {
+  --sandbox-inset: 24px;
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 24px;
+  padding-block-start: var(--sandbox-inset);
   gap: 20px;
   min-height: 0;
 }
 
+.sandbox-main > :is(.demo-description, .stage-container, .demo-actions) {
+  margin-inline: var(--sandbox-inset);
+}
+
 .sandbox-main > q-syntax-box {
+  --q-radius-lg: 0px;
   flex-shrink: 0;
 }
 
@@ -189,7 +195,7 @@ viewport-tabs q-tabs {
   }
 
   .sandbox-main {
-    padding: 16px;
+    --sandbox-inset: 16px;
     gap: 16px;
     overflow-y: auto;
     height: auto;

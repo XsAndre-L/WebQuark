@@ -37,10 +37,15 @@ describe('playground example output', () => {
     await expect.element(htmlTab).toBeVisible();
     const label = htmlTab.element().querySelector<HTMLElement>('.tab__label')!;
     expect(label.scrollWidth).toBeLessThanOrEqual(label.clientWidth);
+    const html = output.element.querySelector('q-syntax-view[view-key="html"]')!;
+    const htmlBody = html.shadowRoot!.querySelector('.view-content')!;
+    expect(htmlTab.element().getBoundingClientRect().bottom).toBeLessThanOrEqual(htmlBody.getBoundingClientRect().top);
 
-    await panel.getByRole('tab', { name: 'Events' }).click();
+    const eventsTab = panel.getByRole('tab', { name: 'Events' });
+    await eventsTab.click();
     await expect.element(panel.getByRole('log')).toBeVisible();
     const body = events.shadowRoot!.querySelector('.slotted-body')!;
+    expect(eventsTab.element().getBoundingClientRect().bottom).toBeLessThanOrEqual(body.getBoundingClientRect().top);
     await vi.waitFor(() => {
       expect(getComputedStyle(body).paddingTop).toBe('9px');
       expect(getComputedStyle(body).paddingLeft).toBe('19px');

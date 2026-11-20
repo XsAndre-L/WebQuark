@@ -3,7 +3,7 @@ import { withSyntaxContent } from '../syntax-box/syntax-content';
 import { syntaxOwner } from '../syntax-box/internals/views';
 
 /**
- * An independently editable or read-only view inside a Syntax Box.
+ * Displays one editable or read-only view, on its own or as a child of a Syntax Box.
  * @slot - Read-only content when code is omitted.
  * @slot actions - Actions for this view.
  */

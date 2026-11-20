@@ -11,6 +11,7 @@ export class SlotRow extends HTMLElement {
   connectedCallback(): void {
     const { slotName, slotConfig } = this;
     const name = slotName === 'default' ? 'Default content' : `Slot "${slotName}"`;
+    const description = (slotConfig.desc ?? slotConfig.description)?.trim();
     const commit = (value: string) => updateKnobValue('slot', slotName, value, this.activeComponentTag);
     const input = (event: CustomEvent<string>) => commit(event.detail);
 
@@ -37,10 +38,10 @@ export class SlotRow extends HTMLElement {
     this.className = 'property-row vertical';
     this.replaceChildren(
       <div class="slot-editor-heading">
-        <div class="property-meta">
-          <span class="property-label">{name}</span>
-          <span class="property-label-sub">{slotConfig.desc ?? slotConfig.description}</span>
-        </div>
+        <span class="property-label" tabIndex={description ? 0 : undefined}>
+          {name}
+          {description && <q-tooltip content={description} position="top" />}
+        </span>
         {!hasToolbar && resetAction}
       </div>,
       this.control,

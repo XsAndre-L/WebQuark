@@ -6,7 +6,8 @@ import { isFieldDisabled, syncFieldHost } from '../../../utils/form-field-state'
 import { syncNativeControlValidity } from '../../../utils/form-control-validity';
 import { getSyntaxBoxCopyText, writeClipboardText } from './internals/clipboard';
 import { getSyntaxBoxEditorKeyAction } from './internals/editor-key-action';
-import { formatSource, isFormatSupported } from './internals/formatters/formatter';
+import { formatSource } from './internals/formatters/formatter';
+import { formatterLanguage, formatterLanguages } from './internals/formatters/languages';
 import { tokenizeSyntax } from './internals/syntax';
 import { normalizeSyntaxBoxValue, resolveInitialSyntaxBoxValue } from './internals/value-sync';
 
@@ -43,6 +44,7 @@ export const withSyntaxContent = <T extends MixedInCtor>(Base: T) => {
     /** Marks the editable textarea as required for form validation. */
     @Prop({ reflect: true }) required: boolean = false;
 
+    /** Selects the formatter. HTML, JavaScript, CSS, and JSON also receive syntax highlighting. */
     @Prop() language: QSyntaxBoxLanguage = 'html';
 
     /** Disables editing and panel actions. */
@@ -70,6 +72,7 @@ export const withSyntaxContent = <T extends MixedInCtor>(Base: T) => {
     private initialValue?: string;
     private scrollPending = false;
     private copyRevision = 0;
+    private formatRevision = 0;
     private copiedTimeoutId?: ReturnType<typeof setTimeout>;
     private scrollableEl?: HTMLQScrollableElement;
     private preEl?: HTMLPreElement;
@@ -80,6 +83,7 @@ export const withSyntaxContent = <T extends MixedInCtor>(Base: T) => {
     // ========================= [3] LIFECYCLE & WATCHERS =========================
     @Watch('code')
     watchCode(newCode: string | undefined) {
+      this.formatRevision++;
       this.formatMessage = undefined;
       const finalCode = normalizeSyntaxBoxValue(newCode, {
         editable: this.editable,
@@ -97,6 +101,7 @@ export const withSyntaxContent = <T extends MixedInCtor>(Base: T) => {
 
     @Watch('value')
     watchValue(newValue: string | undefined) {
+      this.formatRevision++;
       this.formatMessage = undefined;
       const finalVal = normalizeSyntaxBoxValue(newValue, {
         editable: this.editable,
@@ -113,6 +118,12 @@ export const withSyntaxContent = <T extends MixedInCtor>(Base: T) => {
       this.syncFormValue(finalVal);
     }
 
+    @Watch('language')
+    watchLanguage() {
+      this.formatRevision++;
+      this.formatMessage = undefined;
+    }
+
     @Watch('disabled')
     @Watch('required')
     @Watch('name')
@@ -122,6 +133,7 @@ export const withSyntaxContent = <T extends MixedInCtor>(Base: T) => {
 
     @Watch('editable')
     watchEditable() {
+      this.formatRevision++;
       if (this.editable) this.watchCode(this.code);
       this.syncFormValue(this.code);
     }
@@ -176,6 +188,7 @@ export const withSyntaxContent = <T extends MixedInCtor>(Base: T) => {
 
     private syncVisibility() {
       const inactive = syntaxOwner(this.el)?.visible(this.el) === false;
+      if (inactive) this.formatRevision++;
       if (this.contentEl) this.contentEl.inert = inactive;
       if (this.actionsEl) this.actionsEl.inert = inactive;
       if (this.validationAnchor) this.validationAnchor.hidden = !inactive;
@@ -183,11 +196,14 @@ export const withSyntaxContent = <T extends MixedInCtor>(Base: T) => {
     }
 
     disconnectedCallback() {
+      this.formatRevision++;
       this.copyRevision++;
       this.clearCopiedTimeout();
     }
 
     formResetCallback() {
+      this.formatRevision++;
+      this.formatMessage = undefined;
       this.code = this.initialValue;
       this.value = this.initialValue;
       this.syncFormValue(this.code);
@@ -347,17 +363,30 @@ export const withSyntaxContent = <T extends MixedInCtor>(Base: T) => {
       });
     };
 
-    private handleFormat = () => {
-      if (this.isDisabled || !isFormatSupported(this.language)) return;
-      if (this.code) {
-        const result = formatSource(this.code, this.language);
-        this.code = result.code;
-        this.value = result.code;
-        this.formatMessage = result.status === 'invalid' ? 'Invalid JSON; source unchanged.'
-          : result.status === 'unsupported' ? 'JSON formatting limit reached; source unchanged.' : undefined;
-        this.qInput.emit(result.code);
-        this.qChange.emit(result.code);
+    private handleFormat = async () => {
+      const language = formatterLanguage(this.language);
+      if (this.isDisabled || !this.editable || !language || !this.code) return;
+      const revision = ++this.formatRevision;
+      const source = this.code;
+      const pending = formatSource(source, language);
+      const result = pending instanceof Promise ? await pending : pending;
+      if (revision !== this.formatRevision || this.code !== source || !this.el.isConnected || this.isDisabled) return;
+
+      const label = formatterLanguages[language];
+      if (result.status === 'unavailable') {
+        this.formatMessage = `Could not load the ${label} formatter. Reload and try again.`;
+        return;
       }
+      if (result.status === 'failed') {
+        this.formatMessage = `Could not format this ${label} source.`;
+        return;
+      }
+      this.code = result.code;
+      this.value = result.code;
+      this.formatMessage = result.status === 'invalid' ? `Invalid ${label}; source unchanged.`
+        : result.status === 'unsupported' ? `${label} formatting limit reached; source unchanged.` : undefined;
+      this.qInput.emit(result.code);
+      this.qChange.emit(result.code);
     };
 
     private getCopyTooltipContent() {
@@ -370,8 +399,7 @@ export const withSyntaxContent = <T extends MixedInCtor>(Base: T) => {
     renderContent(variant: QSyntaxBoxVariant) {
       const resolvedHeight = this.height !== undefined ? this.height : variant === 'panel' ? '110px' : 'auto';
       const isScrollable = resolvedHeight !== 'auto' && resolvedHeight !== '';
-      const formatSupported = isFormatSupported(this.language);
-      const formatFeedback = this.editable ? formatSupported ? this.formatMessage : 'Formatting is available for JSON only.' : undefined;
+      const formatFeedback = this.editable ? this.formatMessage : undefined;
       const highlighted = tokenizeSyntax(this.code ?? '', this.language).map(token =>
         token.className ? <span class={token.className}>{token.text}</span> : token.text
       );
@@ -428,11 +456,12 @@ export const withSyntaxContent = <T extends MixedInCtor>(Base: T) => {
     }
 
     renderActions() {
+      const language = formatterLanguage(this.language);
       return renderSyntaxActions({
         editable: this.editable,
         copyable: this.copyable,
         disabled: this.isDisabled,
-        formatSupported: isFormatSupported(this.language),
+        formatLabel: language && `Format ${formatterLanguages[language]}`,
         copied: this.copied,
         copyFeedback: this.getCopyTooltipContent(),
         onFormat: this.handleFormat,

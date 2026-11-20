@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { formatCode, formatCss, formatHtml, formatJs, formatJson, formatSource, isFormatSupported } from './formatter';
 import { MAX_JSON_FORMAT_DEPTH, MAX_JSON_FORMAT_INPUT, MAX_JSON_FORMAT_OUTPUT } from './json';
-import { INVALID_JSON, JSON_EXPECTED, JSON_SOURCE, jsonTokens, UNSUPPORTED_SOURCE } from '../../test/format-fixtures';
+import { INVALID_JSON, JSON_EXPECTED, JSON_SOURCE, jsonTokens, NON_JSON_SOURCE } from '../../test/format-fixtures';
 
 describe('explicit token-preserving formatter', () => {
   it('formats JSON with two-space/LF indentation', () => {
@@ -18,17 +18,44 @@ describe('explicit token-preserving formatter', () => {
   it.each(INVALID_JSON)('leaves %s exactly intact on rejected grammar', (_case, source) => {
     expect(formatSource(source, 'json')).toEqual({ code: source, status: 'invalid' }); expect(formatCode(source, 'json')).toBe(source);
   });
-  it.each(UNSUPPORTED_SOURCE)('keeps whitespace-sensitive %s source intact', (language, source) => {
-    expect(isFormatSupported(language)).toBe(false); expect(formatSource(source, language)).toEqual({ code: source, status: 'unsupported' });
-    expect(formatCode(source, language)).toBe(source);
+  it.each(NON_JSON_SOURCE)('routes %s through its embedded formatter', async (language, source) => {
+    expect(isFormatSupported(language)).toBe(true);
+    const result = await formatSource(source, language);
+    expect(result.status).toBe('formatted');
+    expect(await formatCode(result.code, language)).toBe(result.code);
   });
-  it('retains named helper signatures and the js alias as conservative unchanged-source routes', () => {
-    expect(formatHtml(UNSUPPORTED_SOURCE[0][1])).toBe(UNSUPPORTED_SOURCE[0][1]);
-    expect(formatJs(UNSUPPORTED_SOURCE[1][1])).toBe(UNSUPPORTED_SOURCE[1][1]);
-    expect(formatCss(UNSUPPORTED_SOURCE[2][1])).toBe(UNSUPPORTED_SOURCE[2][1]);
-    expect(formatCode(UNSUPPORTED_SOURCE[1][1], 'js')).toBe(UNSUPPORTED_SOURCE[1][1]);
+  it('retains named helpers and the JavaScript alias', async () => {
+    expect(await formatHtml('Hello <b>world</b>!')).toContain('Hello <b>world</b>!');
+    expect(await formatJs('const x=1')).toBe(await formatCode('const x=1', 'js'));
+    expect(await formatCss('p{color:red}')).toContain('color: red;');
     expect(formatCode('literal', 'unknown')).toBe('literal'); expect(formatCode('', 'json')).toBe('');
     expect(isFormatSupported('JSON')).toBe(true);
+  });
+  it.each(['<q-button>', '<div><b>x</b>', '<q-button label="'])('keeps an incomplete HTML draft intact: %s', async code => {
+    expect(await formatSource(code, 'html')).toEqual({ code, status: 'invalid' });
+  });
+  it('preserves text-only slots, outer spacing and literal element contents', async () => {
+    const label = '  Save changes\r\n';
+    expect(await formatSource(label, 'html')).toEqual({ code: label, status: 'unchanged' });
+    const raw = ['pre', 'textarea', 'script', 'style'].map(name => `<${name}>\r\n  x  \r\n</${name}>`).join('');
+    const source = '\t<div   id="log">' + raw + '</div>  ';
+    const result = await formatSource(source, 'html');
+    expect(result.status).toBe('formatted');
+    expect(result.code.startsWith('\t<div id="log">')).toBe(true);
+    expect(result.code.match(/\s+$/)?.[0]).toBe('  ');
+    for (const tag of ['pre', 'textarea', 'script', 'style']) {
+      expect(result.code).toContain(`<${tag}>\r\n  x  \r\n</${tag}`);
+    }
+    expect(await formatHtml(result.code)).toBe(result.code);
+  });
+  it('accepts HTML with optional end tags', async () => {
+    expect((await formatSource('<ul><li>one<li>two</ul>', 'html')).status).toBe('formatted');
+  });
+  it('distinguishes a rejected Vue draft from a missing formatter', async () => {
+    const source = '<template></bad>';
+    const result = await formatSource(source, 'vue');
+    expect(result.code).toBe(source);
+    expect(['invalid', 'failed']).toContain(result.status);
   });
   it('never parses JSON through JavaScript values or stringifies values', () => {
     const parse = vi.spyOn(JSON, 'parse'); const stringify = vi.spyOn(JSON, 'stringify');

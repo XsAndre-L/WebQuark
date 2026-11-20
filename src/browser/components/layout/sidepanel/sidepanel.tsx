@@ -516,6 +516,7 @@ export class QSidepanel {
             <div class="nav-surface">
               {renderNavItems({
                 items: this.normalizedItems,
+                collapsedRail: isCollapsed && this.collapseMode === 'rail',
                 expandedGroups: this.expandedGroups,
                 activeValue: this.value,
                 onItemClick: this.handleNavItemClick,

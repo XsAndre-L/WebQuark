@@ -54,6 +54,7 @@ Use matching WebQuark versions when installing multiple packages.
 - Adjust spacing and typography with [design presets](docs/design-presets.md), or customize colors and surfaces with [theme variables](docs/theme_variables.md).
 - For Unreal Engine webviews, see the [CEF off-screen rendering guidelines](docs/unreal_compatibility.md).
 - To test local WebQuark changes in a consuming app, follow the [package switching guide](src/tooling/wq-switch/README.md).
+- To update the Prettier release shipped with Syntax Box, see the [formatter maintenance guide](src/tooling/formatter/README.md).
 
 ## Run the playground
 

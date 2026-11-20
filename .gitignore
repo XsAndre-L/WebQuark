@@ -34,3 +34,6 @@ packages/browser/react/src/stencil-generated/
 
 # Agent temporary outputs
 **/build/.tmp/
+
+src/tooling/formatter/.update/
+src/tooling/formatter/build/

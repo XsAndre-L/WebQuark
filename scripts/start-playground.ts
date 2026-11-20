@@ -6,6 +6,9 @@
 import { spawn, spawnSync } from "bun";
 import * as path from "path";
 import { watchPlaygroundAssets } from './playground-assets';
+import { buildPinnedFormatter } from '../src/tooling/formatter/update';
+
+await buildPinnedFormatter();
 
 const isWindows = process.platform === "win32";
 

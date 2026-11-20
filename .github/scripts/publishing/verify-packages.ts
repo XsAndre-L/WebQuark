@@ -117,6 +117,8 @@ if (!angularPackage) {
 run(['bun', 'run', 'verify:compatibility'], angularPackage.directory);
 
 if (!hasFlag('--reuse-dev-tests')) {
+  run(['bun', 'test', 'src/tooling/formatter/update.test.ts']);
+  run(['bun', 'scripts/verify-formatter-consumer.ts']);
   console.log('\nRunning the Vitest suite...');
   run(['bunx', 'vitest', 'run']);
 }

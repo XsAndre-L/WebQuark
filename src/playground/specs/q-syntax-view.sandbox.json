@@ -7,7 +7,11 @@
     "viewKey": { "type": "string", "default": "source", "desc": "Identifier for this view within its Syntax Box" },
     "code": { "type": "string", "default": "<q-button>Save</q-button>", "desc": "Source displayed or edited in this view" },
     "value": { "type": "string", "desc": "Form value synchronized with code" },
-    "language": { "type": "select", "default": "html", "options": ["html", "javascript", "css", "json"], "desc": "Language for syntax highlighting" },
+    "language": {
+      "type": "select", "default": "html",
+      "options": ["html", "javascript", "css", "json", "typescript", "jsx", "tsx", "flow", "json5", "jsonc", "json-stringify", "postcss", "less", "scss", "angular", "vue", "lwc", "mjml", "handlebars", "graphql", "markdown", "mdx", "yaml"],
+      "desc": "Language used to format the editor content"
+    },
     "variant": { "type": "select", "default": "panel", "options": ["panel", "plain"], "desc": "Appearance when the view is used on its own" },
     "height": { "type": "string", "desc": "Height of the content area" },
     "copyable": { "type": "boolean", "default": true, "desc": "Show a Copy action for the view" },

@@ -185,7 +185,7 @@ function tokenizeCss(text: string): SyntaxToken[] {
   return tokens;
 }
 
-export function tokenizeSyntax(text: string, language: 'html' | 'javascript' | 'css' | 'json'): SyntaxToken[] {
+export function tokenizeSyntax(text: string, language: string): SyntaxToken[] {
   switch (language) {
     case 'html':
       return tokenizeHtml(text);

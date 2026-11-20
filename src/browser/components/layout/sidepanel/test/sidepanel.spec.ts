@@ -73,8 +73,12 @@ describe('q-sidepanel', () => {
 
     expect(body.hasAttribute('role')).toBe(false);
     expect(roles.every(role => role === 'button')).toBe(true);
+    for (const label of ['Admin', 'Users']) {
+      expect(el.shadowRoot.querySelector(`.nav-item[aria-label="${label}"]`).hasAttribute('title')).toBe(false);
+    }
     expect(activeItem.textContent).toContain('Reports');
     expect(activeItem.getAttribute('aria-label')).toBe('Reports, 123 unread reports');
+    expect(activeItem.title).toBe('Reports, 123 unread reports');
     expect(activeItem.querySelector('[part="item-badge"]')?.textContent).toBe('99+');
     expect(activeItem.querySelector('[part="item-badge"]')?.getAttribute('aria-hidden')).toBe('true');
 
@@ -91,6 +95,7 @@ describe('q-sidepanel', () => {
     await wait();
     expect(el.shadowRoot.querySelector('[part="item-badge"]')).toBeNull();
     expect(el.shadowRoot.querySelector('.nav-item').getAttribute('aria-label')).toBe('Reports');
+    expect(el.shadowRoot.querySelector('.nav-item').getAttribute('title')).toBe('Reports');
   });
 
   it('normalizes string navigation items into matching labels and values', async () => {

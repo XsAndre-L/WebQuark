@@ -9,8 +9,8 @@ export const INVALID_JSON = [
   ['short Unicode escape', '"\\u123"'], ['raw string newline', '"keep\r\nline"'],
   ['BOM', '\ufeff{"a":1}'], ['whitespace only', ' \t\r\n '],
 ] as const;
-export const UNSUPPORTED_SOURCE = [
-  ['html', '<p>Hello <b>world</b> !</p>\r\n<pre> keep  \t spaces\r\n</pre><!-- keep comment -->'],
+export const NON_JSON_SOURCE = [
+  ['html', '<p   class="message">Hello <b>world</b> !</p>\r\n<pre> keep  \t spaces\r\n</pre><!-- keep comment -->'],
   ['javascript', '// keep\r\nfunction f(){return\n"x";} const t = ` a  ${1}\r\n b;{} `; /[{};]/.test(t);'],
   ['css', '/* keep */\r\n.a { content: "  x; { y }  "; --text: a  b; }\r\n'],
 ] as const;

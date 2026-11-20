@@ -1,31 +1,31 @@
 # q-syntax-view
 
-Declare this element directly inside a Syntax Box to give a snippet, editor or log its own tab. See the [working examples](../../../../../docs/components/q-syntax-box.md#switch-between-views).
+Use a Syntax View on its own for one snippet, editor, or log. Place views directly inside a Syntax Box to group them. The box displays tabs when it contains two or more views. Each editable view uses its own [formatting language](../../../../../docs/components/q-syntax-box.md#languages). See the [working examples](../../../../../docs/components/q-syntax-box.md#switch-between-views).
 
 <!-- Auto Generated Below -->
 
 
 ## Overview
 
-An independently editable or read-only view inside a Syntax Box.
+Displays one editable or read-only view, on its own or as a child of a Syntax Box.
 
 ## Properties
 
-| Property    | Attribute    | Description                                                                         | Type                                        | Default     |
-| ----------- | ------------ | ----------------------------------------------------------------------------------- | ------------------------------------------- | ----------- |
-| `ariaLabel` | `aria-label` | Accessible name for the editor; falls back to `heading`, then the language.         | `string`                                    | `null`      |
-| `code`      | `code`       | Mirrored with `value`; prefer `code` for domain usage.                              | `string`                                    | `undefined` |
-| `copyable`  | `copyable`   |                                                                                     | `boolean`                                   | `false`     |
-| `disabled`  | `disabled`   | Disables editing and panel actions.                                                 | `boolean`                                   | `false`     |
-| `editable`  | `editable`   |                                                                                     | `boolean`                                   | `false`     |
-| `heading`   | `heading`    | Title in panel mode and tab label for a composed view.                              | `string`                                    | `undefined` |
-| `height`    | `height`     | Explicit content height. Panel mode defaults to 110px; plain mode defaults to auto. | `string`                                    | `undefined` |
-| `language`  | `language`   |                                                                                     | `"css" \| "html" \| "javascript" \| "json"` | `'html'`    |
-| `name`      | `name`       | Form field name used when the component is editable.                                | `string`                                    | `undefined` |
-| `required`  | `required`   | Marks the editable textarea as required for form validation.                        | `boolean`                                   | `false`     |
-| `value`     | `value`      | Form-value alias mirrored with `code` for compatibility.                            | `string`                                    | `undefined` |
-| `variant`   | `variant`    |                                                                                     | `"panel" \| "plain"`                        | `'panel'`   |
-| `viewKey`   | `view-key`   | Optional identity for preserving selection when replacing a view element.           | `string`                                    | `undefined` |
+| Property    | Attribute    | Description                                                                              | Type                                                                                                                                                                                                                                                                      | Default     |
+| ----------- | ------------ | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| `ariaLabel` | `aria-label` | Accessible name for the editor; falls back to `heading`, then the language.              | `string`                                                                                                                                                                                                                                                                  | `null`      |
+| `code`      | `code`       | Mirrored with `value`; prefer `code` for domain usage.                                   | `string`                                                                                                                                                                                                                                                                  | `undefined` |
+| `copyable`  | `copyable`   |                                                                                          | `boolean`                                                                                                                                                                                                                                                                 | `false`     |
+| `disabled`  | `disabled`   | Disables editing and panel actions.                                                      | `boolean`                                                                                                                                                                                                                                                                 | `false`     |
+| `editable`  | `editable`   |                                                                                          | `boolean`                                                                                                                                                                                                                                                                 | `false`     |
+| `heading`   | `heading`    | Title in panel mode and tab label for a composed view.                                   | `string`                                                                                                                                                                                                                                                                  | `undefined` |
+| `height`    | `height`     | Explicit content height. Panel mode defaults to 110px; plain mode defaults to auto.      | `string`                                                                                                                                                                                                                                                                  | `undefined` |
+| `language`  | `language`   | Selects the formatter. HTML, JavaScript, CSS, and JSON also receive syntax highlighting. | `"angular" \| "css" \| "flow" \| "graphql" \| "handlebars" \| "html" \| "javascript" \| "json" \| "json-stringify" \| "json5" \| "jsonc" \| "jsx" \| "less" \| "lwc" \| "markdown" \| "mdx" \| "mjml" \| "postcss" \| "scss" \| "tsx" \| "typescript" \| "vue" \| "yaml"` | `'html'`    |
+| `name`      | `name`       | Form field name used when the component is editable.                                     | `string`                                                                                                                                                                                                                                                                  | `undefined` |
+| `required`  | `required`   | Marks the editable textarea as required for form validation.                             | `boolean`                                                                                                                                                                                                                                                                 | `false`     |
+| `value`     | `value`      | Form-value alias mirrored with `code` for compatibility.                                 | `string`                                                                                                                                                                                                                                                                  | `undefined` |
+| `variant`   | `variant`    |                                                                                          | `"panel" \| "plain"`                                                                                                                                                                                                                                                      | `'panel'`   |
+| `viewKey`   | `view-key`   | Optional identity for preserving selection when replacing a view element.                | `string`                                                                                                                                                                                                                                                                  | `undefined` |
 
 
 ## Events

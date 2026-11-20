@@ -15,6 +15,17 @@ export const config: Config = {
   globalStyle: fromRepository('src/browser/theme/theme.css'),
   minifyCss: true,
   minifyJs: true,
+  rollupPlugins: {
+    before: [{
+      name: 'webquark-embedded-formatter',
+      resolveDynamicImport(id) {
+        if (id === '@webquark/browser/formatters/runtime') {
+          return { id: '../formatters/prettier/runtime.mjs', external: true };
+        }
+        return null;
+      },
+    }],
+  },
   sourceMap: false,
   watchIgnoredRegex: [/src\/playground\/.*/],
   outputTargets: [
@@ -23,7 +34,10 @@ export const config: Config = {
       dir: 'dist',
       esmLoaderPath: 'loader',
       empty: true,
-      copy: [{ src: 'theme/behaviors/native-content.css', dest: 'native-content.css' }],
+      copy: [
+        { src: 'theme/behaviors/native-content.css', dest: 'native-content.css' },
+        { src: '../tooling/formatter/build', dest: fromRepository('packages/browser/components/dist/formatters/prettier') },
+      ],
     },
     {
       type: 'dist-custom-elements',
@@ -43,6 +57,7 @@ export const config: Config = {
       indexHtml: 'index.html',
       copy: [
         { src: '../playground/presets.html', dest: 'presets.html' },
+        { src: '../tooling/formatter/build', dest: 'formatters/prettier' },
         { src: '../playground/consumer.html', dest: 'playground/consumer.html' },
         { src: 'theme/behaviors/native-content.css', dest: 'native-content.css' },
         { src: '../playground/logo.svg', dest: 'logo.svg' },

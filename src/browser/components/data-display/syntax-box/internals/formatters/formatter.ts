@@ -1,5 +1,7 @@
 import type { SyntaxFormatResult } from './formatter.types';
 import { formatJsonSource } from './json';
+import { formatterLanguage } from './languages';
+import { formatPrettierSource } from './util/prettier';
 
 export type { SyntaxFormatResult } from './formatter.types';
 export { formatHtml } from './html';
@@ -7,23 +9,19 @@ export { formatJs } from './javascript';
 export { formatCss } from './css';
 export { formatJson } from './json';
 
-const sourceFormatters = new Map<string, (code: string) => SyntaxFormatResult>([
-  ['json', formatJsonSource],
-]);
-
-function getFormatter(language: string) {
-  return typeof language === 'string' ? sourceFormatters.get(language.toLowerCase()) : undefined;
-}
-
 export function isFormatSupported(language: string): boolean {
-  return getFormatter(language) !== undefined;
+  return formatterLanguage(language) !== undefined;
 }
 
-export function formatSource(code: string, language: string): SyntaxFormatResult {
-  const format = getFormatter(language);
-  return format ? format(code) : { code, status: 'unsupported' };
+export function formatSource(code: string, language: 'json'): SyntaxFormatResult;
+export function formatSource(code: string, language: string): SyntaxFormatResult | Promise<SyntaxFormatResult>;
+export function formatSource(code: string, language: string): SyntaxFormatResult | Promise<SyntaxFormatResult> {
+  const selected = formatterLanguage(language);
+  if (!selected) return { code, status: 'unsupported' };
+  return selected === 'json' ? formatJsonSource(code) : formatPrettierSource(code, selected);
 }
 
-export function formatCode(code: string, language: string): string {
-  return formatSource(code, language).code;
+export function formatCode(code: string, language: string): string | Promise<string> {
+  const result = formatSource(code, language);
+  return result instanceof Promise ? result.then(value => value.code) : result.code;
 }

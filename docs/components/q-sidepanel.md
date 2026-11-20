@@ -162,6 +162,8 @@ Nav role=navigation uses trimmed aria-label or “Sidebar navigation”. A label
 
 Leaf matches use aria-current=page. Toggleable parents expose aria-expanded. A valid badge is a positive safe integer: values above 99 show 99+, while the item’s accessible label contains the full badgeLabel (trimmed) or count; badge visuals are aria-hidden. Fractions, zero, negative, NaN, and infinities show no badge.
 
+Hover a collapsed rail item to read its full label in the browser tooltip. In expanded navigation, only items with a badge show a tooltip, which includes the full badge description.
+
 Collapse controls use aria-expanded, title, and a dynamic Collapse/Expand sidebar/panel label when collapseLabel is empty, whitespace, or the default “Toggle sidebar”. A custom label stays fixed. Control adornments are aria-hidden and non-interactive; include their meaning in collapseLabel if needed. No live region is created.
 
 ### Forms

@@ -53,7 +53,7 @@ The release logic lives under `.github/scripts/publishing/`:
 - The private root `packages:build` script builds browser, tooling, core, React, and Angular without running tests. The root is never packed or published.
 - The root `pr:verify` package script remains available for local checks: it checks prop policy before building packages and running tooling and unit tests.
 - `prepare-release.ts` validates `.github/release.json`, calculates `-dev.N`, and aligns all five package versions and exact internal dependency versions. Core depends on browser and tooling; wrappers depend on and peer browser; tooling has no WebQuark dependency.
-- `verify-packages.ts` checks prop policy, builds all five packages, verifies packed Angular 21/22 consumers, runs every Vitest project by default, and validates manifests and npm tarballs. It is the publish workflow's final gate.
+- `verify-packages.ts` checks prop policy, builds all five packages, verifies packed Angular 21/22 consumers, and validates manifests and npm tarballs. By default it also tests formatter updates, exercises the packed browser formatter with external requests blocked, and runs every Vitest project. It is the publish workflow's final gate.
 - `publish-packages.ts` packs first, publishes browser/tooling before core and browser before React/Angular, prevents overwriting different npm contents, resumes matching partial publications, and applies the requested npm dist-tag.
 
 The root `publish-all` script requires an explicit `--tag dev|latest`. GitHub Actions uses npm trusted publishing. Local publishing requires an explicit `NODE_AUTH_TOKEN`.

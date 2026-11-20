@@ -60,7 +60,8 @@
 
 .slot-editor-heading {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: space-between;
   gap: 12px;
   width: 100%;
 }
@@ -115,17 +116,12 @@ property-row > .property-error {
   margin: 0;
 }
 
-property-row > .property-label[tabindex] {
+.property-label[tabindex] {
   justify-self: start;
   cursor: help;
   --q-tooltip-max-width: min(18rem, 90vw);
   --q-tooltip-white-space: normal;
   --q-tooltip-overflow-wrap: anywhere;
-}
-
-.property-meta {
-  flex: 1;
-  min-width: 0;
 }
 
 .property-control-container {
@@ -144,13 +140,6 @@ property-row > .property-label[tabindex] {
 
 property-row > .property-label {
   color: var(--q-fg-muted);
-}
-
-.property-label-sub {
-  font-size: 0.7rem;
-  color: var(--q-fg-muted);
-  display: block;
-  margin-top: 2px;
 }
 
 .properties-panel-header {

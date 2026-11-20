@@ -6,9 +6,20 @@ export interface SyntaxOwner {
   select(view: HTMLElement): void;
 }
 
-export const syntaxBoxes = new WeakMap<HTMLElement, SyntaxOwner>();
-export const syntaxScrollRestorers = new WeakMap<HTMLElement, () => void>();
-export const syntaxVisibility = new WeakMap<HTMLElement, () => void>();
+interface SyntaxViewRegistry {
+  syntaxBoxes: WeakMap<HTMLElement, SyntaxOwner>;
+  syntaxScrollRestorers: WeakMap<HTMLElement, () => void>;
+  syntaxVisibility: WeakMap<HTMLElement, () => void>;
+}
+
+// Stencil can load the box and its child views from independently bundled entry points.
+const registryKey = Symbol.for('@webquark/browser:syntax-views:v1');
+const runtime = globalThis as typeof globalThis & { [registryKey]?: SyntaxViewRegistry };
+export const { syntaxBoxes, syntaxScrollRestorers, syntaxVisibility } = runtime[registryKey] ??= {
+  syntaxBoxes: new WeakMap<HTMLElement, SyntaxOwner>(),
+  syntaxScrollRestorers: new WeakMap<HTMLElement, () => void>(),
+  syntaxVisibility: new WeakMap<HTMLElement, () => void>(),
+};
 
 export function syntaxOwner(view: HTMLElement): SyntaxOwner | undefined {
   return syntaxBoxes.get(view) ?? (view.localName === 'q-syntax-view' && view.parentElement

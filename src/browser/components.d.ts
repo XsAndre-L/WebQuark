@@ -2014,6 +2014,7 @@ export namespace Components {
          */
         "height"?: string;
         /**
+          * Selects the formatter. HTML, JavaScript, CSS, and JSON also receive syntax highlighting.
           * @default 'html'
          */
         "language": QSyntaxBoxLanguage;
@@ -2044,7 +2045,7 @@ export namespace Components {
         "variant": QSyntaxBoxVariant;
     }
     /**
-     * An independently editable or read-only view inside a Syntax Box.
+     * Displays one editable or read-only view, on its own or as a child of a Syntax Box.
      */
     interface QSyntaxView {
         /**
@@ -2074,7 +2075,7 @@ export namespace Components {
          */
         "editable": boolean;
         /**
-          * Shown only in the panel variant.
+          * Title in panel mode and tab label for a composed view.
          */
         "heading"?: string;
         /**
@@ -2082,6 +2083,7 @@ export namespace Components {
          */
         "height"?: string;
         /**
+          * Selects the formatter. HTML, JavaScript, CSS, and JSON also receive syntax highlighting.
           * @default 'html'
          */
         "language": QSyntaxBoxLanguage;
@@ -3211,7 +3213,7 @@ declare global {
         "qInput": string;
     }
     /**
-     * An independently editable or read-only view inside a Syntax Box.
+     * Displays one editable or read-only view, on its own or as a child of a Syntax Box.
      */
     interface HTMLQSyntaxViewElement extends Components.QSyntaxView, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQSyntaxViewElementEventMap>(type: K, listener: (this: HTMLQSyntaxViewElement, ev: QSyntaxViewCustomEvent<HTMLQSyntaxViewElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -5407,6 +5409,7 @@ declare namespace LocalJSX {
          */
         "height"?: string;
         /**
+          * Selects the formatter. HTML, JavaScript, CSS, and JSON also receive syntax highlighting.
           * @default 'html'
          */
         "language"?: QSyntaxBoxLanguage;
@@ -5437,7 +5440,7 @@ declare namespace LocalJSX {
         "variant"?: QSyntaxBoxVariant;
     }
     /**
-     * An independently editable or read-only view inside a Syntax Box.
+     * Displays one editable or read-only view, on its own or as a child of a Syntax Box.
      */
     interface QSyntaxView {
         /**
@@ -5467,7 +5470,7 @@ declare namespace LocalJSX {
          */
         "form"?: string;
         /**
-          * Shown only in the panel variant.
+          * Title in panel mode and tab label for a composed view.
          */
         "heading"?: string;
         /**
@@ -5475,6 +5478,7 @@ declare namespace LocalJSX {
          */
         "height"?: string;
         /**
+          * Selects the formatter. HTML, JavaScript, CSS, and JSON also receive syntax highlighting.
           * @default 'html'
          */
         "language"?: QSyntaxBoxLanguage;
@@ -6579,7 +6583,7 @@ declare module "@stencil/core" {
              */
             "q-syntax-box": LocalJSX.IntrinsicElements["q-syntax-box"] & JSXBase.HTMLAttributes<HTMLQSyntaxBoxElement>;
             /**
-             * An independently editable or read-only view inside a Syntax Box.
+             * Displays one editable or read-only view, on its own or as a child of a Syntax Box.
              */
             "q-syntax-view": LocalJSX.IntrinsicElements["q-syntax-view"] & JSXBase.HTMLAttributes<HTMLQSyntaxViewElement>;
             /**

@@ -5,7 +5,7 @@ interface SyntaxActions {
   editable: boolean;
   copyable: boolean;
   disabled: boolean;
-  formatSupported: boolean;
+  formatLabel?: string;
   copied: boolean;
   copyFeedback: string;
   onFormat: () => void;
@@ -14,15 +14,14 @@ interface SyntaxActions {
 }
 
 export function renderSyntaxActions(actions: SyntaxActions) {
-  const formatLabel = actions.formatSupported ? 'Format JSON' : 'Formatting is available for JSON only.';
   return (
     <div class="panel-actions" ref={actions.ref}>
       <slot name="actions" />
-      {actions.editable && (
-        <q-button class="format-btn" ariaLabel="Format JSON" variant="ghost" size="sm"
-          disabled={actions.disabled || !actions.formatSupported} onClick={actions.onFormat}>
+      {actions.editable && actions.formatLabel && (
+        <q-button class="format-btn" ariaLabel={actions.formatLabel} variant="ghost" size="sm"
+          disabled={actions.disabled} onClick={actions.onFormat}>
           <q-icon slot="icon-left" definition={Braces} name="braces" size="sm" />
-          <q-tooltip slot="icon-left" position="bottom" content={formatLabel} />
+          <q-tooltip slot="icon-left" position="bottom" content={actions.formatLabel} />
         </q-button>
       )}
       {actions.copyable && (
