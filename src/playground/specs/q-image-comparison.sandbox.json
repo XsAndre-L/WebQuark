@@ -8,17 +8,53 @@
     "afterAlt": { "type": "string", "default": "Illustrated workspace with a green background", "desc": "After image description" },
     "beforeLabel": { "type": "string", "default": "Before", "desc": "Left caption" },
     "afterLabel": { "type": "string", "default": "After", "desc": "Right caption" },
-    "aspectRatio": { "type": "number", "default": 1.7777777778, "desc": "Frame width / height" },
-    "position": { "type": "number", "default": 50, "desc": "Before reveal percentage" },
-    "ariaLabel": { "type": "string", "default": "Compare workspace illustrations", "desc": "Control name" }
+    "aspectRatio": { "type": "number", "desc": "Frame width / height" },
+    "position": { "type": "number", "default": 50, "desc": "Before reveal percentage", "min": 0, "max": 100 },
+    "ariaLabel": { "type": "string", "default": "Compare workspace illustrations", "desc": "Control name" },
+    "afterCrop": {
+      "type": "object",
+      "desc": "Source-percentage rectangle selected from After; omitted means the full image."
+    },
+    "beforeCrop": {
+      "type": "object",
+      "desc": "Source-percentage rectangle selected from Before; omitted means the full image."
+    }
   },
   "variants": [
     { "name": "Half revealed", "props": { "position": 50 } },
     { "name": "All Before", "props": { "position": 100 } },
     { "name": "All After", "props": { "position": 0 } },
-    { "name": "Square frame", "props": { "aspectRatio": 1 } }
+    { "name": "Square frame", "props": { "aspectRatio": 1 } },
+    {
+      "name": "Independent crops with derived ratio",
+      "props": {
+        "beforeCrop": {
+          "x": 0,
+          "y": 0,
+          "width": 50,
+          "height": 100
+        },
+        "afterCrop": {
+          "x": 25,
+          "y": 0,
+          "width": 75,
+          "height": 75
+        }
+      }
+    }
   ],
   "edgeCases": [
-    { "name": "Unavailable image", "props": { "afterSrc": "assets/missing-comparison.png" } }
+    { "name": "Unavailable image", "props": { "afterSrc": "assets/missing-comparison.png" } },
+    {
+      "name": "Invalid source crop",
+      "props": {
+        "afterCrop": {
+          "x": 90,
+          "y": 0,
+          "width": 40,
+          "height": 100
+        }
+      }
+    }
   ]
 }

@@ -1,10 +1,9 @@
 import { Component, Prop, State, Element, Listen, Event, EventEmitter, Watch, h } from '@stencil/core';
-import { getSlottedElements, handleTabTrap, safeFocus } from '../../../utils/dom';
+import { focusFirstElement, getSlottedElements, handleTabTrap } from '../../../utils/dom';
 
 import type { QThumbnailMaximizeDetail } from '../thumbnail/thumbnail.types';
 import type { QReelLayout } from './reel.types';
 
-const LIGHTBOX_FOCUS_DELAY_MS = 50;
 type QReelThumbnailElement = HTMLElement & Pick<QThumbnailMaximizeDetail, 'src' | 'label' | 'video' | 'alt'>;
 
 /**
@@ -31,12 +30,25 @@ export class QReel {
 
   @State() activeMedia: QThumbnailMaximizeDetail | null = null;
   private closeButtonRef?: HTMLButtonElement;
-  private focusTimer?: ReturnType<typeof setTimeout>;
+  private openingThumbnail?: HTMLElement;
+  private focusAfterRender?: 'viewer' | HTMLElement;
 
   // ========================= [3] LIFECYCLE & WATCHERS ==========================
 
+  componentDidRender() {
+    const target = this.focusAfterRender;
+    this.focusAfterRender = undefined;
+
+    if (target === 'viewer') {
+      this.closeButtonRef?.focus();
+    } else if (target?.isConnected) {
+      focusFirstElement(target);
+    }
+  }
+
   disconnectedCallback() {
-    this.clearFocusTimer();
+    this.focusAfterRender = undefined;
+    this.openingThumbnail = undefined;
   }
 
   @Watch('lightbox')
@@ -58,9 +70,11 @@ export class QReel {
   @Listen('qMaximize')
   handleThumbnailMaximize(event: CustomEvent<QThumbnailMaximizeDetail>) {
     if (!this.lightbox) return;
+    if (!this.activeMedia) this.openingThumbnail = event.detail.triggerEl;
+
+    this.focusAfterRender = 'viewer';
     this.activeMedia = event.detail;
     this.qLightboxOpen.emit();
-    this.scheduleFocus(this.closeButtonRef);
   }
 
   @Listen('keydown', { target: 'window' })
@@ -72,10 +86,10 @@ export class QReel {
   private closeLightbox = () => {
     if (!this.activeMedia) return;
 
-    const originalTrigger = this.activeMedia?.triggerEl;
+    this.focusAfterRender = this.openingThumbnail;
+    this.openingThumbnail = undefined;
     this.activeMedia = null;
     this.qLightboxClose.emit();
-    this.scheduleFocus(originalTrigger);
   };
 
   private handleKeyDown = (e: KeyboardEvent) => {
@@ -152,6 +166,7 @@ export class QReel {
     const thumbnails = this.getThumbnails();
     if (index >= 0 && index < thumbnails.length) {
       const thumb = thumbnails[index];
+      this.focusAfterRender = 'viewer';
       this.activeMedia = {
         src: thumb.src,
         label: thumb.label,
@@ -159,24 +174,7 @@ export class QReel {
         alt: thumb.alt,
         triggerEl: thumb,
       };
-
-      this.scheduleFocus(this.closeButtonRef);
     }
-  }
-
-  private clearFocusTimer() {
-    if (this.focusTimer) {
-      clearTimeout(this.focusTimer);
-      this.focusTimer = undefined;
-    }
-  }
-
-  private scheduleFocus(element: HTMLElement | null | undefined) {
-    this.clearFocusTimer();
-    this.focusTimer = setTimeout(() => {
-      this.focusTimer = undefined;
-      safeFocus(element);
-    }, LIGHTBOX_FOCUS_DELAY_MS);
   }
 
   // ===================== [6] RENDER (Visual Template Only) =====================

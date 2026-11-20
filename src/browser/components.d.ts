@@ -1976,7 +1976,7 @@ export namespace Components {
         "status": QStepDiagramItemStatus;
     }
     /**
-     * Displays and optionally edits syntax-highlighted code, with form association in editable mode.
+     * Displays syntax-highlighted content and automatically adds tabs for multiple views.
      */
     interface QSyntaxBox {
         /**
@@ -2006,7 +2006,7 @@ export namespace Components {
          */
         "editable": boolean;
         /**
-          * Shown only in the panel variant.
+          * Title in panel mode and tab label for a composed view.
          */
         "heading"?: string;
         /**
@@ -2014,6 +2014,7 @@ export namespace Components {
          */
         "height"?: string;
         /**
+          * Selects the formatter. HTML, JavaScript, CSS, and JSON also receive syntax highlighting.
           * @default 'html'
          */
         "language": QSyntaxBoxLanguage;
@@ -2022,7 +2023,7 @@ export namespace Components {
          */
         "name"?: string;
         /**
-          * Reports editable constraint violations and returns whether the control is valid.
+          * Reports editable constraint violations and reveals the editor in its owning box.
          */
         "reportValidity": () => Promise<boolean>;
         /**
@@ -2042,6 +2043,79 @@ export namespace Components {
           * @default 'panel'
          */
         "variant": QSyntaxBoxVariant;
+    }
+    /**
+     * Displays one editable or read-only view, on its own or as a child of a Syntax Box.
+     */
+    interface QSyntaxView {
+        /**
+          * Accessible name for the editor; falls back to `heading`, then the language.
+          * @default null
+         */
+        "ariaLabel": string | null;
+        /**
+          * Returns whether editable content satisfies native constraints.
+         */
+        "checkValidity": () => Promise<boolean>;
+        /**
+          * Mirrored with `value`; prefer `code` for domain usage.
+         */
+        "code"?: string;
+        /**
+          * @default false
+         */
+        "copyable": boolean;
+        /**
+          * Disables editing and panel actions.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * @default false
+         */
+        "editable": boolean;
+        /**
+          * Title in panel mode and tab label for a composed view.
+         */
+        "heading"?: string;
+        /**
+          * Explicit content height. Panel mode defaults to 110px; plain mode defaults to auto.
+         */
+        "height"?: string;
+        /**
+          * Selects the formatter. HTML, JavaScript, CSS, and JSON also receive syntax highlighting.
+          * @default 'html'
+         */
+        "language": QSyntaxBoxLanguage;
+        /**
+          * Form field name used when the component is editable.
+         */
+        "name"?: string;
+        /**
+          * Reports editable constraint violations and reveals the editor in its owning box.
+         */
+        "reportValidity": () => Promise<boolean>;
+        /**
+          * Marks the editable textarea as required for form validation.
+          * @default false
+         */
+        "required": boolean;
+        /**
+          * Programmatically scrolls the read-only code body to the bottom when it is wrapped by q-scrollable.
+         */
+        "scrollToBottom": () => Promise<void>;
+        /**
+          * Form-value alias mirrored with `code` for compatibility.
+         */
+        "value"?: string;
+        /**
+          * @default 'panel'
+         */
+        "variant": QSyntaxBoxVariant;
+        /**
+          * Optional identity for preserving selection when replacing a view element.
+         */
+        "viewKey"?: string;
     }
     /**
      * Accessible tab selector for switching between consumer-owned tab panels.
@@ -2426,6 +2500,10 @@ export interface QStepDiagramItemCustomEvent<T> extends CustomEvent<T> {
 export interface QSyntaxBoxCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLQSyntaxBoxElement;
+}
+export interface QSyntaxViewCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLQSyntaxViewElement;
 }
 export interface QTabsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -3114,7 +3192,7 @@ declare global {
         "qInput": string;
     }
     /**
-     * Displays and optionally edits syntax-highlighted code, with form association in editable mode.
+     * Displays syntax-highlighted content and automatically adds tabs for multiple views.
      */
     interface HTMLQSyntaxBoxElement extends Components.QSyntaxBox, HTMLStencilElement {
         addEventListener<K extends keyof HTMLQSyntaxBoxElementEventMap>(type: K, listener: (this: HTMLQSyntaxBoxElement, ev: QSyntaxBoxCustomEvent<HTMLQSyntaxBoxElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -3129,6 +3207,27 @@ declare global {
     var HTMLQSyntaxBoxElement: {
         prototype: HTMLQSyntaxBoxElement;
         new (): HTMLQSyntaxBoxElement;
+    };
+    interface HTMLQSyntaxViewElementEventMap {
+        "qChange": string;
+        "qInput": string;
+    }
+    /**
+     * Displays one editable or read-only view, on its own or as a child of a Syntax Box.
+     */
+    interface HTMLQSyntaxViewElement extends Components.QSyntaxView, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLQSyntaxViewElementEventMap>(type: K, listener: (this: HTMLQSyntaxViewElement, ev: QSyntaxViewCustomEvent<HTMLQSyntaxViewElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLQSyntaxViewElementEventMap>(type: K, listener: (this: HTMLQSyntaxViewElement, ev: QSyntaxViewCustomEvent<HTMLQSyntaxViewElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLQSyntaxViewElement: {
+        prototype: HTMLQSyntaxViewElement;
+        new (): HTMLQSyntaxViewElement;
     };
     interface HTMLQTabsElementEventMap {
         "qChange": string;
@@ -3289,6 +3388,7 @@ declare global {
         "q-step-diagram": HTMLQStepDiagramElement;
         "q-step-diagram-item": HTMLQStepDiagramItemElement;
         "q-syntax-box": HTMLQSyntaxBoxElement;
+        "q-syntax-view": HTMLQSyntaxViewElement;
         "q-tabs": HTMLQTabsElement;
         "q-textarea": HTMLQTextareaElement;
         "q-thumbnail": HTMLQThumbnailElement;
@@ -5271,7 +5371,7 @@ declare namespace LocalJSX {
         "status"?: QStepDiagramItemStatus;
     }
     /**
-     * Displays and optionally edits syntax-highlighted code, with form association in editable mode.
+     * Displays syntax-highlighted content and automatically adds tabs for multiple views.
      */
     interface QSyntaxBox {
         /**
@@ -5301,7 +5401,7 @@ declare namespace LocalJSX {
          */
         "form"?: string;
         /**
-          * Shown only in the panel variant.
+          * Title in panel mode and tab label for a composed view.
          */
         "heading"?: string;
         /**
@@ -5309,6 +5409,7 @@ declare namespace LocalJSX {
          */
         "height"?: string;
         /**
+          * Selects the formatter. HTML, JavaScript, CSS, and JSON also receive syntax highlighting.
           * @default 'html'
          */
         "language"?: QSyntaxBoxLanguage;
@@ -5337,6 +5438,79 @@ declare namespace LocalJSX {
           * @default 'panel'
          */
         "variant"?: QSyntaxBoxVariant;
+    }
+    /**
+     * Displays one editable or read-only view, on its own or as a child of a Syntax Box.
+     */
+    interface QSyntaxView {
+        /**
+          * Accessible name for the editor; falls back to `heading`, then the language.
+          * @default null
+         */
+        "ariaLabel"?: string | null;
+        /**
+          * Mirrored with `value`; prefer `code` for domain usage.
+         */
+        "code"?: string;
+        /**
+          * @default false
+         */
+        "copyable"?: boolean;
+        /**
+          * Disables editing and panel actions.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * @default false
+         */
+        "editable"?: boolean;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        /**
+          * Title in panel mode and tab label for a composed view.
+         */
+        "heading"?: string;
+        /**
+          * Explicit content height. Panel mode defaults to 110px; plain mode defaults to auto.
+         */
+        "height"?: string;
+        /**
+          * Selects the formatter. HTML, JavaScript, CSS, and JSON also receive syntax highlighting.
+          * @default 'html'
+         */
+        "language"?: QSyntaxBoxLanguage;
+        /**
+          * Form field name used when the component is editable.
+         */
+        "name"?: string;
+        /**
+          * Emitted when editable content is committed by the native change event or by formatting.
+         */
+        "onQChange"?: (event: QSyntaxViewCustomEvent<string>) => void;
+        /**
+          * Emitted on each editable content input and after formatting.
+         */
+        "onQInput"?: (event: QSyntaxViewCustomEvent<string>) => void;
+        /**
+          * Marks the editable textarea as required for form validation.
+          * @default false
+         */
+        "required"?: boolean;
+        /**
+          * Form-value alias mirrored with `code` for compatibility.
+         */
+        "value"?: string;
+        /**
+          * @default 'panel'
+         */
+        "variant"?: QSyntaxBoxVariant;
+        /**
+          * Optional identity for preserving selection when replacing a view element.
+         */
+        "viewKey"?: string;
     }
     /**
      * Accessible tab selector for switching between consumer-owned tab panels.
@@ -6072,6 +6246,21 @@ declare namespace LocalJSX {
         "language": QSyntaxBoxLanguage;
         "disabled": boolean;
     }
+    interface QSyntaxViewAttributes {
+        "code": string;
+        "value": string;
+        "heading": string;
+        "ariaLabel": string | null;
+        "variant": QSyntaxBoxVariant;
+        "height": string;
+        "copyable": boolean;
+        "editable": boolean;
+        "name": string;
+        "required": boolean;
+        "language": QSyntaxBoxLanguage;
+        "disabled": boolean;
+        "viewKey": string;
+    }
     interface QTabsAttributes {
         "items": TabItemInput[] | string;
         "value": string;
@@ -6180,6 +6369,7 @@ declare namespace LocalJSX {
         "q-step-diagram": Omit<QStepDiagram, keyof QStepDiagramAttributes> & { [K in keyof QStepDiagram & keyof QStepDiagramAttributes]?: QStepDiagram[K] } & { [K in keyof QStepDiagram & keyof QStepDiagramAttributes as `attr:${K}`]?: QStepDiagramAttributes[K] } & { [K in keyof QStepDiagram & keyof QStepDiagramAttributes as `prop:${K}`]?: QStepDiagram[K] };
         "q-step-diagram-item": Omit<QStepDiagramItem, keyof QStepDiagramItemAttributes> & { [K in keyof QStepDiagramItem & keyof QStepDiagramItemAttributes]?: QStepDiagramItem[K] } & { [K in keyof QStepDiagramItem & keyof QStepDiagramItemAttributes as `attr:${K}`]?: QStepDiagramItemAttributes[K] } & { [K in keyof QStepDiagramItem & keyof QStepDiagramItemAttributes as `prop:${K}`]?: QStepDiagramItem[K] };
         "q-syntax-box": Omit<QSyntaxBox, keyof QSyntaxBoxAttributes> & { [K in keyof QSyntaxBox & keyof QSyntaxBoxAttributes]?: QSyntaxBox[K] } & { [K in keyof QSyntaxBox & keyof QSyntaxBoxAttributes as `attr:${K}`]?: QSyntaxBoxAttributes[K] } & { [K in keyof QSyntaxBox & keyof QSyntaxBoxAttributes as `prop:${K}`]?: QSyntaxBox[K] };
+        "q-syntax-view": Omit<QSyntaxView, keyof QSyntaxViewAttributes> & { [K in keyof QSyntaxView & keyof QSyntaxViewAttributes]?: QSyntaxView[K] } & { [K in keyof QSyntaxView & keyof QSyntaxViewAttributes as `attr:${K}`]?: QSyntaxViewAttributes[K] } & { [K in keyof QSyntaxView & keyof QSyntaxViewAttributes as `prop:${K}`]?: QSyntaxView[K] };
         "q-tabs": Omit<QTabs, keyof QTabsAttributes> & { [K in keyof QTabs & keyof QTabsAttributes]?: QTabs[K] } & { [K in keyof QTabs & keyof QTabsAttributes as `attr:${K}`]?: QTabsAttributes[K] } & { [K in keyof QTabs & keyof QTabsAttributes as `prop:${K}`]?: QTabs[K] };
         "q-textarea": Omit<QTextarea, keyof QTextareaAttributes> & { [K in keyof QTextarea & keyof QTextareaAttributes]?: QTextarea[K] } & { [K in keyof QTextarea & keyof QTextareaAttributes as `attr:${K}`]?: QTextareaAttributes[K] } & { [K in keyof QTextarea & keyof QTextareaAttributes as `prop:${K}`]?: QTextarea[K] };
         "q-thumbnail": Omit<QThumbnail, keyof QThumbnailAttributes> & { [K in keyof QThumbnail & keyof QThumbnailAttributes]?: QThumbnail[K] } & { [K in keyof QThumbnail & keyof QThumbnailAttributes as `attr:${K}`]?: QThumbnailAttributes[K] } & { [K in keyof QThumbnail & keyof QThumbnailAttributes as `prop:${K}`]?: QThumbnail[K] };
@@ -6389,9 +6579,13 @@ declare module "@stencil/core" {
              */
             "q-step-diagram-item": LocalJSX.IntrinsicElements["q-step-diagram-item"] & JSXBase.HTMLAttributes<HTMLQStepDiagramItemElement>;
             /**
-             * Displays and optionally edits syntax-highlighted code, with form association in editable mode.
+             * Displays syntax-highlighted content and automatically adds tabs for multiple views.
              */
             "q-syntax-box": LocalJSX.IntrinsicElements["q-syntax-box"] & JSXBase.HTMLAttributes<HTMLQSyntaxBoxElement>;
+            /**
+             * Displays one editable or read-only view, on its own or as a child of a Syntax Box.
+             */
+            "q-syntax-view": LocalJSX.IntrinsicElements["q-syntax-view"] & JSXBase.HTMLAttributes<HTMLQSyntaxViewElement>;
             /**
              * Accessible tab selector for switching between consumer-owned tab panels.
              */

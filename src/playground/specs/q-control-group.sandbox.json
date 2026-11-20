@@ -15,6 +15,16 @@
   },
   "variants": [
     { "name": "Sync interval", "props": {} },
-    { "name": "Vertical", "props": { "orientation": "vertical" } }
+    { "name": "Vertical", "props": { "orientation": "vertical" } },
+    {
+      "name": "Inherited size and child override",
+      "props": {
+        "size": "lg",
+        "ariaLabel": "Display settings"
+      },
+      "slots": {
+        "default": "<q-input label=\"Title\"></q-input><q-button size=\"sm\">Apply</q-button>"
+      }
+    }
   ]
 }

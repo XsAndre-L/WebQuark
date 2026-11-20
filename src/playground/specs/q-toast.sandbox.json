@@ -1,12 +1,7 @@
 {
   "tag": "q-toast",
   "name": "Toast",
-  "description": "Global mutation feedback driven by the framework-neutral toast controller.",
-  "stageHelper": {
-    "label": "Toast Component Control",
-    "buttonId": "stageShowToastBtn",
-    "buttonLabel": "Show Error Toast"
-  },
+  "description": "Show a toast with a chosen title, description, duration and dismiss behavior. Use its returned ID to dismiss it or clear the queue.",
   "props": {
     "position": {
       "type": "select",
@@ -24,9 +19,25 @@
     "maxVisible": {
       "type": "number",
       "min": 1,
-      "max": 10,
       "default": 3,
       "desc": "Maximum number of visible toasts before queueing"
     }
-  }
+  },
+  "variants": [
+    {
+      "name": "Queue with one visible toast",
+      "props": {
+        "maxVisible": 1,
+        "position": "bottom-center"
+      }
+    }
+  ],
+  "edgeCases": [
+    {
+      "name": "Persistent notifications",
+      "props": {
+        "position": "top-start"
+      }
+    }
+  ]
 }

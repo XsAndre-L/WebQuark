@@ -1,0 +1,95 @@
+{
+  "tag": "q-alert",
+  "name": "Alert",
+  "description": "Inline feedback with optional announcement, actions and consumer-managed dismissal.",
+  "props": {
+    "heading": {
+      "type": "string",
+      "desc": "Visible heading",
+      "default": "Review changes"
+    },
+    "variant": {
+      "type": "select",
+      "desc": "Alert tone",
+      "default": "info",
+      "options": [
+        "info",
+        "success",
+        "warning",
+        "danger"
+      ]
+    },
+    "announcement": {
+      "type": "select",
+      "desc": "Live announcement priority",
+      "default": "off",
+      "options": [
+        "off",
+        "polite",
+        "assertive"
+      ]
+    },
+    "dismissible": {
+      "type": "boolean",
+      "desc": "Show the dismiss control",
+      "default": false
+    },
+    "dismissLabel": {
+      "type": "string",
+      "desc": "Accessible dismiss label",
+      "default": "Dismiss alert"
+    }
+  },
+  "slots": {
+    "default": {
+      "type": "html",
+      "desc": "Message",
+      "default": "Two files have changes."
+    },
+    "icon": {
+      "type": "html",
+      "desc": "Leading icon",
+      "default": ""
+    },
+    "actions": {
+      "type": "html",
+      "desc": "Action controls",
+      "default": ""
+    }
+  },
+  "variants": [
+    {
+      "name": "Successful save",
+      "props": {
+        "heading": "Document saved",
+        "variant": "success",
+        "announcement": "polite"
+      }
+    },
+    {
+      "name": "Dismissible warning",
+      "props": {
+        "variant": "warning",
+        "dismissible": true,
+        "dismissLabel": "Dismiss warning"
+      },
+      "slots": {
+        "default": "Storage is nearly full.",
+        "icon": "⚠",
+        "actions": "<q-link href=\"#storage\">Storage settings</q-link>"
+      }
+    },
+    {
+      "name": "Urgent failure",
+      "props": {
+        "variant": "danger",
+        "announcement": "assertive",
+        "heading": "Upload failed"
+      },
+      "slots": {
+        "default": "Check the connection before retrying."
+      }
+    }
+  ],
+  "edgeCases": []
+}

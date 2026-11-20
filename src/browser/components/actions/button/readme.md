@@ -71,6 +71,7 @@ Action button that renders a native button or anchor according to `href`.
 
  - [q-data-table](../../data-display/data-table)
  - [q-syntax-box](../../data-display/syntax-box)
+ - [q-syntax-view](../../data-display/syntax-view)
 
 ### Depends on
 
@@ -82,6 +83,7 @@ graph TD;
   q-button --> q-icon
   q-data-table --> q-button
   q-syntax-box --> q-button
+  q-syntax-view --> q-button
   style q-button fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

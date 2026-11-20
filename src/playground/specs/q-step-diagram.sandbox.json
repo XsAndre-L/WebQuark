@@ -8,8 +8,20 @@
         "vertical",
         "horizontal"
       ],
-      "default": "vertical",
       "desc": "Timeline orientation path"
+    },
+    "ariaLabel": {
+      "type": "string",
+      "desc": "Accessible list name",
+      "default": "Steps"
+    },
+    "layout": {
+      "type": "select",
+      "desc": "Deprecated fallback. Use orientation; omit the replacement to try this alias.",
+      "options": [
+        "horizontal",
+        "vertical"
+      ]
     }
   },
   "slots": {
@@ -31,6 +43,15 @@
       "props": {
         "orientation": "horizontal"
       }
+    },
+    {
+      "name": "Customized badge",
+      "props": {
+        "ariaLabel": "Build pipeline"
+      },
+      "slots": {
+        "default": "<q-step-diagram-item status=\"active\"><span slot=\"badge\">1</span><span slot=\"title\">Compile</span>Compile project sources.</q-step-diagram-item>"
+      }
     }
   ],
   "edgeCases": [
@@ -50,6 +71,13 @@
       },
       "slots": {
         "default": "<q-step-diagram-item status=\"active\" line-style=\"none\"><span slot=\"title\">Isolated Node</span>Lone timeline item</q-step-diagram-item>"
+      }
+    },
+    {
+      "name": "Legacy horizontal layout",
+      "props": {
+        "orientation": null,
+        "layout": "horizontal"
       }
     }
   ]

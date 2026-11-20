@@ -1,0 +1,1378 @@
+{
+  "q-accordion": {
+    "attributes": {
+      "mode": "mode"
+    },
+    "defaults": {
+      "mode": "'single'"
+    },
+    "requiredProps": [],
+    "events": []
+  },
+  "q-alert": {
+    "attributes": {
+      "announcement": "announcement",
+      "dismissLabel": "dismiss-label",
+      "dismissible": "dismissible",
+      "heading": "heading",
+      "variant": "variant"
+    },
+    "defaults": {
+      "announcement": "'off'",
+      "dismissLabel": "'Dismiss alert'",
+      "dismissible": "false",
+      "heading": "undefined",
+      "variant": "'info'"
+    },
+    "requiredProps": [],
+    "events": [
+      "qDismiss"
+    ]
+  },
+  "q-avatar": {
+    "attributes": {
+      "alt": "alt",
+      "initials": "initials",
+      "loading": "loading",
+      "name": "name",
+      "shape": "shape",
+      "size": "size",
+      "src": "src"
+    },
+    "defaults": {
+      "alt": "undefined",
+      "initials": "undefined",
+      "loading": "'lazy'",
+      "name": "undefined",
+      "shape": "'circle'",
+      "size": "'md'",
+      "src": "undefined"
+    },
+    "requiredProps": [],
+    "events": [
+      "qError",
+      "qLoad"
+    ]
+  },
+  "q-banner": {
+    "attributes": {
+      "alignment": "alignment",
+      "height": "height"
+    },
+    "defaults": {
+      "alignment": "'center'",
+      "height": "'auto'"
+    },
+    "requiredProps": [],
+    "events": []
+  },
+  "q-button": {
+    "attributes": {
+      "ariaLabel": "aria-label",
+      "disabled": "disabled",
+      "download": "download",
+      "expand": "expand",
+      "form": "form",
+      "formAction": "formaction",
+      "formEnctype": "formenctype",
+      "formMethod": "formmethod",
+      "formNoValidate": "formnovalidate",
+      "formTarget": "formtarget",
+      "href": "href",
+      "icon": "icon",
+      "iconOnly": "icon-only",
+      "layout": "layout",
+      "loading": "loading",
+      "name": "name",
+      "rel": "rel",
+      "shape": "shape",
+      "size": "size",
+      "target": "target",
+      "type": "type",
+      "value": "value",
+      "variant": "variant"
+    },
+    "defaults": {
+      "ariaLabel": "null",
+      "disabled": "false",
+      "download": "undefined",
+      "expand": "false",
+      "form": "undefined",
+      "formAction": "undefined",
+      "formEnctype": "undefined",
+      "formMethod": "undefined",
+      "formNoValidate": "false",
+      "formTarget": "undefined",
+      "href": "undefined",
+      "icon": "undefined",
+      "iconOnly": "undefined",
+      "layout": "'inline'",
+      "loading": "false",
+      "name": "undefined",
+      "rel": "undefined",
+      "shape": "'default'",
+      "size": "'inherit'",
+      "target": "undefined",
+      "type": "'button'",
+      "value": "''",
+      "variant": "'primary'"
+    },
+    "requiredProps": [],
+    "events": [
+      "qBlur",
+      "qClick",
+      "qFocus"
+    ]
+  },
+  "q-card": {
+    "attributes": {
+      "dividers": "dividers",
+      "elevation": "elevation",
+      "footerPadding": "footer-padding",
+      "glass": "glass",
+      "headerPadding": "header-padding",
+      "interactive": "interactive",
+      "lift": "lift",
+      "padding": "padding",
+      "surface": "surface"
+    },
+    "defaults": {
+      "dividers": "false",
+      "elevation": "'low'",
+      "footerPadding": "undefined",
+      "glass": "false",
+      "headerPadding": "undefined",
+      "interactive": "false",
+      "lift": "false",
+      "padding": "'lg'",
+      "surface": "undefined"
+    },
+    "requiredProps": [],
+    "events": []
+  },
+  "q-carousel": {
+    "attributes": {
+      "ariaLabel": "aria-label",
+      "autoplay": "autoplay",
+      "autoplayAdvanceSuspended": "autoplay-advance-suspended",
+      "autoplayBehavior": "autoplay-behavior",
+      "autoplayInterval": "autoplay-interval",
+      "autoplaySuspended": "autoplay-suspended",
+      "itemWidth": "item-width",
+      "layout": "layout",
+      "repeat": "repeat",
+      "rotationPlacement": "rotation-placement",
+      "showArrows": "show-arrows",
+      "showIndicators": "show-indicators",
+      "slideTiming": "slide-timing",
+      "snapAlignment": "snap-alignment",
+      "transition": "transition",
+      "transitionDuration": "transition-duration"
+    },
+    "defaults": {
+      "ariaLabel": "'Carousel content'",
+      "autoplay": "false",
+      "autoplayAdvanceSuspended": "false",
+      "autoplayBehavior": "'pauseOnInteraction'",
+      "autoplayInterval": "5000",
+      "autoplaySuspended": "false",
+      "itemWidth": "'auto'",
+      "layout": "'strip'",
+      "repeat": "false",
+      "rotationPlacement": "'controls'",
+      "showArrows": "undefined",
+      "showIndicators": "undefined",
+      "slideTiming": "'fixedInterval'",
+      "snapAlignment": "'start'",
+      "transition": "'slide'",
+      "transitionDuration": "500"
+    },
+    "requiredProps": [],
+    "events": [
+      "qAutoplayChange",
+      "qPlaybackChange",
+      "qSlideChange"
+    ]
+  },
+  "q-chip": {
+    "attributes": {
+      "clickable": "clickable",
+      "disabled": "disabled",
+      "download": "download",
+      "href": "href",
+      "label": "label",
+      "rel": "rel",
+      "removable": "removable",
+      "selected": "selected",
+      "size": "size",
+      "target": "target",
+      "value": "value",
+      "variant": "variant"
+    },
+    "defaults": {
+      "clickable": "false",
+      "disabled": "false",
+      "download": "undefined",
+      "href": "undefined",
+      "label": "undefined",
+      "rel": "undefined",
+      "removable": "false",
+      "selected": "false",
+      "size": "'md'",
+      "target": "undefined",
+      "value": "undefined",
+      "variant": "'neutral'"
+    },
+    "requiredProps": [],
+    "events": [
+      "qBlur",
+      "qClick",
+      "qFocus",
+      "qRemove"
+    ]
+  },
+  "q-control-group": {
+    "attributes": {
+      "ariaLabel": "aria-label",
+      "orientation": "orientation",
+      "size": "size"
+    },
+    "defaults": {
+      "ariaLabel": "null",
+      "orientation": "'horizontal'",
+      "size": "'inherit'"
+    },
+    "requiredProps": [],
+    "events": []
+  },
+  "q-conversation-bubble": {
+    "attributes": {
+      "ariaLabel": "aria-label",
+      "compact": "compact",
+      "sender": "sender",
+      "timestamp": "timestamp",
+      "variant": "variant"
+    },
+    "defaults": {
+      "ariaLabel": "null",
+      "compact": "false",
+      "sender": "undefined",
+      "timestamp": "undefined",
+      "variant": "'incoming'"
+    },
+    "requiredProps": [],
+    "events": []
+  },
+  "q-data-table": {
+    "attributes": {
+      "ariaLabel": "aria-label",
+      "columns": "columns",
+      "items": "items",
+      "keyField": "key-field",
+      "loading": "loading",
+      "rowActions": "row-actions",
+      "rowClickable": "row-clickable",
+      "rowGroup": null,
+      "rowGutter": "row-gutter",
+      "rowNumberOffset": "row-number-offset",
+      "searchPlaceholder": "search-placeholder",
+      "searchValue": "search-value",
+      "selectable": "selectable",
+      "selectedKeys": null,
+      "showSearch": "show-search",
+      "showToolbar": "show-toolbar",
+      "sortColumn": "sort-column",
+      "sortDirection": "sort-direction",
+      "sortMode": "sort-mode",
+      "sortable": "sortable",
+      "toolbarTitle": "toolbar-title",
+      "twoLineRows": "two-line-rows"
+    },
+    "defaults": {
+      "ariaLabel": "null",
+      "columns": "[]",
+      "items": "[]",
+      "keyField": "'id'",
+      "loading": "false",
+      "rowActions": "[]",
+      "rowClickable": "true",
+      "rowGroup": "undefined",
+      "rowGutter": "'blank'",
+      "rowNumberOffset": "0",
+      "searchPlaceholder": "'Search...'",
+      "searchValue": "''",
+      "selectable": "false",
+      "selectedKeys": "[]",
+      "showSearch": "false",
+      "showToolbar": "false",
+      "sortColumn": "undefined",
+      "sortDirection": "undefined",
+      "sortMode": "'table'",
+      "sortable": "false",
+      "toolbarTitle": "undefined",
+      "twoLineRows": "false"
+    },
+    "requiredProps": [],
+    "events": [
+      "qRowAction",
+      "qRowClick",
+      "qSearch",
+      "qSelectionChange",
+      "qSortChange"
+    ]
+  },
+  "q-dialog": {
+    "attributes": {
+      "ariaLabel": "aria-label",
+      "backdrop": "backdrop",
+      "backdropEffect": "backdrop-effect",
+      "cancelLabel": "cancel-label",
+      "closeLabel": "close-label",
+      "closeOnBackdropClick": "close-on-backdrop-click",
+      "closeOnEsc": "close-on-esc",
+      "closeOnEscape": "close-on-escape",
+      "closeOnOverlayClick": "close-on-overlay-click",
+      "confirmLabel": "confirm-label",
+      "dialogTitle": "dialog-title",
+      "heading": "heading",
+      "loading": "loading",
+      "message": "message",
+      "open": "open",
+      "showCancel": "show-cancel",
+      "showConfirm": "show-confirm",
+      "size": "size"
+    },
+    "defaults": {
+      "ariaLabel": "null",
+      "backdrop": "undefined",
+      "backdropEffect": "'solid'",
+      "cancelLabel": "'Cancel'",
+      "closeLabel": "'Close dialog'",
+      "closeOnBackdropClick": "undefined",
+      "closeOnEsc": "true",
+      "closeOnEscape": "undefined",
+      "closeOnOverlayClick": "true",
+      "confirmLabel": "'Confirm'",
+      "dialogTitle": "undefined",
+      "heading": "undefined",
+      "loading": "false",
+      "message": "undefined",
+      "open": "false",
+      "showCancel": "true",
+      "showConfirm": "true",
+      "size": "'md'"
+    },
+    "requiredProps": [],
+    "events": [
+      "qCancel",
+      "qClose",
+      "qConfirm"
+    ]
+  },
+  "q-divider": {
+    "attributes": {
+      "decorative": "decorative",
+      "length": "length",
+      "orientation": "orientation",
+      "spacing": "spacing"
+    },
+    "defaults": {
+      "decorative": "false",
+      "length": "'auto'",
+      "orientation": "'horizontal'",
+      "spacing": "'lg'"
+    },
+    "requiredProps": [],
+    "events": []
+  },
+  "q-dropdown": {
+    "attributes": {
+      "ariaLabel": "aria-label",
+      "collisionPadding": "collision-padding",
+      "description": "description",
+      "disabled": "disabled",
+      "error": "error",
+      "externalSearch": "external-search",
+      "hasMore": "has-more",
+      "label": "label",
+      "labelHidden": "label-hidden",
+      "loading": "loading",
+      "multiple": "multiple",
+      "name": "name",
+      "options": "options",
+      "placeholder": "placeholder",
+      "placement": "placement",
+      "required": "required",
+      "reserveFeedback": "reserve-feedback",
+      "searchMode": "search-mode",
+      "searchable": "searchable",
+      "size": "size",
+      "value": "value",
+      "values": null,
+      "width": "width"
+    },
+    "defaults": {
+      "ariaLabel": "null",
+      "collisionPadding": "8",
+      "description": "undefined",
+      "disabled": "false",
+      "error": "undefined",
+      "externalSearch": "false",
+      "hasMore": "false",
+      "label": "undefined",
+      "labelHidden": "false",
+      "loading": "false",
+      "multiple": "false",
+      "name": "undefined",
+      "options": "[]",
+      "placeholder": "'Select an option...'",
+      "placement": "'auto'",
+      "required": "false",
+      "reserveFeedback": "undefined",
+      "searchMode": "'default'",
+      "searchable": "false",
+      "size": "'inherit'",
+      "value": "''",
+      "values": "[]",
+      "width": "undefined"
+    },
+    "requiredProps": [],
+    "events": [
+      "qBlur",
+      "qChange",
+      "qClick",
+      "qFocus",
+      "qLoadMore",
+      "qSearch",
+      "qSelect",
+      "qValuesChange"
+    ]
+  },
+  "q-form": {
+    "attributes": {
+      "action": "action",
+      "ariaLabel": "aria-label",
+      "autocomplete": "autocomplete",
+      "enctype": "enctype",
+      "enterBehavior": "enter-behavior",
+      "label": "label",
+      "labelHidden": "label-hidden",
+      "method": "method",
+      "noValidate": "no-validate",
+      "preventDefault": "prevent-default",
+      "reserveFeedback": "reserve-feedback",
+      "size": "size",
+      "target": "target"
+    },
+    "defaults": {
+      "action": "undefined",
+      "ariaLabel": "null",
+      "autocomplete": "'on'",
+      "enctype": "'application/x-www-form-urlencoded'",
+      "enterBehavior": "'submit'",
+      "label": "undefined",
+      "labelHidden": "false",
+      "method": "'post'",
+      "noValidate": "false",
+      "preventDefault": "true",
+      "reserveFeedback": "undefined",
+      "size": "'inherit'",
+      "target": "undefined"
+    },
+    "requiredProps": [],
+    "events": [
+      "qReset",
+      "qSubmit"
+    ]
+  },
+  "q-grid": {
+    "attributes": {
+      "columnGap": "column-gap",
+      "columns": "columns",
+      "gap": "gap",
+      "minItemWidth": "min-item-width",
+      "rowGap": "row-gap"
+    },
+    "defaults": {
+      "columnGap": "undefined",
+      "columns": "2",
+      "gap": "'lg'",
+      "minItemWidth": "'16rem'",
+      "rowGap": "undefined"
+    },
+    "requiredProps": [],
+    "events": []
+  },
+  "q-icon": {
+    "attributes": {
+      "color": "color",
+      "definition": null,
+      "fetchTimeout": "fetch-timeout",
+      "label": "label",
+      "lib": "lib",
+      "libVersion": "lib-version",
+      "library": "library",
+      "libraryVersion": "library-version",
+      "localPath": "local-path",
+      "name": "name",
+      "size": "size"
+    },
+    "defaults": {
+      "color": "'currentColor'",
+      "definition": "undefined",
+      "fetchTimeout": "8000",
+      "label": "undefined",
+      "lib": "'lucide'",
+      "libVersion": "undefined",
+      "library": "undefined",
+      "libraryVersion": "undefined",
+      "localPath": "'/assets/icons/'",
+      "name": "undefined",
+      "size": "'md'"
+    },
+    "requiredProps": [],
+    "events": []
+  },
+  "q-image-comparison": {
+    "attributes": {
+      "afterAlt": "after-alt",
+      "afterCrop": null,
+      "afterLabel": "after-label",
+      "afterSrc": "after-src",
+      "ariaLabel": "aria-label",
+      "aspectRatio": "aspect-ratio",
+      "beforeAlt": "before-alt",
+      "beforeCrop": null,
+      "beforeLabel": "before-label",
+      "beforeSrc": "before-src",
+      "position": "position"
+    },
+    "defaults": {
+      "afterAlt": "''",
+      "afterCrop": "undefined",
+      "afterLabel": "'After'",
+      "afterSrc": "''",
+      "ariaLabel": "'Image comparison'",
+      "aspectRatio": "undefined",
+      "beforeAlt": "''",
+      "beforeCrop": "undefined",
+      "beforeLabel": "'Before'",
+      "beforeSrc": "''",
+      "position": "50"
+    },
+    "requiredProps": [],
+    "events": [
+      "qChange"
+    ]
+  },
+  "q-inline": {
+    "attributes": {
+      "align": "align",
+      "gap": "gap",
+      "justify": "justify",
+      "wrap": "wrap"
+    },
+    "defaults": {
+      "align": "'center'",
+      "gap": "'sm'",
+      "justify": "'start'",
+      "wrap": "true"
+    },
+    "requiredProps": [],
+    "events": []
+  },
+  "q-input": {
+    "attributes": {
+      "ariaLabel": "aria-label",
+      "clearable": "clearable",
+      "description": "description",
+      "disabled": "disabled",
+      "error": "error",
+      "errorMessage": "error-message",
+      "label": "label",
+      "labelHidden": "label-hidden",
+      "max": "max",
+      "min": "min",
+      "name": "name",
+      "placeholder": "placeholder",
+      "required": "required",
+      "reserveFeedback": "reserve-feedback",
+      "size": "size",
+      "step": "step",
+      "type": "type",
+      "value": "value",
+      "width": "width"
+    },
+    "defaults": {
+      "ariaLabel": "null",
+      "clearable": "false",
+      "description": "undefined",
+      "disabled": "false",
+      "error": "undefined",
+      "errorMessage": "undefined",
+      "label": "undefined",
+      "labelHidden": "false",
+      "max": "undefined",
+      "min": "undefined",
+      "name": "undefined",
+      "placeholder": "\"\"",
+      "required": "false",
+      "reserveFeedback": "undefined",
+      "size": "'inherit'",
+      "step": "1",
+      "type": "'text'",
+      "value": "\"\"",
+      "width": "undefined"
+    },
+    "requiredProps": [],
+    "events": [
+      "qBlur",
+      "qChange",
+      "qClick",
+      "qFocus",
+      "qInput"
+    ]
+  },
+  "q-link": {
+    "attributes": {
+      "disabled": "disabled",
+      "download": "download",
+      "external": "external",
+      "href": "href",
+      "label": "label",
+      "mailto": "mailto",
+      "rel": "rel",
+      "target": "target",
+      "tel": "tel",
+      "underline": "underline",
+      "url": "url",
+      "variant": "variant"
+    },
+    "defaults": {
+      "disabled": "false",
+      "download": "undefined",
+      "external": "false",
+      "href": "undefined",
+      "label": "undefined",
+      "mailto": "undefined",
+      "rel": "undefined",
+      "target": "undefined",
+      "tel": "undefined",
+      "underline": "'hover'",
+      "url": "undefined",
+      "variant": "'default'"
+    },
+    "requiredProps": [],
+    "events": [
+      "qBlur",
+      "qClick",
+      "qFocus"
+    ]
+  },
+  "q-map": {
+    "attributes": {
+      "ariaLabel": "aria-label",
+      "attribution": "attribution",
+      "attributionUrl": "attribution-url",
+      "centerLatitude": "center-latitude",
+      "centerLongitude": "center-longitude",
+      "clusterMarkers": "cluster-markers",
+      "clusterMaxZoom": "cluster-max-zoom",
+      "clusterMinPoints": "cluster-min-points",
+      "clusterRadius": "cluster-radius",
+      "googleApiKey": "google-api-key",
+      "googleMapType": "google-map-type",
+      "markers": "markers",
+      "maxBounds": "max-bounds",
+      "maxBoundsViscosity": "max-bounds-viscosity",
+      "maxZoom": "max-zoom",
+      "minZoom": "min-zoom",
+      "provider": "provider",
+      "rasterTileLoadingPolicy": "raster-tile-loading-policy",
+      "scrollWheelZoom": "scroll-wheel-zoom",
+      "selectedMarkerId": "selected-marker-id",
+      "tilePreloadBuffer": "tile-preload-buffer",
+      "tileUrl": "tile-url",
+      "vectorPadding": "vector-padding",
+      "vectorStyleUrl": "vector-style-url",
+      "zoom": "zoom",
+      "zoomControls": "zoom-controls"
+    },
+    "defaults": {
+      "ariaLabel": "'Interactive map'",
+      "attribution": "''",
+      "attributionUrl": "''",
+      "centerLatitude": "0",
+      "centerLongitude": "0",
+      "clusterMarkers": "false",
+      "clusterMaxZoom": "undefined",
+      "clusterMinPoints": "2",
+      "clusterRadius": "48",
+      "googleApiKey": "''",
+      "googleMapType": "'roadmap'",
+      "markers": "[]",
+      "maxBounds": "undefined",
+      "maxBoundsViscosity": "1",
+      "maxZoom": "19",
+      "minZoom": "0",
+      "provider": "'tiles'",
+      "rasterTileLoadingPolicy": "'full-batch'",
+      "scrollWheelZoom": "true",
+      "selectedMarkerId": "undefined",
+      "tilePreloadBuffer": "0",
+      "tileUrl": "''",
+      "vectorPadding": "0.2",
+      "vectorStyleUrl": "''",
+      "zoom": "2",
+      "zoomControls": "true"
+    },
+    "requiredProps": [],
+    "events": [
+      "qClusterSelect",
+      "qError",
+      "qMapClick",
+      "qMarkerSelect",
+      "qReady",
+      "qStatusChange"
+    ]
+  },
+  "q-media": {
+    "attributes": {
+      "alt": "alt",
+      "kind": "kind",
+      "loading": "loading",
+      "src": "src"
+    },
+    "defaults": {
+      "alt": "''",
+      "kind": "'image'",
+      "loading": "'lazy'",
+      "src": "''"
+    },
+    "requiredProps": [],
+    "events": []
+  },
+  "q-navbar": {
+    "attributes": {
+      "activeValue": "active-value",
+      "ariaLabel": "aria-label",
+      "bordered": "bordered",
+      "brand": "brand",
+      "brandHref": "brand-href",
+      "compact": "compact",
+      "edge": "edge",
+      "items": "items",
+      "logoAlt": "logo-alt",
+      "logoSrc": "logo-src",
+      "mobileLabel": "mobile-label",
+      "mobileMode": "mobile-mode",
+      "navAlign": "nav-align",
+      "navCenterWithin": "nav-center-within",
+      "sticky": "sticky",
+      "transparent": "transparent",
+      "value": "value"
+    },
+    "defaults": {
+      "activeValue": "''",
+      "ariaLabel": "null",
+      "bordered": "true",
+      "brand": "undefined",
+      "brandHref": "'/'",
+      "compact": "false",
+      "edge": "'top'",
+      "items": "[]",
+      "logoAlt": "''",
+      "logoSrc": "undefined",
+      "mobileLabel": "'Menu'",
+      "mobileMode": "'menu'",
+      "navAlign": "'start'",
+      "navCenterWithin": "'available'",
+      "sticky": "false",
+      "transparent": "false",
+      "value": "undefined"
+    },
+    "requiredProps": [],
+    "events": [
+      "qMenuToggle",
+      "qSelect"
+    ]
+  },
+  "q-pagination": {
+    "attributes": {
+      "ariaLabel": "aria-label",
+      "disabled": "disabled",
+      "itemLabel": "item-label",
+      "page": "page",
+      "pageSize": "page-size",
+      "showSummary": "show-summary",
+      "totalItems": "total-items"
+    },
+    "defaults": {
+      "ariaLabel": "'Pagination'",
+      "disabled": "false",
+      "itemLabel": "'items'",
+      "page": "1",
+      "pageSize": "10",
+      "showSummary": "true",
+      "totalItems": "0"
+    },
+    "requiredProps": [],
+    "events": [
+      "qPageChange"
+    ]
+  },
+  "q-panel": {
+    "attributes": {
+      "ariaLabel": "aria-label",
+      "borderless": "borderless",
+      "dividers": "dividers",
+      "footerPadding": "footer-padding",
+      "fullHeight": "full-height",
+      "headerPadding": "header-padding",
+      "noBorders": "no-borders",
+      "padding": "padding",
+      "scrollable": "scrollable",
+      "stickyFooter": "sticky-footer",
+      "stickyHeader": "sticky-header",
+      "surface": "surface",
+      "variant": "variant"
+    },
+    "defaults": {
+      "ariaLabel": "null",
+      "borderless": "undefined",
+      "dividers": "false",
+      "footerPadding": "undefined",
+      "fullHeight": "false",
+      "headerPadding": "undefined",
+      "noBorders": "false",
+      "padding": "'lg'",
+      "scrollable": "false",
+      "stickyFooter": "false",
+      "stickyHeader": "false",
+      "surface": "undefined",
+      "variant": "'bordered'"
+    },
+    "requiredProps": [],
+    "events": []
+  },
+  "q-progress": {
+    "attributes": {
+      "ariaLabel": "aria-label",
+      "ariaValueText": "aria-valuetext",
+      "indeterminate": "indeterminate",
+      "label": "label",
+      "size": "size",
+      "tone": "tone",
+      "value": "value",
+      "variant": "variant"
+    },
+    "defaults": {
+      "ariaLabel": "null",
+      "ariaValueText": "null",
+      "indeterminate": "false",
+      "label": "undefined",
+      "size": "'md'",
+      "tone": "'primary'",
+      "value": "0",
+      "variant": "'linear'"
+    },
+    "requiredProps": [],
+    "events": []
+  },
+  "q-quantity-selector": {
+    "attributes": {
+      "max": "max",
+      "min": "min",
+      "orientation": "orientation",
+      "size": "size",
+      "step": "step",
+      "value": "value",
+      "variant": "variant"
+    },
+    "defaults": {
+      "max": "undefined",
+      "min": "undefined",
+      "orientation": "undefined",
+      "size": "'inherit'",
+      "step": "1",
+      "value": "0",
+      "variant": "'horizontal'"
+    },
+    "requiredProps": [],
+    "events": [
+      "qBlur",
+      "qChange",
+      "qClick",
+      "qFocus"
+    ]
+  },
+  "q-radio-group": {
+    "attributes": {
+      "ariaLabel": "aria-label",
+      "description": "description",
+      "disabled": "disabled",
+      "error": "error",
+      "errorMessage": "error-message",
+      "label": "label",
+      "labelHidden": "label-hidden",
+      "name": "name",
+      "options": "options",
+      "orientation": "orientation",
+      "required": "required",
+      "reserveFeedback": "reserve-feedback",
+      "size": "size",
+      "value": "value"
+    },
+    "defaults": {
+      "ariaLabel": "null",
+      "description": "undefined",
+      "disabled": "false",
+      "error": "undefined",
+      "errorMessage": "undefined",
+      "label": "undefined",
+      "labelHidden": "false",
+      "name": "undefined",
+      "options": "[]",
+      "orientation": "'responsive'",
+      "required": "false",
+      "reserveFeedback": "undefined",
+      "size": "'inherit'",
+      "value": "''"
+    },
+    "requiredProps": [],
+    "events": [
+      "qBlur",
+      "qChange",
+      "qFocus"
+    ]
+  },
+  "q-reel": {
+    "attributes": {
+      "layout": "layout",
+      "lightbox": "lightbox"
+    },
+    "defaults": {
+      "layout": "'grid'",
+      "lightbox": "true"
+    },
+    "requiredProps": [],
+    "events": [
+      "qLightboxClose",
+      "qLightboxOpen"
+    ]
+  },
+  "q-scrollable": {
+    "attributes": {
+      "autoHide": "auto-hide",
+      "height": "height",
+      "maxHeight": "max-height",
+      "mode": "mode",
+      "nativeOnMobile": "native-on-mobile",
+      "target": "target"
+    },
+    "defaults": {
+      "autoHide": "true",
+      "height": "'100%'",
+      "maxHeight": "''",
+      "mode": "'custom'",
+      "nativeOnMobile": "true",
+      "target": "''"
+    },
+    "requiredProps": [],
+    "events": [
+      "qScroll"
+    ]
+  },
+  "q-section": {
+    "attributes": {
+      "columns": "columns",
+      "layout": "layout",
+      "reverse": "reverse"
+    },
+    "defaults": {
+      "columns": "1",
+      "layout": "'full'",
+      "reverse": "false"
+    },
+    "requiredProps": [],
+    "events": []
+  },
+  "q-sidepanel": {
+    "attributes": {
+      "accordion": "accordion",
+      "ariaLabel": "aria-label",
+      "collapseControl": "collapse-control",
+      "collapseControlAppearance": "collapse-control-appearance",
+      "collapseControlPosition": "collapse-control-position",
+      "collapseControlStyle": "collapse-control-style",
+      "collapseLabel": "collapse-label",
+      "collapseMode": "collapse-mode",
+      "collapsed": "collapsed",
+      "collapsible": "collapsible",
+      "defaultGroupsExpanded": "default-groups-expanded",
+      "drawerSize": "drawer-size",
+      "expanded": "expanded",
+      "items": null,
+      "mode": "mode",
+      "open": "open",
+      "panelSize": "panel-size",
+      "side": "side",
+      "value": "value",
+      "variant": "variant"
+    },
+    "defaults": {
+      "accordion": "false",
+      "ariaLabel": "null",
+      "collapseControl": "'none'",
+      "collapseControlAppearance": "'icon-button'",
+      "collapseControlPosition": "''",
+      "collapseControlStyle": "undefined",
+      "collapseLabel": "'Toggle sidebar'",
+      "collapseMode": "'rail'",
+      "collapsed": "false",
+      "collapsible": "false",
+      "defaultGroupsExpanded": "undefined",
+      "drawerSize": "undefined",
+      "expanded": "true",
+      "items": "[]",
+      "mode": "'flat'",
+      "open": "false",
+      "panelSize": "'320px'",
+      "side": "'right'",
+      "value": "''",
+      "variant": "'nav'"
+    },
+    "requiredProps": [],
+    "events": [
+      "qClose",
+      "qCollapsedChange",
+      "qSelect"
+    ]
+  },
+  "q-slider": {
+    "attributes": {
+      "ariaLabel": "aria-label",
+      "disabled": "disabled",
+      "label": "label",
+      "max": "max",
+      "min": "min",
+      "name": "name",
+      "showValue": "show-value",
+      "step": "step",
+      "suffix": "suffix",
+      "value": "value"
+    },
+    "defaults": {
+      "ariaLabel": "null",
+      "disabled": "false",
+      "label": "undefined",
+      "max": "100",
+      "min": "0",
+      "name": "undefined",
+      "showValue": "true",
+      "step": "1",
+      "suffix": "''",
+      "value": "undefined"
+    },
+    "requiredProps": [],
+    "events": [
+      "qChange",
+      "qInput"
+    ]
+  },
+  "q-stack": {
+    "attributes": {
+      "align": "align",
+      "gap": "gap"
+    },
+    "defaults": {
+      "align": "'stretch'",
+      "gap": "'lg'"
+    },
+    "requiredProps": [],
+    "events": []
+  },
+  "q-step-diagram": {
+    "attributes": {
+      "ariaLabel": "aria-label",
+      "layout": "layout",
+      "orientation": "orientation"
+    },
+    "defaults": {
+      "ariaLabel": "'Steps'",
+      "layout": "'vertical'",
+      "orientation": "undefined"
+    },
+    "requiredProps": [],
+    "events": []
+  },
+  "q-step-diagram-item": {
+    "attributes": {
+      "layout": "layout",
+      "lineStyle": "line-style",
+      "orientation": "orientation",
+      "status": "status"
+    },
+    "defaults": {
+      "layout": "'vertical'",
+      "lineStyle": "'solid'",
+      "orientation": "undefined",
+      "status": "'completed'"
+    },
+    "requiredProps": [],
+    "events": [
+      "qItemClick"
+    ]
+  },
+  "q-syntax-box": {
+    "attributes": {
+      "ariaLabel": "aria-label",
+      "code": "code",
+      "copyable": "copyable",
+      "disabled": "disabled",
+      "editable": "editable",
+      "heading": "heading",
+      "height": "height",
+      "language": "language",
+      "name": "name",
+      "required": "required",
+      "value": "value",
+      "variant": "variant"
+    },
+    "defaults": {
+      "ariaLabel": "null",
+      "code": "undefined",
+      "copyable": "false",
+      "disabled": "false",
+      "editable": "false",
+      "heading": "undefined",
+      "height": "undefined",
+      "language": "'html'",
+      "name": "undefined",
+      "required": "false",
+      "value": "undefined",
+      "variant": "'panel'"
+    },
+    "requiredProps": [],
+    "events": [
+      "qChange",
+      "qInput"
+    ]
+  },
+  "q-syntax-view": {
+    "attributes": {
+      "ariaLabel": "aria-label",
+      "code": "code",
+      "copyable": "copyable",
+      "disabled": "disabled",
+      "editable": "editable",
+      "heading": "heading",
+      "height": "height",
+      "language": "language",
+      "name": "name",
+      "required": "required",
+      "value": "value",
+      "variant": "variant",
+      "viewKey": "view-key"
+    },
+    "defaults": {
+      "ariaLabel": "null",
+      "code": "undefined",
+      "copyable": "false",
+      "disabled": "false",
+      "editable": "false",
+      "heading": "undefined",
+      "height": "undefined",
+      "language": "'html'",
+      "name": "undefined",
+      "required": "false",
+      "value": "undefined",
+      "variant": "'panel'",
+      "viewKey": "undefined"
+    },
+    "requiredProps": [],
+    "events": [
+      "qChange",
+      "qInput"
+    ]
+  },
+  "q-tabs": {
+    "attributes": {
+      "ariaLabel": "aria-label",
+      "items": "items",
+      "orientation": "orientation",
+      "size": "size",
+      "stretch": "stretch",
+      "value": "value",
+      "variant": "variant"
+    },
+    "defaults": {
+      "ariaLabel": "'Sections'",
+      "items": "[]",
+      "orientation": "'horizontal'",
+      "size": "'md'",
+      "stretch": "false",
+      "value": "''",
+      "variant": "'underline'"
+    },
+    "requiredProps": [],
+    "events": [
+      "qChange"
+    ]
+  },
+  "q-textarea": {
+    "attributes": {
+      "ariaLabel": "aria-label",
+      "autoGrow": "auto-grow",
+      "description": "description",
+      "disabled": "disabled",
+      "error": "error",
+      "errorMessage": "error-message",
+      "label": "label",
+      "labelHidden": "label-hidden",
+      "name": "name",
+      "placeholder": "placeholder",
+      "required": "required",
+      "reserveFeedback": "reserve-feedback",
+      "resizeMode": "resize-mode",
+      "rows": "rows",
+      "size": "size",
+      "value": "value",
+      "width": "width"
+    },
+    "defaults": {
+      "ariaLabel": "null",
+      "autoGrow": "true",
+      "description": "undefined",
+      "disabled": "false",
+      "error": "undefined",
+      "errorMessage": "undefined",
+      "label": "undefined",
+      "labelHidden": "false",
+      "name": "undefined",
+      "placeholder": "\"\"",
+      "required": "false",
+      "reserveFeedback": "undefined",
+      "resizeMode": "'auto'",
+      "rows": "3",
+      "size": "'inherit'",
+      "value": "\"\"",
+      "width": "undefined"
+    },
+    "requiredProps": [],
+    "events": [
+      "qBlur",
+      "qChange",
+      "qClick",
+      "qFocus",
+      "qInput"
+    ]
+  },
+  "q-thumbnail": {
+    "attributes": {
+      "alt": "alt",
+      "highlighted": "highlighted",
+      "label": "label",
+      "src": "src",
+      "video": "video"
+    },
+    "defaults": {
+      "alt": "''",
+      "highlighted": "false",
+      "label": "undefined",
+      "src": "''",
+      "video": "false"
+    },
+    "requiredProps": [],
+    "events": [
+      "qMaximize"
+    ]
+  },
+  "q-toast": {
+    "attributes": {
+      "maxVisible": "max-visible",
+      "position": "position"
+    },
+    "defaults": {
+      "maxVisible": "3",
+      "position": "'top-end'"
+    },
+    "requiredProps": [],
+    "events": []
+  },
+  "q-toggle": {
+    "attributes": {
+      "checked": "checked",
+      "description": "description",
+      "disabled": "disabled",
+      "error": "error",
+      "label": "label",
+      "labelHidden": "label-hidden",
+      "name": "name",
+      "required": "required",
+      "reserveFeedback": "reserve-feedback",
+      "size": "size",
+      "type": "type"
+    },
+    "defaults": {
+      "checked": "false",
+      "description": "undefined",
+      "disabled": "false",
+      "error": "undefined",
+      "label": "undefined",
+      "labelHidden": "false",
+      "name": "undefined",
+      "required": "false",
+      "reserveFeedback": "undefined",
+      "size": "'inherit'",
+      "type": "'switch'"
+    },
+    "requiredProps": [],
+    "events": [
+      "qBlur",
+      "qChange",
+      "qClick",
+      "qFocus"
+    ]
+  },
+  "q-toolbar": {
+    "attributes": {
+      "ariaLabel": "aria-label",
+      "bordered": "bordered",
+      "compact": "compact",
+      "edge": "edge",
+      "gap": "gap",
+      "size": "size",
+      "sticky": "sticky",
+      "transparent": "transparent",
+      "wrap": "wrap"
+    },
+    "defaults": {
+      "ariaLabel": "null",
+      "bordered": "false",
+      "compact": "false",
+      "edge": "'top'",
+      "gap": "'sm'",
+      "size": "'inherit'",
+      "sticky": "false",
+      "transparent": "false",
+      "wrap": "true"
+    },
+    "requiredProps": [],
+    "events": []
+  },
+  "q-tooltip": {
+    "attributes": {
+      "content": "content",
+      "delay": "delay",
+      "position": "position"
+    },
+    "defaults": {
+      "content": "undefined",
+      "delay": "200",
+      "position": "'top'"
+    },
+    "requiredProps": [],
+    "events": []
+  }
+}

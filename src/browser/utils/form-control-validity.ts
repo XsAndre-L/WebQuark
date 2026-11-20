@@ -1,6 +1,7 @@
 type NativeValidityOptions = {
   internals: ElementInternals;
   control: HTMLInputElement | HTMLTextAreaElement;
+  anchor?: HTMLElement;
   disabled: boolean;
   customError?: string;
 };
@@ -8,6 +9,7 @@ type NativeValidityOptions = {
 export function syncNativeControlValidity({
   internals,
   control,
+  anchor = control,
   disabled,
   customError,
 }: NativeValidityOptions): void {
@@ -25,7 +27,7 @@ export function syncNativeControlValidity({
 
   const message = customError?.trim();
   if (message) {
-    internals.setValidity({ customError: true }, message, control);
+    internals.setValidity({ customError: true }, message, anchor);
     return;
   }
 
@@ -37,7 +39,7 @@ export function syncNativeControlValidity({
   internals.setValidity(
     validityFlags(control.validity),
     control.validationMessage || 'Please enter a valid value.',
-    control,
+    anchor,
   );
 }
 

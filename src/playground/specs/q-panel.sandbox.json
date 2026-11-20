@@ -14,7 +14,6 @@
     },
     "borderless": {
       "type": "boolean",
-      "default": false,
       "desc": "Removes the panel border while preserving other variant styling"
     },
     "padding": {
@@ -66,6 +65,42 @@
     "dividers": {
       "type": "boolean",
       "default": false
+    },
+    "headerPadding": {
+      "type": "select",
+      "desc": "Header padding",
+      "options": [
+        "none",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl",
+        "2xl",
+        "3xl"
+      ]
+    },
+    "footerPadding": {
+      "type": "select",
+      "desc": "Footer padding",
+      "options": [
+        "none",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl",
+        "2xl",
+        "3xl"
+      ]
+    },
+    "ariaLabel": {
+      "type": "string",
+      "desc": "Accessible name"
+    },
+    "noBorders": {
+      "type": "boolean",
+      "desc": "Deprecated fallback. Use borderless; omit the replacement to try this alias."
     }
   },
   "slots": {
@@ -75,7 +110,7 @@
       "desc": "Header slot content"
     },
     "default": {
-      "type": "textarea",
+      "type": "html",
       "default": "Panel body content",
       "desc": "Main panel body"
     },
@@ -131,6 +166,25 @@
       "slots": {
         "default": "Plain structural region."
       }
+    },
+    {
+      "name": "Sticky header and footer with independent spacing",
+      "props": {
+        "style": "display:block;height:180px",
+        "scrollable": true,
+        "fullHeight": true,
+        "stickyHeader": true,
+        "stickyFooter": true,
+        "headerPadding": "xs",
+        "footerPadding": "xl",
+        "dividers": true,
+        "ariaLabel": "Release notes"
+      },
+      "slots": {
+        "header": "Release notes",
+        "default": "<div style=\"min-height:420px\">Scroll through the release notes.</div>",
+        "footer": "End of notes"
+      }
     }
   ],
   "edgeCases": [
@@ -143,6 +197,13 @@
       "slots": {
         "header": "Scrollable",
         "default": "Line one<br/>Line two<br/>Line three<br/>Line four<br/>Line five<br/>Line six<br/>Line seven<br/>Line eight"
+      }
+    },
+    {
+      "name": "Legacy borderless",
+      "props": {
+        "noBorders": true,
+        "borderless": null
       }
     }
   ]

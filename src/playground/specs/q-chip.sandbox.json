@@ -44,6 +44,22 @@
       "type": "boolean",
       "default": false,
       "desc": "Blocks chip interaction"
+    },
+    "download": {
+      "type": "string",
+      "desc": "Enables native download behavior when the component operates as a link."
+    },
+    "label": {
+      "type": "string",
+      "desc": "Text used when slotted content cannot supply the component's required label."
+    },
+    "rel": {
+      "type": "string",
+      "desc": "Defaults to `noopener noreferrer` when `target=\"_blank\"`."
+    },
+    "value": {
+      "type": "string",
+      "desc": "Included in `qRemove` detail."
     }
   },
   "slots": {
@@ -66,7 +82,7 @@
   "variants": [
     {
       "name": "Filter Selected",
-      "props": { "variant": "filter", "selected": true, "href": "#users" },
+      "props": { "variant": "filter", "selected": true, "clickable": true },
       "slots": { "default": "User Management" }
     },
     {
@@ -86,8 +102,19 @@
     },
     {
       "name": "Removable",
-      "props": { "removable": true },
+      "props": { "removable": true, "label": "Western Cape", "value": "WC" },
       "slots": { "default": "Western Cape" }
+    },
+    {
+      "name": "Download link",
+      "props": {
+        "label": "Download illustration",
+        "href": "assets/comparison-before.svg",
+        "download": "illustration.svg"
+      },
+      "slots": {
+        "default": ""
+      }
     }
   ],
   "edgeCases": [

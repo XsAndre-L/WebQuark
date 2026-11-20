@@ -41,7 +41,8 @@ This inventory follows current public component declarations. Documentation cove
 | `q-stack` | Layout | Implemented; see guide limitations | [Guide](./components/q-stack.md) |
 | `q-step-diagram` | Indicators | Implemented; see guide limitations | [Guide](./components/q-step-diagram.md) |
 | `q-step-diagram-item` | Indicators | Implemented; pending state still permits activation | [Guide](./components/q-step-diagram-item.md) |
-| `q-syntax-box` | Data display | Implemented; trusted code only; escaping and action-name limitations | [Guide](./components/q-syntax-box.md) |
+| `q-syntax-box` | Data display | Code display, editing and automatic tabs | [Guide](./components/q-syntax-box.md) |
+| `q-syntax-view` | Data display | Read-only or editable content for a Syntax Box | [Composing views](./components/q-syntax-box.md#switch-between-views) |
 | `q-tabs` | Layout | Implemented; see guide limitations | [Guide](./components/q-tabs.md) |
 | `q-textarea` | Forms & inputs | Implemented; see guide limitations | [Guide](./components/q-textarea.md) |
 | `q-thumbnail` | Media | Implemented; see guide limitations | [Guide](./components/q-thumbnail.md) |

@@ -1,5 +1,6 @@
 import { h } from '../../dom-factory';
 import { activeComponent, activeTab, fetchComponentSpec, effect } from '../../state';
+import { setButtonState } from '../button-accessibility';
 import css from './playground-sidebar.css';
 
 interface ComponentManifestItem {
@@ -31,39 +32,53 @@ const CATEGORY_ORDER = Object.keys(CATEGORY_LABELS);
 class PlaygroundSidebar extends HTMLElement {
   private components: ComponentManifestItem[] = [];
   private navPanel: any = null;
-  private globalStylingBtn: HTMLElement | null = null;
+  private globalStylingBtn: HTMLQButtonElement | null = null;
   private handleNavSelect?: (e: CustomEvent) => void;
   private cleanupActiveEffect?: () => void;
 
+  private request?: AbortController;
+
   async connectedCallback(): Promise<void> {
-    // Load manifest
+    this.request?.abort();
+    const request = this.request = new AbortController();
+    let loadFailed = false;
     try {
-      const res = await fetch('/playground/components.manifest.json');
+      const res = await fetch('./playground/components.manifest.json', { signal: request.signal });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       this.components = (await res.json()) as ComponentManifestItem[];
     } catch (err) {
+      if (request.signal.aborted) return;
+      loadFailed = true;
       console.error('[playground-sidebar] Failed to load components.manifest.json:', err);
       this.components = [];
     }
 
-    // Render template via TSX
+    if (request.signal.aborted || !this.isConnected) return;
     this.innerHTML = '';
     this.appendChild(
-      <q-sidepanel id="sidebarNav" variant="nav" mode="tree">
-        <div slot="footer">
-          <button
+      <q-sidepanel id="sidebarNav" aria-label="Component navigation" variant="nav" mode="tree">
+        <div slot="footer" class="sidebar-footer-actions">
+          {loadFailed && <div role="status">Component list could not load. <q-button type="button" size="sm" onClick={() => {
+            this.disconnectedCallback();
+            void this.connectedCallback();
+          }}>Retry</q-button></div>}
+          <q-button
             id="globalStylingBtn"
-            class="global-styling-btn"
+            variant="primary"
+            expand
             type="button"
-            onClick={() => activeComponent.set('global-styling')}
+            onClick={() => {
+              activeComponent.set('global-styling');
+              this.dispatchEvent(new Event('playground-navigation', { bubbles: true }));
+            }}
           >
-            <q-icon name="globe" library="lucide" size="16"></q-icon>
-            <span>Global Styling</span>
-          </button>
-          <a class="global-styling-btn" href="./views/tooling/tooling.html">
-            <q-icon name="file-text" library="lucide" size="16"></q-icon>
-            <span>Changelog Tooling</span>
-          </a>
+            <q-icon slot="icon-left" name="globe" library="lucide" size="16"></q-icon>
+            Global Styling
+          </q-button>
+          <q-button variant="primary" expand href="./views/tooling/tooling.html">
+            <q-icon slot="icon-left" name="file-text" library="lucide" size="16"></q-icon>
+            Changelog Tooling
+          </q-button>
         </div>
       </q-sidepanel>
     );
@@ -93,7 +108,8 @@ class PlaygroundSidebar extends HTMLElement {
       const { value } = e.detail;
       activeTab.set('sandbox');
       activeComponent.set(value);
-      fetchComponentSpec(value);
+      void fetchComponentSpec(value);
+      this.dispatchEvent(new Event('playground-navigation', { bubbles: true }));
     };
     this.navPanel.addEventListener('qSelect', this.handleNavSelect as EventListener);
 
@@ -105,7 +121,7 @@ class PlaygroundSidebar extends HTMLElement {
       }
 
       if (this.globalStylingBtn) {
-        this.globalStylingBtn.classList.toggle('active', active === 'global-styling');
+        void setButtonState(this.globalStylingBtn, 'aria-pressed', active === 'global-styling');
       }
     });
   }
@@ -146,6 +162,7 @@ class PlaygroundSidebar extends HTMLElement {
   }
 
   disconnectedCallback(): void {
+    this.request?.abort();
     if (this.cleanupActiveEffect) {
       this.cleanupActiveEffect();
     }

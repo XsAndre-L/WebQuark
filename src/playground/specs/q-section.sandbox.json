@@ -1,0 +1,69 @@
+{
+  "tag": "q-section",
+  "name": "Section",
+  "description": "Slot-projection scaffold. Layout, direction and columns are reserved for the presentation pass.",
+  "props": {
+    "layout": {
+      "type": "select",
+      "desc": "Reserved layout mode",
+      "default": "full",
+      "options": [
+        "full",
+        "split",
+        "sidebar",
+        "columns"
+      ]
+    },
+    "reverse": {
+      "type": "boolean",
+      "desc": "Reserved reversed layout",
+      "default": false
+    },
+    "columns": {
+      "type": "number",
+      "desc": "Reserved column count",
+      "default": 1,
+      "min": 1
+    }
+  },
+  "slots": {
+    "media": {
+      "type": "html",
+      "desc": "Media",
+      "default": "<img src=\"assets/comparison-before.svg\" alt=\"Landscape before restoration\" width=\"180\">"
+    },
+    "default": {
+      "type": "html",
+      "desc": "Section content",
+      "default": "<h2>Restoration report</h2><p>Work is underway.</p>"
+    },
+    "actions": {
+      "type": "html",
+      "desc": "Actions",
+      "default": "<q-link href=\"#report\">Read report</q-link>"
+    }
+  },
+  "variants": [
+    {
+      "name": "Split-layout configuration",
+      "props": {
+        "layout": "split",
+        "reverse": true
+      }
+    },
+    {
+      "name": "Column configuration",
+      "props": {
+        "layout": "columns",
+        "columns": 3
+      }
+    },
+    {
+      "name": "Sidebar configuration",
+      "props": {
+        "layout": "sidebar"
+      }
+    }
+  ],
+  "edgeCases": []
+}

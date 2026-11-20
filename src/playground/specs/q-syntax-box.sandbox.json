@@ -17,10 +17,29 @@
         "html",
         "javascript",
         "css",
-        "json"
+        "json",
+        "typescript",
+        "jsx",
+        "tsx",
+        "flow",
+        "json5",
+        "jsonc",
+        "json-stringify",
+        "postcss",
+        "less",
+        "scss",
+        "angular",
+        "vue",
+        "lwc",
+        "mjml",
+        "handlebars",
+        "graphql",
+        "markdown",
+        "mdx",
+        "yaml"
       ],
       "default": "html",
-      "desc": "The programming language highlighting rules to apply"
+      "desc": "Language used to format the editor content"
     },
     "height": {
       "type": "string",
@@ -44,7 +63,6 @@
     },
     "code": {
       "type": "string",
-      "default": "",
       "desc": "The source code string to highlight (takes precedence over slot content)"
     },
     "required": {
@@ -56,13 +74,36 @@
       "type": "boolean",
       "default": false,
       "desc": "Disables interaction in editable mode"
+    },
+    "name": {
+      "type": "string",
+      "desc": "Field name included in form data",
+      "default": "source"
+    },
+    "ariaLabel": {
+      "type": "string",
+      "desc": "Accessible name"
+    },
+    "value": {
+      "type": "string",
+      "desc": "Synchronized editable value"
     }
   },
   "slots": {
     "default": {
-      "type": "text",
-      "default": "<div class=\"app-container\">\n  <h1>Hello World</h1>\n  <q-button variant=\"primary\">Click Me</q-button>\n</div>",
-      "desc": "Read-only fallback content projected when the code property is absent"
+      "type": "html",
+      "default": "&lt;div class=\"app-container\"&gt;\n  &lt;h1&gt;Hello World&lt;/h1&gt;\n  &lt;q-button variant=\"primary\"&gt;Click Me&lt;/q-button&gt;\n&lt;/div&gt;",
+      "desc": "Projected content for this box, or direct q-syntax-view children for separate views"
+    },
+    "heading": {
+      "type": "html",
+      "desc": "Custom title content in the single-view panel header",
+      "default": ""
+    },
+    "actions": {
+      "type": "html",
+      "desc": "Additional panel-header controls",
+      "default": ""
     }
   },
   "variants": [
@@ -74,6 +115,13 @@
         "copyable": true,
         "height": "110px",
         "code": "<div class=\"demo\">\n  <span>Interactive Item</span>\n</div>"
+      }
+    },
+    {
+      "name": "Two named views",
+      "props": { "heading": "Button example" },
+      "slots": {
+        "default": "<q-syntax-view heading=\"Example HTML\" view-key=\"html\" code=\"&lt;q-button&gt;Save&lt;/q-button&gt;\" copyable></q-syntax-view><q-syntax-view heading=\"Notes\" view-key=\"notes\"><p>Use a short action label.</p></q-syntax-view>"
       }
     },
     {
@@ -154,9 +202,38 @@
         "code": "{\"10\":9007199254740993,\"2\":-0,\"same\":1,\"same\":2}",
         "height": "190px"
       }
+    },
+    {
+      "name": "Slotted read-only content",
+      "props": {
+        "code": null,
+        "value": null,
+        "editable": false
+      },
+      "slots": {
+        "default": "&lt;article&gt;Draft&lt;/article&gt;",
+        "actions": "<q-link href=\"#reference\">Reference</q-link>"
+      }
+    },
+    {
+      "name": "Named form editor",
+      "props": {
+        "name": "source",
+        "editable": true,
+        "required": true,
+        "value": "<section>Draft</section>",
+        "ariaLabel": "HTML source"
+      }
     }
   ],
   "edgeCases": [
+    {
+      "name": "Empty editor keeps its tab",
+      "props": { "heading": "Draft sources" },
+      "slots": {
+        "default": "<q-syntax-view heading=\"Saved\" code=\"&lt;p&gt;Published&lt;/p&gt;\" copyable></q-syntax-view><q-syntax-view heading=\"Draft\" editable required name=\"draft\" aria-label=\"Draft HTML\"></q-syntax-view>"
+      }
+    },
     {
       "name": "Long Script Wrapping Test",
       "props": {
@@ -179,13 +256,13 @@
       }
     },
     {
-      "name": "Unsupported JavaScript Format",
+      "name": "Preserve Spaces in a JavaScript Template",
       "props": {
         "variant": "panel",
         "language": "javascript",
         "editable": true,
         "heading": "LITERAL JAVASCRIPT",
-        "code": "const message = `keep  spaces; { braces }`;",
+        "code": "const message=`keep  spaces; { braces }`",
         "height": "110px"
       }
     },

@@ -87,7 +87,7 @@ Evidence: [escaping shortcut](../../src/browser/components/data-display/syntax-b
 
 **Helper reproduced.** Editable initialization and unfocused updates automatically invoke the lightweight formatter. Its global whitespace/semicolon/brace replacements do not respect strings or comments. Valid JavaScript can become invalid, and a line comment can absorb the following statement. This is data corruption, not merely a formatting preference.
 
-Evidence: [initial formatting](../../src/browser/components/data-display/syntax-box/internals/value-sync.ts), [formatter](../../src/browser/components/data-display/syntax-box/internals/formatter.ts), [value watchers](../../src/browser/components/data-display/syntax-box/syntax-box.tsx).
+Evidence: [initial formatting](../../src/browser/components/data-display/syntax-box/internals/value-sync.ts), [formatter](../../src/browser/components/data-display/syntax-box/internals/formatters/formatter.ts), [value watchers](../../src/browser/components/data-display/syntax-box/syntax-box.tsx).
 
 **Correction:** preserve source verbatim by default. Make formatting explicit and use a parser-aware formatter. Editable mode must also render an empty textarea without requiring consumers to seed `code=""`; currently an unseeded required editor renders no textarea and reports valid. That last behavior was browser reproduced.
 

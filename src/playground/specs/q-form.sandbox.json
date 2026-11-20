@@ -45,6 +45,54 @@
     "reserveFeedback": {
       "type": "boolean",
       "desc": "Reserve one feedback line; omit to inherit"
+    },
+    "action": {
+      "type": "string",
+      "desc": "Submission URL."
+    },
+    "ariaLabel": {
+      "type": "string",
+      "desc": "Names the native form without requiring a visible heading."
+    },
+    "enctype": {
+      "type": "select",
+      "default": "application/x-www-form-urlencoded",
+      "desc": "Form data encoding for submission.",
+      "options": [
+        "application/x-www-form-urlencoded",
+        "multipart/form-data",
+        "text/plain"
+      ]
+    },
+    "enterBehavior": {
+      "type": "select",
+      "default": "submit",
+      "desc": "Controls how Enter behaves inside text-like controls.",
+      "options": [
+        "focus-next",
+        "none",
+        "submit"
+      ]
+    },
+    "method": {
+      "type": "select",
+      "default": "post",
+      "desc": "HTTP submission method or dialog.",
+      "options": [
+        "dialog",
+        "get",
+        "post"
+      ]
+    },
+    "target": {
+      "type": "select",
+      "desc": "Browsing context for the response.",
+      "options": [
+        "_blank",
+        "_parent",
+        "_self",
+        "_top"
+      ]
     }
   },
   "slots": {
@@ -57,6 +105,11 @@
       "type": "html",
       "default": "<q-button type=\"submit\">Save</q-button>",
       "desc": "Action controls"
+    },
+    "header": {
+      "type": "html",
+      "default": "",
+      "desc": "Custom header content."
     }
   },
   "variants": [
@@ -81,6 +134,18 @@
         "actions": "<q-inline justify=\"end\"><q-button variant=\"ghost\" type=\"reset\">Reset</q-button><q-button type=\"submit\">Save</q-button></q-inline>"
       },
       "slot": "<q-panel surface=\"panel\" padding=\"lg\"><q-grid columns=\"2\"><q-input label=\"Payer name\" name=\"payer\" required data-q-span=\"full\"></q-input><q-input label=\"Email\" name=\"email\" type=\"email\" description=\"Receipts go here\"></q-input><q-dropdown label=\"Country\" name=\"country\" required options='[{\"label\":\"South Africa\",\"value\":\"ZA\"},{\"label\":\"United Kingdom\",\"value\":\"GB\"}]'></q-dropdown><q-textarea label=\"Notes\" name=\"notes\" data-q-span=\"full\"></q-textarea></q-grid></q-panel>"
+    },
+    {
+      "name": "Enter moves to the next field",
+      "props": {
+        "enterBehavior": "focus-next",
+        "ariaLabel": "Account details"
+      },
+      "slots": {
+        "header": "Account details",
+        "default": "<q-input label=\"Account\" name=\"name\" required></q-input><q-input label=\"Email\" name=\"email\" type=\"email\"></q-input>",
+        "actions": "<q-button type=\"reset\">Reset</q-button><q-button type=\"submit\" name=\"intent\" value=\"apply\" formmethod=\"get\" formaction=\"#preview\">Apply</q-button>"
+      }
     }
   ],
   "edgeCases": [
@@ -92,7 +157,7 @@
       "slots": {
         "actions": "<q-button type=\"submit\">Submit</q-button>"
       },
-      "slot": "<input name=\"plain\" value=\"native\" />"
+      "slot": "<label>Plain text <input name=\"plain\" value=\"native\"></label>"
     }
   ]
 }

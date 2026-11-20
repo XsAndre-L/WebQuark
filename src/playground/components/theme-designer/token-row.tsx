@@ -11,137 +11,79 @@ export interface TokenItem {
 }
 
 export class TokenRow extends HTMLElement {
-  public token!: TokenItem;
+  token!: TokenItem;
 
-  private pixelValue(value: string): number {
-    const rootSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-    return (parseFloat(value) || 0) * (value.endsWith('rem') ? rootSize : 1);
+  private change(value: string): void {
+    this.dispatchEvent(new CustomEvent('token-edit', { bubbles: true, detail: { name: this.token.name, value } }));
+    this.syncValue();
   }
 
-  public syncValue(): void {
-    const computedStyle = window.getComputedStyle(document.documentElement);
-    const val = computedStyle.getPropertyValue(this.token.name).trim();
-
-    if (this.token.type === 'text') {
-      const input = this.querySelector<HTMLInputElement>('.token-text-input');
-      if (input) input.value = val;
-    } else if (this.token.type === 'color') {
-      const hexVal = convertToHex(val);
-      const picker = this.querySelector('.color-swatch-picker') as HTMLInputElement | null;
-      const textInput = this.querySelector('.color-text-input') as HTMLInputElement | null;
-      if (picker) picker.value = hexVal;
-      if (textInput) textInput.value = hexVal;
-    } else {
-      const numVal = this.pixelValue(val);
-      const slider = this.querySelector('.range-slider-input') as HTMLInputElement | null;
-      const display = this.querySelector('.range-slider-value') as HTMLElement | null;
-      if (slider) slider.value = String(numVal);
-      if (display) display.innerText = `${numVal}px`;
+  syncValue(): void {
+    const computed = getComputedStyle(document.documentElement);
+    const value = computed.getPropertyValue(this.token.name).trim();
+    const text = this.querySelector<HTMLQInputElement>('.token-text-input');
+    if (text && text.value !== value) {
+      text.value = value;
+      text.errorMessage = undefined;
     }
+
+    const picker = this.querySelector<HTMLQInputElement>('.token-color-picker');
+    if (picker) {
+      const hex = convertToHex(value);
+      picker.hidden = !hex;
+      if (hex) picker.value = hex;
+    }
+
+    const slider = this.querySelector('q-slider');
+    if (!slider) return;
+    const length = value.match(/^(-?(?:\d+\.?\d*|\.\d+))(rem|px)?$/);
+    const pixels = length ? Number(length[1]) * (length[2] === 'rem' ? parseFloat(computed.fontSize) : 1) : NaN;
+    slider.disabled = !Number.isFinite(pixels) || pixels < (this.token.min ?? 0) || pixels > (this.token.max ?? 40);
+    if (!slider.disabled) slider.value = pixels;
   }
 
-  connectedCallback() {
-    if (!this.token) return;
+  connectedCallback(): void {
+    const { token } = this;
+    if (!token) return;
     this.className = 'token-row';
-    this.innerHTML = '';
+    const editText = (event: CustomEvent<string>) => {
+      const input = event.currentTarget as HTMLQInputElement;
+      const value = event.detail.trim();
+      if (token.type === 'color' && value && !CSS.supports('color', value)) {
+        input.errorMessage = 'Enter a valid CSS color.';
+        return;
+      }
 
-    const computedStyle = window.getComputedStyle(document.documentElement);
-    const val = computedStyle.getPropertyValue(this.token.name).trim();
-    let control: HTMLElement;
+      if ((token.type === 'dimension' || token.type === 'radius') && value && !CSS.supports('width', value)) {
+        input.errorMessage = 'Enter a valid CSS length.';
+        return;
+      }
+      input.errorMessage = undefined;
+      this.change(value);
+    };
 
-    if (this.token.type === 'text') {
-      control = <input type="text" class="color-text-input token-text-input" aria-label={this.token.label} value={val}
-        onChange={(event: Event) => {
-          const value = (event.target as HTMLInputElement).value.trim();
-          if (value) document.documentElement.style.setProperty(this.token.name, value);
-          else document.documentElement.style.removeProperty(this.token.name);
-        }} />;
-    } else if (this.token.type === 'color') {
-      const hexVal = convertToHex(val);
-
-      const picker = (
-        <input
-          type="color"
-          class="color-swatch-picker"
-          data-token={this.token.name}
-          value={hexVal}
-          onInput={(e: Event) => {
-            const target = e.target as HTMLInputElement;
-            const textInput = this.querySelector('.color-text-input') as HTMLInputElement | null;
-            if (textInput) textInput.value = target.value;
-            document.documentElement.style.setProperty(this.token.name, target.value);
-          }}
-        />
-      ) as HTMLInputElement;
-
-      const textInput = (
-        <input
-          type="text"
-          class="color-text-input"
-          data-token={this.token.name}
-          value={hexVal}
-          onInput={(e: Event) => {
-            const target = e.target as HTMLInputElement;
-            const newColor = target.value;
-            if (/^#[0-9A-F]{6}$/i.test(newColor)) {
-              const pickerEl = this.querySelector('.color-swatch-picker') as HTMLInputElement | null;
-              if (pickerEl) pickerEl.value = newColor;
-              document.documentElement.style.setProperty(this.token.name, newColor);
-            }
-          }}
-        />
-      ) as HTMLInputElement;
-
-      control = (
-        <div class="color-input-container">
-          <div class="color-picker-wrapper">{picker}</div>
-          {textInput}
-        </div>
-      );
-    } else {
-      const numVal = this.pixelValue(val);
-
-      const valDisplay = (
-        <span class="range-slider-value" data-token={this.token.name}>
-          {numVal}px
-        </span>
-      ) as HTMLElement;
-
-      const slider = (
-        <input
-          type="range"
-          step="0.5"
-          class="range-slider-input"
-          min={String(this.token.min ?? 0)}
-          max={String(this.token.max ?? 40)}
-          value={String(numVal)}
-          data-token={this.token.name}
-          onInput={(e: Event) => {
-            const target = e.target as HTMLInputElement;
-            valDisplay.innerText = `${target.value}px`;
-            const rootSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-            document.documentElement.style.setProperty(this.token.name, this.token.type === 'dimension' ? `${Number(target.value) / rootSize}rem` : `${target.value}px`);
-          }}
-        />
-      ) as HTMLInputElement;
-
-      control = (
-        <div class="range-slider-container">
-          {slider}
-          {valDisplay}
-        </div>
-      );
-    }
-
-    this.appendChild(
+    this.replaceChildren(
       <div class="token-info">
-        <span class="token-label">{this.token.label}</span>
-        <span class="token-desc">{this.token.desc}</span>
-      </div>
+        <span class="token-label">{token.label}</span>
+        <span class="token-desc">{token.desc}</span>
+      </div>,
+      <div class="token-control-wrapper">
+        <q-input type="text" size="sm" class="token-text-input" aria-label={token.label}
+          placeholder="Unset" onQChange={editText} />
+
+        {token.type === 'color' && <q-input type="color" size="sm" class="token-color-picker"
+          aria-label={`Pick ${token.label}`} onQInput={(event: CustomEvent<string>) => this.change(event.detail)} />}
+
+        {(token.type === 'dimension' || token.type === 'radius') && <q-slider
+          aria-label={`${token.label} in pixels`} min={token.min ?? 0} max={token.max ?? 40} step={0.5} show-value="false"
+          onQInput={(event: CustomEvent<number>) => {
+            const pixels = event.detail;
+            const rootSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+            this.change(token.type === 'dimension' ? `${pixels / rootSize}rem` : `${pixels}px`);
+          }} />}
+      </div>,
     );
-    this.appendChild(
-      <div class="token-control-wrapper">{control}</div>
-    );
+    this.syncValue();
   }
 }
 

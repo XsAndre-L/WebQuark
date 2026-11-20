@@ -4,7 +4,7 @@
 
 **Component tag:** `<q-thumbnail>`
 
-**Working preview:** Run `bun start` from the repository root and open the [existing playground](http://localhost:3333). There is no dedicated q-thumbnail preset; the examples below use temporary markup with the same registered runtime, not a new navigation entry.
+**Working preview:** Run `bun start` at the repository root, open the [playground](http://localhost:3333) and select **Media → Thumbnail**. [Try thumbnails in the reel lightbox](./q-reel.md).
 
 **On this page**
 
@@ -46,7 +46,7 @@ defineCustomElements();
 
 ## Examples
 
-These examples share the [Quick start registration](#quick-start). Screenshots show the real registered component in a temporary preview fixture using the existing playground runtime. They do not imply extra permanent playground presets.
+These examples share the [Quick start registration](#quick-start). Screenshots show the real registered component in a temporary preview fixture using the existing playground runtime.
 
 ### Handle a media selection
 

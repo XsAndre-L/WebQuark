@@ -935,7 +935,7 @@ export const componentPresetTokens: Record<string, Record<QPreset, string>> = {
   '--q-table-cell-padding-inline': { compact: '8px', comfortable: '14px' },
   '--q-dropdown-option-padding': { compact: '10px 14px', comfortable: '12px 18px' },
   '--q-tooltip-padding': { compact: '6px 10px', comfortable: '8px 14px' },
-  '--q-syntax-padding': { compact: '16px', comfortable: '24px' },
+  '--q-syntax-padding': { compact: 'var(--q-padding-lg, 1rem)', comfortable: 'var(--q-padding-lg, 1.5rem)' },
   '--q-syntax-compact-padding': { compact: '10px', comfortable: '16px' },
   '--q-syntax-header-padding': { compact: '4px 16px', comfortable: '8px 24px' },
   '--q-sidepanel-nav-font': { compact: '0.875rem', comfortable: '1rem' },

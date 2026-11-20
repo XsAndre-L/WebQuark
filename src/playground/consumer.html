@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Use a playground example in your application</title>
+  <script type="module" src="../build/webquark.esm.js"></script>
+  <link rel="stylesheet" href="../build/webquark.css">
+  <style>
+    body { max-width: 52rem; margin: 2rem auto; padding: 1rem; font: 1rem/1.55 system-ui; }
+    pre { white-space: pre-wrap; overflow-wrap: anywhere; padding: 1rem; border: 1px solid currentColor; }
+  </style>
+</head>
+<body>
+  <nav><q-link href="../">Component playground</q-link></nav>
+  <main>
+    <h1>Run a copied example</h1>
+    <p>Use the same version of <code>@webquark/browser</code> as the playground. In a bundler-based project, register the components and load their stylesheet in your application entry point.</p>
+    <pre><code>import '@webquark/browser/webquark.css';
+import { defineCustomElements } from '@webquark/browser/loader';
+
+defineCustomElements();</code></pre>
+    <p>Copy an example into the body of your HTML page. Keep any accompanying script directly after the example and serve the page over HTTP. The script connects actions and assigns values that HTML attributes cannot express.</p>
+    <p>The bundled comparison illustrations and sample video travel with copied examples. Supply your own provider credentials for Google Maps. For local icons, serve your chosen files at the icon’s configured local path.</p>
+  </main>
+</body>
+</html>

@@ -1,8 +1,3 @@
-/* playground-sidebar.css
-   All nav item rendering is handled by q-sidepanel variant="nav".
-   This file only styles the host element layout, the Global Styling footer
-   button (slotted light DOM), and mobile responsive overrides. */
-
 playground-sidebar {
   display: flex;
   flex-direction: column;
@@ -14,53 +9,32 @@ playground-sidebar q-sidepanel {
   --q-sidepanel-bg: var(--q-bg-surface-2);
 }
 
-/* Global Styling footer button — lives in q-sidepanel's footer slot (light DOM) */
-.global-styling-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+playground-sidebar q-sidepanel::part(group-label) {
+  color: var(--q-fg-base);
+}
+
+playground-sidebar q-sidepanel::part(item-label) {
+  color: var(--q-fg-muted);
+}
+
+.sidebar-footer-actions {
+  display: grid;
   gap: 8px;
-  width: calc(100% - 24px);
-  margin: 4px 12px;
-  background: var(--q-bg-surface-2);
-  border: var(--q-border);
-  color: var(--q-fg-base);
-  padding: 10px 16px;
-  border-radius: var(--q-radius-md, 8px);
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-sizing: border-box;
-  text-decoration: none;
-}
-
-.global-styling-btn:hover {
-  background: color-mix(in srgb, var(--q-fg-base) 5%, var(--q-bg-surface-2));
-  color: var(--q-fg-base);
-}
-
-.global-styling-btn.active {
-  background: color-mix(in srgb, var(--q-color-primary) 12%, transparent);
-  color: var(--q-color-primary);
-  border-color: var(--q-color-primary);
-}
-
-.global-styling-btn:focus-visible {
-  outline: var(--q-focus-ring);
-  outline-offset: -2px;
+  padding: 4px 12px;
 }
 
 /* Mobile responsive: q-sidepanel handles its own internal layout,
    we just control the host element position on small screens */
 @media (max-width: 900px) {
   playground-sidebar {
-    position: fixed;
-    top: 64px;
+    position: absolute;
+    top: 0;
     left: 0;
     bottom: 0;
     width: 280px;
-    height: calc(100vh - 64px);
+    height: 100%;
+    max-width: 100%;
+    --q-sidepanel-expanded-width: 100%;
     z-index: 1000;
     transform: translateX(-100%);
     transition: transform 220ms ease-out;

@@ -13,5 +13,5 @@
     "types": ["node"]
   },
   "include": ["../../src/tooling/**/*"],
-  "exclude": ["../../src/tooling/**/*.test.*", "../../src/tooling/**/*.spec.*", "../../src/tooling/wq-switch/**"]
+  "exclude": ["../../src/tooling/**/*.test.*", "../../src/tooling/**/*.spec.*", "../../src/tooling/wq-switch/**", "../../src/tooling/formatter/**"]
 }

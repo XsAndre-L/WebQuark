@@ -29,6 +29,17 @@
     "wrap": {
       "type": "boolean",
       "default": true
+    },
+    "align": {
+      "type": "select",
+      "default": "center",
+      "desc": "Align items along the cross axis.",
+      "options": [
+        "center",
+        "end",
+        "start",
+        "stretch"
+      ]
     }
   },
   "slots": {
@@ -47,6 +58,36 @@
       "name": "Generous spacing",
       "props": {
         "gap": "xl"
+      }
+    },
+    {
+      "name": "Align mixed-height actions",
+      "props": {
+        "align": "end",
+        "justify": "between"
+      },
+      "slots": {
+        "default": "<q-button size=\"sm\">Previous</q-button><q-button size=\"lg\">Continue</q-button><q-button size=\"md\">Save draft</q-button>"
+      }
+    },
+    {
+      "name": "Single line in a narrow host",
+      "props": {
+        "wrap": false,
+        "style": "max-width:14rem"
+      },
+      "slots": {
+        "default": "<q-button size=\"sm\">Previous</q-button><q-button size=\"lg\">Continue</q-button><q-button size=\"md\">Save draft</q-button>"
+      }
+    },
+    {
+      "name": "Wrapped actions in a narrow host",
+      "props": {
+        "wrap": true,
+        "style": "max-width:14rem"
+      },
+      "slots": {
+        "default": "<q-button size=\"sm\">Previous</q-button><q-button size=\"lg\">Continue</q-button><q-button size=\"md\">Save draft</q-button>"
       }
     }
   ],

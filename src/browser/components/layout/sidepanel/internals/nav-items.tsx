@@ -35,7 +35,7 @@ export function renderNavItems(options: RenderNavItemsOptions): any[] {
           style={{ paddingLeft: `${16 + depth * 16}px` }}
           role={isAlwaysExpanded ? 'heading' : 'button'}
           tabindex={isAlwaysExpanded ? undefined : 0}
-          title={accessibleLabel}
+          title={options.collapsedRail || hasBadge ? accessibleLabel : undefined}
           aria-label={accessibleLabel}
           aria-level={isAlwaysExpanded ? String(Math.min(depth + 2, 6)) : undefined}
           aria-expanded={hasChildren && !isAlwaysExpanded ? String(isExpanded) : undefined}
@@ -53,7 +53,7 @@ export function renderNavItems(options: RenderNavItemsOptions): any[] {
           {item.icon && (
             <q-icon class="nav-item__icon" name={item.icon} library="lucide" size="sm" />
           )}
-          <span class="nav-item__label">{item.label}</span>
+          <span class="nav-item__label" part={hasChildren ? 'group-label' : 'item-label'}>{item.label}</span>
           {hasBadge && (
             <span class="nav-item__badge" part="item-badge" aria-hidden="true">
               {count > 99 ? '99+' : count}
@@ -71,7 +71,7 @@ export function renderNavItems(options: RenderNavItemsOptions): any[] {
 
         {hasChildren && isExpanded && (
           <div class="nav-children" role="group" aria-label={item.label}>
-            {renderNavItems({ items: item.children!, expandedGroups, activeValue, onItemClick, depth: depth + 1 })}
+            {renderNavItems({ ...options, items: item.children!, depth: depth + 1 })}
           </div>
         )}
       </div>

@@ -71,24 +71,89 @@
       "desc": "Placeholder text for the search input"
     },
     "columns": {
-      "type": "textarea",
-      "default": "[\n  { \"key\": \"id\", \"header\": \"ID\", \"width\": \"60px\" },\n  { \"key\": \"name\", \"header\": \"Name\", \"width\": \"1.5fr\" },\n  { \"key\": \"role\", \"header\": \"Role\" },\n  { \"key\": \"status\", \"header\": \"Status\" }\n]",
+      "type": "array",
+      "default": [
+        {
+          "key": "id",
+          "header": "ID",
+          "width": "60px"
+        },
+        {
+          "key": "name",
+          "header": "Name",
+          "width": "35%"
+        },
+        {
+          "key": "role",
+          "header": "Role"
+        },
+        {
+          "key": "status",
+          "header": "Status"
+        }
+      ],
       "desc": "JSON array of table column definitions"
     },
     "items": {
-      "type": "textarea",
-      "default": "[\n  { \"id\": \"1\", \"name\": \"Administrator Account\", \"role\": \"Admin\", \"status\": \"Active\" },\n  { \"id\": \"2\", \"name\": \"Content Editor Manager\", \"role\": \"Editor\", \"status\": \"Inactive\" },\n  { \"id\": \"3\", \"name\": \"Viewer Guest\", \"role\": \"Viewer\", \"status\": \"Active\" }\n]",
+      "type": "array",
+      "default": [
+        {
+          "id": "1",
+          "name": "Administrator Account",
+          "role": "Admin",
+          "status": "Active"
+        },
+        {
+          "id": "2",
+          "name": "Content Editor Manager",
+          "role": "Editor",
+          "status": "Inactive"
+        },
+        {
+          "id": "3",
+          "name": "Viewer Guest",
+          "role": "Viewer",
+          "status": "Active"
+        }
+      ],
       "desc": "JSON array of data row items"
     },
     "rowActions": {
-      "type": "textarea",
-      "default": "[]",
+      "type": "array",
+      "default": [],
       "desc": "JSON array of row action definitions with key, icon, and tooltip"
     },
     "searchValue": {
       "type": "string",
       "default": "",
       "desc": "Current search input value"
+    },
+    "ariaLabel": {
+      "type": "string",
+      "desc": "Accessible name for the grid; falls back to `toolbarTitle`, then \"Data table\".",
+      "default": "Workspace members"
+    },
+    "loading": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Shows a loading state and suppresses row rendering while true."
+    },
+    "rowGroup": {
+      "type": "callback",
+      "desc": "Choose the role grouping callback or leave ungrouped.",
+      "options": [
+        "role"
+      ]
+    },
+    "selectedKeys": {
+      "type": "array",
+      "default": [],
+      "desc": "Stable keys of preselected rows. Assign an array as a property."
+    },
+    "twoLineRows": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Reserves two text lines per data cell; rich cells must fit the same content height."
     }
   },
   "slots": {
@@ -99,23 +164,33 @@
     },
     "footer": {
       "type": "html",
-      "default": "<div style=\"padding: 0px 16px; font-size: 0.85rem; opacity: 0.7;\">Total entries: 3</div>",
+      "default": "",
       "desc": "Custom footer content slot (appends to table bottom)"
     },
     "toolbar-left": {
-      "type": "text",
+      "type": "html",
       "default": "",
       "desc": "Slot for elements rendered on the left of the toolbar (e.g. badges, counters)"
     },
     "filters": {
-      "type": "text",
+      "type": "html",
       "default": "",
       "desc": "Slot for filter elements (e.g. QDropdowns) rendered in the toolbar"
     },
     "actions": {
-      "type": "text",
+      "type": "html",
       "default": "",
       "desc": "Slot for action elements (e.g. buttons) rendered on the right of the toolbar"
+    },
+    "q-data-table-row-gutter-string%3A1": {
+      "type": "html",
+      "default": "",
+      "desc": "Custom gutter for string row key 1, from getDataTableRowGutterSlotName(\"1\")."
+    },
+    "q-data-table-cell-string%3Astatus-string%3A1": {
+      "type": "html",
+      "default": "",
+      "desc": "Status cell for string row key 1, from getDataTableCellSlotName(\"status\", \"1\")."
     }
   },
   "variants": [
@@ -171,14 +246,64 @@
       "name": "Grid with Row Actions",
       "props": {
         "rowClickable": false,
-        "rowActions": "[\n  { \"key\": \"edit\", \"icon\": \"pencil\", \"tooltip\": \"Edit user\" },\n  { \"key\": \"delete\", \"icon\": \"trash-2\", \"tooltip\": \"Delete user\" },\n  { \"key\": \"reset-password\", \"icon\": \"key-round\", \"tooltip\": \"Reset password\" }\n]"
+        "rowActions": [
+          {
+            "key": "edit",
+            "icon": "pencil",
+            "tooltip": "Edit user"
+          },
+          {
+            "key": "delete",
+            "icon": "trash-2",
+            "tooltip": "Delete user"
+          },
+          {
+            "key": "reset-password",
+            "icon": "key-round",
+            "tooltip": "Reset password"
+          }
+        ]
       }
     },
     {
       "name": "Empty State grid",
       "props": {
-        "items": "[]",
+        "items": [],
         "selectable": false
+      }
+    },
+    {
+      "name": "Grouped rows with preselection",
+      "props": {
+        "rowGroup": "role",
+        "selectedKeys": [
+          "2"
+        ],
+        "selectable": true,
+        "twoLineRows": true
+      }
+    },
+    {
+      "name": "Custom gutter and status cell",
+      "props": {
+        "rowGutter": "custom"
+      },
+      "slots": {
+        "q-data-table-row-gutter-string%3A1": "<span aria-label=\"Featured member\">★</span>",
+        "q-data-table-cell-string%3Astatus-string%3A1": "<q-chip variant=\"success\" label=\"Active\"></q-chip>"
+      }
+    },
+    {
+      "name": "Loading records",
+      "props": {
+        "loading": true
+      }
+    },
+    {
+      "name": "Continued numbering",
+      "props": {
+        "rowGutter": "numbers",
+        "rowNumberOffset": 20
       }
     }
   ]

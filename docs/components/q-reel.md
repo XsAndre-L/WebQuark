@@ -4,7 +4,7 @@
 
 **Component tag:** `<q-reel>`
 
-**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Media → Reel**.
+**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Media → Reel**. [Configure a single thumbnail](./q-thumbnail.md).
 
 **On this page**
 

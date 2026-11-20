@@ -107,7 +107,7 @@ Generated from `src/browser/theme/tokens.ts`. Compact preserves existing default
 | `--q-table-cell-padding-inline` | `8px` | `14px` |
 | `--q-dropdown-option-padding` | `10px 14px` | `12px 18px` |
 | `--q-tooltip-padding` | `6px 10px` | `8px 14px` |
-| `--q-syntax-padding` | `16px` | `24px` |
+| `--q-syntax-padding` | `var(--q-padding-lg, 1rem)` | `var(--q-padding-lg, 1.5rem)` |
 | `--q-syntax-compact-padding` | `10px` | `16px` |
 | `--q-syntax-header-padding` | `4px 16px` | `8px 24px` |
 | `--q-sidepanel-nav-font` | `0.875rem` | `1rem` |

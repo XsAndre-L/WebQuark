@@ -83,6 +83,8 @@ export function h(
 
 export namespace h {
   export namespace JSX {
+    export type Element = HTMLElement;
+
     export interface IntrinsicElements {
       [elemName: string]: any;
     }

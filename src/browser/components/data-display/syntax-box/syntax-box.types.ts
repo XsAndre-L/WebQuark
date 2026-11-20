@@ -1,3 +1,3 @@
 export type QSyntaxBoxVariant = 'panel' | 'plain';
-export type QSyntaxBoxLanguage = 'html' | 'javascript' | 'css' | 'json';
+export type { FormatterLanguage as QSyntaxBoxLanguage } from './internals/formatters/languages';
 

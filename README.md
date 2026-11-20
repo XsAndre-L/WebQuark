@@ -54,8 +54,11 @@ Use matching WebQuark versions when installing multiple packages.
 - Adjust spacing and typography with [design presets](docs/design-presets.md), or customize colors and surfaces with [theme variables](docs/theme_variables.md).
 - For Unreal Engine webviews, see the [CEF off-screen rendering guidelines](docs/unreal_compatibility.md).
 - To test local WebQuark changes in a consuming app, follow the [package switching guide](src/tooling/wq-switch/README.md).
+- To update the Prettier release shipped with Syntax Box, see the [formatter maintenance guide](src/tooling/formatter/README.md).
 
 ## Run the playground
+
+Open the [hosted component playground](https://xsandre-l.github.io/WebQuark/) to try the current `main` build. See the [changelog](./CHANGELOG.md) for release notes.
 
 From a checkout of this repository, install dependencies and start the playground with Bun.
 
@@ -65,6 +68,8 @@ bun start
 ```
 
 Open the [local playground](http://localhost:3333) to try the components and inspect their events.
+
+In the Sandbox, **Example HTML** formats the generated snippet when it first appears and whenever its source changes. Copy uses the displayed HTML. Slot editors provide a separate Format action for your edits.
 
 ## License
 

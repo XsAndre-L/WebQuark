@@ -63,6 +63,10 @@ Accessible tab selector for switching between consumer-owned tab panels.
 
 ## Dependencies
 
+### Used by
+
+ - [q-syntax-box](../../data-display/syntax-box)
+
 ### Depends on
 
 - [q-icon](../../media/icon)
@@ -71,6 +75,7 @@ Accessible tab selector for switching between consumer-owned tab panels.
 ```mermaid
 graph TD;
   q-tabs --> q-icon
+  q-syntax-box --> q-tabs
   style q-tabs fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
