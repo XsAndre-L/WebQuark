@@ -86,6 +86,7 @@ export const DEFAULT_CLASSIFICATIONS: readonly ClassificationEntry[] = [
       'toolbarTitle',
       'totalItems',
       'value',
+      'viewKey',
     ],
   },
   {
@@ -339,6 +340,7 @@ export const DEFAULT_PROP_ORDER_CONFIG: PropOrderConfig = {
   mixinFactories: [
     { name: 'withActionProps', file: 'src/browser/components/actions/action.props.ts' },
     { name: 'withActionLabel', file: 'src/browser/components/actions/action.props.ts' },
+    { name: 'withSyntaxContent', file: 'src/browser/components/data-display/syntax-box/syntax-content.tsx' },
   ],
   clusters: [
     { id: 'action-navigation', scope: 'withActionProps', props: ['href', 'rel', 'download'] },
@@ -390,9 +392,11 @@ export const DEFAULT_PROP_ORDER_CONFIG: PropOrderConfig = {
     },
     { id: 'pagination-page', scope: 'q-pagination', props: ['page', 'pageSize', 'totalItems'] },
     { id: 'pagination-summary', scope: 'q-pagination', props: ['showSummary', 'itemLabel'] },
-    { id: 'syntax-value', scope: 'q-syntax-box', props: ['code', 'value'] },
-    { id: 'syntax-heading', scope: 'q-syntax-box', props: ['heading', 'ariaLabel'] },
-    { id: 'syntax-editing', scope: 'q-syntax-box', props: ['editable', 'name', 'required'] },
+    ...['withSyntaxContent', 'q-syntax-box', 'q-syntax-view'].flatMap(scope => [
+      { id: `${scope}-value`, scope, props: ['code', 'value'] },
+      { id: `${scope}-heading`, scope, props: ['heading', 'ariaLabel'] },
+      { id: `${scope}-editing`, scope, props: ['editable', 'name', 'required'] },
+    ]),
     {
       id: 'progress-value',
       scope: 'q-progress',

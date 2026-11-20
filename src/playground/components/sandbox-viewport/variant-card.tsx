@@ -1,8 +1,7 @@
 import { h } from '../../dom-factory';
 import { resolveExample } from '../../examples/example';
 import { mountExample } from '../../examples/mount';
-import { PlaygroundEventLog } from '../playground-event-log/playground-event-log';
-import { PlaygroundCodePreview } from '../playground-code-preview/playground-code-preview';
+import { ExampleOutput } from './example-output';
 import type { ComponentSpec, Example } from '../../state';
 
 export class VariantCard extends HTMLElement {
@@ -16,12 +15,11 @@ export class VariantCard extends HTMLElement {
     const stage = <div class="variant-card-stage" />;
     const controls = <div class="demo-actions" hidden />;
     const size = <span class="example-dimensions" />;
-    const log = new PlaygroundEventLog();
-    const code = new PlaygroundCodePreview();
-    this.replaceChildren(<div class="variant-title-row"><h4>{this.item.name}</h4>{size}</div>, stage, controls, log, code);
+    const output = new ExampleOutput();
+    this.replaceChildren(<div class="variant-title-row"><h4>{this.item.name}</h4>{size}</div>, stage, controls, output.element);
     const example = resolveExample(this.spec, this.item);
-    this.preview = mountExample(stage, controls, example, event => log.record(event));
-    code.show(example);
+    this.preview = mountExample(stage, controls, example, event => output.record(event));
+    void output.show(example);
     customElements.whenDefined(this.spec.tag).then(() => {
       const element = stage.querySelector(this.spec.tag);
       if (!this.isConnected || !element) return;

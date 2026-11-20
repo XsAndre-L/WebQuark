@@ -374,6 +374,8 @@ Defaults below include the imported shared stylesheet; `var(...)` values follow 
 | `drawer` | Drawer dialog surface. |
 | `footer` | All variants; wrapper may be hidden. |
 | `header` | All variants; wrapper may be hidden. |
+| `group-label` | Label of a navigation item with children, at any nesting level. |
+| `item-label` | Label of a navigation item without children. |
 | `item-badge` | Each nav item with a valid positive badgeCount. |
 | `panel` | Persistent panel surface only; nav has no equivalent surface part. |
 | `surface` | Stable inner persistent-panel content, excluding collapse controls. |

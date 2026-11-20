@@ -1,8 +1,10 @@
 # WebQuark playground implementation plan
 
+The [Syntax Box views plan](./syntax-box-views.md) covers the shared tabbed output in Sandbox, Variants and Edge Cases.
+
 ## Implementation result
 
-The shared renderer now serves 45 component pages with 437 property definitions. Each gallery card has its own event log and keyboard-accessible Copy action. The reset button beside Properties restores every property of the active component to its sandbox default and preserves slot content.
+The shared renderer now serves 46 component pages with 450 property definitions. Sandbox and each gallery card open with Example HTML and Copy. The Events tab holds that example's log and Clear action. The reset button beside Properties restores every property of the active component to its sandbox default and preserves slot content.
 
 The panel appends `*` to a property name when the generated Stencil API marks that property as required.
 

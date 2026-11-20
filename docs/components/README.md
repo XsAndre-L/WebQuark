@@ -92,6 +92,7 @@ Choose a component's primary category by the situation in which developers usual
 | `q-step-diagram` | Indicators | [Guide](./q-step-diagram.md) | [API](../../src/browser/components/indicators/step-diagram/readme.md) |
 | `q-step-diagram-item` | Indicators | [Guide](./q-step-diagram-item.md) | [API](../../src/browser/components/indicators/step-diagram-item/readme.md) |
 | `q-syntax-box` | Data display | [Guide](./q-syntax-box.md) | [API](../../src/browser/components/data-display/syntax-box/readme.md) |
+| `q-syntax-view` | Data display | [Composing views](./q-syntax-box.md#switch-between-views) | [API](../../src/browser/components/data-display/syntax-view/readme.md) |
 | `q-tabs` | Layout | [Guide](./q-tabs.md) | [API](../../src/browser/components/layout/tabs/readme.md) |
 | `q-textarea` | Forms & inputs | [Guide](./q-textarea.md) | [API](../../src/browser/components/inputs/textarea/readme.md) |
 | `q-thumbnail` | Media | [Guide](./q-thumbnail.md) | [API](../../src/browser/components/media/thumbnail/readme.md) |

@@ -60,6 +60,34 @@ Present read-only JSON with a title and fixed code-body height.
 
 The panel defaults to a 110 px code body; `height` controls the body, not the entire panel.
 
+### Switch between views
+
+Place a `q-syntax-view` inside the box for each piece of content. The box shows one tab per view as soon as there are at least two. A single view uses the full box without a tab bar. For a simple code sample, continue setting `code` directly on the box.
+
+![Syntax Box with Example HTML selected, an Events tab and a Copy button](./assets/q-syntax-box-views.png)
+
+```html
+<q-syntax-box heading="Example output">
+  <q-syntax-view heading="Example HTML" view-key="html" code="&lt;q-button&gt;Save&lt;/q-button&gt;" copyable></q-syntax-view>
+
+  <q-syntax-view heading="Events" view-key="events">
+    <q-stack role="log" aria-label="Example events" gap="xs">
+      <div>Save clicked</div>
+    </q-stack>
+  </q-syntax-view>
+</q-syntax-box>
+```
+
+The example opens on **Example HTML** with the Copy action. Switching to **Events** displays the log. Put a custom action such as Clear in the owning view's `actions` slot. Use `heading` for the visible tab label and `name` only when submitting an editable view as a form field.
+
+To add another view to an existing snippet, leave the original content on the parent and append one child. A heading alone names the container. A parent with its own snippet or editor supplies the first tab.
+
+```html
+<q-syntax-box heading="HTML" code="&lt;main&gt;&lt;/main&gt;" copyable>
+  <q-syntax-view heading="CSS" language="css" code="main { margin: auto; }" copyable></q-syntax-view>
+</q-syntax-box>
+```
+
 ### Track code edits
 
 Listen for input while the component owns its editable text.
@@ -182,6 +210,7 @@ The Format action exists only in editable panel mode and supports strict JSON. H
 
 | Key | Action |
 | :--- | :--- |
+| Left / Right, Home / End on a view tab | Select the previous, next, first or last view |
 | Tab inside editor | Insert two spaces at the selection |
 | Shift+Tab | Native backward focus navigation |
 | Escape | Blur the editor |
@@ -193,7 +222,7 @@ The shadow root delegates focus. A hidden instruction describes Tab and Escape. 
 
 The editable textarea name uses trimmed `ariaLabel`, then trimmed `heading`, then the uppercased language plus “code editor.” Read-only output is code content, not an input.
 
-The built-in copy and format icon buttons currently lack explicit accessible names; tooltips do not reliably supply those names. For an editor with fully named actions, use `variant="plain"` and provide external, accessibly named controls with application-owned behavior. The panel `actions` slot adds controls but does not replace its built-in Format button. Copy feedback changes an icon/tooltip; no dedicated live region announces it.
+The built-in icon buttons have accessible names for Copy and Format JSON. Copy feedback updates the originating button's name, icon and tooltip. Use the `actions` slot to add controls specific to a view.
 
 ### Forms
 
@@ -203,6 +232,7 @@ Explicit disabled state combines with disabled fieldsets and their first-legend 
 
 The q-form adapter includes only editable mode. Unnamed editable fields validate; named enabled editors collect their exact source string. Partial setValues writes are silent and keep code/value/form participation coherent. Display mode does not participate, and no consumer shadow roots are traversed.
 
+Each editable child view is an independent field. Switching tabs preserves the field value, editor selection and form ownership. Supply `name` on each editor you want in the submitted data. A heading on the container does not create a field.
 
 Only editable mode contributes a form value. Use `name` and `required` for native form submission and validation; unnamed fields do not produce named entries. `checkValidity()` and `reportValidity()` return promises.
 
@@ -227,7 +257,7 @@ The code theme stays dark even in a light application theme. There is no compone
 | Value | Effect |
 | :--- | :--- |
 | `panel` (default) | Header, optional actions, bordered code surface |
-| `plain` | Code body only; heading/actions omitted |
+| `plain` | Code body for a single view, or a tab selector and the active body for multiple views |
 
 An unrecognized variant renders the plain branch. Panel height defaults to 110 px; plain height defaults to `auto`. Explicit `height` takes precedence. An empty height disables the read-only scroll wrapper.
 
@@ -243,6 +273,17 @@ An unrecognized variant renders the plain branch. Panel height defaults to 110 p
 Language changes select the helper used on subsequent rendering/formatting. Use the supported values.
 
 ### Custom styling
+
+Code, editable text, and content in the default slot share the same monospace typography, line height, and large theme padding. For a list of events, use a named log region and an extra-small stack. The log uses medium padding vertically and large padding horizontally. Set `--q-syntax-padding` directly on the box to override either default.
+
+```html
+<q-syntax-box role="log" aria-label="Build events" heading="Events">
+  <q-stack gap="xs">
+    <div>Build started</div>
+    <div>Build completed</div>
+  </q-stack>
+</q-syntax-box>
+```
 
 Set [CSS variables](#css-variables) on the host; there are no [Shadow Parts](#shadow-parts). The local dark-theme declarations override inherited syntax tokens, so apply component overrides directly.
 
@@ -274,7 +315,7 @@ All properties are optional. Use JavaScript properties for structured values and
 | `copyable` | `false` | Shows the Copy action in panel mode only.<br>**Type:** `boolean`. **HTML attribute:** `copyable`. **Required:** No. |
 | `disabled` | `false` | Disables editing and panel actions.<br>**Type:** `boolean`. **HTML attribute:** `disabled`. **Required:** No. |
 | `editable` | `false` | Enables editing, including an initially empty textarea when code and value are absent.<br>**Type:** `boolean`. **HTML attribute:** `editable`. **Required:** No. |
-| `heading` | `undefined` | Shown only in the panel variant.<br>**Type:** `string`. **HTML attribute:** `heading`. **Required:** No. |
+| `heading` | `undefined` | Panel title in single-view mode. In a composed box it names the tab list or labels the view that supplies it.<br>**Type:** `string`. **HTML attribute:** `heading`. **Required:** No. |
 | `height` | `undefined` | Explicit content height. Panel mode defaults to 110px; plain mode defaults to auto.<br>**Type:** `string`. **HTML attribute:** `height`. **Required:** No. |
 | `language` | `'html'` | Accepted values: `html`, `javascript`, `css`, `json`.<br>**Type:** `QSyntaxBoxLanguage`. **HTML attribute:** `language`. **Required:** No. |
 | `name` | `undefined` | Form field name used when the component is editable.<br>**Type:** `string`. **HTML attribute:** `name`. **Required:** No. |
@@ -294,7 +335,7 @@ These types describe property values and event payloads. Optional fields are mar
 
 | Name | Description |
 | :--- | :--- |
-| (default) | Read-only fallback content only while `code` is undefined; no built-in fallback text |
+| (default) | Direct `q-syntax-view` children declare views. Other content supplies the host's read-only fallback when `code` is undefined. |
 | `actions` | Consumer-owned panel header controls; not rendered in plain mode |
 
 ### Events
@@ -334,6 +375,7 @@ Defaults show local declarations, shared defaults where declared, or the compone
 | `--q-syntax-header-bg` | `#161b22` | Panel header background. |
 | `--q-syntax-header-font-size` | `var(--q-font-size-sm, 0.7rem)` | Panel heading text size. |
 | `--q-syntax-number` | `#f0883e` | Numeric token highlight color. |
+| `--q-syntax-padding` | Large theme padding, or medium vertical and large horizontal padding for logs | Inner padding for displayed code, editable text, and slotted content. |
 | `--q-syntax-tag` | `#ff7b72` | Tag and applicable keyword highlight color. |
 | `--q-syntax-text` | `#c9d1d9` | Base code and editor text color. |
 | `--q-syntax-value` | `#a5d6ff` | String and attribute value highlight color. |

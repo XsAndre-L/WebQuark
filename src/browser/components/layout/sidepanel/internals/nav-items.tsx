@@ -53,7 +53,7 @@ export function renderNavItems(options: RenderNavItemsOptions): any[] {
           {item.icon && (
             <q-icon class="nav-item__icon" name={item.icon} library="lucide" size="sm" />
           )}
-          <span class="nav-item__label">{item.label}</span>
+          <span class="nav-item__label" part={hasChildren ? 'group-label' : 'item-label'}>{item.label}</span>
           {hasBadge && (
             <span class="nav-item__badge" part="item-badge" aria-hidden="true">
               {count > 99 ? '99+' : count}

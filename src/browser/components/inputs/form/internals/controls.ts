@@ -4,7 +4,7 @@ import type { NamedFormControl } from '../form.types';
 
 const skippedInputTypes = new Set(['button', 'checkbox', 'color', 'file', 'hidden', 'image', 'radio', 'range', 'reset', 'submit']);
 
-const customFieldTags = new Set(['q-slider', 'q-input', 'q-textarea', 'q-dropdown', 'q-radio-group', 'q-toggle', 'q-syntax-box']);
+const customFieldTags = new Set(['q-slider', 'q-input', 'q-textarea', 'q-dropdown', 'q-radio-group', 'q-toggle', 'q-syntax-box', 'q-syntax-view']);
 const actionInputTypes = new Set(['button', 'image', 'reset', 'submit']);
 
 function supported(element: Element): element is NamedFormControl {
@@ -107,7 +107,7 @@ export function getNamedControls(formEl: HTMLFormElement | undefined, hostEl: HT
 }
 
 export function shouldSkipControl(control: NamedFormControl, tagName = control.tagName.toLowerCase()): boolean {
-  return tagName === 'q-syntax-box' && !control.editable;
+  return (tagName === 'q-syntax-box' || tagName === 'q-syntax-view') && !control.editable;
 }
 
 export function getControlFromEvent(ev: KeyboardEvent, formEl: HTMLFormElement | undefined, hostEl: HTMLElement): NamedFormControl | undefined {

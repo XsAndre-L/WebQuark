@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
-import { formatCode, formatCss, formatHtml, formatJs, formatJson, formatSource, isFormatSupported,
-  MAX_JSON_FORMAT_DEPTH, MAX_JSON_FORMAT_INPUT, MAX_JSON_FORMAT_OUTPUT } from './formatter';
-import { INVALID_JSON, JSON_EXPECTED, JSON_SOURCE, jsonTokens, UNSUPPORTED_SOURCE } from '../test/format-fixtures';
+import { formatCode, formatCss, formatHtml, formatJs, formatJson, formatSource, isFormatSupported } from './formatter';
+import { MAX_JSON_FORMAT_DEPTH, MAX_JSON_FORMAT_INPUT, MAX_JSON_FORMAT_OUTPUT } from './json';
+import { INVALID_JSON, JSON_EXPECTED, JSON_SOURCE, jsonTokens, UNSUPPORTED_SOURCE } from '../../test/format-fixtures';
 
 describe('explicit token-preserving formatter', () => {
   it('formats JSON with two-space/LF indentation', () => {

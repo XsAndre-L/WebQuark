@@ -1159,6 +1159,43 @@
       "qInput"
     ]
   },
+  "q-syntax-view": {
+    "attributes": {
+      "ariaLabel": "aria-label",
+      "code": "code",
+      "copyable": "copyable",
+      "disabled": "disabled",
+      "editable": "editable",
+      "heading": "heading",
+      "height": "height",
+      "language": "language",
+      "name": "name",
+      "required": "required",
+      "value": "value",
+      "variant": "variant",
+      "viewKey": "view-key"
+    },
+    "defaults": {
+      "ariaLabel": "null",
+      "code": "undefined",
+      "copyable": "false",
+      "disabled": "false",
+      "editable": "false",
+      "heading": "undefined",
+      "height": "undefined",
+      "language": "'html'",
+      "name": "undefined",
+      "required": "false",
+      "value": "undefined",
+      "variant": "'panel'",
+      "viewKey": "undefined"
+    },
+    "requiredProps": [],
+    "events": [
+      "qChange",
+      "qInput"
+    ]
+  },
   "q-tabs": {
     "attributes": {
       "ariaLabel": "aria-label",

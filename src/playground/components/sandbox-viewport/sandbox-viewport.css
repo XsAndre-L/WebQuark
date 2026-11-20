@@ -66,20 +66,13 @@ viewport-tabs q-tabs {
   min-height: 0;
 }
 
-.sandbox-bottom-panels {
-  display: flex;
-  gap: 20px;
-  height: 150px;
+.sandbox-main > q-syntax-box {
   flex-shrink: 0;
 }
 
-playground-event-log,
-playground-code-preview {
-  flex: 1;
-  min-width: 0;
-  height: 100%;
+.sandbox-main > q-syntax-box[hidden] {
+  display: none;
 }
-
 
 .stage-container {
   flex: 1;
@@ -181,8 +174,6 @@ playground-code-preview {
   margin: 0;
 }
 
-.sandbox-bottom-panels[hidden] { display: none; }
-
 .example-fixture {
   width: 100%;
   min-width: 0;
@@ -227,11 +218,6 @@ playground-code-preview {
   .active-component-badge {
     align-self: flex-start;
   }
-
-  .sandbox-bottom-panels {
-    flex-direction: column;
-    height: auto;
-  }
 }
 
 .grid-empty-state {
@@ -252,4 +238,17 @@ sandbox-viewport[active-component="q-step-diagram"] .edgecases-grid {
 .example-fixture > :is(q-data-table, q-step-diagram, q-map, q-form, q-grid, q-stack, q-toolbar, q-navbar, q-reel, q-carousel) {
   width: 100%;
   min-width: 0;
+}
+
+.example-fixture > q-toast + q-panel {
+  width: min(100%, 40rem);
+}
+
+sandbox-viewport[active-component="q-toast"] .sandbox-main {
+  overflow-y: auto;
+}
+
+sandbox-viewport[active-component="q-toast"] .stage-container {
+  flex: 1 0 auto;
+  padding: var(--q-space-md, 1rem);
 }

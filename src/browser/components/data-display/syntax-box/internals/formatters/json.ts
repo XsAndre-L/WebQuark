@@ -1,18 +1,10 @@
-/** Explicit formatting. JSON layout preserves raw tokens; other languages stay literal. */
-export interface SyntaxFormatResult {
-  code: string;
-  status: 'formatted' | 'unchanged' | 'invalid' | 'unsupported';
-}
+import type { SyntaxFormatResult } from './formatter.types';
 
 export const MAX_JSON_FORMAT_INPUT = 1_048_576;
 export const MAX_JSON_FORMAT_OUTPUT = 2_097_152;
 export const MAX_JSON_FORMAT_DEPTH = 128;
 
 class FormatLimitError extends Error {}
-
-export function isFormatSupported(language: string): boolean {
-  return typeof language === 'string' && language.toLowerCase() === 'json';
-}
 
 /** Validates JSON grammar while emitting original tokens, never JavaScript values. */
 function layoutJson(source: string): string {
@@ -157,11 +149,7 @@ function layoutJson(source: string): string {
   return parts.join('');
 }
 
-export function formatSource(code: string, language: string): SyntaxFormatResult {
-  if (!isFormatSupported(language)) {
-    return { code, status: 'unsupported' };
-  }
-
+export function formatJsonSource(code: string): SyntaxFormatResult {
   try {
     const formatted = layoutJson(code);
     return { code: formatted, status: formatted === code ? 'unchanged' : 'formatted' };
@@ -171,21 +159,5 @@ export function formatSource(code: string, language: string): SyntaxFormatResult
 }
 
 export function formatJson(code: string): string {
-  return formatSource(code, 'json').code;
-}
-
-export function formatCss(code: string): string {
-  return code;
-}
-
-export function formatHtml(code: string): string {
-  return code;
-}
-
-export function formatJs(code: string): string {
-  return code;
-}
-
-export function formatCode(code: string, language: string): string {
-  return formatSource(code, language).code;
+  return formatJsonSource(code).code;
 }

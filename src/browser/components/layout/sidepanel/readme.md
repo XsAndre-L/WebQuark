@@ -70,8 +70,10 @@ Drawer, persistent panel, or hierarchical navigation side panel.
 | `"collapse-control-adornment"` | Positioning wrapper for the built-in control's optional visual adornment. |
 | `"drawer"`                     | Drawer dialog surface.                                                    |
 | `"footer"`                     | Footer region.                                                            |
+| `"group-label"`                | Text of a navigation item with children.                                  |
 | `"header"`                     | Header region.                                                            |
 | `"item-badge"`                 | Navigation item's optional count badge.                                   |
+| `"item-label"`                 | Text of a navigation item without children.                               |
 | `"panel"`                      | Persistent panel surface.                                                 |
 | `"surface"`                    | Stable inner content surface for persistent panels.                       |
 

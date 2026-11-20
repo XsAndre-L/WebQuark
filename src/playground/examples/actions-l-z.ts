@@ -133,6 +133,7 @@ export const actionsLZ: Record<string, ExampleActions> = {
 
   'q-slider': fieldActions,
   'q-syntax-box': fieldActions,
+  'q-syntax-view': fieldActions,
 
   'q-tabs': (element) => {
     const tabs = element as HTMLQTabsElement;
@@ -173,16 +174,25 @@ export const actionsLZ: Record<string, ExampleActions> = {
 
   'q-toast': (element, add) => {
     const toast = element as HTMLQToastElement;
-    const editor = document.createElement('fieldset');
-    const legend = document.createElement('legend');
-    legend.textContent = 'Toast content';
-    editor.append(legend);
+    const editor = document.createElement('q-panel');
+    editor.setAttribute('aria-label', 'Toast content');
+    editor.setAttribute('padding', 'sm');
+
+    const heading = document.createElement('strong');
+    heading.slot = 'header';
+    heading.textContent = 'Toast content';
+
+    const fields = document.createElement('q-grid');
+    fields.setAttribute('min-item-width', '13rem');
+    fields.setAttribute('gap', 'sm');
+    editor.append(heading, fields);
+
     const input = (label: string, value: string, type: 'text' | 'number' = 'text') => {
       const control = document.createElement('q-input');
       control.setAttribute('label', label);
       control.setAttribute('type', type);
       control.setAttribute('value', value);
-      editor.append(control);
+      fields.append(control);
       return control;
     };
     const title = input('Title', 'Document updated');
@@ -194,7 +204,7 @@ export const actionsLZ: Record<string, ExampleActions> = {
     dismissible.setAttribute('type', 'checkbox');
     dismissible.setAttribute('label', 'Dismissible');
     dismissible.setAttribute('checked', '');
-    editor.append(dismissible);
+    fields.append(dismissible);
     element.after(editor);
 
     let lastId: string | undefined;

@@ -18,7 +18,7 @@ export function stateFromEvent(tag: string, name: string, detail: any): Record<s
   if (name === 'qMarkerSelect') return { selectedMarkerId: detail.marker.id };
   if (name === 'qChange' && tag === 'q-image-comparison') return { position: detail };
   if (name === 'qChange' && tag === 'q-toggle') return { checked: detail };
-  if ((name === 'qChange' || name === 'qInput') && ['q-input', 'q-textarea', 'q-syntax-box', 'q-slider', 'q-dropdown', 'q-radio-group', 'q-quantity-selector', 'q-tabs'].includes(tag)) return { value: detail };
+  if ((name === 'qChange' || name === 'qInput') && ['q-input', 'q-textarea', 'q-syntax-box', 'q-syntax-view', 'q-slider', 'q-dropdown', 'q-radio-group', 'q-quantity-selector', 'q-tabs'].includes(tag)) return { value: detail };
   return {};
 }
 

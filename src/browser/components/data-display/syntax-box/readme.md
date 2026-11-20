@@ -15,7 +15,7 @@ See the [authored guide](../../../../../docs/components/q-syntax-box.md) for lit
 
 ## Overview
 
-Displays and optionally edits syntax-highlighted code, with form association in editable mode.
+Displays syntax-highlighted content and automatically adds tabs for multiple views.
 
 ## Properties
 
@@ -26,7 +26,7 @@ Displays and optionally edits syntax-highlighted code, with form association in 
 | `copyable`  | `copyable`   |                                                                                     | `boolean`                                   | `false`     |
 | `disabled`  | `disabled`   | Disables editing and panel actions.                                                 | `boolean`                                   | `false`     |
 | `editable`  | `editable`   |                                                                                     | `boolean`                                   | `false`     |
-| `heading`   | `heading`    | Shown only in the panel variant.                                                    | `string`                                    | `undefined` |
+| `heading`   | `heading`    | Title in panel mode and tab label for a composed view.                              | `string`                                    | `undefined` |
 | `height`    | `height`     | Explicit content height. Panel mode defaults to 110px; plain mode defaults to auto. | `string`                                    | `undefined` |
 | `language`  | `language`   |                                                                                     | `"css" \| "html" \| "javascript" \| "json"` | `'html'`    |
 | `name`      | `name`       | Form field name used when the component is editable.                                | `string`                                    | `undefined` |
@@ -57,7 +57,7 @@ Type: `Promise<boolean>`
 
 ### `reportValidity() => Promise<boolean>`
 
-Reports editable constraint violations and returns whether the control is valid.
+Reports editable constraint violations and reveals the editor in its owning box.
 
 #### Returns
 
@@ -78,28 +78,31 @@ Type: `Promise<void>`
 
 ## Slots
 
-| Slot        | Description                                                      |
-| ----------- | ---------------------------------------------------------------- |
-|             | Read-only fallback content rendered when `code` is not provided. |
-| `"actions"` | Additional actions rendered in the panel header.                 |
+| Slot        | Description                                                  |
+| ----------- | ------------------------------------------------------------ |
+|             | Read-only fallback content or direct q-syntax-view children. |
+| `"actions"` | Additional actions for the box's own view.                   |
 
 
 ## Dependencies
 
 ### Depends on
 
-- [q-scrollable](../../layout/scrollable)
+- [q-tabs](../../layout/tabs)
 - [q-button](../../actions/button)
 - [q-icon](../../media/icon)
 - [q-tooltip](../../overlays/tooltip)
+- [q-scrollable](../../layout/scrollable)
 
 ### Graph
 ```mermaid
 graph TD;
-  q-syntax-box --> q-scrollable
+  q-syntax-box --> q-tabs
   q-syntax-box --> q-button
   q-syntax-box --> q-icon
   q-syntax-box --> q-tooltip
+  q-syntax-box --> q-scrollable
+  q-tabs --> q-icon
   q-button --> q-icon
   style q-syntax-box fill:#f9f,stroke:#333,stroke-width:4px
 ```

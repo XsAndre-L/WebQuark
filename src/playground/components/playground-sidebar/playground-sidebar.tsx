@@ -64,7 +64,7 @@ class PlaygroundSidebar extends HTMLElement {
           }}>Retry</q-button></div>}
           <q-button
             id="globalStylingBtn"
-            variant="secondary"
+            variant="primary"
             expand
             type="button"
             onClick={() => {
@@ -75,8 +75,7 @@ class PlaygroundSidebar extends HTMLElement {
             <q-icon slot="icon-left" name="globe" library="lucide" size="16"></q-icon>
             Global Styling
           </q-button>
-          <q-button variant="secondary" expand href="/playground/consumer.html">Standalone host example</q-button>
-          <q-button variant="secondary" expand href="./views/tooling/tooling.html">
+          <q-button variant="primary" expand href="./views/tooling/tooling.html">
             <q-icon slot="icon-left" name="file-text" library="lucide" size="16"></q-icon>
             Changelog Tooling
           </q-button>
@@ -123,7 +122,6 @@ class PlaygroundSidebar extends HTMLElement {
 
       if (this.globalStylingBtn) {
         void setButtonState(this.globalStylingBtn, 'aria-pressed', active === 'global-styling');
-        this.globalStylingBtn.setAttribute('variant', active === 'global-styling' ? 'primary' : 'secondary');
       }
     });
   }

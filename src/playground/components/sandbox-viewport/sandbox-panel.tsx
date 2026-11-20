@@ -2,8 +2,7 @@ import { h } from '../../dom-factory';
 import { activeComponent, activeTab, componentRegistry, effect, fetchComponentSpec, specErrors, updateKnobValue } from '../../state';
 import { resolveExample } from '../../examples/example';
 import { mountExample } from '../../examples/mount';
-import { PlaygroundEventLog } from '../playground-event-log/playground-event-log';
-import { PlaygroundCodePreview } from '../playground-code-preview/playground-code-preview';
+import { ExampleOutput } from './example-output';
 
 export class SandboxPanel extends HTMLElement {
   private cleanup?: () => void;
@@ -12,11 +11,9 @@ export class SandboxPanel extends HTMLElement {
   connectedCallback() {
     const stage = <div class="stage-container" />;
     const controls = <div class="demo-actions" hidden />;
-    const log = new PlaygroundEventLog();
-    const code = new PlaygroundCodePreview();
-    const panels = <div class="sandbox-bottom-panels">{log}{code}</div>;
+    const output = new ExampleOutput();
     const description = <p class="demo-description" hidden />;
-    this.replaceChildren(<div class="sandbox-layout"><div class="sandbox-main">{description}{stage}{controls}{panels}</div></div>);
+    this.replaceChildren(<div class="sandbox-layout"><div class="sandbox-main">{description}{stage}{controls}{output.element}</div></div>);
 
     let mountedTag = '';
     this.cleanup = effect(() => {
@@ -29,9 +26,9 @@ export class SandboxPanel extends HTMLElement {
         this.preview = undefined;
         mountedTag = '';
         stage.replaceChildren();
-        log.clear();
+        output.reset();
       }
-      panels.hidden = !visible || !spec;
+      output.element.hidden = !visible || !spec;
       description.textContent = spec?.description || '';
       description.hidden = !visible || !description.textContent;
       if (!visible) return;
@@ -46,10 +43,10 @@ export class SandboxPanel extends HTMLElement {
       if (this.preview) this.preview.update(example);
       else {
         mountedTag = tag;
-        this.preview = mountExample(stage, controls, example, event => log.record(event),
+        this.preview = mountExample(stage, controls, example, event => output.record(event),
           (key, value) => updateKnobValue('prop', key, value, tag));
       }
-      code.show(example);
+      void output.show(example);
     });
   }
 

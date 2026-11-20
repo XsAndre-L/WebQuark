@@ -16,6 +16,7 @@
   {"tag": "q-map", "name": "Map", "category": "data-display"},
   {"tag": "q-pagination", "name": "Pagination", "category": "data-display"},
   {"tag": "q-syntax-box", "name": "Syntax Box", "category": "data-display"},
+  {"tag": "q-syntax-view", "name": "Syntax View", "category": "data-display"},
 
   {"tag": "q-dropdown", "name": "Dropdown", "category": "inputs"},
   {"tag": "q-form", "name": "Form", "category": "inputs"},

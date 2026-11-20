@@ -1,6 +1,19 @@
-# Run a copied playground example
+# Run a copied example
 
-Paste the entire example into an HTML page that registers its WebQuark elements. Keep the markup and any accompanying script together. The script configures that particular example, including property-only values, event handling and demo actions.
+[Component playground](http://localhost:3333/) (local development)
+
+Use the same version of `@webquark/browser` as the playground. In a bundler-based project, register the components and load their stylesheet in your application entry point.
+
+```javascript
+import '@webquark/browser/webquark.css';
+import { defineCustomElements } from '@webquark/browser/loader';
+
+defineCustomElements();
+```
+
+Copy an example into the body of your HTML page. Keep any accompanying script directly after the example and serve the page over HTTP. The script connects actions and assigns values that HTML attributes cannot express.
+
+The bundled comparison illustrations and sample video travel with copied examples. Supply your own provider credentials for Google Maps. For local icons, serve your chosen files at the icon’s configured local path.
 
 ## Try Image Comparison in a separate folder
 

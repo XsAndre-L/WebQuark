@@ -72,9 +72,9 @@
   },
   "slots": {
     "default": {
-      "type": "text",
-      "default": "<div class=\"app-container\">\n  <h1>Hello World</h1>\n  <q-button variant=\"primary\">Click Me</q-button>\n</div>",
-      "desc": "Read-only fallback content projected when the code property is absent"
+      "type": "html",
+      "default": "&lt;div class=\"app-container\"&gt;\n  &lt;h1&gt;Hello World&lt;/h1&gt;\n  &lt;q-button variant=\"primary\"&gt;Click Me&lt;/q-button&gt;\n&lt;/div&gt;",
+      "desc": "Projected content for this box, or direct q-syntax-view children for separate views"
     },
     "actions": {
       "type": "html",
@@ -91,6 +91,13 @@
         "copyable": true,
         "height": "110px",
         "code": "<div class=\"demo\">\n  <span>Interactive Item</span>\n</div>"
+      }
+    },
+    {
+      "name": "Two named views",
+      "props": { "heading": "Button example" },
+      "slots": {
+        "default": "<q-syntax-view heading=\"Example HTML\" view-key=\"html\" code=\"&lt;q-button&gt;Save&lt;/q-button&gt;\" copyable></q-syntax-view><q-syntax-view heading=\"Notes\" view-key=\"notes\"><p>Use a short action label.</p></q-syntax-view>"
       }
     },
     {
@@ -180,7 +187,7 @@
         "editable": false
       },
       "slots": {
-        "default": "<article>Draft</article>",
+        "default": "&lt;article&gt;Draft&lt;/article&gt;",
         "actions": "<q-link href=\"#reference\">Reference</q-link>"
       }
     },
@@ -196,6 +203,13 @@
     }
   ],
   "edgeCases": [
+    {
+      "name": "Empty editor keeps its tab",
+      "props": { "heading": "Draft sources" },
+      "slots": {
+        "default": "<q-syntax-view heading=\"Saved\" code=\"&lt;p&gt;Published&lt;/p&gt;\" copyable></q-syntax-view><q-syntax-view heading=\"Draft\" editable required name=\"draft\" aria-label=\"Draft HTML\"></q-syntax-view>"
+      }
+    },
     {
       "name": "Long Script Wrapping Test",
       "props": {

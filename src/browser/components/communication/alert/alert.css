@@ -49,8 +49,9 @@
 }
 
 .content {
-  flex: 1 1 auto;
+  flex: 1 1 0%;
   min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .heading {
@@ -78,6 +79,7 @@
 
 .dismiss-button {
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
@@ -113,6 +115,7 @@
   }
 
   .actions.has-content {
+    order: 1;
     flex: 1 0 100%;
   }
 }
