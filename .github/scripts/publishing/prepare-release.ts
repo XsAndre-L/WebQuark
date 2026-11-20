@@ -104,8 +104,11 @@ for (const { definition, manifest } of prepared) {
 
 const githubOutput = process.env.GITHUB_OUTPUT;
 if (githubOutput) {
+  const packageLinks = packages.map(({ name }) => `- [${name}](https://www.npmjs.com/package/${name}/v/${version})`);
+  const packageNotes = ['## Packages', '', ...packageLinks].join('\n');
+
   appendFileSync(
     githubOutput,
-    'version=' + version + '\nnpm_tag=' + npmTag + '\nchannel=' + channel + '\n',
+    `version=${version}\nnpm_tag=${npmTag}\nchannel=${channel}\npackage_notes<<END_NOTES\n${packageNotes}\nEND_NOTES\n`,
   );
 }

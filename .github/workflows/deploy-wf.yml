@@ -32,6 +32,7 @@ jobs:
     environment: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
     outputs:
       version: ${{ steps.release.outputs.version }}
+      package_notes: ${{ steps.release.outputs.package_notes }}
     steps:
       - name: Checkout WebQuark
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -115,7 +116,9 @@ jobs:
           GH_REPO: ${{ github.repository }}
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ needs.publish.outputs.version }}
+          PACKAGE_NOTES: ${{ needs.publish.outputs.package_notes }}
         run: |
           if ! gh release view "v${VERSION}" >/dev/null 2>&1; then
-            gh release create "v${VERSION}" --target "${GITHUB_SHA}" --generate-notes --title "WebQuark ${VERSION}"
+            gh release create "v${VERSION}" --target "${GITHUB_SHA}" \
+              --title "WebQuark ${VERSION}" --notes "$PACKAGE_NOTES" --generate-notes
           fi
