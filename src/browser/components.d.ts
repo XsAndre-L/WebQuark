@@ -5683,6 +5683,7 @@ declare namespace LocalJSX {
         "layout": QCarouselLayout;
         "snapAlignment": QCarouselSnapAlignment;
         "itemWidth": string;
+        "rotationPlacement": 'controls' | 'overlay';
         "showArrows": boolean;
         "showIndicators": boolean;
         "repeat": boolean;
@@ -5694,7 +5695,6 @@ declare namespace LocalJSX {
         "autoplaySuspended": boolean;
         "slideTiming": QCarouselSlideTiming;
         "autoplayAdvanceSuspended": boolean;
-        "rotationPlacement": 'controls' | 'overlay';
         "ariaLabel": string;
     }
     interface QChipAttributes {
