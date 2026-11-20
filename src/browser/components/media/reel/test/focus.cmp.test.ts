@@ -1,10 +1,9 @@
 import { afterEach, expect, it, vi } from 'vitest';
 import { userEvent } from 'vitest/browser';
-import { defineCustomElement as defineReel } from '@webquark/browser/components/q-reel';
-import { defineCustomElement as defineThumbnail } from '@webquark/browser/components/q-thumbnail';
+// @ts-ignore - the browser tests run after Stencil generates the loader.
+import { defineCustomElements } from '../../../../../../packages/browser/components/dist/loader';
 
-defineThumbnail();
-defineReel();
+defineCustomElements();
 
 afterEach(() => document.body.replaceChildren());
 
