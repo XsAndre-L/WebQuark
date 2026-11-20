@@ -4,7 +4,7 @@
 
 **Component tag:** `<q-step-diagram-item>`
 
-**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Indicators → Step Diagram**.
+**Working preview:** Run `bun start` at the repository root, open the [playground](http://localhost:3333) and select **Indicators → Step Diagram Item**. [Try the parent diagram](./q-step-diagram.md).
 
 **On this page**
 
@@ -47,7 +47,7 @@ defineCustomElements();
 
 ## Examples
 
-These examples share the [Quick start registration](#quick-start). Screenshots show the real registered component in a temporary preview fixture using the existing playground runtime. They do not imply extra permanent playground presets.
+These examples share the [Quick start registration](#quick-start). Screenshots show the real registered component in a temporary preview fixture using the existing playground runtime.
 
 ### Handle an available step
 

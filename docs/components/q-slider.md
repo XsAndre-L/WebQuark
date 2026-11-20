@@ -1,5 +1,7 @@
 # Slider
 
+**Working preview:** Run `bun start` at the repository root, open the [playground](http://localhost:3333) and select **Forms & inputs → Slider**.
+
 A single-value numeric input in the Inputs category. Uses a native range control for pointer, touch, arrow-key, Home and End interactions.
 
 ```html

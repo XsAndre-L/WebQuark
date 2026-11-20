@@ -1,0 +1,67 @@
+{
+  "tag": "q-thumbnail",
+  "name": "Thumbnail",
+  "description": "Keyboard-activatable thumbnail. qMaximize carries the media details to a consumer such as q-reel.",
+  "props": {
+    "src": {
+      "type": "string",
+      "desc": "Thumbnail media URL",
+      "default": "assets/comparison-before.svg"
+    },
+    "alt": {
+      "type": "string",
+      "desc": "Image alternative text",
+      "default": "Landscape before restoration"
+    },
+    "label": {
+      "type": "string",
+      "desc": "Caption",
+      "default": "Restoration survey"
+    },
+    "highlighted": {
+      "type": "boolean",
+      "desc": "Highlight the thumbnail",
+      "default": false
+    },
+    "video": {
+      "type": "boolean",
+      "desc": "Display a play indicator",
+      "default": false
+    }
+  },
+  "slots": {
+    "default": {
+      "type": "html",
+      "desc": "Custom overlay",
+      "default": ""
+    }
+  },
+  "variants": [
+    {
+      "name": "Highlighted with overlay",
+      "props": {
+        "src": "assets/comparison-after.svg",
+        "highlighted": true
+      },
+      "slots": {
+        "default": "<span>After restoration</span>"
+      }
+    },
+    {
+      "name": "Video indicator",
+      "props": {
+        "video": true,
+        "label": "Survey footage"
+      }
+    }
+  ],
+  "edgeCases": [
+    {
+      "name": "Accessible without a caption",
+      "props": {
+        "label": null,
+        "alt": "A restored landscape"
+      }
+    }
+  ]
+}

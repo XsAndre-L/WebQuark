@@ -1,7 +1,13 @@
+import { Settings, X } from '@lucide/icons';
 import { h } from '../../dom-factory';
-import { activeComponent, activeTab, componentRegistry, effect, ComponentSpec } from '../../state';
+import { setButtonState } from '../button-accessibility';
+import { activeComponent, activeTab, componentRegistry, effect, resetComponentProperties, ComponentSpec } from '../../state';
+import { getPropertySections } from './property-categories';
+import { createResetAction } from './reset-action';
 import './property-row';
+import type { PropertyRow } from './property-row';
 import './slot-row';
+import type { SlotRow } from './slot-row';
 import css from './properties-panel.css';
 
 export class PropertiesPanel extends HTMLElement {
@@ -10,27 +16,51 @@ export class PropertiesPanel extends HTMLElement {
   private slotContainer: HTMLElement | null = null;
   private cleanupEffect?: () => void;
   private lastActiveComponent: string | null = null;
+  private resetAction!: HTMLElement;
+
+  private mobile = matchMedia('(max-width: 900px)');
+  private listeners?: AbortController;
 
   connectedCallback(): void {
+    this.lastActiveComponent = null;
     this.innerHTML = '';
     
     const toggleBtn = (
-      <button class="properties-toggle-btn" id="propertiesToggleBtn" type="button" onClick={() => this.openPanel()}>
-        <span class="properties-toggle-icon">⚙️</span>
-        <span>Properties</span>
-      </button>
+      <q-button
+        class="properties-toggle-btn"
+        id="propertiesToggleBtn"
+        aria-controls="propertiesPanel"
+        aria-expanded="false"
+        shape="pill"
+        onClick={() => this.openPanel()}
+      >
+        {Object.assign(<q-icon slot="icon-left" size="16" />, { definition: Settings })}
+        Properties
+      </q-button>
     );
 
     const closeBtn = (
-      <button class="properties-close-btn" id="propertiesCloseBtn" type="button" onClick={() => this.closePanel()}>&times;</button>
+      <q-button
+        class="properties-close-btn"
+        id="propertiesCloseBtn"
+        aria-label="Close component properties"
+        variant="text"
+        icon-only="true"
+        onClick={() => this.closePanel()}
+      >
+        {Object.assign(<q-icon slot="icon-left" size="20" />, { definition: X })}
+      </q-button>
     );
+
+    this.resetAction = createResetAction('Reset all properties to sandbox defaults', () => this.resetProperties());
+    this.resetAction.hidden = true;
 
     this.panel = (
       <q-sidepanel
         class="properties-panel"
         id="propertiesPanel"
         variant="panel"
-        side="right"
+        side="right" aria-label="Component properties"
       >
         <q-scrollable height="100%">
           <div class="properties-scroll-content">
@@ -40,7 +70,10 @@ export class PropertiesPanel extends HTMLElement {
             </div>
             
             <div class="properties-section">
-              <h3 class="properties-section-title">Properties</h3>
+              <div class="properties-section-header">
+                <h3 class="properties-section-title">Properties</h3>
+                {this.resetAction}
+              </div>
               <div id="attributeProperties">
                 {/* Attributes list */}
               </div>
@@ -70,6 +103,13 @@ export class PropertiesPanel extends HTMLElement {
     }
     style.textContent = css as any;
 
+    this.listeners = new AbortController();
+    const { signal } = this.listeners;
+    this.mobile.addEventListener('change', () => this.closePanel(false), { signal });
+    this.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && this.panel?.classList.contains('open')) this.closePanel();
+    }, { signal });
+    this.closePanel(false);
     this.init(toggleBtn);
   }
 
@@ -88,7 +128,7 @@ export class PropertiesPanel extends HTMLElement {
       if (active === 'global-styling' || tab !== 'sandbox') {
         this.style.display = 'none';
         toggleBtn.style.display = 'none';
-        if (this.panel) this.panel.classList.remove('open');
+        this.closePanel(false);
         return;
       }
 
@@ -97,6 +137,11 @@ export class PropertiesPanel extends HTMLElement {
 
       if (config) {
         this.buildProperties(config, active);
+      } else {
+        this.lastActiveComponent = null;
+        this.resetAction.hidden = true;
+        this.attrContainer?.replaceChildren();
+        this.slotContainer?.replaceChildren();
       }
     });
   }
@@ -104,92 +149,79 @@ export class PropertiesPanel extends HTMLElement {
   private buildProperties(config: ComponentSpec, active: string): void {
     if (!this.attrContainer || !this.slotContainer) return;
 
-    // A. Build Attribute/Property rows
     if (this.lastActiveComponent !== active) {
-      this.attrContainer.innerHTML = '';
-      if (config.props && Object.keys(config.props).length > 0) {
-        Object.keys(config.props).forEach(propName => {
-          if (config.props) {
-            const prop = config.props[propName];
-            const row = document.createElement('property-row') as any;
-            row.propName = propName;
-            row.prop = prop;
-            this.attrContainer!.appendChild(row);
-          }
-        });
-      } else {
-        this.attrContainer.appendChild(
-          <div class="property-empty-state">No customizable attributes.</div>
-        );
-      }
-    } else {
-      // Just update existing controls' values
-      if (config.props) {
-        Object.keys(config.props).forEach(propName => {
-          const prop = config.props![propName];
-          const control = this.attrContainer!.querySelector(`[data-prop="${propName}"]`) as any;
-          if (control) {
-            if (prop.type === 'boolean') {
-              if (control.checked !== prop.currentValue) {
-                control.checked = prop.currentValue;
-              }
-            } else {
-              // Only update value if different and the element is not currently focused by the user
-              if (control.value !== prop.currentValue && document.activeElement !== control) {
-                control.value = prop.currentValue;
-              }
-            }
-          }
-        });
-      }
+      const sections = this.renderPropertySections(config);
+      const slots = Object.entries(config.slots ?? {}).map(([slotName, slotConfig]) =>
+        Object.assign(document.createElement('slot-row') as SlotRow, { slotName, slotConfig, activeComponentTag: active }));
+
+      this.attrContainer.replaceChildren(...(sections.length ? sections : [<div class="property-empty-state">No customizable attributes.</div>]));
+      this.slotContainer.replaceChildren(...(slots.length ? slots : [<div class="property-empty-state">No slot options configured.</div>]));
+      this.lastActiveComponent = active;
+
+      this.resetAction.hidden = sections.length === 0;
+      return;
     }
 
-    // B. Build Slot rows
-    if (this.lastActiveComponent !== active) {
-      this.slotContainer.innerHTML = '';
-      if (config.slots && Object.keys(config.slots).length > 0) {
-        Object.keys(config.slots).forEach(slotName => {
-          if (config.slots) {
-            const slot = config.slots[slotName];
-            const row = document.createElement('slot-row') as any;
-            row.slotName = slotName;
-            row.slotConfig = slot;
-            row.activeComponentTag = active;
-            this.slotContainer!.appendChild(row);
-          }
-        });
-      } else {
-        this.slotContainer.appendChild(
-          <div class="property-empty-state">No slot options configured.</div>
-        );
-      }
-    } else {
-      // Just update existing slot controls' values
-      if (config.slots) {
-        Object.keys(config.slots).forEach(slotName => {
-          const slot = config.slots![slotName];
-          const control = this.slotContainer!.querySelector(`[data-slot="${slotName}"]`) as any;
-          if (control) {
-            if (control.value !== slot.currentValue && document.activeElement !== control) {
-              control.value = slot.currentValue;
-            }
-          }
-        });
-      }
+    for (const row of this.attrContainer.querySelectorAll<PropertyRow>('property-row')) {
+      row.sync(config.props?.[row.propName]?.currentValue);
     }
+    for (const row of Array.from(this.slotContainer.children) as SlotRow[]) {
+      if (row.slotName) row.sync(config.slots?.[row.slotName]?.currentValue);
+    }
+  }
 
-    this.lastActiveComponent = active;
+  private renderPropertySections(config: ComponentSpec): HTMLElement[] {
+    const properties = config.props ?? {};
+    const sections = getPropertySections(config.tag, Object.keys(properties));
+
+    return sections.map(({ name, categories }) => (
+      <div class="property-section">
+        {name && <h4 class="property-section-heading">{name}</h4>}
+
+        {categories.map(({ label, props }) => (
+          <div class="property-category">
+            {h(name ? 'h5' : 'h4', { class: 'property-category-heading' }, label)}
+
+            <div class="property-category-rows">
+              {props.map(propName => Object.assign(document.createElement('property-row') as PropertyRow, {
+                propName,
+                prop: properties[propName],
+                activeComponentTag: config.tag,
+              }))}
+            </div>
+          </div>
+        ))}
+      </div>
+    ));
+  }
+
+  private resetProperties(): void {
+    resetComponentProperties();
+    for (const row of this.querySelectorAll<PropertyRow>('property-row')) {
+      row.sync(row.prop.default, true);
+    }
   }
 
   private openPanel(): void {
-    if (this.panel) this.panel.classList.add('open');
+    if (!this.panel) return;
+    this.panel.inert = false;
+    this.panel.classList.add('open');
+    const toggle = this.querySelector<HTMLQButtonElement>('#propertiesToggleBtn');
+    if (toggle) void setButtonState(toggle, 'aria-expanded', true);
+    this.querySelector<HTMLQButtonElement>('#propertiesCloseBtn')?.focus();
   }
 
-  public closePanel(): void {
-    if (this.panel) this.panel.classList.remove('open');
+  public closePanel(restoreFocus = true): void {
+    if (!this.panel) return;
+    this.panel.classList.remove('open');
+    this.panel.inert = this.mobile.matches;
+    const toggle = this.querySelector<HTMLQButtonElement>('#propertiesToggleBtn');
+    if (toggle) void setButtonState(toggle, 'aria-expanded', false);
+    if (restoreFocus && this.mobile.matches) toggle?.focus();
   }
 
   disconnectedCallback(): void {
+    this.listeners?.abort();
     if (this.cleanupEffect) {
       this.cleanupEffect();
     }

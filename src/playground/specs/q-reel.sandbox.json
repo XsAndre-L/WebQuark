@@ -20,7 +20,7 @@
   "slots": {
     "default": {
       "type": "html",
-      "default": "<q-thumbnail \n  src=\"https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=350\" \n  label=\"Cyberspace Grid\"\n  alt=\"Grid display representation\"\n></q-thumbnail>\n<q-thumbnail \n  src=\"https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=350\" \n  label=\"Synthetics Laboratory\"\n  alt=\"Lab mock representation\"\n  highlighted=\"true\"\n></q-thumbnail>\n<q-thumbnail \n  src=\"https://images.unsplash.com/photo-1614064641938-3bbee52942c7?q=80&w=350\" \n  label=\"Cyber Threat Map\"\n  alt=\"Map mock representation\"\n  video=\"true\"\n></q-thumbnail>",
+      "default": "<q-thumbnail src=\"assets/comparison-before.svg\" alt=\"Before restoration\" label=\"Before restoration\"></q-thumbnail><q-thumbnail src=\"assets/comparison-after.svg\" alt=\"After restoration\" label=\"After restoration\" highlighted></q-thumbnail>",
       "desc": "Slotted child q-thumbnail elements"
     }
   },
@@ -40,10 +40,19 @@
       }
     },
     {
-      "name": "No Lightbox (Clicks ignored)",
+      "name": "Lightbox disabled",
       "props": {
         "layout": "grid",
         "lightbox": false
+      }
+    },
+    {
+      "name": "Video in the lightbox",
+      "props": {
+        "lightbox": true
+      },
+      "slots": {
+        "default": "<q-thumbnail src=\"assets/reel-motion.webm\" alt=\"Moving test pattern\" label=\"Moving test pattern\" video></q-thumbnail>"
       }
     }
   ],
@@ -54,7 +63,7 @@
         "layout": "grid"
       },
       "slots": {
-        "default": "<q-thumbnail src=\"https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=350\" label=\"Single Image\" alt=\"Only item\"></q-thumbnail>"
+        "default": "<q-thumbnail src=\"assets/comparison-before.svg\" label=\"Single Image\" alt=\"Only item\"></q-thumbnail>"
       }
     },
     {
@@ -63,8 +72,16 @@
         "layout": "grid"
       },
       "slots": {
-        "default": "<q-thumbnail src=\"https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=350\" alt=\"No caption text\"></q-thumbnail>\n<q-thumbnail src=\"https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=350\" alt=\"Highlight text\" highlighted=\"true\"></q-thumbnail>"
+        "default": "<q-thumbnail src=\"assets/comparison-before.svg\" alt=\"No caption text\"></q-thumbnail>\n<q-thumbnail src=\"assets/comparison-before.svg\" alt=\"Highlight text\" highlighted=\"true\"></q-thumbnail>"
+      }
+    },
+    {
+      "name": "No media",
+      "props": {},
+      "slots": {
+        "default": ""
       }
     }
-  ]
+  ],
+  "description": "Open a thumbnail, navigate with the arrow keys and close with Escape. Video thumbnails use the same URL for the image preview and video playback; a video URL plays in the viewer and the thumbnail displays its alternative text."
 }

@@ -4,7 +4,7 @@
 
 **Component tag:** `<q-pagination>`
 
-**Working preview:** Run `bun start` from the repository root and open the [WebQuark playground](http://localhost:3333). There is no dedicated pagination menu entry. To try these examples, paste the HTML into the registered runtime using browser DevTools and run the module body in the console. This temporary setup does not add a playground menu entry.
+**Working preview:** Run `bun start` at the repository root, open the [playground](http://localhost:3333) and select **Data display → Pagination**.
 
 **On this page**
 

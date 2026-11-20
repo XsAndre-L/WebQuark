@@ -1,15 +1,18 @@
 import { h } from '../../dom-factory';
+import { RefreshCw } from '@lucide/icons';
 import { theme, effect } from '../../state';
 import './token-section';
 import { dimensionTokenItems } from './dimension-tokens';
 import css from './theme-designer.css';
 import { TokenItem } from './token-row';
-import { themeGroups } from '../../../browser/theme/tokens';
+import { themeGroups, presetTokens } from '../../../browser/theme/tokens';
 
 export interface TokenCategory {
   category: string;
   tokens: TokenItem[];
 }
+
+const groupedNames = new Set([...dimensionTokenItems, ...themeGroups.flatMap(group => group.tokens)].map(token => token.name));
 
 const THEME_TOKENS: TokenCategory[] = [
   {
@@ -25,12 +28,35 @@ const THEME_TOKENS: TokenCategory[] = [
       desc: token.name,
     })),
   })),
+  {
+    category: 'Preset typography, spacing and component defaults',
+    tokens: presetTokens.filter(token => !groupedNames.has(token.name)).map(token => ({
+      name: token.name, label: token.name.slice(4).replaceAll('-', ' '), type: 'text', desc: token.name,
+    })),
+  },
 ];
+
+// Token overrides live on the document root and survive navigation between examples.
+const previousTokenValues = new Map<string, { value: string; priority: string }>();
 
 export class ThemeDesigner extends HTMLElement {
   private cleanupThemeSync?: () => void;
 
+  private frame = 0;
+
+  private editToken = (event: Event): void => {
+    const { name, value } = (event as CustomEvent<{ name: string; value: string }>).detail;
+    const style = document.documentElement.style;
+    if (!previousTokenValues.has(name)) {
+      previousTokenValues.set(name, { value: style.getPropertyValue(name), priority: style.getPropertyPriority(name) });
+    }
+    if (value) style.setProperty(name, value);
+    else style.removeProperty(name);
+    this.scheduleSync();
+  };
+
   connectedCallback(): void {
+    this.addEventListener('token-edit', this.editToken);
     this.innerHTML = '';
     this.appendChild(
       <div class="theme-designer-container">
@@ -39,10 +65,10 @@ export class ThemeDesigner extends HTMLElement {
             <h2 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--q-fg-base)">Theme Designer</h2>
             <p class="theme-designer-desc">Customize colors, dimensions, and component defaults. Overrides apply to all sandbox components.</p>
           </div>
-          <button id="resetThemeBtn" class="reset-theme-btn" type="button" onClick={() => this.resetTheme()}>
-            <q-icon name="refresh-cw" library="lucide" size="16"></q-icon>
-            <span>Reset to Default</span>
-          </button>
+          <q-button id="resetThemeBtn" variant="secondary" size="sm" type="button" onClick={() => this.resetTheme()}>
+            {Object.assign(<q-icon slot="icon-left" name="refresh-cw" size="16" />, { definition: RefreshCw })}
+            Reset to Default
+          </q-button>
         </div>
         {this.renderGrid()}
       </div>
@@ -63,7 +89,7 @@ export class ThemeDesigner extends HTMLElement {
   private init(): void {
     this.cleanupThemeSync = effect(() => {
       theme(); // Consume signal reactively
-      setTimeout(() => this.syncThemeInputs(), 50);
+      this.scheduleSync();
     });
   }
 
@@ -83,8 +109,18 @@ export class ThemeDesigner extends HTMLElement {
   }
 
   private resetTheme(): void {
-    document.documentElement.style.cssText = '';
-    setTimeout(() => this.syncThemeInputs(), 50);
+    const style = document.documentElement.style;
+    previousTokenValues.forEach(({ value, priority }, name) => {
+      if (value) style.setProperty(name, value, priority);
+      else style.removeProperty(name);
+    });
+    previousTokenValues.clear();
+    this.scheduleSync();
+  }
+
+  private scheduleSync(): void {
+    cancelAnimationFrame(this.frame);
+    this.frame = requestAnimationFrame(() => this.syncThemeInputs());
   }
 
   private syncThemeInputs(): void {
@@ -96,6 +132,8 @@ export class ThemeDesigner extends HTMLElement {
   }
 
   disconnectedCallback(): void {
+    this.removeEventListener('token-edit', this.editToken);
+    cancelAnimationFrame(this.frame);
     if (this.cleanupThemeSync) {
       this.cleanupThemeSync();
     }

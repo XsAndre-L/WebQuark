@@ -9,12 +9,10 @@
   "props": {
     "closeOnEscape": {
       "type": "boolean",
-      "default": true,
       "desc": "Enables Escape key trigger close"
     },
     "closeOnBackdropClick": {
       "type": "boolean",
-      "default": true,
       "desc": "Enables backdrop clicks to trigger cancel"
     },
     "showConfirm": {
@@ -39,17 +37,17 @@
     },
     "confirmLabel": {
       "type": "string",
-      "default": "Confirm Action",
+      "default": "Confirm",
       "desc": "Label text for confirmation button"
     },
     "cancelLabel": {
       "type": "string",
-      "default": "Dismiss",
+      "default": "Cancel",
       "desc": "Label text for cancellation button"
     },
     "open": {
       "type": "boolean",
-      "default": true,
+      "default": false,
       "desc": "Controls visibility of the dialog overlay"
     },
     "loading": {
@@ -66,6 +64,43 @@
         "lg",
         "full"
       ]
+    },
+    "ariaLabel": {
+      "type": "string",
+      "desc": "Accessible name for the dialog, especially when using a custom header without heading."
+    },
+    "backdrop": {
+      "type": "select",
+      "desc": "Choose a solid backdrop or a transparent click layer.",
+      "options": [
+        "none",
+        "solid"
+      ]
+    },
+    "backdropEffect": {
+      "type": "select",
+      "desc": "Deprecated fallback for backdrop (effective default solid).",
+      "options": [
+        "none",
+        "solid"
+      ]
+    },
+    "closeLabel": {
+      "type": "string",
+      "default": "Close dialog",
+      "desc": "Accessible label for the header close button."
+    },
+    "closeOnEsc": {
+      "type": "boolean",
+      "desc": "Deprecated fallback for closeOnEscape (effective default true)."
+    },
+    "closeOnOverlayClick": {
+      "type": "boolean",
+      "desc": "Deprecated fallback for closeOnBackdropClick (effective default true)."
+    },
+    "dialogTitle": {
+      "type": "string",
+      "desc": "Deprecated fallback for heading."
     }
   },
   "slots": {
@@ -103,6 +138,9 @@
         "message": "Uploading invoice reports to the database server. Please wait...",
         "loading": true,
         "open": false
+      },
+      "slots": {
+        "footer": "<q-button type=\"button\" data-dialog-close>Close loading preview</q-button>"
       }
     },
     {
@@ -112,6 +150,25 @@
         "message": "Warning: Deleting this database profile will remove all scraped logs forever. This cannot be undone.",
         "confirmLabel": "Yes, Delete It",
         "open": false
+      }
+    },
+    {
+      "name": "Named header and custom footer",
+      "props": {
+        "ariaLabel": "Review document",
+        "backdrop": "solid"
+      },
+      "slots": {
+        "header": "<strong>Review document</strong>",
+        "footer": "<q-button type=\"button\" data-dialog-close>Done</q-button>"
+      }
+    },
+    {
+      "name": "Explicit dismissal only",
+      "props": {
+        "closeOnEscape": false,
+        "closeOnBackdropClick": false,
+        "closeLabel": "Dismiss review"
       }
     }
   ]

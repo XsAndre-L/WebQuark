@@ -43,6 +43,7 @@ export const config: Config = {
       indexHtml: 'index.html',
       copy: [
         { src: '../playground/presets.html', dest: 'presets.html' },
+        { src: '../playground/consumer.html', dest: 'playground/consumer.html' },
         { src: 'theme/behaviors/native-content.css', dest: 'native-content.css' },
         { src: '../playground/logo.svg', dest: 'logo.svg' },
         { src: '../playground/playground.css', dest: 'playground.css' },

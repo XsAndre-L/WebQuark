@@ -404,7 +404,7 @@ export class QSyntaxBox {
                   </q-button>
                 )}
                 {this.copyable && (
-                  <q-button variant="ghost" size="sm" onClick={this.copyCode} disabled={this.isDisabled}>
+                  <q-button variant="ghost" size="sm" ariaLabel={this.getCopyTooltipContent()} onClick={this.copyCode} disabled={this.isDisabled}>
                     <q-icon
                       slot="icon-left"
                       definition={this.copied ? Check : Copy}

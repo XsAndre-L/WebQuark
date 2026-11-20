@@ -15,18 +15,16 @@
     },
     "itemWidth": {
       "type": "string",
-      "default": "280px",
+      "default": "auto",
       "desc": "Forces scroll items width (e.g. 280px or 100%)"
     },
     "showArrows": {
       "type": "boolean",
-      "default": true,
-      "desc": "Renders absolute positioned layout nav arrows"
+      "desc": "Unset follows the layout: arrows appear in navigable slideshows."
     },
     "showIndicators": {
       "type": "boolean",
-      "default": true,
-      "desc": "Renders dot navigation indicators at footer"
+      "desc": "Unset follows the layout: indicators appear in navigable slideshows."
     },
     "repeat": {
       "type": "boolean",
@@ -47,6 +45,67 @@
       "type": "number",
       "default": 500,
       "desc": "Crossfade duration in milliseconds"
+    },
+    "ariaLabel": {
+      "type": "string",
+      "default": "Carousel content",
+      "desc": "Accessible name forwarded to the slide viewport."
+    },
+    "autoplay": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Enables rotation with the configured interaction behavior."
+    },
+    "autoplayAdvanceSuspended": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Holds advancement for loading without pausing the active media."
+    },
+    "autoplayBehavior": {
+      "type": "select",
+      "default": "pauseOnInteraction",
+      "desc": "Continuous rotation ignores hover and interaction; explicit pause remains available.",
+      "options": [
+        "continuous",
+        "pauseOnInteraction"
+      ]
+    },
+    "autoplayInterval": {
+      "type": "number",
+      "default": 5000,
+      "desc": "Finite positive interval in milliseconds; invalid values use 5000."
+    },
+    "autoplaySuspended": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Temporarily suspends requested playback without changing the button action."
+    },
+    "layout": {
+      "type": "select",
+      "default": "strip",
+      "desc": "Slideshow provides full-width slides with no default viewport inset or gap.",
+      "options": [
+        "slideshow",
+        "strip"
+      ]
+    },
+    "rotationPlacement": {
+      "type": "select",
+      "default": "controls",
+      "desc": "Overlay keeps playback separate from the indicators/extra-controls panel.",
+      "options": [
+        "controls",
+        "overlay"
+      ]
+    },
+    "slideTiming": {
+      "type": "select",
+      "default": "fixedInterval",
+      "desc": "Finish-videos delegates each active visit's timing to setSlidePlayback().",
+      "options": [
+        "finishVideos",
+        "fixedInterval"
+      ]
     }
   },
   "slots": {
@@ -54,11 +113,16 @@
       "type": "html",
       "default": "<q-card elevation=\"medium\" interactive=\"true\">\n  <span slot=\"header\">Slide Card 1</span>\n  Horizontal touch swipe and slide indicators.\n</q-card>\n<q-card elevation=\"medium\" interactive=\"true\">\n  <span slot=\"header\">Slide Card 2</span>\n  Second slide panel content in carousel view.\n</q-card>\n<q-card elevation=\"medium\" interactive=\"true\">\n  <span slot=\"header\">Slide Card 3</span>\n  Third card item displaying custom slots.\n</q-card>\n<q-card elevation=\"medium\" interactive=\"true\">\n  <span slot=\"header\">Slide Card 4</span>\n  Fourth card item in carousel viewport.\n</q-card>",
       "desc": "Slotted slide list content cards"
+    },
+    "controls-extra": {
+      "type": "html",
+      "default": "",
+      "desc": "Additional rotation controls content."
     }
   },
   "variants": [
     {
-      "name": "Default Arrows & Indicators",
+      "name": "Strip with arrows and indicators",
       "props": {
         "showArrows": true,
         "showIndicators": true,
@@ -105,6 +169,45 @@
         "showArrows": true,
         "showIndicators": true,
         "itemWidth": "160px"
+      }
+    },
+    {
+      "name": "Full-width slideshow",
+      "props": {
+        "layout": "slideshow",
+        "ariaLabel": "Workspace gallery"
+      }
+    },
+    {
+      "name": "Autoplay with overlay controls",
+      "props": {
+        "layout": "slideshow",
+        "autoplay": true,
+        "autoplayBehavior": "pauseOnInteraction",
+        "rotationPlacement": "overlay",
+        "autoplayInterval": 3500,
+        "repeat": true
+      },
+      "slots": {
+        "controls-extra": "Workspace gallery"
+      }
+    },
+    {
+      "name": "Completion-driven rotation",
+      "props": {
+        "layout": "slideshow",
+        "slideTiming": "finishVideos",
+        "autoplay": true,
+        "autoplayBehavior": "continuous",
+        "repeat": true
+      }
+    },
+    {
+      "name": "Suspended rotation",
+      "props": {
+        "layout": "slideshow",
+        "autoplay": true,
+        "autoplayAdvanceSuspended": true
       }
     }
   ],

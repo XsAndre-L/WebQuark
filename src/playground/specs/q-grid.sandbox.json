@@ -6,7 +6,8 @@
       "type": "number",
       "default": 2,
       "min": 1,
-      "max": 4
+      "max": 4,
+      "desc": "One to four columns, with full-row children marked data-q-span=\"full\"."
     },
     "minItemWidth": {
       "type": "string",
@@ -24,6 +25,34 @@
         "xl",
         "2xl",
         "3xl"
+      ]
+    },
+    "columnGap": {
+      "type": "select",
+      "desc": "Horizontal spacing between columns. Omit to use gap.",
+      "options": [
+        "2xl",
+        "3xl",
+        "lg",
+        "md",
+        "none",
+        "sm",
+        "xl",
+        "xs"
+      ]
+    },
+    "rowGap": {
+      "type": "select",
+      "desc": "Vertical spacing between rows. Omit to use gap.",
+      "options": [
+        "2xl",
+        "3xl",
+        "lg",
+        "md",
+        "none",
+        "sm",
+        "xl",
+        "xs"
       ]
     }
   },
@@ -43,6 +72,13 @@
       "name": "Generous spacing",
       "props": {
         "gap": "xl"
+      }
+    },
+    {
+      "name": "Separate row and column spacing",
+      "props": {
+        "rowGap": "xl",
+        "columnGap": "xs"
       }
     }
   ],

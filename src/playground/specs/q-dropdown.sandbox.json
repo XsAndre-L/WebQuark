@@ -37,12 +37,12 @@
     },
     "placeholder": {
       "type": "string",
-      "default": "Select profile...",
+      "default": "Select an option...",
       "desc": "Text displayed when value is empty"
     },
     "value": {
       "type": "string",
-      "default": "staging",
+      "default": "",
       "desc": "Active selected options key"
     },
     "disabled": {
@@ -58,27 +58,88 @@
     "reserveFeedback": {
       "type": "boolean",
       "desc": "Reserve one feedback line; omit to inherit"
+    },
+    "collisionPadding": {
+      "type": "number",
+      "default": 8,
+      "desc": "Minimum distance maintained between the open menu and viewport edges."
+    },
+    "description": {
+      "type": "string",
+      "desc": "Supporting text, replaced by an active error."
+    },
+    "error": {
+      "type": "string",
+      "desc": "Custom validation error; independent of currently loaded options."
+    },
+    "externalSearch": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Delegates filtering and pagination to the consumer."
+    },
+    "hasMore": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Indicates another externally loaded option page is available."
+    },
+    "loading": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Show the loading state."
+    },
+    "multiple": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Select several options. Uses values/qValuesChange instead of value/qChange."
+    },
+    "name": {
+      "type": "string",
+      "desc": "Name included in form values."
+    },
+    "options": {
+      "type": "array",
+      "default": [
+        {
+          "label": "Production Server Host",
+          "value": "prod"
+        },
+        {
+          "label": "Staging Sandbox Gateway",
+          "value": "staging"
+        },
+        {
+          "label": "Local Development Server",
+          "value": "dev"
+        },
+        {
+          "label": "Disaster Recovery Vault",
+          "value": "dr"
+        }
+      ],
+      "desc": "Options as a structured array of label/value pairs."
+    },
+    "placement": {
+      "type": "select",
+      "default": "auto",
+      "desc": "Choose top or bottom, or let the component use the available viewport space.",
+      "options": [
+        "auto",
+        "bottom",
+        "top"
+      ]
+    },
+    "required": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Require a selection for form validation."
+    },
+    "values": {
+      "type": "array",
+      "default": [],
+      "desc": "Selected identities in multiple mode. Replace the array to update selections."
     }
   },
-  "slots": {},
-  "options": [
-    {
-      "label": "Production Server Host",
-      "value": "prod"
-    },
-    {
-      "label": "Staging Sandbox Gateway",
-      "value": "staging"
-    },
-    {
-      "label": "Local Development Server",
-      "value": "dev"
-    },
-    {
-      "label": "Disaster Recovery Vault",
-      "value": "dr"
-    }
-  ],
+  "slots": { "icon-left": {"type":"html", "default":"", "desc":"Leading trigger content."} },
   "variants": [
     {
       "name": "Standard Dropdown",
@@ -116,7 +177,8 @@
     {
       "name": "Without Title Label",
       "props": {
-        "placeholder": "Select profile..."
+        "label": "Server profile",
+        "labelHidden": true
       }
     },
     {
@@ -126,6 +188,77 @@
         "disabled": true,
         "value": "prod"
       }
+    },
+    {
+      "name": "Multiple environments",
+      "props": {
+        "multiple": true,
+        "values": [
+          "prod",
+          "staging"
+        ]
+      }
+    },
+    {
+      "name": "External search and pagination",
+      "props": {
+        "searchable": true,
+        "externalSearch": true,
+        "hasMore": true,
+        "options": [
+          {
+            "value": "project-1",
+            "label": "Project 1"
+          },
+          {
+            "value": "project-2",
+            "label": "Project 2"
+          },
+          {
+            "value": "project-3",
+            "label": "Project 3"
+          },
+          {
+            "value": "project-4",
+            "label": "Project 4"
+          },
+          {
+            "value": "project-5",
+            "label": "Project 5"
+          },
+          {
+            "value": "project-6",
+            "label": "Project 6"
+          },
+          {
+            "value": "project-7",
+            "label": "Project 7"
+          },
+          {
+            "value": "project-8",
+            "label": "Project 8"
+          },
+          {
+            "value": "project-9",
+            "label": "Project 9"
+          },
+          {
+            "value": "project-10",
+            "label": "Project 10"
+          }
+        ],
+        "label": "Projects"
+      }
+    },
+    {
+      "name": "Open above the trigger",
+      "props": {
+        "placement": "top",
+        "collisionPadding": 16
+      },
+      "slots": {
+        "icon-left": "↑"
+      }
     }
   ],
   "edgeCases": [
@@ -133,6 +266,29 @@
       "name": "Super Long Title label test",
       "props": {
         "label": "This is a super long label caption designed to test form field text overflow boundaries"
+      }
+    },
+    {
+      "name": "Required empty selection",
+      "props": {
+        "required": true,
+        "name": "environment",
+        "value": "",
+        "description": "Choose a deployment environment."
+      }
+    },
+    {
+      "name": "Loading options",
+      "props": {
+        "loading": true,
+        "options": []
+      }
+    },
+    {
+      "name": "No matching options",
+      "props": {
+        "options": [],
+        "value": ""
       }
     }
   ]

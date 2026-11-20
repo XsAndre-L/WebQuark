@@ -9,19 +9,18 @@
   <link rel="stylesheet" href="./native-content.css">
   <style>
     body { margin: 0; padding: 24px; background: var(--q-bg-base); color: var(--q-fg-base); font-family: var(--q-font-family); }
-    .controls { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
+    .controls { display: flex; flex-wrap: wrap; align-items: end; gap: 16px; margin-bottom: 24px; }
     .comparison { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 24px; }
     article { min-width: 0; border: var(--q-border); border-radius: var(--q-radius-lg); }
     q-input, q-card, q-form { margin-block: var(--q-space-md); }
-    a { color: var(--q-color-primary); }
   </style>
 </head>
 <body>
   <nav class="controls">
-    <a href="./">Component playground</a>
-    <label>Colour <select id="theme"><option>dark</option><option>light</option></select></label>
-    <label>Direction <select id="direction"><option>ltr</option><option>rtl</option></select></label>
-    <label>Right preset <select id="preset"><option>comfortable</option><option>compact</option></select></label>
+    <q-link href="./">Component playground</q-link>
+    <q-dropdown id="theme" label="Colour" size="sm" width="fit-options" value="dark" options='["dark", "light"]'></q-dropdown>
+    <q-dropdown id="direction" label="Direction" size="sm" width="fit-options" value="ltr" options='["ltr", "rtl"]'></q-dropdown>
+    <q-dropdown id="preset" label="Right preset" size="sm" width="fit-options" value="comfortable" options='["comfortable", "compact"]'></q-dropdown>
   </nav>
   <div class="comparison">
     <article class="q-prose q-content-section" data-wq-preset="compact">
@@ -32,50 +31,72 @@
       <q-card><span slot="header">Card title</span>Compact card padding and body text.</q-card>
     </article>
     <article id="preview" class="q-prose q-content-section" data-wq-preset="comfortable">
-      <small>COMFORTABLE — balanced reading</small><h1>Give your ideas room</h1>
-      <p>Readable text, responsive headings and comfortable controls for a public website.</p>
-      <q-form size="md" reserve-feedback><q-input label="Email" placeholder="you@example.com"></q-input>
+      <small id="presetCaption">COMFORTABLE — balanced reading</small><h1>Give your ideas room</h1>
+      <p id="presetDescription">Readable text, responsive headings and comfortable controls for a public website.</p>
+      <q-form size="md" reserve-feedback><q-input label="Email" type="email" placeholder="you@example.com"></q-input>
       <q-button size="sm">Small</q-button> <q-button>Medium</q-button> <q-button size="lg">Large</q-button></q-form>
-      <q-card><span slot="header">Card title</span>Comfortable card padding and body text.</q-card>
+      <q-card><span slot="header">Card title</span>Preset card padding and body text.</q-card>
       <aside data-wq-preset="compact"><h2>Nested compact section</h2><q-input label="Filter"></q-input>
       <q-button>Apply</q-button></aside>
     </article>
   </div>
   <section class="q-prose q-content-section"><h2>Independent input widths</h2><p>Named widths are shared across all three fields; size controls height independently. Change theme and direction above to compare.</p>
-    <h3>q-input</h3><div style="display:grid;gap:12px"><q-input width="xs" size="sm" placeholder="xs width, small size"></q-input>
-      <q-input width="sm" size="sm" placeholder="sm width, small size"></q-input>
-      <q-input width="md" size="sm" placeholder="md width, small size"></q-input>
-      <q-input width="lg" size="sm" placeholder="lg width, small size"></q-input>
-      <q-input width="xl" size="sm" placeholder="xl width, small size"></q-input>
-      <q-input width="full" size="sm" placeholder="full width, small size"></q-input>
-      <q-input  size="sm" placeholder="omitted width, small size"></q-input>
+    <h3>q-input</h3><div style="display:grid;gap:12px"><q-input width="xs" size="sm" aria-label="Input: xs width, small size" placeholder="xs width, small size"></q-input>
+      <q-input width="sm" size="sm" aria-label="Input: sm width, small size" placeholder="sm width, small size"></q-input>
+      <q-input width="md" size="sm" aria-label="Input: md width, small size" placeholder="md width, small size"></q-input>
+      <q-input width="lg" size="sm" aria-label="Input: lg width, small size" placeholder="lg width, small size"></q-input>
+      <q-input width="xl" size="sm" aria-label="Input: xl width, small size" placeholder="xl width, small size"></q-input>
+      <q-input width="xxl" size="sm" aria-label="Input: xxl width, small size" placeholder="xxl width, small size"></q-input>
+      <q-input width="full" size="sm" aria-label="Input: full width, small size" placeholder="full width, small size"></q-input>
+      <q-input size="sm" aria-label="Input: omitted width, small size" placeholder="omitted width, small size"></q-input>
       </div>
-    <h3>q-dropdown</h3><div style="display:grid;gap:12px"><q-dropdown width="xs" size="sm" placeholder="xs width, small size"></q-dropdown>
-      <q-dropdown width="sm" size="sm" placeholder="sm width, small size"></q-dropdown>
-      <q-dropdown width="md" size="sm" placeholder="md width, small size"></q-dropdown>
-      <q-dropdown width="lg" size="sm" placeholder="lg width, small size"></q-dropdown>
-      <q-dropdown width="xl" size="sm" placeholder="xl width, small size"></q-dropdown>
-      <q-dropdown width="full" size="sm" placeholder="full width, small size"></q-dropdown>
-      <q-dropdown  size="sm" placeholder="omitted width, small size"></q-dropdown>
+    <h3>q-dropdown</h3><div style="display:grid;gap:12px"><q-dropdown width="xs" size="sm" aria-label="Dropdown: xs width, small size" placeholder="xs width, small size"></q-dropdown>
+      <q-dropdown width="sm" size="sm" aria-label="Dropdown: sm width, small size" placeholder="sm width, small size"></q-dropdown>
+      <q-dropdown width="md" size="sm" aria-label="Dropdown: md width, small size" placeholder="md width, small size"></q-dropdown>
+      <q-dropdown width="lg" size="sm" aria-label="Dropdown: lg width, small size" placeholder="lg width, small size"></q-dropdown>
+      <q-dropdown width="xl" size="sm" aria-label="Dropdown: xl width, small size" placeholder="xl width, small size"></q-dropdown>
+      <q-dropdown width="xxl" size="sm" aria-label="Dropdown: xxl width, small size" placeholder="xxl width, small size"></q-dropdown>
+      <q-dropdown width="full" size="sm" aria-label="Dropdown: full width, small size" placeholder="full width, small size"></q-dropdown>
+      <q-dropdown size="sm" aria-label="Dropdown: omitted width, small size" placeholder="omitted width, small size"></q-dropdown>
       </div>
-    <h3>q-textarea</h3><div style="display:grid;gap:12px"><q-textarea width="xs" size="sm" placeholder="xs width, small size"></q-textarea>
-      <q-textarea width="sm" size="sm" placeholder="sm width, small size"></q-textarea>
-      <q-textarea width="md" size="sm" placeholder="md width, small size"></q-textarea>
-      <q-textarea width="lg" size="sm" placeholder="lg width, small size"></q-textarea>
-      <q-textarea width="xl" size="sm" placeholder="xl width, small size"></q-textarea>
-      <q-textarea width="full" size="sm" placeholder="full width, small size"></q-textarea>
-      <q-textarea  size="sm" placeholder="omitted width, small size"></q-textarea>
+    <h4>Dropdown fit to options</h4><q-dropdown width="fit-options" aria-label="Dropdown sized to its options"></q-dropdown>
+    <h3>q-textarea</h3><div style="display:grid;gap:12px"><q-textarea width="xs" size="sm" aria-label="Textarea: xs width, small size" placeholder="xs width, small size"></q-textarea>
+      <q-textarea width="sm" size="sm" aria-label="Textarea: sm width, small size" placeholder="sm width, small size"></q-textarea>
+      <q-textarea width="md" size="sm" aria-label="Textarea: md width, small size" placeholder="md width, small size"></q-textarea>
+      <q-textarea width="lg" size="sm" aria-label="Textarea: lg width, small size" placeholder="lg width, small size"></q-textarea>
+      <q-textarea width="xl" size="sm" aria-label="Textarea: xl width, small size" placeholder="xl width, small size"></q-textarea>
+      <q-textarea width="xxl" size="sm" aria-label="Textarea: xxl width, small size" placeholder="xxl width, small size"></q-textarea>
+      <q-textarea width="full" size="sm" aria-label="Textarea: full width, small size" placeholder="full width, small size"></q-textarea>
+      <q-textarea size="sm" aria-label="Textarea: omitted width, small size" placeholder="omitted width, small size"></q-textarea>
       </div>
-<h3>Scoped override and narrow parent</h3><div style="--q-input-width-md:18rem;max-width:200px"><q-input width="md" size="lg" placeholder="md overridden, large size"></q-input>
+<h3>Scoped override and narrow parent</h3><div style="--q-input-width-md:18rem;max-width:200px"><q-input width="md" size="lg" aria-label="Input: md overridden, large size" placeholder="md overridden, large size"></q-input>
       </div>
-<h3>Flex and grid constraints</h3><div style="display:flex;max-width:200px"><q-dropdown width="xl" placeholder="Long selected labels stay within the container"></q-dropdown>
-      </div><div style="display:grid;grid-template-columns:minmax(0,1fr);max-width:200px"><q-textarea width="xl" placeholder="Grid-constrained textarea"></q-textarea>
+<h3>Flex and grid constraints</h3><div style="display:flex;max-width:200px"><q-dropdown id="long-selection" width="xl" aria-label="Dropdown: Long selected labels stay within the container" placeholder="Long selected labels stay within the container"></q-dropdown>
+      </div><div style="display:grid;grid-template-columns:minmax(0,1fr);max-width:200px"><q-textarea width="xl" aria-label="Textarea: Grid-constrained textarea" placeholder="Grid-constrained textarea"></q-textarea>
       </div>
 </section>
   <script>
-    document.querySelector('#theme').onchange = event => document.documentElement.dataset.theme = event.target.value;
-    document.querySelector('#direction').onchange = event => document.documentElement.dir = event.target.value;
-    document.querySelector('#preset').onchange = event => document.querySelector('#preview').dataset.wqPreset = event.target.value;
+    document.querySelector('#theme').addEventListener('qChange', event => document.documentElement.dataset.theme = event.detail);
+    document.querySelector('#direction').addEventListener('qChange', event => document.documentElement.dir = event.detail);
+    const preview = document.querySelector('#preview');
+    document.querySelector('#preset').addEventListener('qChange', event => {
+      const comfortable = event.detail === 'comfortable';
+      preview.dataset.wqPreset = event.detail;
+      preview.querySelector('#presetCaption').textContent = comfortable ? 'COMFORTABLE — balanced reading' : 'COMPACT — existing defaults';
+      preview.querySelector('#presetDescription').textContent = comfortable
+        ? 'Readable text, responsive headings and comfortable controls for a public website.'
+        : 'Compact text, controls and spacing for everyday application work.';
+    });
+
+    customElements.whenDefined('q-dropdown').then(() => {
+      for (const dropdown of document.querySelectorAll('section q-dropdown')) {
+        dropdown.options = [
+          { value: 'brief', label: 'Brief label' },
+          { value: 'long', label: 'A long selected option inside a narrow container' },
+        ];
+        if (dropdown.id === 'long-selection') dropdown.value = 'long';
+      }
+    });
   </script>
 </body>
 </html>

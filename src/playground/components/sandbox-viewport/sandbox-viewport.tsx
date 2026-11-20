@@ -1,204 +1,73 @@
 import { h } from '../../dom-factory';
-import { activeComponent, activeTab, componentRegistry, effect, ComponentSpec } from '../../state';
-import './viewport-tabs';
+import { activeComponent, activeTab, componentRegistry, effect, fetchComponentSpec, specErrors } from '../../state';
+import { VariantCard } from './variant-card';
+import { viewportTabs } from './viewport-tabs';
 import './sandbox-panel';
-import './variant-card';
 import css from './sandbox-viewport.css';
 
-function emptyState(msg: string): string {
-  return `<div class="grid-empty-state">${msg}</div>`;
-}
-
 class SandboxViewport extends HTMLElement {
-  private variantsGrid: HTMLElement | null = null;
-  private edgecasesGrid: HTMLElement | null = null;
-  private cleanupEffect?: () => void;
+  private cleanup?: () => void;
 
   connectedCallback() {
-    this.innerHTML = '';
-
-    // Render components using custom TSX elements
-    this.appendChild(<viewport-tabs></viewport-tabs>);
-
-    this.appendChild(
-      <div class="stage-content-wrapper">
-        {/* 1. Sandbox */}
-        <sandbox-panel class="tab-content active" id="content-sandbox"></sandbox-panel>
-
-        {/* 2. Variants */}
-        <div class="tab-content" id="content-variants">
-          <q-scrollable height="100%">
-            <div class="variants-grid" id="variantsGrid"></div>
-          </q-scrollable>
-        </div>
-
-        {/* 3. Edge Cases */}
-        <div class="tab-content" id="content-edgecases">
-          <q-scrollable height="100%">
-            <div class="variants-grid" id="edgecasesGrid"></div>
-          </q-scrollable>
-        </div>
-
-        {/* 4. Global Styling Designer */}
-        <div class="tab-content" id="content-global-styling">
-          <q-scrollable height="100%">
-            <theme-designer></theme-designer>
-          </q-scrollable>
-        </div>
-      </div>
-    );
-
-    // Inject CSS stylesheet (scoped style wrapper)
-    const styleId = 'sandbox-viewport-style';
-    if (!document.getElementById(styleId)) {
+    if (!document.getElementById('sandbox-viewport-style')) {
       const style = document.createElement('style');
-      style.id = styleId;
-      style.textContent = css as any;
-      document.head.appendChild(style);
+      style.id = 'sandbox-viewport-style';
+      style.textContent = css;
+      document.head.append(style);
     }
 
-    this.init();
-  }
+    const panels = new Map(viewportTabs.map(({ value, panelId, label }) => [
+      value,
+      <div id={panelId} class="stage-content-wrapper" role="tabpanel" aria-label={label} tabIndex={0} hidden />,
+    ]));
+    panels.set('global-styling', <div id="content-global-styling" class="stage-content-wrapper" hidden />);
+    this.replaceChildren(<viewport-tabs />, ...panels.values());
+    let route = '';
+    let displayedSpec: unknown;
+    let displayedError = '';
 
-  private init() {
-    this.variantsGrid = this.querySelector('#variantsGrid');
-    this.edgecasesGrid = this.querySelector('#edgecasesGrid');
+    this.cleanup = effect(() => {
+      const tag = activeComponent();
+      const tab = tag === 'global-styling' ? tag : activeTab();
+      const next = tag + '/' + tab;
+      const spec = componentRegistry()[tag];
+      const error = specErrors()[tag];
+      if (route === next && (tab === 'sandbox' || (spec === displayedSpec && error === displayedError))) return;
+      route = next;
+      displayedSpec = spec;
+      displayedError = error;
+      this.setAttribute('active-component', tag);
 
-    // Centralized Click Event Handler via Event Bubbling
-    this.addEventListener('click', (e: MouseEvent) => {
-      const target = e.target as HTMLElement | null;
-      if (!target) return;
-
-      // A. Close drawer / dialog inside Sandbox Panel
-      if (target.id === 'closePanelBtn') {
-        const panel = this.querySelector('q-sidepanel') as any;
-        if (panel) {
-          panel.open = false;
-          const registry = componentRegistry();
-          if (registry['q-sidepanel'] && registry['q-sidepanel'].props) {
-            registry['q-sidepanel'].props.open.currentValue = false;
-            componentRegistry.set({ ...registry });
+      let content: HTMLElement;
+      if (tab === 'sandbox') content = document.createElement('sandbox-panel');
+      else if (tab === 'global-styling') content = <div><q-scrollable height="100%"><theme-designer /></q-scrollable></div>;
+      else {
+        const grid = <div class="variants-grid" />;
+        content = <div><q-scrollable height="100%">{grid}</q-scrollable></div>;
+        const examples = tab === 'variants' ? spec?.variants : spec?.edgeCases;
+        if (!spec) {
+          grid.textContent = error ? 'Could not load ' + tag + '. ' : 'Loading…';
+          if (error) grid.append(<q-button type="button" size="sm" onClick={() => fetchComponentSpec(tag)}>Retry</q-button>);
+        } else if (examples?.length) {
+          for (const item of examples) {
+            const card = new VariantCard();
+            card.spec = spec;
+            card.item = item;
+            grid.append(card);
           }
-        }
-      }
-      if (target.id === 'stageOpenPanelBtn') {
-        const panel = this.querySelector('q-sidepanel') as any;
-        if (panel) {
-          panel.open = true;
-          const registry = componentRegistry();
-          if (registry['q-sidepanel'] && registry['q-sidepanel'].props) {
-            registry['q-sidepanel'].props.open.currentValue = true;
-            componentRegistry.set({ ...registry });
-          }
-        }
-      }
-      if (target.id === 'stageOpenDialogBtn') {
-        const dialog = this.querySelector('q-dialog') as any;
-        if (dialog) {
-          dialog.open = true;
-          const registry = componentRegistry();
-          if (registry['q-dialog'] && registry['q-dialog'].props) {
-            registry['q-dialog'].props.open.currentValue = true;
-            componentRegistry.set({ ...registry });
-          }
-        }
-      }
-      if (target.id === 'stageShowToastBtn') {
-        const toastHost = this.querySelector('q-toast') as any;
-        toastHost?.error(
-          "Couldn't delete user",
-          'System-protected accounts cannot be deleted.',
-        );
+        } else grid.textContent = tab === 'variants' ? 'No variants defined.' : 'No edge cases defined.';
       }
 
-      // B. Trigger overlay buttons inside Variant Cards
-      if (target.classList.contains('var-open-panel-btn')) {
-        const card = target.closest('.variant-card');
-        if (card) {
-          const panel = card.querySelector('q-sidepanel') as any;
-          if (panel) panel.open = true;
-        }
-      }
-      if (target.classList.contains('var-open-dialog-btn')) {
-        const card = target.closest('.variant-card');
-        if (card) {
-          const dialog = card.querySelector('q-dialog') as any;
-          if (dialog) dialog.open = true;
-        }
-      }
-    });
-
-    // Reactive routing & visibility rendering loop
-    this.cleanupEffect = effect(() => {
-      const active = activeComponent();
-      const tab = activeTab();
-      const registry = componentRegistry();
-      const spec = registry[active];
-
-      this.setAttribute('active-component', active);
-
-      // Toggle tab-content views
-      this.querySelectorAll('.stage-content-wrapper > .tab-content').forEach(c => {
-        if (active === 'global-styling') {
-          c.classList.toggle('active', c.id === 'content-global-styling');
-        } else {
-          c.classList.toggle('active', c.id === `content-${tab}`);
-        }
-      });
-
-      // Render grids conditionally based on selected tab
-      if (active !== 'global-styling' && spec) {
-        if (tab === 'variants') {
-          this.renderVariantsMatrix(active, spec);
-        } else if (tab === 'edgecases') {
-          this.renderEdgeCases(active, spec);
-        }
+      content.className = 'tab-content active';
+      for (const [view, panel] of panels) {
+        panel.hidden = view !== tab;
+        if (view === tab) panel.replaceChildren(content);
+        else if (panel.hasChildNodes()) panel.replaceChildren();
       }
     });
   }
 
-  private renderVariantsMatrix(tag: string, config: ComponentSpec) {
-    if (!this.variantsGrid) return;
-    this.variantsGrid.innerHTML = '';
-
-    const variants = (config as any).variants;
-    if (!variants || variants.length === 0) {
-      this.variantsGrid.innerHTML = emptyState('No variant matrix defined for this component.');
-      return;
-    }
-
-    variants.forEach((variant: any) => {
-      const card = document.createElement('variant-card') as any;
-      card.tag = tag;
-      card.item = variant;
-      this.variantsGrid!.appendChild(card);
-    });
-  }
-
-  private renderEdgeCases(tag: string, config: ComponentSpec) {
-    if (!this.edgecasesGrid) return;
-    this.edgecasesGrid.innerHTML = '';
-
-    const edgeCases = (config as any).edgeCases;
-    if (!edgeCases || edgeCases.length === 0) {
-      this.edgecasesGrid.innerHTML = emptyState('No stress-test layout edge cases defined for this component.');
-      return;
-    }
-
-    edgeCases.forEach((edge: any) => {
-      const card = document.createElement('variant-card') as any;
-      card.tag = tag;
-      card.item = edge;
-      this.edgecasesGrid!.appendChild(card);
-    });
-  }
-
-  disconnectedCallback() {
-    if (this.cleanupEffect) {
-      this.cleanupEffect();
-    }
-  }
+  disconnectedCallback() { this.cleanup?.(); }
 }
 
 customElements.define('sandbox-viewport', SandboxViewport);
-export { SandboxViewport };

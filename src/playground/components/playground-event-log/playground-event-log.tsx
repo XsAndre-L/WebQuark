@@ -1,86 +1,59 @@
 import { h } from '../../dom-factory';
-import { playgroundBus } from '../../events';
+import type { ExampleEvent } from '../../examples/mount';
 import css from './playground-event-log.css';
 
-class PlaygroundEventLog extends HTMLElement {
-  private logBody: HTMLElement | null = null;
-  private syntaxBox: any = null;
-  private unsubscribeBus?: () => void;
+function readableDetail(value: unknown) {
+  const seen = new WeakSet<object>();
+  return JSON.stringify(value, (_key, item) => {
+    if (item instanceof Element) return item.localName;
+    if (item instanceof Event) return item.type;
+    if (item instanceof FormData) return Array.from(item.entries());
+    if (typeof item === 'bigint') return String(item);
+    if (item && typeof item === 'object') {
+      if (seen.has(item)) return '[reference]';
+      seen.add(item);
+    }
+    return item;
+  });
+}
 
-  connectedCallback(): void {
-    // 1. Render template via TSX
-    this.innerHTML = '';
-    this.appendChild(
-      <q-syntax-box variant="panel" heading="Event Dispatches Log" id="eventLogBox">
-        <q-button slot="actions" variant="ghost" size="sm" id="clearLogBtn" onClick={() => this.clearLog()}>
-          <q-icon slot="icon-left" library="local" name="trash-2" size="sm"></q-icon>
-          <q-tooltip slot="icon-left" position="bottom" content="Clear Log"></q-tooltip>
-        </q-button>
-        <div id="eventLogBody" class="event-log-body">
-          <span class="log-placeholder">Interactive events will appear here in real-time...</span>
-        </div>
+export class PlaygroundEventLog extends HTMLElement {
+  private lines = document.createElement('div');
+
+  connectedCallback() {
+    if (!document.getElementById('event-log-style')) {
+      const style = document.createElement('style');
+      style.id = 'event-log-style';
+      style.textContent = css;
+      document.head.append(style);
+    }
+    this.lines.className = 'event-log-body';
+    this.lines.setAttribute('aria-label', 'Example events');
+    this.clear();
+    this.replaceChildren(
+      <q-syntax-box variant="panel" heading="Events" height="95px">
+        <q-button slot="actions" variant="ghost" size="sm" aria-label="Clear event log" onClick={() => this.clear()}>Clear</q-button>
+        {this.lines}
       </q-syntax-box>
     );
-
-    // 2. Inject CSS stylesheet (scoped style wrapper)
-    const styleId = 'playground-event-log-style';
-    if (!document.getElementById(styleId)) {
-      const style = document.createElement('style');
-      style.id = styleId;
-      style.textContent = css as any;
-      document.head.appendChild(style);
-    }
-
-    this.init();
   }
 
-  private init(): void {
-    this.logBody = this.querySelector('#eventLogBody');
-    this.syntaxBox = this.querySelector('#eventLogBox');
-
-    // Bind log listener via typed event bus
-    this.unsubscribeBus = playgroundBus.on('event-dispatched', data => {
-      this.logEvent(data.name, data.detail);
-    });
+  clear() {
+    const empty = document.createElement('span');
+    empty.className = 'log-placeholder';
+    empty.textContent = 'Interact with the example to see its events.';
+    this.lines.replaceChildren(empty);
   }
 
-  private logEvent(name: string, detail: any): void {
-    if (!this.logBody) return;
-
-    const placeholder = this.logBody.querySelector('.log-placeholder');
-    if (placeholder) placeholder.remove();
-
-    const now = new Date();
-    const ms = String(now.getMilliseconds()).padStart(3, '0');
-    const timeStr = now.toTimeString().split(' ')[0] + '.' + ms;
-
+  record({source, name, detail}: ExampleEvent) {
+    this.lines.querySelector('.log-placeholder')?.remove();
     const line = document.createElement('div');
     line.className = 'log-item';
-    line.innerHTML = `
-      <span class="log-item-time">[${timeStr}]</span>
-      <strong>${name}</strong>: ${detail !== undefined ? JSON.stringify(detail) : '<em>(void detail)</em>'}
-    `;
-
-    this.logBody.appendChild(line);
-
-    // Scroll to bottom using q-syntax-box scrollToBottom method
-    if (this.syntaxBox && typeof this.syntaxBox.scrollToBottom === 'function') {
-      this.syntaxBox.scrollToBottom();
-    }
-  }
-
-  private clearLog(): void {
-    if (this.logBody) {
-      this.logBody.innerHTML = '<span class="log-placeholder">Interactive events will appear here in real-time...</span>';
-    }
-  }
-
-  disconnectedCallback(): void {
-    if (this.unsubscribeBus) {
-      this.unsubscribeBus();
-    }
+    line.textContent = source + ' · ' + name + (detail === undefined ? '' : ' ' + readableDetail(detail));
+    this.lines.append(line);
+    if (this.lines.childElementCount > 100) this.lines.firstElementChild?.remove();
+    void this.querySelector('q-syntax-box')?.scrollToBottom?.();
   }
 }
 
 customElements.define('playground-event-log', PlaygroundEventLog);
-export { PlaygroundEventLog };

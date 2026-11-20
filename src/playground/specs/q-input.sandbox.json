@@ -17,7 +17,12 @@
         "number",
         "url",
         "search",
-        "color"
+        "color",
+        "date",
+        "datetime-local",
+        "month",
+        "time",
+        "week"
       ],
       "default": "text",
       "desc": "Browser native input element type"
@@ -35,7 +40,7 @@
     },
     "clearable": {
       "type": "boolean",
-      "default": true,
+      "default": false,
       "desc": "Displays clean icon button when value is populated"
     },
     "label": {
@@ -56,7 +61,7 @@
     "required": {
       "type": "boolean",
       "default": false,
-      "desc": "Aria-required validation identifier"
+      "desc": "Require a value for native form validation."
     },
     "disabled": {
       "type": "boolean",
@@ -76,6 +81,35 @@
     "reserveFeedback": {
       "type": "boolean",
       "desc": "Reserve one feedback line; omit to inherit"
+    },
+    "ariaLabel": {
+      "type": "string",
+      "desc": "Accessible name for the native input when a visible label is not used."
+    },
+    "description": {
+      "type": "string",
+      "desc": "Supporting text, replaced by an active error."
+    },
+    "errorMessage": {
+      "type": "string",
+      "desc": "Deprecated fallback used when error is unset or empty."
+    },
+    "max": {
+      "type": "number",
+      "desc": "Upper bound for a numeric input."
+    },
+    "min": {
+      "type": "number",
+      "desc": "Lower bound for a numeric input."
+    },
+    "name": {
+      "type": "string",
+      "desc": "Name included in submitted form values."
+    },
+    "step": {
+      "type": "number",
+      "default": 1,
+      "desc": "Numeric increment for spinner and validation."
     }
   },
   "slots": {
@@ -136,7 +170,11 @@
         "label": "Quantity Bound",
         "type": "number",
         "value": "42",
-        "placeholder": "Enter number..."
+        "placeholder": "Enter number...",
+        "min": 0,
+        "max": 100,
+        "step": 2,
+        "description": "Even values from 0 through 100."
       }
     },
     {
@@ -187,6 +225,33 @@
         "prefix": "<span style=\"padding:0 8px;opacity:0.6\">$</span>",
         "suffix": "<span style=\"padding:0 8px;opacity:0.6;font-size:0.8rem\">USD</span>"
       }
+    },
+    {
+      "name": "Calendar date",
+      "props": {
+        "type": "date",
+        "value": "2026-06-15",
+        "label": "Due date"
+      }
+    },
+    {
+      "name": "Local appointment time",
+      "props": {
+        "type": "datetime-local",
+        "value": "2026-06-15T09:30",
+        "label": "Appointment"
+      }
+    },
+    {
+      "name": "Required hidden label",
+      "props": {
+        "required": true,
+        "labelHidden": true,
+        "label": "Username",
+        "name": "username",
+        "value": "",
+        "description": "Enter a username to continue."
+      }
     }
   ],
   "edgeCases": [
@@ -201,7 +266,8 @@
       "name": "Empty Placeholder & Label",
       "props": {
         "label": "",
-        "placeholder": ""
+        "placeholder": "",
+        "ariaLabel": "Search records"
       }
     }
   ]

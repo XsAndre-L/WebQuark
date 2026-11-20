@@ -1,6 +1,14 @@
 # WebQuark playground implementation plan
 
-**Start with the shared sandbox mount.** Today only Button and Input take the path that attaches event listeners and renders stage actions. Adding another property to a spec cannot make the other 34 demos report events or make the missing Dialog, Sidepanel and Toast triggers appear.
+## Implementation result
+
+The shared renderer now serves 45 component pages with 437 property definitions. Each gallery card has its own event log and keyboard-accessible Copy action. The reset button beside Properties restores every property of the active component to its sandbox default and preserves slot content.
+
+The panel appends `*` to a property name when the generated Stencil API marks that property as required.
+
+Chromium checks loaded every page, matched its rendered control count to its spec, and rendered 351 gallery cases. Focused interaction checks covered gallery event isolation, keyboard copying, dialog dismissal, Reel focus restoration to the opening thumbnail, responsive navigation and property editing. A separate consumer origin rendered both illustrations from the actual Image Comparison clipboard contents and emitted the expected numeric change on ArrowRight. See the [consumer setup guide](../playground-consumer.md).
+
+Run `bun run check:playground` for the focused contract and TypeScript checks. Configured external map providers require their own network access and credentials. The sections below retain the original audit baseline and implementation criteria.
 
 ## Scope and baseline
 

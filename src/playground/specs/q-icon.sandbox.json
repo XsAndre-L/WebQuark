@@ -3,19 +3,9 @@
   "tag": "q-icon",
   "props": {
     "size": {
-      "type": "select",
-      "options": [
-        "sm",
-        "md",
-        "lg",
-        "16",
-        "24",
-        "32",
-        "48",
-        "64"
-      ],
+      "type": "string",
       "default": "md",
-      "desc": "Preset alias (sm, md, lg) or numeric pixel size string"
+      "desc": "Preset sm/md/lg, pixel size, or CSS length."
     },
     "color": {
       "type": "string",
@@ -24,23 +14,43 @@
     },
     "name": {
       "type": "string",
-      "default": "settings",
+      "default": "check",
       "desc": "The name of the icon (e.g. settings, heart, or logo.png)"
     },
     "library": {
-      "type": "select",
-      "options": [
-        "lucide",
-        "font-awesome",
-        "local"
-      ],
-      "default": "lucide",
-      "desc": "Library source for the icon file"
+      "type": "string",
+      "default": "local",
+      "desc": "Lucide, font-awesome/fontawesome, local, or a custom library URL/base path."
     },
     "localPath": {
       "type": "string",
       "default": "/assets/icons/",
       "desc": "Custom local assets base path"
+    },
+    "definition": {
+      "type": "object",
+      "desc": "Trusted compile-time icon data. Takes precedence over `name` and never performs I/O."
+    },
+    "fetchTimeout": {
+      "type": "number",
+      "default": 8000,
+      "desc": "SVG fetch timeout in milliseconds."
+    },
+    "label": {
+      "type": "string",
+      "desc": "Meaningful icons require a label; unlabeled icons are hidden from assistive technology."
+    },
+    "lib": {
+      "type": "string",
+      "desc": "Deprecated fallback for library. Effective default lucide."
+    },
+    "libVersion": {
+      "type": "string",
+      "desc": "Deprecated fallback for libraryVersion."
+    },
+    "libraryVersion": {
+      "type": "string",
+      "desc": "Overrides the version of built-in remote libraries."
     }
   },
   "slots": {},
@@ -103,7 +113,7 @@
       "name": "Local Asset SVG (Standard)",
       "props": {
         "library": "local",
-        "name": "checkmark",
+        "name": "check",
         "size": "24",
         "color": "var(--q-color-success)"
       }
@@ -114,6 +124,35 @@
         "library": "local",
         "name": "check?v=1.2#preview",
         "size": "24"
+      }
+    },
+    {
+      "name": "Labeled local icon",
+      "props": {
+        "library": "local",
+        "name": "check",
+        "label": "Saved",
+        "size": "1.5rem"
+      }
+    },
+    {
+      "name": "Inline check definition",
+      "props": {
+        "label": "Complete",
+        "definition": {
+          "name": "complete",
+          "node": [
+            [
+              "path",
+              {
+                "d": "m4 12 5 5L20 6",
+                "stroke": "currentColor",
+                "stroke-width": "2",
+                "fill": "none"
+              }
+            ]
+          ]
+        }
       }
     }
   ],

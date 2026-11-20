@@ -75,6 +75,22 @@
         "height": "auto",
         "maxHeight": "150px"
       }
+    },
+    {
+      "name": "External native scroll target",
+      "props": {
+        "mode": "native",
+        "target": "[data-playground-scroll-target]",
+        "height": "0px"
+      }
+    },
+    {
+      "name": "Mobile native fallback",
+      "props": {
+        "mode": "custom",
+        "nativeOnMobile": true,
+        "height": "145px"
+      }
     }
   ],
   "edgeCases": [

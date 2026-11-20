@@ -3,7 +3,7 @@
   "tag": "q-divider",
   "props": {
     "orientation": { "type": "select", "default": "horizontal", "options": ["horizontal", "vertical"] },
-    "length": { "type": "string", "default": "auto" },
+    "length": { "type": "string", "default": "auto", "desc": "CSS length or percentage, bounded by the host. The vertical example allocates height on the host." },
     "spacing": { "type": "select", "default": "lg", "options": ["none", "xs", "sm", "md", "lg", "xl", "2xl", "3xl"] },
     "decorative": { "type": "boolean", "default": false }
   },

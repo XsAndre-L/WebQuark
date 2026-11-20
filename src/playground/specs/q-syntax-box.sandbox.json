@@ -44,7 +44,6 @@
     },
     "code": {
       "type": "string",
-      "default": "",
       "desc": "The source code string to highlight (takes precedence over slot content)"
     },
     "required": {
@@ -56,6 +55,19 @@
       "type": "boolean",
       "default": false,
       "desc": "Disables interaction in editable mode"
+    },
+    "name": {
+      "type": "string",
+      "desc": "Field name included in form data",
+      "default": "source"
+    },
+    "ariaLabel": {
+      "type": "string",
+      "desc": "Accessible name"
+    },
+    "value": {
+      "type": "string",
+      "desc": "Synchronized editable value"
     }
   },
   "slots": {
@@ -63,6 +75,11 @@
       "type": "text",
       "default": "<div class=\"app-container\">\n  <h1>Hello World</h1>\n  <q-button variant=\"primary\">Click Me</q-button>\n</div>",
       "desc": "Read-only fallback content projected when the code property is absent"
+    },
+    "actions": {
+      "type": "html",
+      "desc": "Additional panel-header controls",
+      "default": ""
     }
   },
   "variants": [
@@ -153,6 +170,28 @@
         "heading": "EXACT JSON TOKENS",
         "code": "{\"10\":9007199254740993,\"2\":-0,\"same\":1,\"same\":2}",
         "height": "190px"
+      }
+    },
+    {
+      "name": "Slotted read-only content",
+      "props": {
+        "code": null,
+        "value": null,
+        "editable": false
+      },
+      "slots": {
+        "default": "<article>Draft</article>",
+        "actions": "<q-link href=\"#reference\">Reference</q-link>"
+      }
+    },
+    {
+      "name": "Named form editor",
+      "props": {
+        "name": "source",
+        "editable": true,
+        "required": true,
+        "value": "<section>Draft</section>",
+        "ariaLabel": "HTML source"
       }
     }
   ],

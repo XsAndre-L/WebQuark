@@ -11,13 +11,13 @@ Apply WebQuark's prop-order contract without changing component behavior or publ
 
 Order classified props by these groups only:
 
-1. `content-data-identity`
-2. `appearance-layout`
-3. `features-behavior`
-4. `configuration-constraints`
-5. `state-status`
-6. `validation-feedback`
-7. `platform-external-integration`
+1. `content-data`
+2. `style-layout`
+3. `behavior`
+4. `settings`
+5. `state`
+6. `validation`
+7. `html-integrations`
 8. `accessibility`
 
 Use the default map and component overrides in `scripts/component-prop-order/config.ts` as the source of truth. Do not guess when a prop is unclassified; audit its semantics and update the configuration deliberately.

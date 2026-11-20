@@ -1,0 +1,101 @@
+{
+  "tag": "q-step-diagram-item",
+  "name": "Step Diagram Item",
+  "description": "Standalone timeline item. A q-step-diagram parent coordinates orientation.",
+  "props": {
+    "lineStyle": {
+      "type": "select",
+      "desc": "Connector line style",
+      "default": "solid",
+      "options": [
+        "solid",
+        "dashed",
+        "dotted",
+        "none"
+      ]
+    },
+    "status": {
+      "type": "select",
+      "desc": "Step status",
+      "default": "completed",
+      "options": [
+        "pending",
+        "active",
+        "completed",
+        "success",
+        "warning",
+        "danger"
+      ]
+    },
+    "orientation": {
+      "type": "select",
+      "desc": "Item direction",
+      "options": [
+        "vertical",
+        "horizontal"
+      ]
+    },
+    "layout": {
+      "type": "select",
+      "desc": "Deprecated fallback. Use orientation; omit the replacement to try this alias.",
+      "options": [
+        "vertical",
+        "horizontal"
+      ]
+    }
+  },
+  "slots": {
+    "badge": {
+      "type": "html",
+      "desc": "Optional custom badge",
+      "default": ""
+    },
+    "title": {
+      "type": "html",
+      "desc": "Step title",
+      "default": "Prepare workspace"
+    },
+    "default": {
+      "type": "html",
+      "desc": "Step body",
+      "default": "Inspect the pending changes."
+    }
+  },
+  "variants": [
+    {
+      "name": "Active step and custom badge",
+      "props": {
+        "status": "active",
+        "lineStyle": "dashed"
+      },
+      "slots": {
+        "badge": "2",
+        "title": "Review pull request",
+        "default": "Read the proposed changes."
+      }
+    },
+    {
+      "name": "Horizontal warning",
+      "props": {
+        "orientation": "horizontal",
+        "status": "warning",
+        "lineStyle": "dotted"
+      }
+    }
+  ],
+  "edgeCases": [
+    {
+      "name": "Pending step",
+      "props": {
+        "status": "pending"
+      }
+    },
+    {
+      "name": "Legacy direction",
+      "props": {
+        "orientation": null,
+        "layout": "horizontal"
+      }
+    }
+  ]
+}

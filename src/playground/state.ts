@@ -1,82 +1,82 @@
-// ==========================================================================
-// CENTRAL REACTIVE SIGNALS ENGINE
-// ==========================================================================
-
 export interface Signal<T> {
   (): T;
-  set(newValue: T): void;
-  update(fn: (v: T) => T): void;
+  set(value: T): void;
+  update(fn: (value: T) => T): void;
 }
 
-let activeEffect: (() => void) | null = null;
-const registeredEffects = new Set<() => void>();
+interface Subscriber {
+  run(): void;
+  dependencies: Set<Set<Subscriber>>;
+}
 
-export function signal<T>(initialValue: T): Signal<T>;
-export function signal<T = undefined>(): Signal<T | undefined>;
-export function signal<T>(initialValue?: T): Signal<any> {
+let activeEffect: Subscriber | undefined;
+
+export function signal<T>(initialValue: T): Signal<T> {
+  const subscribers = new Set<Subscriber>();
   let value = initialValue;
-  const subscribers = new Set<() => void>();
 
-  const getter = () => {
+  const read = () => {
     if (activeEffect) {
       subscribers.add(activeEffect);
+      activeEffect.dependencies.add(subscribers);
     }
     return value;
   };
 
-  getter.set = (newValue: T) => {
-    if (value !== newValue) {
-      value = newValue;
-      // Copy and run all effects to prevent issues if effects modify subscribers
-      [...subscribers].filter(fn => registeredEffects.has(fn)).forEach(run => run());
+  read.set = (next: T) => {
+    if (Object.is(value, next)) return;
+    value = next;
+    for (const subscriber of [...subscribers]) {
+      if (subscribers.has(subscriber)) subscriber.run();
     }
   };
-
-  getter.update = (fn: (v: T) => T) => {
-    getter.set(fn(value as T));
-  };
-
-  return getter;
+  read.update = (fn: (previous: T) => T) => read.set(fn(value));
+  return read;
 }
 
 export function effect(fn: () => void): () => void {
-  const run = () => {
-    activeEffect = run;
-    try {
-      fn();
-    } finally {
-      activeEffect = null;
-    }
+  const detach = () => {
+    for (const source of subscriber.dependencies) source.delete(subscriber);
+    subscriber.dependencies.clear();
   };
-  registeredEffects.add(run);
-  run();
-  return () => registeredEffects.delete(run);
+  const subscriber: Subscriber = {
+    dependencies: new Set(),
+    run() {
+      detach();
+      const previous = activeEffect;
+      activeEffect = subscriber;
+      try { fn(); } finally { activeEffect = previous; }
+    },
+  };
+  subscriber.run();
+  return detach;
 }
-
-export function computed<T>(fn: () => T): () => T {
-  const derived = signal<T>();
-  effect(() => {
-    derived.set(fn());
-  });
-  return derived as unknown as () => T;
-}
-
-// ==========================================================================
-// PLAYGROUND SHARED REACTIVE STATE
-// ==========================================================================
 
 export interface PropSpec {
   type: string;
-  default: any;
+  default?: any;
   currentValue?: any;
   options?: any[];
   description?: string;
+  desc?: string;
+  min?: number;
+  max?: number;
+  step?: number;
 }
 
 export interface SlotSpec {
+  type?: string;
   default?: string;
   currentValue?: string;
   description?: string;
+  desc?: string;
+}
+
+export interface Example {
+  name: string;
+  props?: Record<string, any>;
+  slots?: Record<string, string>;
+  slot?: string;
 }
 
 export interface ComponentSpec {
@@ -86,134 +86,61 @@ export interface ComponentSpec {
   props?: Record<string, PropSpec>;
   slots?: Record<string, SlotSpec>;
   options?: any[];
-  stageHelper?: {
-    label: string;
-    buttonId: string;
-    buttonLabel: string;
-  };
-  variants?: any[];
-  edgeCases?: any[];
+  stageHelper?: { label: string; buttonId: string; buttonLabel: string };
+  variants?: Example[];
+  edgeCases?: Example[];
 }
 
-const SPEC_BASE_URL = '/playground/specs';
-
-export const activeComponent = signal<string>('q-button');
-export const activeTab = signal<string>('sandbox'); // 'sandbox', 'variants', 'edgecases'
-export const theme = signal<string>(document.documentElement.getAttribute('data-theme') || 'dark');
+export const activeComponent = signal('q-button');
+export const activeTab = signal('sandbox');
+export const theme = signal(document.documentElement.getAttribute('data-theme') || 'dark');
 export const componentRegistry = signal<Record<string, ComponentSpec>>({});
+export const specErrors = signal<Record<string, string>>({});
+const pending = new Map<string, Promise<void>>();
 
-// Computed active specification
-export const activeSpec = computed<ComponentSpec | null>(() => {
-  const registry = componentRegistry();
-  const active = activeComponent();
-  return registry[active] || null;
-});
+export function fetchComponentSpec(tag: string): Promise<void> {
+  if (componentRegistry()[tag]) return Promise.resolve();
+  const loading = pending.get(tag);
+  if (loading) return loading;
 
-// Dynamic component spec fetcher
-export async function fetchComponentSpec(tag: string): Promise<void> {
-  const registry = { ...componentRegistry() };
-  if (registry[tag]) return;
+  specErrors.update(previous => ({ ...previous, [tag]: '' }));
+  const task = loadSpec(tag).finally(() => pending.delete(tag));
+  pending.set(tag, task);
+  return task;
+}
 
+async function loadSpec(tag: string): Promise<void> {
   try {
-    const res = await fetch(`${SPEC_BASE_URL}/${tag}.sandbox.json`);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const spec = (await res.json()) as ComponentSpec;
+    const response = await fetch('/playground/specs/' + encodeURIComponent(tag) + '.sandbox.json');
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    const spec: ComponentSpec = await response.json();
+    if (spec.tag !== tag) throw new Error('Unexpected component tag');
 
-    // Seed spec props and slots with defaults
-    if (spec.props) {
-      Object.keys(spec.props).forEach(p => {
-        if (spec.props) {
-          spec.props[p].currentValue = spec.props[p].default;
-        }
-      });
-    }
-    if (spec.slots) {
-      Object.keys(spec.slots).forEach(s => {
-        if (spec.slots) {
-          spec.slots[s].currentValue = spec.slots[s].default || '';
-        }
-      });
-    }
-
-    registry[tag] = spec;
-    componentRegistry.set(registry);
-  } catch (err) {
-    console.error(`Failed to fetch spec for ${tag}:`, err);
+    for (const prop of Object.values(spec.props || {})) prop.currentValue = prop.default;
+    for (const slot of Object.values(spec.slots || {})) slot.currentValue = slot.default ?? '';
+    componentRegistry.update(current => ({ ...current, [tag]: spec }));
+  } catch (error) {
+    specErrors.update(previous => ({ ...previous, [tag]: String(error) }));
   }
 }
 
-// Updates prop/slot values from controls
-export function updateKnobValue(type: 'prop' | 'slot', name: string, value: any): void {
-  const registry = { ...componentRegistry() };
-  const spec = registry[activeComponent()];
-  if (!spec) return;
-
-  if (type === 'prop' && spec.props) {
-    spec.props[name].currentValue = value;
-  } else if (type === 'slot' && spec.slots) {
-    spec.slots[name].currentValue = value;
-  }
-
-  // Trigger signal change to update all subscribers
-  componentRegistry.set(registry);
+export function updateKnobValue(type: 'prop' | 'slot', name: string, value: any, tag = activeComponent()): void {
+  if (tag !== activeComponent()) return;
+  const registry = componentRegistry();
+  const spec = registry[tag];
+  const field = (type === 'prop' ? spec?.props : spec?.slots)?.[name];
+  if (!field || Object.is(field.currentValue, value)) return;
+  field.currentValue = value;
+  componentRegistry.set({ ...registry });
 }
 
-export function serializeComponentCode(
-  tag: string,
-  props?: Record<string, PropSpec | any>,
-  slots?: Record<string, SlotSpec | any> | string,
-  appendScript: string | null = null
-): string {
-  let code = `<${tag}`;
+export function resetComponentProperties(): void {
+  const registry = componentRegistry();
+  const properties = registry[activeComponent()]?.props;
+  if (!properties) return;
 
-  if (props) {
-    Object.keys(props).forEach(k => {
-      const p = props[k];
-      const val = (p && typeof p === 'object' && 'currentValue' in p) ? p.currentValue : p;
-      if (val === true) {
-        code += ` ${k}`;
-      } else if (val !== undefined && val !== null && val !== '') {
-        code += ` ${k}="${val}"`;
-      }
-    });
+  for (const prop of Object.values(properties)) {
+    prop.currentValue = prop.default;
   }
-
-  code += '>';
-
-  let slotContent = '';
-  if (slots) {
-    if (typeof slots === 'string') {
-      if (slots) {
-        slotContent += `\n  ${slots.replace(/\n/g, '\n  ')}\n`;
-      }
-    } else {
-      Object.keys(slots).forEach(slotName => {
-        const s = slots[slotName];
-        const val = (s && typeof s === 'object' && 'currentValue' in s) ? s.currentValue : s;
-        if (val) {
-          if (slotName === 'default') {
-            slotContent += `\n  ${val.replace(/\n/g, '\n  ')}\n`;
-          } else {
-            if (typeof val === 'string' && val.includes(`slot="${slotName}"`)) {
-              slotContent += `\n  ${val.replace(/\n/g, '\n  ')}\n`;
-            } else {
-              slotContent += `\n  <span slot="${slotName}">${val.replace(/\n/g, '\n  ')}</span>\n`;
-            }
-          }
-        }
-      });
-    }
-  }
-
-  if (slotContent) {
-    code += slotContent + `</${tag}>`;
-  } else {
-    code += `</${tag}>`;
-  }
-
-  if (appendScript) {
-    code += appendScript;
-  }
-
-  return code;
+  componentRegistry.set({ ...registry });
 }

@@ -51,23 +51,48 @@
     "reserveFeedback": {
       "type": "boolean",
       "desc": "Reserve one feedback line; omit to inherit"
+    },
+    "options": {
+      "type": "array",
+      "desc": "String labels or objects with label, value, disabled and icon",
+      "default": [
+        {
+          "label": "Email",
+          "value": "email"
+        },
+        {
+          "label": "Username",
+          "value": "username"
+        },
+        {
+          "label": "Email and Username",
+          "value": "both"
+        }
+      ]
+    },
+    "description": {
+      "type": "string",
+      "desc": "Supporting instructions"
+    },
+    "error": {
+      "type": "string",
+      "desc": "Validation feedback"
+    },
+    "errorMessage": {
+      "type": "string",
+      "desc": "Deprecated fallback. Use error; omit the replacement to try this alias."
+    },
+    "name": {
+      "type": "string",
+      "desc": "Field name included in form data",
+      "default": "signInField"
+    },
+    "ariaLabel": {
+      "type": "string",
+      "desc": "Accessible name"
     }
   },
   "slots": {},
-  "options": [
-    {
-      "label": "Email",
-      "value": "email"
-    },
-    {
-      "label": "Username",
-      "value": "username"
-    },
-    {
-      "label": "Email and Username",
-      "value": "both"
-    }
-  ],
   "variants": [
     {
       "name": "Responsive",
@@ -88,6 +113,61 @@
       "props": {
         "disabled": true,
         "value": "username"
+      }
+    },
+    {
+      "name": "Horizontal with individual disabled choice",
+      "props": {
+        "options": [
+          "Home",
+          {
+            "label": "Archive",
+            "value": "archive",
+            "disabled": true
+          },
+          {
+            "label": "Inbox",
+            "value": "inbox",
+            "icon": "mail"
+          }
+        ],
+        "orientation": "horizontal",
+        "value": "inbox",
+        "name": "folder",
+        "description": "Choose a destination."
+      }
+    }
+  ],
+  "edgeCases": [
+    {
+      "name": "Required empty field",
+      "props": {
+        "options": [
+          {
+            "label": "Email",
+            "value": "email"
+          },
+          {
+            "label": "Username",
+            "value": "username"
+          },
+          {
+            "label": "Email and Username",
+            "value": "both"
+          }
+        ],
+        "required": true,
+        "value": "",
+        "labelHidden": true,
+        "ariaLabel": "Destination",
+        "name": "destination"
+      }
+    },
+    {
+      "name": "Legacy validation text",
+      "props": {
+        "errorMessage": "Choose a destination",
+        "error": null
       }
     }
   ]

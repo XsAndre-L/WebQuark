@@ -14,6 +14,7 @@
     "switch:build": "tsc -p src/tooling/wq-switch/tsconfig.json && bun build src/tooling/wq-switch/index.ts src/tooling/wq-switch/setup.ts --outdir=packages/tooling/dist/wq-switch --entry-naming=[name].cjs --target=node --format=cjs",
     "build": "bun run browser:build && bun run tooling:build && bun run core:build",
     "start": "bun run scripts/start-playground.ts",
+    "check:playground": "bun scripts/playground-contract.ts && tsc -p src/playground/tsconfig.json",
     "dev": "bun run start",
     "test": "bun run packages:build && STENCIL_PROD=true vitest run",
     "test:watch": "stencil-test --prod --watch --stencil-config packages/browser/components/stencil.config.ts",

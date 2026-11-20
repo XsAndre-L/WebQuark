@@ -8,17 +8,14 @@
         "horizontal",
         "vertical"
       ],
-      "default": "horizontal",
       "desc": "Layout alignment variant"
     },
     "min": {
       "type": "number",
-      "default": 0,
       "desc": "Minimum allowed value limit"
     },
     "max": {
       "type": "number",
-      "default": 100,
       "desc": "Maximum allowed value limit"
     },
     "step": {
@@ -41,6 +38,14 @@
         "lg"
       ],
       "desc": "Control size; inherit follows the nearest form or toolbar"
+    },
+    "variant": {
+      "type": "select",
+      "desc": "Deprecated fallback. Use orientation; omit the replacement to try this alias.",
+      "options": [
+        "horizontal",
+        "vertical"
+      ]
     }
   },
   "variants": [
@@ -78,6 +83,13 @@
         "value": 0,
         "min": -50,
         "max": 50
+      }
+    },
+    {
+      "name": "Legacy vertical orientation",
+      "props": {
+        "orientation": null,
+        "variant": "vertical"
       }
     }
   ],

@@ -5,6 +5,7 @@
 
 import { spawn, spawnSync } from "bun";
 import * as path from "path";
+import { watchPlaygroundAssets } from './playground-assets';
 
 const isWindows = process.platform === "win32";
 
@@ -45,6 +46,7 @@ if (!prebuild.success) {
 }
 
 console.log("🚀 Starting Stencil watch/serve compiler...");
+const assetWatcher = watchPlaygroundAssets();
 const stencilProcess = Bun.spawn(stencilCmd, {
   stdout: "inherit",
   stderr: "inherit",
@@ -61,6 +63,7 @@ let isShuttingDown = false;
 function cleanup() {
   if (isShuttingDown) return;
   isShuttingDown = true;
+  assetWatcher.close();
   console.log("\n🛑 Shutting down playground dev servers...");
   try {
     stencilProcess.kill();
