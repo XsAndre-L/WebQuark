@@ -16,6 +16,7 @@ let nextBox = 0;
 /**
  * Displays syntax-highlighted content and automatically adds tabs for multiple views.
  * @slot - Read-only fallback content or direct q-syntax-view children.
+ * @slot heading - Custom title content in the single-view panel header.
  * @slot actions - Additional actions for the box's own view.
  */
 @Component({
@@ -220,7 +221,7 @@ export class QSyntaxBox extends Mixin(withSyntaxContent) {
             {tabbed
               ? <q-tabs size="sm" items={this.views.map(view => view.tab)} value={active?.tab.value} ariaLabel={this.heading || 'Syntax views'}
                   onQChange={this.onTabChange} ref={el => { this.tabSelector = el; }} />
-              : <span>{title}</span>}
+              : <span><slot name="heading">{title}</slot></span>}
           </div>}
           {this.views.map(view => <div key={view.tab.value} class="view-panel" id={view.tab.panelId}
             data-inactive={this.visible(view.element) ? undefined : ''} role={tabbed ? 'tabpanel' : undefined}

@@ -82,6 +82,7 @@ Type: `Promise<void>`
 | ----------- | ------------------------------------------------------------ |
 |             | Read-only fallback content or direct q-syntax-view children. |
 | `"actions"` | Additional actions for the box's own view.                   |
+| `"heading"` | Custom title content in the single-view panel header.        |
 
 
 ## Dependencies

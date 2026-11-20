@@ -18,6 +18,7 @@
     "build": "bun run browser:build && bun run tooling:build && bun run core:build",
     "start": "bun run scripts/start-playground.ts",
     "check:playground": "bun scripts/playground-contract.ts && tsc -p src/playground/tsconfig.json",
+    "check:playground-pages": "bun scripts/playground-pages/verify.ts",
     "dev": "bun run start",
     "test": "bun run packages:build && STENCIL_PROD=true vitest run",
     "test:watch": "stencil-test --prod --watch --stencil-config packages/browser/components/stencil.config.ts",

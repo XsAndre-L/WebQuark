@@ -58,6 +58,8 @@ Use matching WebQuark versions when installing multiple packages.
 
 ## Run the playground
 
+Open the [hosted component playground](https://xsandre-l.github.io/WebQuark/) to try the current `main` build. See the [changelog](./CHANGELOG.md) for release notes.
+
 From a checkout of this repository, install dependencies and start the playground with Bun.
 
 ```sh
@@ -66,6 +68,8 @@ bun start
 ```
 
 Open the [local playground](http://localhost:3333) to try the components and inspect their events.
+
+In the Sandbox, **Example HTML** formats the generated snippet when it first appears and whenever its source changes. Copy uses the displayed HTML. Slot editors provide a separate Format action for your edits.
 
 ## License
 

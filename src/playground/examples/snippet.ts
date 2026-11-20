@@ -1,6 +1,12 @@
 import { contracts, portableAsset, wrapTrigger, type ResolvedExample } from './example';
 import { actions, installActions, stateFromEvent } from './interactions';
 
+export async function formatExampleHtml(source: string): Promise<string> {
+  const runtimeUrl = new URL('formatters/prettier/runtime.mjs', document.baseURI);
+  const formatter: typeof import('@webquark/browser/formatters/runtime') = await import(/* @vite-ignore */ runtimeUrl.href);
+  return formatter.formatSource(source, 'html');
+}
+
 function scriptLiteral(value: unknown): string {
   return JSON.stringify(value).replaceAll('<', '\\u003c');
 }

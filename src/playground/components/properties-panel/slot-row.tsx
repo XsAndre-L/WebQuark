@@ -23,29 +23,30 @@ export class SlotRow extends HTMLElement {
     });
 
     const hasToolbar = slotConfig.type === 'html';
+    const label = (
+      <span class="property-label" data-theme={hasToolbar ? 'dark' : undefined} tabIndex={description ? 0 : undefined}>
+        {name}
+        {description && <q-tooltip content={description} position="top" />}
+      </span>
+    );
+
     this.control = hasToolbar
-      ? <q-syntax-box editable language="html" aria-label={name} height="110px" onQInput={input} />
+      ? <q-syntax-box editable language="html" heading={name} height="110px" onQInput={input} />
       : slotConfig.type === 'textarea'
         ? <q-textarea rows={4} aria-label={name} width="full" onQInput={input} />
         : <q-input aria-label={name} width="full" onQInput={input} />;
     this.control.dataset.slot = slotName;
 
+    this.className = 'property-row vertical';
     if (hasToolbar) {
+      label.slot = 'heading';
       resetAction.slot = 'actions';
-      this.control.append(resetAction);
+      this.control.append(label, resetAction);
+      this.replaceChildren(this.control);
+    } else {
+      this.replaceChildren(<div class="slot-editor-heading">{label}{resetAction}</div>, this.control);
     }
 
-    this.className = 'property-row vertical';
-    this.replaceChildren(
-      <div class="slot-editor-heading">
-        <span class="property-label" tabIndex={description ? 0 : undefined}>
-          {name}
-          {description && <q-tooltip content={description} position="top" />}
-        </span>
-        {!hasToolbar && resetAction}
-      </div>,
-      this.control,
-    );
     this.sync(slotConfig.currentValue);
   }
 

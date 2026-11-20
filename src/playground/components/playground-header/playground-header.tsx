@@ -29,7 +29,7 @@ class PlaygroundHeader extends HTMLElement {
           {Object.assign(<q-icon slot="icon-left" size="20" />, { definition: Menu })}
         </q-button>
         <div class="header-logo">
-          <img src="/logo.svg" class="logo-image" alt="" />
+          <img src="./logo.svg" class="logo-image" alt="" />
           <div class="logo-text">WebQuark</div>
         </div>
         <div class="header-actions">

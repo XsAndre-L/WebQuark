@@ -119,6 +119,7 @@ jobs:
           PACKAGE_NOTES: ${{ needs.publish.outputs.package_notes }}
         run: |
           if ! gh release view "v${VERSION}" >/dev/null 2>&1; then
+            changelog="[WebQuark changelog](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/v${VERSION}/CHANGELOG.md)"
             gh release create "v${VERSION}" --target "${GITHUB_SHA}" \
-              --title "WebQuark ${VERSION}" --notes "$PACKAGE_NOTES" --generate-notes
+              --title "WebQuark ${VERSION}" --notes "${PACKAGE_NOTES}"$'\n\n'"${changelog}" --generate-notes
           fi

@@ -3,6 +3,11 @@ import type { ResolvedExample } from '../../examples/example';
 import type { ExampleEvent } from '../../examples/mount';
 import { snippet } from '../../examples/snippet';
 
+interface ExampleOutputOptions {
+  contentHeight?: string;
+  formatHtml?: (source: string) => Promise<string>;
+}
+
 function readableDetail(value: unknown) {
   const seen = new WeakSet<object>();
   return JSON.stringify(value, (_key, item) => {
@@ -33,12 +38,23 @@ export class ExampleOutput {
 
   readonly element = <q-syntax-box heading="Example output">{this.htmlView}{this.eventsView}</q-syntax-box>;
   private revision = 0;
+  private formatted?: { source: string; result: Promise<string> };
+
+  constructor(private readonly options: ExampleOutputOptions = {}) {
+    const { contentHeight } = options;
+    if (contentHeight) {
+      this.htmlView.setAttribute('height', contentHeight);
+      this.eventsView.setAttribute('height', contentHeight);
+    }
+  }
 
   async show(example: ResolvedExample) {
     const revision = ++this.revision;
     let code: string;
     try {
-      code = await snippet(example);
+      const source = await snippet(example);
+      if (revision !== this.revision || !this.element.isConnected) return;
+      code = await this.formatSnippet(source);
     } catch (error) {
       code = 'Example unavailable: ' + String(error);
     }
@@ -58,8 +74,19 @@ export class ExampleOutput {
 
   reset() {
     this.revision++;
+    this.formatted = undefined;
     if (customElements.get('q-syntax-view')) this.htmlView.code = '';
     this.clearEvents();
+  }
+
+  private formatSnippet(source: string): string | Promise<string> {
+    const { formatHtml } = this.options;
+    if (!formatHtml) return source;
+
+    if (this.formatted?.source !== source) {
+      this.formatted = { source, result: formatHtml(source).catch(() => source) };
+    }
+    return this.formatted.result;
   }
 
   private clearEvents() {

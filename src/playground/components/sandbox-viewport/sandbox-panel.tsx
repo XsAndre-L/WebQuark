@@ -2,6 +2,7 @@ import { h } from '../../dom-factory';
 import { activeComponent, activeTab, componentRegistry, effect, fetchComponentSpec, specErrors, updateKnobValue } from '../../state';
 import { resolveExample } from '../../examples/example';
 import { mountExample } from '../../examples/mount';
+import { formatExampleHtml } from '../../examples/snippet';
 import { ExampleOutput } from './example-output';
 
 export class SandboxPanel extends HTMLElement {
@@ -11,7 +12,10 @@ export class SandboxPanel extends HTMLElement {
   connectedCallback() {
     const stage = <div class="stage-container" />;
     const controls = <div class="demo-actions" hidden />;
-    const output = new ExampleOutput();
+    const output = new ExampleOutput({
+      contentHeight: 'var(--sandbox-output-height)',
+      formatHtml: formatExampleHtml,
+    });
     const description = <p class="demo-description" hidden />;
     this.replaceChildren(<div class="sandbox-layout"><div class="sandbox-main">{description}{stage}{controls}{output.element}</div></div>);
 

@@ -43,7 +43,7 @@ class PlaygroundSidebar extends HTMLElement {
     const request = this.request = new AbortController();
     let loadFailed = false;
     try {
-      const res = await fetch('/playground/components.manifest.json', { signal: request.signal });
+      const res = await fetch('./playground/components.manifest.json', { signal: request.signal });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       this.components = (await res.json()) as ComponentManifestItem[];
     } catch (err) {

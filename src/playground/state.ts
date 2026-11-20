@@ -111,10 +111,16 @@ export function fetchComponentSpec(tag: string): Promise<void> {
 
 async function loadSpec(tag: string): Promise<void> {
   try {
-    const response = await fetch('/playground/specs/' + encodeURIComponent(tag) + '.sandbox.json');
+    const response = await fetch('./playground/specs/' + encodeURIComponent(tag) + '.sandbox.json');
     if (!response.ok) throw new Error('HTTP ' + response.status);
     const spec: ComponentSpec = await response.json();
     if (spec.tag !== tag) throw new Error('Unexpected component tag');
+
+    // Local SVG requests resolve from the origin. Anchor the bundled fixture to this site's directory.
+    const iconPath = spec.tag === 'q-icon' ? spec.props?.localPath : undefined;
+    if (iconPath?.default?.startsWith('./')) {
+      iconPath.default = new URL(iconPath.default, document.baseURI).pathname;
+    }
 
     for (const prop of Object.values(spec.props || {})) prop.currentValue = prop.default;
     for (const slot of Object.values(spec.slots || {})) slot.currentValue = slot.default ?? '';

@@ -342,6 +342,7 @@ These types describe property values and event payloads. Optional fields are mar
 | Name | Description |
 | :--- | :--- |
 | (default) | Direct `q-syntax-view` children declare views. Other content supplies the host's read-only fallback when `code` is undefined. |
+| `heading` | Custom title content in the single-view panel header, such as a label with a `q-tooltip`. Set the `heading` property for the editor's accessible name and tab label. |
 | `actions` | Consumer-owned panel header controls; not rendered in plain mode |
 
 ### Events

@@ -102,6 +102,11 @@
 .property-row.vertical {
   flex-direction: column;
   align-items: flex-start;
+  padding-block-start: 9.6px;
+}
+
+.property-row.vertical:first-child {
+  padding-block-start: 10px;
 }
 
 property-row.property-row {
@@ -163,12 +168,16 @@ property-row > .property-label {
 }
 
 .property-row.vertical q-input,
+.property-row.vertical q-textarea {
+  margin-top: 6px;
+}
+
+.property-row.vertical q-input,
 .property-row.vertical q-textarea,
 .property-row.vertical q-syntax-box {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  margin-top: 6px;
   display: block;
 }
 

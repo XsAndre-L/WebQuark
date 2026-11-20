@@ -95,6 +95,11 @@
       "default": "&lt;div class=\"app-container\"&gt;\n  &lt;h1&gt;Hello World&lt;/h1&gt;\n  &lt;q-button variant=\"primary\"&gt;Click Me&lt;/q-button&gt;\n&lt;/div&gt;",
       "desc": "Projected content for this box, or direct q-syntax-view children for separate views"
     },
+    "heading": {
+      "type": "html",
+      "desc": "Custom title content in the single-view panel header",
+      "default": ""
+    },
     "actions": {
       "type": "html",
       "desc": "Additional panel-header controls",

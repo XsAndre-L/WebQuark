@@ -18,14 +18,42 @@ afterEach(() => {
 
 const example = { tag: 'q-button', name: 'Button', props: {}, content: 'Save' };
 
-function mountOutput(testId = 'output') {
-  const output = new ExampleOutput();
+function mountOutput(testId = 'output', formatHtml?: (source: string) => Promise<string>) {
+  const output = new ExampleOutput({ formatHtml });
   output.element.dataset.testid = testId;
   document.body.append(output.element);
   return { output, panel: page.getByTestId(testId) };
 }
 
 describe('playground example output', () => {
+  it('formats each changed HTML snippet once and discards an older pending result', async () => {
+    vi.mocked(snippet).mockImplementation(async example => example.content);
+    let finish!: (source: string) => void;
+    const format = vi.fn(async (source: string) => source + '\n')
+      .mockImplementationOnce(() => new Promise(resolve => { finish = resolve; }));
+    const { output } = mountOutput('sandbox', format);
+    const html = output.element.querySelector<HTMLQSyntaxViewElement>('[view-key="html"]')!;
+
+    const first = output.show(example);
+    await vi.waitFor(() => expect(format).toHaveBeenCalledTimes(1));
+    const duplicate = output.show(example);
+    await Promise.resolve();
+    expect(format).toHaveBeenCalledTimes(1);
+
+    const changed = { ...example, content: '<div>Updated</div>' };
+    await output.show(changed);
+    finish('Old result');
+    await Promise.all([first, duplicate]);
+    output.record({ source: 'Button', name: 'qClick', detail: undefined });
+    await output.show(changed);
+    expect(format.mock.calls).toEqual([[example.content], [changed.content]]);
+    expect(html.code).toBe(changed.content + '\n');
+
+    format.mockRejectedValueOnce(new Error('Formatter unavailable'));
+    await output.show(example);
+    expect(html.code).toBe(example.content);
+  });
+
   it('fits the HTML label and uses the theme log padding inside a narrow output box', async () => {
     const { output, panel } = mountOutput();
     output.element.style.width = '320px';

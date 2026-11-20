@@ -24,7 +24,7 @@
     },
     "localPath": {
       "type": "string",
-      "default": "/assets/icons/",
+      "default": "./assets/icons/",
       "desc": "Custom local assets base path"
     },
     "definition": {

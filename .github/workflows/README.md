@@ -2,14 +2,22 @@
 
 WebQuark has one publishing workflow for `dev` and `main`. Automatic verification runs after changes reach either release branch and before npm publishing. Pull requests do not run GitHub Actions checks. Publishing remains dormant until deliberately enabled.
 
+## Playground deployment
+
+**Deploy playground to Pages** runs on pushes to `main` and can be dispatched manually from `main`. GitHub Pages must use **GitHub Actions** as its source. The workflow builds the checkout with `bun run browser:build`, runs the Chromium checks, and deploys the contents of `.stencil/dist/playground/` using the `github-pages` environment. The public URL is [WebQuark Playground](https://xsandre-l.github.io/WebQuark/).
+
+To reproduce the check locally, run `bun run browser:build`, install Chromium with `bunx --no-install playwright install chromium`, then run `bun run check:playground-pages`. The check serves the production files at both `/WebQuark/` and `/`. To check the published site, run `bun run check:playground-pages https://xsandre-l.github.io/WebQuark/`.
+
+For a transient failure, retry the failed job from Actions. Correct a build or browser-check failure on the release branch and merge it into `main` to redeploy. Pages deploys independently of the npm publishing flags.
+
 ## The developer flow
 
 1. Work on a feature branch and open a pull request into `dev`.
 2. Review and merge the pull request into `dev`.
-3. When dev publishing is enabled, the deploy workflow audits the locked dependencies, reads `.github/release.json`, finds the next available npm sequence, verifies the prepared packages, and publishes them together as `1.1.0-dev.1` only after every release check passes.
-4. The next merge into `dev` becomes `1.1.0-dev.2`, then `dev.3`, and so on.
+3. When dev publishing is enabled, the deploy workflow audits the locked dependencies, reads `.github/release.json`, finds the next available npm sequence, verifies the prepared packages, and publishes them together as `<nextVersion>-dev.N`.
+4. Each subsequent merge into `dev` increments the prerelease sequence for that version.
 5. Open and review a pull request from `dev` into `main`.
-6. Merge into `main`. When production publishing is enabled, the deploy workflow runs the same release gates, publishes all packages as `1.1.0`, and creates the `v1.1.0` GitHub release.
+6. Merge into `main`. When production publishing is enabled, the deploy workflow runs the release gates, publishes the stable version of all five packages, and creates the GitHub release with package and changelog links.
 
 The workflow also handles direct pushes to these branches and manual retries through `workflow_dispatch`, subject to the same branch-specific enable flags.
 
@@ -21,12 +29,12 @@ No commit-title convention and no manually applied npm tag controls the version.
 
 ```json
 {
-  "nextVersion": "1.1.0",
+  "nextVersion": "1.1.1",
   "versioning": "lockstep"
 }
 ```
 
-The workflow temporarily writes the calculated version into every package manifest. After `1.1.0` is released, change `nextVersion` once to the next intended version, such as `1.1.1`, `1.2.0`, or `2.0.0`.
+The workflow temporarily writes the calculated version into every package manifest. After each stable release, set `nextVersion` to the intended patch, minor, or major version before starting the next dev series.
 
 A numeric prerelease identifier cannot contain a leading zero. The valid form is `1.1.0-dev.1`, not `1.1.0-dev.01`.
 

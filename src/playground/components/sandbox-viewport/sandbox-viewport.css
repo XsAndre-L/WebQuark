@@ -72,6 +72,7 @@ viewport-tabs q-tabs {
 }
 
 .sandbox-main > q-syntax-box {
+  --sandbox-output-height: clamp(110px, min(100vw * 250 / 1920, 100dvh * 250 / 1080), 250px);
   --q-radius-lg: 0px;
   flex-shrink: 0;
 }
