@@ -56,7 +56,7 @@ The release logic lives under `.github/scripts/publishing/`:
 - `verify-packages.ts` checks prop policy, builds all five packages, verifies packed Angular 21/22 consumers, runs every Vitest project, and validates manifests and npm tarballs. It is the publish workflow's final gate.
 - `publish-packages.ts` packs first, publishes browser/tooling before core and browser before React/Angular, prevents overwriting different npm contents, resumes matching partial publications, and applies the requested npm dist-tag.
 
-The root `publish-all` package script points to this guarded publisher. A real publish requires both an explicit `--tag dev|latest` argument and `NODE_AUTH_TOKEN`.
+The root `publish-all` script requires an explicit `--tag dev|latest`. GitHub Actions uses npm trusted publishing. Local publishing requires an explicit `NODE_AUTH_TOKEN`.
 
 ## Required GitHub configuration
 
@@ -64,7 +64,7 @@ Create these repository settings before enabling deployment:
 
 - Repository variables `WEBQUARK_DEV_PIPELINE_ENABLED=true` and `WEBQUARK_PROD_PIPELINE_ENABLED=false`.
 - GitHub environment `dev`, managed by AnythingDevOps. `prod` remains inactive.
-- One repository secret named `NPM_TOKEN`, with npm publish access to the `@webquark` scope. This shared credential publishes all five packages; there are no per-package secrets.
+- Configure GitHub Actions trusted publishing for each of the five npm packages. Use `XsAndre-L/WebQuark` and `deploy-wf.yml`, with separate `dev` and `prod` connections. Enable `npm publish` and `npm dist-tag` on both.
 - Recommended reviewer approval on `prod`.
 
 If branch protection or a ruleset requires the former `Pull Request` workflow's `Build and test packages` status check, remove that requirement when retiring the workflow so pull requests can merge.
@@ -101,7 +101,7 @@ The dry-run commands do not change npm or GitHub.
 
 ## Enabling publishing
 
-Only after `dev` exists and the npm credential has been reviewed:
+Enable dev publishing after configuring the `dev` trusted publisher for all five npm packages.
 
 ```bash
 gh variable set WEBQUARK_DEV_PIPELINE_ENABLED --body true
