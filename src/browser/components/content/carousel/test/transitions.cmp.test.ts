@@ -25,7 +25,7 @@ type CarouselTestElement = Omit<HTMLQCarouselElement, 'showArrows' | 'showIndica
   pause(): Promise<void>;
 };
 type CarouselTestOptions = Partial<Pick<CarouselTestElement,
-  'layout' | 'itemWidth' | 'showArrows' | 'showIndicators' | 'autoplay' | 'autoplayInterval' | 'autoplaySuspended' | 'autoplayBehavior' | 'repeat' | 'slideTiming' | 'rotationPlacement'
+  'layout' | 'itemWidth' | 'showArrows' | 'showIndicators' | 'autoplay' | 'autoplayInterval' | 'autoplaySuspended' | 'autoplayAdvanceSuspended' | 'autoplayBehavior' | 'repeat' | 'slideTiming' | 'rotationPlacement'
 >>;
 
 async function create(transition: 'slide' | 'crossfade' | 'instant' = 'crossfade', parent: HTMLElement | ShadowRoot = document.body, options: CarouselTestOptions = {}) {
@@ -365,7 +365,7 @@ it('preserves original dot styling while controls fit the available container wi
 it('keeps continuous rotation running through hover, focus, pointer and keyboard navigation', async () => {
   const el = await create('instant', document.body, {
     layout: 'slideshow', autoplay: true, autoplayBehavior: 'continuous',
-    autoplayInterval: 150, repeat: true,
+    autoplayInterval: 150, autoplayAdvanceSuspended: true, repeat: true,
   });
   const viewport = el.shadowRoot!.querySelector<HTMLElement>('.carousel-viewport')!;
   const rotation = el.shadowRoot!.querySelector<HTMLButtonElement>('.rotation-btn')!;
@@ -374,6 +374,8 @@ it('keeps continuous rotation running through hover, focus, pointer and keyboard
   action.focus();
   action.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, composed: true }));
   action.click();
+  expect(document.activeElement).toBe(action);
+  el.autoplayAdvanceSuspended = false;
   await frame();
   expect(rotation.textContent?.trim()).toBe('Pause slideshow');
   expect(viewport.getAttribute('aria-live')).toBe('off');

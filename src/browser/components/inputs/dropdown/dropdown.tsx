@@ -511,7 +511,11 @@ export class QDropdown {
       if (this.selectedValues.includes(option.value)) return;
       this.values = [...this.selectedValues, option.value];
       this.multipleLabels.set(option.value, this.getOptionLabel(option));
+
       this.searchTerm = '';
+      if (this.triggerEl instanceof HTMLInputElement) {
+        this.triggerEl.value = '';
+      }
       this.draftEdited = false;
       this.focusedIndex = -1;
       this.qValuesChange.emit([...this.values]);
