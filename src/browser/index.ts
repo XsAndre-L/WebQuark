@@ -47,6 +47,9 @@ export {
 } from './components/data-display/data-table/data-table-cell';
 export type * from './components.d.ts';
 export type {
+  QCarouselAutoplayBehavior,
+  QCarouselSlideTiming,
+  QCarouselPlaybackChangeDetail,
   QCarouselAutoplayChangeDetail,
   QCarouselLayout,
   QCarouselSlideChangeDetail,

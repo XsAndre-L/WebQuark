@@ -1,5 +1,5 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": { "noEmit": true, "declaration": false, "declarationDir": null, "rootDir": ".." },
-  "include": ["navbar.tsx"]
+  "include": ["navbar.tsx", "control-group.tsx"]
 }

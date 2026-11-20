@@ -10,7 +10,7 @@ export interface FieldState {
   disabled: boolean;
   active: boolean;
   entries: SuccessfulEntry[];
-  model: string | boolean | null;
+  model: string | string[] | boolean | null;
   custom?: CustomFormField;
 }
 
@@ -85,7 +85,11 @@ export function snapshotField(control: NamedFormControl): FieldState {
   if (custom) {
     state.model = custom.value();
     if (name && active && !disabled && state.model !== null && (state.kind !== 'toggle' || state.model === true)) {
-      state.entries.push([name, String(state.model)]);
+      if (state.kind === 'multiselect' && Array.isArray(state.model)) {
+        state.entries.push(...state.model.map(value => [name, value] as const));
+      } else {
+        state.entries.push([name, String(state.model)]);
+      }
     }
     return state;
   }

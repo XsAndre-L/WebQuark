@@ -55,6 +55,7 @@ Choose a component's primary category by the situation in which developers usual
 
 | Component | Category | Authored guide | Generated API |
 | :--- | :--- | :--- | :--- |
+| `q-control-group` | Layout | [Guide](./q-control-group.md) | [API](../../src/browser/components/layout/control-group/readme.md) |
 | `q-accordion` | Data display | [Guide](./q-accordion.md) | [API](../../src/browser/components/data-display/accordion/readme.md) |
 | `q-alert` | Communication | [Guide](./q-alert.md) | [API](../../src/browser/components/communication/alert/readme.md) |
 | `q-avatar` | Media | [Guide](./q-avatar.md) | [API](../../src/browser/components/media/avatar/readme.md) |

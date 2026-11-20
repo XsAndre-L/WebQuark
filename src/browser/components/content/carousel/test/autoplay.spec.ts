@@ -112,3 +112,36 @@ describe('carousel autoplay ownership', () => {
     expect(vi.getTimerCount()).toBe(0);
   });
 });
+
+
+it('holds completion through pause and readiness, consuming it only once', () => {
+  const { autoplay, advance } = create();
+  const config = { ...enabled, timing: 'completion' as const, visitKey: 'video:1', advanceSuspended: true };
+  autoplay.configure(config);
+  autoplay.complete('stale');
+  autoplay.complete('video:1');
+  vi.advanceTimersByTime(30000);
+  expect(advance).not.toHaveBeenCalled();
+  autoplay.pause();
+  autoplay.configure({ ...config, advanceSuspended: false });
+  expect(advance).not.toHaveBeenCalled();
+  autoplay.play();
+  expect(advance).toHaveBeenCalledTimes(1);
+  autoplay.configure({ ...config, advanceSuspended: false });
+  expect(advance).toHaveBeenCalledTimes(1);
+});
+
+it('starts a fresh image dwell on navigation and discards the old video completion', () => {
+  const { autoplay, advance } = create();
+  autoplay.configure({ ...enabled, timing: 'completion', visitKey: 'old' });
+  autoplay.pause();
+  autoplay.complete('old');
+  autoplay.configure({ ...enabled, timing: 'interval', visitKey: 'image:1' });
+  autoplay.play();
+  vi.advanceTimersByTime(4000);
+  autoplay.configure({ ...enabled, timing: 'interval', visitKey: 'image:2' });
+  vi.advanceTimersByTime(4999);
+  expect(advance).not.toHaveBeenCalled();
+  vi.advanceTimersByTime(1);
+  expect(advance).toHaveBeenCalledTimes(1);
+});

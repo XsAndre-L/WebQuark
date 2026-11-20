@@ -28,42 +28,45 @@ and externally loaded option pages.
 
 ## Properties
 
-| Property           | Attribute           | Description                                                                                            | Type                                                      | Default                 |
-| ------------------ | ------------------- | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------- | ----------------------- |
-| `ariaLabel`        | `aria-label`        | Accessible name for the trigger and option list when no visible label is available.                    | `string`                                                  | `null`                  |
-| `collisionPadding` | `collision-padding` | Minimum distance maintained between the open menu and viewport edges.                                  | `number`                                                  | `8`                     |
-| `description`      | `description`       | Supporting text, replaced by an active error.                                                          | `string`                                                  | `undefined`             |
-| `disabled`         | `disabled`          |                                                                                                        | `boolean`                                                 | `false`                 |
-| `error`            | `error`             | Custom validation error; independent of currently loaded options.                                      | `string`                                                  | `undefined`             |
-| `externalSearch`   | `external-search`   | Delegates filtering and pagination to the consumer.                                                    | `boolean`                                                 | `false`                 |
-| `hasMore`          | `has-more`          | Indicates another externally loaded option page is available.                                          | `boolean`                                                 | `false`                 |
-| `label`            | `label`             |                                                                                                        | `string`                                                  | `undefined`             |
-| `labelHidden`      | `label-hidden`      | Keep the label accessible without displaying it.                                                       | `boolean`                                                 | `false`                 |
-| `loading`          | `loading`           |                                                                                                        | `boolean`                                                 | `false`                 |
-| `name`             | `name`              |                                                                                                        | `string`                                                  | `undefined`             |
-| `options`          | `options`           | Options to render; strings use the same text for label and value, while objects allow separate values. | `DropdownOptionInput[] \| string`                         | `[]`                    |
-| `placeholder`      | `placeholder`       |                                                                                                        | `string`                                                  | `'Select an option...'` |
-| `placement`        | `placement`         | `auto` uses a side with sufficient viewport space.                                                     | `"auto" \| "bottom" \| "top"`                             | `'auto'`                |
-| `required`         | `required`          |                                                                                                        | `boolean`                                                 | `false`                 |
-| `reserveFeedback`  | `reserve-feedback`  | Omitted inherits the enclosing form; false cancels reservation.                                        | `boolean`                                                 | `undefined`             |
-| `searchMode`       | `search-mode`       | Search in the main editable control (default) or a separate menu field. Applies only when searchable.  | `"default" \| "menu"`                                     | `'default'`             |
-| `searchable`       | `searchable`        |                                                                                                        | `boolean`                                                 | `false`                 |
-| `size`             | `size`              |                                                                                                        | `"inherit" \| "lg" \| "md" \| "sm"`                       | `'inherit'`             |
-| `value`            | `value`             |                                                                                                        | `string`                                                  | `''`                    |
-| `width`            | `width`             | Opt-in horizontal width; independent of size. Omitted uses the existing full-width layout.             | `"full" \| "lg" \| "md" \| "sm" \| "xl" \| "xs" \| "xxl"` | `undefined`             |
+| Property           | Attribute           | Description                                                                                              | Type                                                                       | Default                 |
+| ------------------ | ------------------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | ----------------------- |
+| `ariaLabel`        | `aria-label`        | Accessible name for the trigger and option list when no visible label is available.                      | `string`                                                                   | `null`                  |
+| `collisionPadding` | `collision-padding` | Minimum distance maintained between the open menu and viewport edges.                                    | `number`                                                                   | `8`                     |
+| `description`      | `description`       | Supporting text, replaced by an active error.                                                            | `string`                                                                   | `undefined`             |
+| `disabled`         | `disabled`          |                                                                                                          | `boolean`                                                                  | `false`                 |
+| `error`            | `error`             | Custom validation error; independent of currently loaded options.                                        | `string`                                                                   | `undefined`             |
+| `externalSearch`   | `external-search`   | Delegates filtering and pagination to the consumer.                                                      | `boolean`                                                                  | `false`                 |
+| `hasMore`          | `has-more`          | Indicates another externally loaded option page is available.                                            | `boolean`                                                                  | `false`                 |
+| `label`            | `label`             |                                                                                                          | `string`                                                                   | `undefined`             |
+| `labelHidden`      | `label-hidden`      | Keep the label accessible without displaying it.                                                         | `boolean`                                                                  | `false`                 |
+| `loading`          | `loading`           |                                                                                                          | `boolean`                                                                  | `false`                 |
+| `multiple`         | `multiple`          | Select several options. Uses values/qValuesChange instead of value/qChange.                              | `boolean`                                                                  | `false`                 |
+| `name`             | `name`              |                                                                                                          | `string`                                                                   | `undefined`             |
+| `options`          | `options`           | Options to render; strings use the same text for label and value, while objects allow separate values.   | `DropdownOptionInput[] \| string`                                          | `[]`                    |
+| `placeholder`      | `placeholder`       |                                                                                                          | `string`                                                                   | `'Select an option...'` |
+| `placement`        | `placement`         | `auto` uses a side with sufficient viewport space.                                                       | `"auto" \| "bottom" \| "top"`                                              | `'auto'`                |
+| `required`         | `required`          |                                                                                                          | `boolean`                                                                  | `false`                 |
+| `reserveFeedback`  | `reserve-feedback`  | Omitted inherits the enclosing form; false cancels reservation.                                          | `boolean`                                                                  | `undefined`             |
+| `searchMode`       | `search-mode`       | Search in the main editable control (default) or a separate menu field. Applies only when searchable.    | `"default" \| "menu"`                                                      | `'default'`             |
+| `searchable`       | `searchable`        |                                                                                                          | `boolean`                                                                  | `false`                 |
+| `size`             | `size`              |                                                                                                          | `"inherit" \| "lg" \| "md" \| "sm"`                                        | `'inherit'`             |
+| `value`            | `value`             |                                                                                                          | `string`                                                                   | `''`                    |
+| `values`           | --                  | Selected identities in multiple mode. Replace the array to update selections.                            | `string[]`                                                                 | `[]`                    |
+| `width`            | `width`             | Opt-in horizontal width; fit-options sizes to loaded option labels. Omitted keeps the full-width layout. | `"fit-options" \| "full" \| "lg" \| "md" \| "sm" \| "xl" \| "xs" \| "xxl"` | `undefined`             |
 
 
 ## Events
 
-| Event       | Description                                                                           | Type                      |
-| ----------- | ------------------------------------------------------------------------------------- | ------------------------- |
-| `qBlur`     |                                                                                       | `CustomEvent<FocusEvent>` |
-| `qChange`   | Emitted with the selected option value when selection changes.                        | `CustomEvent<string>`     |
-| `qClick`    | Emitted before the trigger toggles the menu.                                          | `CustomEvent<MouseEvent>` |
-| `qFocus`    |                                                                                       | `CustomEvent<FocusEvent>` |
-| `qLoadMore` | Emitted when an externally loaded option list reaches its scroll boundary.            | `CustomEvent<void>`       |
-| `qSearch`   | Emitted with the current search term when a searchable dropdown uses external search. | `CustomEvent<string>`     |
-| `qSelect`   | Emitted with the selected option object when selection changes.                       | `CustomEvent<Option>`     |
+| Event           | Description                                                                           | Type                      |
+| --------------- | ------------------------------------------------------------------------------------- | ------------------------- |
+| `qBlur`         |                                                                                       | `CustomEvent<FocusEvent>` |
+| `qChange`       | Emitted with the selected option value when selection changes.                        | `CustomEvent<string>`     |
+| `qClick`        | Emitted before the trigger toggles the menu.                                          | `CustomEvent<MouseEvent>` |
+| `qFocus`        |                                                                                       | `CustomEvent<FocusEvent>` |
+| `qLoadMore`     | Emitted when an externally loaded option list reaches its scroll boundary.            | `CustomEvent<void>`       |
+| `qSearch`       | Emitted with the current search term when a searchable dropdown uses external search. | `CustomEvent<string>`     |
+| `qSelect`       | Emitted with the selected option object when selection changes.                       | `CustomEvent<Option>`     |
+| `qValuesChange` | Complete selected identities after an add or removal in multiple mode.                | `CustomEvent<string[]>`   |
 
 
 ## Methods
@@ -114,6 +117,19 @@ Type: `Promise<boolean>`
 | `"menu"`    | Floating option menu.                              |
 | `"trigger"` | Active input or button that opens the option menu. |
 
+
+## Dependencies
+
+### Depends on
+
+- [q-chip](../../data-display/chip)
+
+### Graph
+```mermaid
+graph TD;
+  q-dropdown --> q-chip
+  style q-dropdown fill:#f9f,stroke:#333,stroke-width:4px
+```
 
 ----------------------------------------------
 

@@ -2,8 +2,11 @@
 
 This inventory follows current public component declarations. Documentation coverage does not change implementation maturity. See the [guide index and standard](./components/README.md).
 
+[QControlGroup implementation record](./architecture/control-group-implementation-plan.md) tracks local implementation and verification.
+
 | Component | Category | Implementation status | Guide |
 | :--- | :--- | :--- | :--- |
+| `q-control-group` | Layout | Implemented locally; focused checks passed | [Guide](./components/q-control-group.md) |
 | `q-accordion` | Data display | Public scaffold; behavior incomplete | [Guide](./components/q-accordion.md) |
 | `q-alert` | Communication | Implemented; see guide limitations | [Guide](./components/q-alert.md) |
 | `q-avatar` | Media | Implemented; see guide limitations | [Guide](./components/q-avatar.md) |

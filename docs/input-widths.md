@@ -5,6 +5,13 @@
 controls height and internal density. Omitted, empty and invalid widths preserve
 the existing full-width layout.
 
+`q-dropdown` also accepts `width="fit-options"`. It measures the widest loaded
+option label and reserves the trigger's padding, borders, leading icon and arrow
+gap. Selection and local search do not change its width; replacing options or
+changing typography updates it. With no loaded options, the selected cached label
+or placeholder supplies the width. An oversized placeholder may truncate when
+options are present. Parent width constraints and consumer CSS still win.
+
 Copy this block into a project's shared theme stylesheet and change the values
 to establish one project-wide scale. These are WebQuark's defaults:
 

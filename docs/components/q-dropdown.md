@@ -157,13 +157,19 @@ The successful string selection participates through ElementInternals; reset res
 
 ### Limitations and compatibility
 
-Options cannot individually be disabled and there is no multiple-selection mode. Supply an array; malformed JSON falls back to [], while valid non-array JSON can fail because the normalizer calls flatMap. No configurable search/loading/empty text exists. Use finite nonnegative collisionPadding: negatives clamp to zero, nonfinite values are not repaired. The menu uses the top layer when Popover API is available, otherwise fixed positioning; clipping behavior needs checking in the target browser. Loading spins every 0.6 seconds with no reduced-motion override.
+Options cannot individually be disabled. Multiple selection uses the separate `values` array described below. Supply an array; malformed JSON falls back to [], while valid non-array JSON can fail because the normalizer calls flatMap. No configurable search/loading/empty text exists. Use finite nonnegative collisionPadding: negatives clamp to zero, nonfinite values are not repaired. The menu uses the top layer when Popover API is available, otherwise fixed positioning; clipping behavior needs checking in the target browser. Loading spins every 0.6 seconds with no reduced-motion override.
 
 ## Styling
 
 Use size and placement. The menu background has a separate hook from the field trigger.
 
 ### Sizes
+
+Width is separate from size. Omitted width or `width="full"` fills the available
+space. `width="fit-options"` fits the longest loaded option, including padding
+and arrow spacing; selection and local filtering leave that width stable. Use
+`xs`, `sm`, `md`, `lg`, `xl` or `xxl` for a theme width. See [input widths](../input-widths.md)
+for empty-option behavior, dynamic updates and parent/CSS constraints.
 
 `size="inherit"` is the declared default: it uses the nearest [q-form](./q-form.md) or [q-toolbar](./q-toolbar.md) scope, with `md` geometry when no scope exists. Explicit `sm`, `md`, or `lg` overrides that scope. Changing a scope updates inherited dimensions without changing the child's size property.
 
@@ -216,6 +222,7 @@ All properties are optional in the TypeScript component contract. Required conte
 | `label` | `undefined` | Visible trigger label.<br>**Type:** `string`. **HTML attribute:** `label`. **Required:** No. |
 | `labelHidden` | `false` | Visually hides label while retaining its accessible name.<br>**Type:** `boolean`. **HTML attribute:** `label-hidden`. **Required:** No. |
 | `loading` | `false` | Shows a loading row while open; does not disable the trigger or existing options.<br>**Type:** `boolean`. **HTML attribute:** `loading`. **Required:** No. |
+| `multiple` | `false` | Uses one-line chips and main-input search. Uses `values` instead of `value`.<br>**Type:** `boolean`. **HTML attribute:** `multiple`. |
 | `name` | `undefined` | Name used for native form submission.<br>**Type:** `string`. **HTML attribute:** `name`. **Required:** No. |
 | `options` | `[]` | Array or JSON string; see [Option data](#option-data).<br>**Type:** `DropdownOptionInput[] \| string`. **HTML attribute:** `options`. **Required:** No. |
 | `placeholder` | `'Select an option...'` | Displayed when no matching labelled option exists.<br>**Type:** `string`. **HTML attribute:** `placeholder`. **Required:** No. |
@@ -226,6 +233,7 @@ All properties are optional in the TypeScript component contract. Required conte
 | `searchMode` | `'default'` | Search in the main editable control (`default`) or in a separate popup field (`menu`). Applies only when searchable.<br>**Type:** `'default' \| 'menu'`. **HTML attribute:** `search-mode`. **Required:** No. |
 | `size` | `'inherit'` | Inherited or explicit geometry; see [Sizes](#sizes).<br>**Type:** `'inherit' \| 'sm' \| 'md' \| 'lg'`. **HTML attribute:** `size`. **Required:** No. |
 | `value` | `''` | Mutable stored string; unmatched values show placeholder but remain valid when required.<br>**Type:** `string`. **HTML attribute:** `value`. **Required:** No. |
+| `width` | `undefined` | Horizontal sizing independent of size; omitted fills available space. `fit-options` measures loaded options plus trigger padding and arrow spacing.<br>**Type:** `QInputWidth \| 'fit-options'`. **HTML attribute:** `width`. **Required:** No. |
 
 Boolean attributes use Stencil coercion: presence/empty string is true, the literal string `"false"` is false, and removing the attribute supplies false rather than restoring a true or undefined initializer. Prefer explicit JavaScript `true`/`false` for updates; an optional Boolean can be reset to `undefined` through its property to recover inheritance/detection. String attributes remain strings; numeric attributes are parsed as numbers, so invalid text can become `NaN`. Setting a property to `undefined` or removing a string/number attribute does not rerun its initializer. Keep values within the documented types.
 
@@ -236,6 +244,10 @@ Boolean attributes use Stencil coercion: presence/empty string is true, the lite
 Pass arrays through the JavaScript property after registration, or a JSON array through the HTML options attribute. Reassign the array after edits; in-place mutation alone does not trigger a property update.
 
 ### Slots
+
+`values: string[]` defaults to `[]` and is a JavaScript array property for multiple
+mode; it is not a JSON HTML attribute. `qValuesChange` emits the complete array on
+user add/removal. See [Multiple selection](#multiple-selection).
 
 | Name | Description |
 | :--- | :--- |
@@ -333,3 +345,41 @@ Defaults below show the local fallback chains; references to shared tokens depen
 | `menu` | Floating listbox; only while open. |
 | `selected-item` | Additional part on visible options matching value. |
 | `trigger` | Native opening button; always present. |
+
+## Multiple selection
+
+Set `multiple` to opt in. Existing `value` and `qChange` remain the single-selection
+contract; multiple mode uses `values: string[]` and `qValuesChange: CustomEvent<string[]>`.
+Replace arrays when setting selections. Duplicate identities are rendered once.
+`qSelect` still reports an added option; removals emit only `qValuesChange`.
+
+```javascript
+const field = document.querySelector('q-dropdown');
+field.multiple = true;
+field.options = [{ label: 'Catalogue', value: 'catalogue' }, { label: 'Checkout', value: 'checkout' }];
+field.values = ['catalogue'];
+field.addEventListener('qValuesChange', event => console.log(event.detail));
+```
+
+The field remains one line at the configured control height. It always includes
+main-input search in multiple mode, regardless of `searchable` or `searchMode`.
+Selected options disappear from the choices and become removable `q-chip` tokens
+inside the field. Tokens that fit are displayed; `+N more` opens a selected-options
+panel with removal actions. Removing a token returns its option to the current
+choices when that option is loaded and matches the search. Long labels that cannot
+fit remain accessible in the selected-options panel. Width changes recalculate the
+visible count while reserving space for typing.
+
+Arrow keys and Enter choose an option; Backspace in an empty search removes the
+last selection; Escape dismisses the open panel. Chip removal and the overflow
+button are keyboard accessible. Disabled controls cannot add or remove selections.
+Required means at least one valid selection. Native forms submit repeated entries
+under `name`; `q-form.getValues()`/`setValues()` use an array even with one selection.
+Form reset restores the initial array. External search preserves selected identities
+and their last known labels when loaded option pages change.
+
+For Angular forms, import `MultipleSelectValueAccessor` with the `QDropdown`
+wrapper and bind `multiple`. Use a string-array form control. This accessor also
+preserves scalar behavior when `[multiple]="false"`; the existing
+`SelectValueAccessor` continues to own dropdowns with no `multiple` binding.
+Direct Angular property/event usage needs only `[values]` and `(qValuesChange)`.

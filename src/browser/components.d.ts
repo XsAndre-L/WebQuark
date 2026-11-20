@@ -14,7 +14,7 @@ import { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant }
 import { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/inputs/form/form.types";
 import { QControlSize, QInputWidth, QSpace, QSurface } from "./theme/tokens";
 import { QCardElevation } from "./components/content/card/card.types";
-import { QCarouselAutoplayChangeDetail, QCarouselLayout, QCarouselSlideChangeDetail, QCarouselSnapAlignment, QCarouselTransition } from "./components/content/carousel/carousel.types";
+import { QCarouselAutoplayBehavior, QCarouselAutoplayChangeDetail, QCarouselLayout, QCarouselPlaybackChangeDetail, QCarouselSlideChangeDetail, QCarouselSlideTiming, QCarouselSnapAlignment, QCarouselTransition } from "./components/content/carousel/carousel.types";
 import { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/data-display/chip/chip.types";
 import { QConversationBubbleVariant } from "./components/communication/conversation-bubble/conversation-bubble.types";
 import { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableRowGutter, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
@@ -53,7 +53,7 @@ export { QButtonLayout, QButtonShape, QButtonSize, QButtonType, QButtonVariant }
 export { QFormAutocomplete, QFormEnctype, QFormEnterBehavior, QFormMethod, QFormResetDetail, QFormSubmitDetail, QFormTarget, QFormValues } from "./components/inputs/form/form.types";
 export { QControlSize, QInputWidth, QSpace, QSurface } from "./theme/tokens";
 export { QCardElevation } from "./components/content/card/card.types";
-export { QCarouselAutoplayChangeDetail, QCarouselLayout, QCarouselSlideChangeDetail, QCarouselSnapAlignment, QCarouselTransition } from "./components/content/carousel/carousel.types";
+export { QCarouselAutoplayBehavior, QCarouselAutoplayChangeDetail, QCarouselLayout, QCarouselPlaybackChangeDetail, QCarouselSlideChangeDetail, QCarouselSlideTiming, QCarouselSnapAlignment, QCarouselTransition } from "./components/content/carousel/carousel.types";
 export { QChipRemoveDetail, QChipSize, QChipTarget, QChipVariant } from "./components/data-display/chip/chip.types";
 export { QConversationBubbleVariant } from "./components/communication/conversation-bubble/conversation-bubble.types";
 export { DataTableItem, DataTableKey, DataTableRowAction, DataTableRowGrouper, DataTableRowGutter, DataTableSortDirection, DataTableSortMode, QDataTableRowActionDetail, QDataTableRowClickDetail, QDataTableSelectionChangeDetail, QDataTableSortChangeDetail, TableColumn } from "./components/data-display/data-table/data-table.types";
@@ -315,10 +315,20 @@ export namespace Components {
          */
         "ariaLabel": string;
         /**
-          * Enables rotation; user interaction pauses until explicitly restarted.
+          * Enables rotation with the configured interaction behavior.
           * @default false
          */
         "autoplay": boolean;
+        /**
+          * Holds advancement for loading without pausing the active media.
+          * @default false
+         */
+        "autoplayAdvanceSuspended": boolean;
+        /**
+          * Continuous rotation ignores hover and interaction; explicit pause remains available.
+          * @default 'pauseOnInteraction'
+         */
+        "autoplayBehavior": QCarouselAutoplayBehavior;
         /**
           * Finite positive interval in milliseconds; invalid values use 5000.
           * @default 5000
@@ -329,6 +339,10 @@ export namespace Components {
           * @default false
          */
         "autoplaySuspended": boolean;
+        /**
+          * Completes the registered visit; stale or duplicate media events are ignored.
+         */
+        "completeSlide": (key: string) => Promise<void>;
         /**
           * `auto` preserves each slotted item's natural width.
           * @default 'auto'
@@ -353,6 +367,15 @@ export namespace Components {
          */
         "repeat": boolean;
         /**
+          * Overlay keeps playback separate from the indicators/extra-controls panel.
+          * @default 'controls'
+         */
+        "rotationPlacement": 'controls' | 'overlay';
+        /**
+          * Registers timing for the current slide and responsive-media visit only.
+         */
+        "setSlidePlayback": (element: HTMLElement, key: string, mode: "interval" | "completion") => Promise<void>;
+        /**
           * Omitted controls are enabled for navigable slideshows and disabled for strips.
          */
         "showArrows"?: boolean;
@@ -360,6 +383,11 @@ export namespace Components {
           * Shows clickable slide indicator dots when the carousel can scroll.
          */
         "showIndicators"?: boolean;
+        /**
+          * Finish-videos delegates each active visit's timing to setSlidePlayback().
+          * @default 'fixedInterval'
+         */
+        "slideTiming": QCarouselSlideTiming;
         /**
           * Scrolls the carousel to a zero-based slide index.
          */
@@ -436,6 +464,24 @@ export namespace Components {
           * @default 'neutral'
          */
         "variant": QChipVariant;
+    }
+    /**
+     * Visually joined controls with consumer-owned values and interactions.
+     */
+    interface QControlGroup {
+        /**
+          * Name of the group; each child still needs its own accessible name.
+          * @default null
+         */
+        "ariaLabel": string | null;
+        /**
+          * @default 'horizontal'
+         */
+        "orientation": 'horizontal' | 'vertical';
+        /**
+          * @default 'inherit'
+         */
+        "size": QControlSize;
     }
     /**
      * Semantic conversation message with optional identity, metadata, and actions.
@@ -748,6 +794,11 @@ export namespace Components {
           * @default false
          */
         "loading": boolean;
+        /**
+          * Select several options. Uses values/qValuesChange instead of value/qChange.
+          * @default false
+         */
+        "multiple": boolean;
         "name"?: string;
         /**
           * Options to render; strings use the same text for label and value, while objects allow separate values.
@@ -790,9 +841,14 @@ export namespace Components {
          */
         "value": string;
         /**
-          * Opt-in horizontal width; independent of size. Omitted uses the existing full-width layout.
+          * Selected identities in multiple mode. Replace the array to update selections.
+          * @default []
          */
-        "width"?: QInputWidth;
+        "values": string[];
+        /**
+          * Opt-in horizontal width; fit-options sizes to loaded option labels. Omitted keeps the full-width layout.
+         */
+        "width"?: QInputWidth | 'fit-options';
     }
     /**
      * Form wrapper that bridges slotted WebQuark controls to a native form element.
@@ -2481,6 +2537,7 @@ declare global {
     interface HTMLQCarouselElementEventMap {
         "qSlideChange": QCarouselSlideChangeDetail;
         "qAutoplayChange": QCarouselAutoplayChangeDetail;
+        "qPlaybackChange": QCarouselPlaybackChangeDetail;
     }
     /**
      * A carousel with sliding, crossfade or instant transitions and shared navigation.
@@ -2521,6 +2578,15 @@ declare global {
     var HTMLQChipElement: {
         prototype: HTMLQChipElement;
         new (): HTMLQChipElement;
+    };
+    /**
+     * Visually joined controls with consumer-owned values and interactions.
+     */
+    interface HTMLQControlGroupElement extends Components.QControlGroup, HTMLStencilElement {
+    }
+    var HTMLQControlGroupElement: {
+        prototype: HTMLQControlGroupElement;
+        new (): HTMLQControlGroupElement;
     };
     /**
      * Semantic conversation message with optional identity, metadata, and actions.
@@ -2605,6 +2671,7 @@ declare global {
     };
     interface HTMLQDropdownElementEventMap {
         "qChange": string;
+        "qValuesChange": string[];
         "qSelect": Option;
         "qSearch": string;
         "qLoadMore": void;
@@ -3192,6 +3259,7 @@ declare global {
         "q-card": HTMLQCardElement;
         "q-carousel": HTMLQCarouselElement;
         "q-chip": HTMLQChipElement;
+        "q-control-group": HTMLQControlGroupElement;
         "q-conversation-bubble": HTMLQConversationBubbleElement;
         "q-data-table": HTMLQDataTableElement;
         "q-dialog": HTMLQDialogElement;
@@ -3474,10 +3542,20 @@ declare namespace LocalJSX {
          */
         "ariaLabel"?: string;
         /**
-          * Enables rotation; user interaction pauses until explicitly restarted.
+          * Enables rotation with the configured interaction behavior.
           * @default false
          */
         "autoplay"?: boolean;
+        /**
+          * Holds advancement for loading without pausing the active media.
+          * @default false
+         */
+        "autoplayAdvanceSuspended"?: boolean;
+        /**
+          * Continuous rotation ignores hover and interaction; explicit pause remains available.
+          * @default 'pauseOnInteraction'
+         */
+        "autoplayBehavior"?: QCarouselAutoplayBehavior;
         /**
           * Finite positive interval in milliseconds; invalid values use 5000.
           * @default 5000
@@ -3502,12 +3580,21 @@ declare namespace LocalJSX {
           * Actual running state, including temporary suspension.
          */
         "onQAutoplayChange"?: (event: QCarouselCustomEvent<QCarouselAutoplayChangeDetail>) => void;
+        /**
+          * Playback intent and eligibility, independent of an image-readiness advance hold.
+         */
+        "onQPlaybackChange"?: (event: QCarouselCustomEvent<QCarouselPlaybackChangeDetail>) => void;
         "onQSlideChange"?: (event: QCarouselCustomEvent<QCarouselSlideChangeDetail>) => void;
         /**
           * Wraps arrow and programmatic navigation at either end.
           * @default false
          */
         "repeat"?: boolean;
+        /**
+          * Overlay keeps playback separate from the indicators/extra-controls panel.
+          * @default 'controls'
+         */
+        "rotationPlacement"?: 'controls' | 'overlay';
         /**
           * Omitted controls are enabled for navigable slideshows and disabled for strips.
          */
@@ -3516,6 +3603,11 @@ declare namespace LocalJSX {
           * Shows clickable slide indicator dots when the carousel can scroll.
          */
         "showIndicators"?: boolean;
+        /**
+          * Finish-videos delegates each active visit's timing to setSlidePlayback().
+          * @default 'fixedInterval'
+         */
+        "slideTiming"?: QCarouselSlideTiming;
         /**
           * @default 'start'
          */
@@ -3594,6 +3686,24 @@ declare namespace LocalJSX {
           * @default 'neutral'
          */
         "variant"?: QChipVariant;
+    }
+    /**
+     * Visually joined controls with consumer-owned values and interactions.
+     */
+    interface QControlGroup {
+        /**
+          * Name of the group; each child still needs its own accessible name.
+          * @default null
+         */
+        "ariaLabel"?: string | null;
+        /**
+          * @default 'horizontal'
+         */
+        "orientation"?: 'horizontal' | 'vertical';
+        /**
+          * @default 'inherit'
+         */
+        "size"?: QControlSize;
     }
     /**
      * Semantic conversation message with optional identity, metadata, and actions.
@@ -3909,6 +4019,11 @@ declare namespace LocalJSX {
           * @default false
          */
         "loading"?: boolean;
+        /**
+          * Select several options. Uses values/qValuesChange instead of value/qChange.
+          * @default false
+         */
+        "multiple"?: boolean;
         "name"?: string;
         "onQBlur"?: (event: QDropdownCustomEvent<FocusEvent>) => void;
         /**
@@ -3932,6 +4047,10 @@ declare namespace LocalJSX {
           * Emitted with the selected option object when selection changes.
          */
         "onQSelect"?: (event: QDropdownCustomEvent<Option>) => void;
+        /**
+          * Complete selected identities after an add or removal in multiple mode.
+         */
+        "onQValuesChange"?: (event: QDropdownCustomEvent<string[]>) => void;
         /**
           * Options to render; strings use the same text for label and value, while objects allow separate values.
           * @default []
@@ -3972,9 +4091,14 @@ declare namespace LocalJSX {
          */
         "value"?: string;
         /**
-          * Opt-in horizontal width; independent of size. Omitted uses the existing full-width layout.
+          * Selected identities in multiple mode. Replace the array to update selections.
+          * @default []
          */
-        "width"?: QInputWidth;
+        "values"?: string[];
+        /**
+          * Opt-in horizontal width; fit-options sizes to loaded option labels. Omitted keeps the full-width layout.
+         */
+        "width"?: QInputWidth | 'fit-options';
     }
     /**
      * Form wrapper that bridges slotted WebQuark controls to a native form element.
@@ -5565,8 +5689,12 @@ declare namespace LocalJSX {
         "transition": QCarouselTransition;
         "transitionDuration": number;
         "autoplay": boolean;
+        "autoplayBehavior": QCarouselAutoplayBehavior;
         "autoplayInterval": number;
         "autoplaySuspended": boolean;
+        "slideTiming": QCarouselSlideTiming;
+        "autoplayAdvanceSuspended": boolean;
+        "rotationPlacement": 'controls' | 'overlay';
         "ariaLabel": string;
     }
     interface QChipAttributes {
@@ -5582,6 +5710,11 @@ declare namespace LocalJSX {
         "removable": boolean;
         "selected": boolean;
         "target": QChipTarget;
+    }
+    interface QControlGroupAttributes {
+        "size": QControlSize;
+        "orientation": 'horizontal' | 'vertical';
+        "ariaLabel": string | null;
     }
     interface QConversationBubbleAttributes {
         "sender": string;
@@ -5645,10 +5778,11 @@ declare namespace LocalJSX {
         "placeholder": string;
         "options": DropdownOptionInput[] | string;
         "value": string;
+        "multiple": boolean;
         "labelHidden": boolean;
         "reserveFeedback": boolean;
         "size": QDropdownSize;
-        "width": QInputWidth;
+        "width": QInputWidth | 'fit-options';
         "searchable": boolean;
         "searchMode": 'default' | 'menu';
         "externalSearch": boolean;
@@ -6016,6 +6150,7 @@ declare namespace LocalJSX {
         "q-card": Omit<QCard, keyof QCardAttributes> & { [K in keyof QCard & keyof QCardAttributes]?: QCard[K] } & { [K in keyof QCard & keyof QCardAttributes as `attr:${K}`]?: QCardAttributes[K] } & { [K in keyof QCard & keyof QCardAttributes as `prop:${K}`]?: QCard[K] };
         "q-carousel": Omit<QCarousel, keyof QCarouselAttributes> & { [K in keyof QCarousel & keyof QCarouselAttributes]?: QCarousel[K] } & { [K in keyof QCarousel & keyof QCarouselAttributes as `attr:${K}`]?: QCarouselAttributes[K] } & { [K in keyof QCarousel & keyof QCarouselAttributes as `prop:${K}`]?: QCarousel[K] };
         "q-chip": Omit<QChip, keyof QChipAttributes> & { [K in keyof QChip & keyof QChipAttributes]?: QChip[K] } & { [K in keyof QChip & keyof QChipAttributes as `attr:${K}`]?: QChipAttributes[K] } & { [K in keyof QChip & keyof QChipAttributes as `prop:${K}`]?: QChip[K] };
+        "q-control-group": Omit<QControlGroup, keyof QControlGroupAttributes> & { [K in keyof QControlGroup & keyof QControlGroupAttributes]?: QControlGroup[K] } & { [K in keyof QControlGroup & keyof QControlGroupAttributes as `attr:${K}`]?: QControlGroupAttributes[K] } & { [K in keyof QControlGroup & keyof QControlGroupAttributes as `prop:${K}`]?: QControlGroup[K] };
         "q-conversation-bubble": Omit<QConversationBubble, keyof QConversationBubbleAttributes> & { [K in keyof QConversationBubble & keyof QConversationBubbleAttributes]?: QConversationBubble[K] } & { [K in keyof QConversationBubble & keyof QConversationBubbleAttributes as `attr:${K}`]?: QConversationBubbleAttributes[K] } & { [K in keyof QConversationBubble & keyof QConversationBubbleAttributes as `prop:${K}`]?: QConversationBubble[K] };
         "q-data-table": Omit<QDataTable, keyof QDataTableAttributes> & { [K in keyof QDataTable & keyof QDataTableAttributes]?: QDataTable[K] } & { [K in keyof QDataTable & keyof QDataTableAttributes as `attr:${K}`]?: QDataTableAttributes[K] } & { [K in keyof QDataTable & keyof QDataTableAttributes as `prop:${K}`]?: QDataTable[K] };
         "q-dialog": Omit<QDialog, keyof QDialogAttributes> & { [K in keyof QDialog & keyof QDialogAttributes]?: QDialog[K] } & { [K in keyof QDialog & keyof QDialogAttributes as `attr:${K}`]?: QDialogAttributes[K] } & { [K in keyof QDialog & keyof QDialogAttributes as `prop:${K}`]?: QDialog[K] };
@@ -6090,6 +6225,10 @@ declare module "@stencil/core" {
              * Compact label, link, filter, or removable token.
              */
             "q-chip": LocalJSX.IntrinsicElements["q-chip"] & JSXBase.HTMLAttributes<HTMLQChipElement>;
+            /**
+             * Visually joined controls with consumer-owned values and interactions.
+             */
+            "q-control-group": LocalJSX.IntrinsicElements["q-control-group"] & JSXBase.HTMLAttributes<HTMLQControlGroupElement>;
             /**
              * Semantic conversation message with optional identity, metadata, and actions.
              */

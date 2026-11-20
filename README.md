@@ -1,165 +1,71 @@
-# ⚡ WebQuark
+# WebQuark
 
-WebQuark has a private workspace root and five packages released in lockstep. Install `@webquark/core` for the browser and changelog tooling together, then use the explicit `@webquark/core/browser` and `@webquark/core/tooling/changelog` entries. The umbrella owns the `wq-switch`, `wq-setup`, `wq-sandbox`, and forwarding `wq-changelog` binaries. Angular and React integrations are optional.
+WebQuark is a Stencil library of web components for browsers and embedded Chromium views. Use the same custom elements for forms, navigation, maps, and data tables in plain HTML, or use the Angular and React integrations.
 
-The browser-only instructions below use a direct `@webquark/browser` dependency. Tooling-only consumers can install `@webquark/tooling`. An isolated installation should either use umbrella forwarding entries or declare the directly imported package as a dependency. Former `@webquark/core` browser imports must migrate.
+## Quick start
 
-## 🎯 Purpose
-A premium, glassmorphic Web Component library compiled with **StencilJS**. Designed for high performance, standard compliance, and compatibility with **Unreal Engine Webviews** (Chromium Embedded Framework in Off-Screen Rendering mode).
+### 1. Install library
 
----
+Install the browser package in an application that bundles JavaScript and CSS imports. The `dev` tag selects the prerelease documented on this branch.
 
-## 🚀 Quick Start (Using Components)
-
-**Design presets:** use `data-wq-preset="comfortable"` for website typography, spacing and controls. Omit it for existing compact defaults. See [the preset guide](docs/design-presets.md) and [complete values](docs/design-presets-tokens.md).
-
-### 1. Install Library
-```bash
-bun add @webquark/browser
+```sh
+npm install @webquark/browser@dev
 ```
 
-### 2. Import Styles & Bootloader
-Add this to your application's entry file:
-```javascript
-// Import core CSS variables & design tokens
-import '@webquark/browser/webquark.css';
+### 2. Register the components
 
-// Register custom web components
+In your application's browser entry point, load the shared stylesheet and register the custom elements once.
+
+```js
+import '@webquark/browser/webquark.css';
 import { defineCustomElements } from '@webquark/browser/loader';
+
 defineCustomElements();
 ```
 
-### 3. Use in HTML
+### 3. Add a card
+
+Put this markup in your page. The named `header` slot places the heading above the body. The comfortable preset gives the card roomier spacing.
+
 ```html
-<q-card elevation="medium">
-  <div slot="header">Hello WebQuark</div>
-  <q-button variant="primary">Click Me</q-button>
-</q-card>
+<main data-wq-preset="comfortable">
+  <q-card>
+    <h2 slot="header">Opening hours</h2>
+    <p>Monday to Friday, 09:00–17:00.</p>
+  </q-card>
+</main>
 ```
 
----
+## Packages
 
-## 🗺️ Project Workspace Map
+Use matching WebQuark versions when installing multiple packages.
 
-```
-webquark/ (Root)
- ├── .stencil/              ◄── Compiler cache (.build) and repository output (dist/playground)
- ├── packages/              ◄── Published manifests and package-owned dist artifacts
- │    ├── core/             ◄── Installation umbrella, forwarding entries and CLI binaries
- │    ├── browser/
- │    │    ├── components/  ◄── @webquark/browser
- │    │    ├── angular/     ◄── @webquark/angular (handwritten and generated src)
- │    │    └── react/       ◄── @webquark/react (handwritten and generated src)
- │    └── tooling/          ◄── @webquark/tooling (changelog, switcher and sandbox)
- ├── examples/              ◄── Standalone applications, including changelog-adoption
- ├── docs/                  ◄── Design guides & API specs
- │    ├── components/       ◄── Component-specific specifications (e.g. q-card.md)
- │    ├── components.md     ◄── Roadmap implementation status dashboard
- │    ├── theme_variables.md◄── CSS custom properties reference
- │    └── unreal_compatibility.md ◄─ CEF Off-Screen Rendering layout guidelines
- ├── src/                   ◄── Source files
- │    ├── browser/          ◄── Shared browser source
- │    │    ├── components/  ◄── Custom Web Components
- │    │    │    └── [category]/[name]/
- │    │    │         ├── [name].tsx ◄── Component logic & render template (TSX)
- │    │    │         ├── [name].css ◄── Local stylesheet
- │    │    │         └── readme.md    ◄── Auto-generated API details (props, slots, events)
- │    │    ├── theme/       ◄── Tokens and shared styles
- │    │    ├── assets/      ◄── Browser assets
- │    │    └── utils/       ◄── Browser utilities
- │    ├── playground/      ◄── Shared demonstrations and documentation
- │    └── tooling/          ◄── Developer tooling
- │         ├── changelog/   ◄── Notes, versioning and capture mechanisms
- │         ├── wq-switch/   ◄── Local package switching and setup
- │         └── sandbox/     ◄── Playground HTTP server
- └── readme.md              ◄── This file
-```
+| Package | Use it for |
+| --- | --- |
+| [@webquark/browser](packages/browser/components/README.md) | Custom elements, styles, and browser utilities |
+| [@webquark/angular](packages/browser/angular/README.md) | Angular components and form value accessors |
+| [@webquark/react](packages/browser/react/README.md) | React wrappers for the browser components |
+| [@webquark/tooling](packages/tooling/README.md) | Changelog tools and local package switching |
+| [@webquark/core](packages/core/README.md) | Browser components and tooling together, including the `wq-sandbox` command |
 
----
+## Guides
 
-## 📚 Documentation
+- Browse the [component guides](docs/components/README.md) for examples, properties, slots, and events.
+- Adjust spacing and typography with [design presets](docs/design-presets.md), or customize colors and surfaces with [theme variables](docs/theme_variables.md).
+- For Unreal Engine webviews, see the [CEF off-screen rendering guidelines](docs/unreal_compatibility.md).
+- To test local WebQuark changes in a consuming app, follow the [package switching guide](src/tooling/wq-switch/README.md).
 
-* [Component index and documentation standard](docs/components/README.md)
-* [Current public contracts](docs/components/current-contracts.md)
-* [Component implementation status](docs/components.md)
-* [Theme setup](docs/theme_variables.md), [generated tokens](docs/theme-tokens.md), and [component composition](docs/foundation.md)
-* [Unreal Engine / CEF compatibility](docs/unreal_compatibility.md)
-* [Full UX, DX, accessibility, and optimization audit (2026-07-11)](docs/component-audit-2026-07-11.md)
+## Run the playground
 
-Generated API references live beside each component implementation under `src/browser/components/**/readme.md` and are refreshed by `bun run build`.
+From a checkout of this repository, install dependencies and start the playground with Bun.
 
----
-
-## Local package switching
-
-Run `bun run wq-setup` in a consuming project to generate `.webquark/.webquark.json` and
-the `wq-sandbox`/`wq-switch`/`wq-check` package scripts. Fill in `source` inside the `"wq-switch"` section:
-
-```json
-{
-  "wq-switch": {
-    "version": 1,
-    "source": "D:\\Dev\\PurelyIT\\WebQuark",
-    "preferredVersion": "1.1.0-dev.7"
-  }
-}
-```
-
-`preferredVersion` records your installed release preference; setup preserves an
-existing value. It does not select or download a release.
-
-Then run `bun run wq-switch local`. The switcher builds the workspace packages and
-activates the project's selected packages with their local dependency closure. Run `bun run wq-switch npm` to
-restore the original installed packages. See [the switcher guide](src/tooling/wq-switch/README.md).
-
-For CLI development, use the [rebuilt checkout commands](src/tooling/wq-switch/README.md#developing-the-cli)
-to exercise the current tooling directly.
-
-## 🧪 WebQuark Component Sandbox
-
-WebQuark includes a built-in interactive sandbox playground where you can preview components, inspect their layout behaviors, and test theme design variables in real-time.
-
-From a project with `@webquark/core` installed, launch the packaged sandbox:
-
-```bash
-bun run wq-sandbox
-```
-
-Open [http://localhost:3333](http://localhost:3333). This shows the installed package's sandbox.
-
-To develop the sandbox in the WebQuark repository:
-1. Navigate to the WebQuark root directory.
-2. Start the playground server:
-   ```bash
-   bun start
-   ```
-3. Open your web browser and navigate to: [http://localhost:3333](http://localhost:3333)
-
-Inside the sandbox:
-* **Interactive Previews:** Adjust component attributes, slots, and events on the fly.
-* **Theme Designer:** Tweak global CSS design tokens (colors, border-radius, font sizes) and see the visual changes reflect instantly.
-* **Event Log:** Inspect custom event payloads dispatched by components as you interact with them.
-
----
-
-## 🛠️ Development Commands
-
-Before running commands, install package dependencies:
-```bash
+```sh
 bun install
+bun start
 ```
 
-| Command | Action | Description |
-| :--- | :--- | :--- |
-| **`bun start`** | **Run Playground** | Starts a local hot-reloading component sandbox at `http://localhost:3333`. |
-| **`bun run build`** | **Build Library** | Runs Stencil compiler to output production bundles inside `dist/`. |
-| **`bun run test`** | **Build and Test** | Builds all five packages, then runs every Vitest project, including browser tests on IPv4 loopback. |
-| **`bun run test:watch`**| **Watch Tests** | Runs tests in interactive watcher mode. |
+Open the [local playground](http://localhost:3333) to try the components and inspect their events.
 
----
+## License
 
-## ⚠️ Key Design Principles
-
-* **Self-Contained Rendering**: All components encapsulate their layout inside Shadow DOM.
-* **Tactile Micro-interactions**: Buttons and selectors utilize tactile CSS transformations (e.g. `scale(0.97)` on active press) for premium layout feedback.
-* **CEF Safety First**: Ensure any new styling variables comply with [Unreal Compatibility Guidelines](docs/unreal_compatibility.md) (e.g., no backdrop-filters, no dropdown overlay windows).
+[MIT](LICENSE)
