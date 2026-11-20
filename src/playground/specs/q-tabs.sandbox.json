@@ -1,0 +1,164 @@
+{
+  "tag": "q-tabs",
+  "name": "Tabs",
+  "description": "Controlled selection with a consumer-rendered tab panel. Use arrow keys, Home or End in the tab list.",
+  "props": {
+    "items": {
+      "type": "array",
+      "desc": "Array of labels or tab objects",
+      "default": [
+        {
+          "label": "Overview",
+          "value": "overview"
+        },
+        {
+          "label": "Activity",
+          "value": "activity",
+          "icon": "history"
+        },
+        {
+          "label": "Settings",
+          "value": "settings",
+          "icon": "settings",
+          "iconOnly": true
+        },
+        {
+          "label": "Archive",
+          "value": "archive",
+          "disabled": true
+        }
+      ]
+    },
+    "value": {
+      "type": "string",
+      "desc": "Active tab value",
+      "default": "overview"
+    },
+    "orientation": {
+      "type": "select",
+      "desc": "Tab list orientation",
+      "default": "horizontal",
+      "options": [
+        "horizontal",
+        "vertical"
+      ]
+    },
+    "size": {
+      "type": "select",
+      "desc": "Tab size",
+      "default": "md",
+      "options": [
+        "sm",
+        "md",
+        "lg"
+      ]
+    },
+    "variant": {
+      "type": "select",
+      "desc": "Tab appearance",
+      "default": "underline",
+      "options": [
+        "underline",
+        "enclosed",
+        "pills",
+        "button"
+      ]
+    },
+    "stretch": {
+      "type": "boolean",
+      "desc": "Distribute tabs across the row",
+      "default": false
+    },
+    "ariaLabel": {
+      "type": "string",
+      "desc": "Tab list accessible name",
+      "default": "Sections"
+    }
+  },
+  "slots": {},
+  "variants": [
+    {
+      "name": "Vertical enclosed",
+      "props": {
+        "orientation": "vertical",
+        "variant": "enclosed",
+        "items": [
+          {
+            "label": "Overview",
+            "value": "overview"
+          },
+          {
+            "label": "Activity",
+            "value": "activity",
+            "icon": "history"
+          },
+          {
+            "label": "Settings",
+            "value": "settings",
+            "icon": "settings",
+            "iconOnly": true
+          },
+          {
+            "label": "Archive",
+            "value": "archive",
+            "disabled": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "Stretched pills",
+      "props": {
+        "variant": "pills",
+        "stretch": true,
+        "items": [
+          {
+            "label": "Overview",
+            "value": "overview"
+          },
+          {
+            "label": "Activity",
+            "value": "activity",
+            "icon": "history"
+          },
+          {
+            "label": "Settings",
+            "value": "settings",
+            "icon": "settings",
+            "iconOnly": true
+          },
+          {
+            "label": "Archive",
+            "value": "archive",
+            "disabled": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "Button style and string labels",
+      "props": {
+        "variant": "button",
+        "items": [
+          "News",
+          "Reviews"
+        ],
+        "value": "News"
+      }
+    }
+  ],
+  "edgeCases": [
+    {
+      "name": "No enabled choices",
+      "props": {
+        "items": [
+          {
+            "label": "Archive",
+            "value": "archive",
+            "disabled": true
+          }
+        ]
+      }
+    }
+  ]
+}

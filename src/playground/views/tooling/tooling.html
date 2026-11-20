@@ -4,12 +4,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Changelog tooling · WebQuark</title>
+    <script type="module" src="../../build/webquark.esm.js"></script>
+    <link rel="stylesheet" href="../../build/webquark.css">
     <style>
       :root { color-scheme: light dark; font: 16px/1.6 system-ui, sans-serif; }
       body { margin: 0; background: light-dark(#f5f7fb, #10151f); color: light-dark(#182337, #e7edf7); }
       main { max-width: 880px; margin: auto; padding: 40px 24px 64px; }
-      a { color: light-dark(#2754bd, #a0bdff); }
-      a:focus-visible { outline: 3px solid currentColor; outline-offset: 4px; }
       h1 { font-size: clamp(2rem, 6vw, 3rem); line-height: 1.15; margin: 28px 0 16px; }
       h2 { margin-top: 36px; font-size: 1.35rem; }
       .intro { font-size: 1.15rem; max-width: 70ch; }
@@ -22,7 +22,7 @@
   </head>
   <body>
     <main>
-      <a href="../../index.html">← Component playground</a>
+      <q-link href="../../index.html" underline="always">← Component playground</q-link>
       <p class="eyebrow">Developer tooling</p>
       <h1>Release notes from your project</h1>
       <p class="intro">Generate a content-hashed release feed, keep application versions aligned, and stage reviewed images. Your application owns its routes, authentication, fictional demo data and viewer.</p>
@@ -45,8 +45,8 @@ import { checkVersions as umbrellaCheckVersions } from '@webquark/core/tooling/c
 
       <h2>Start with text notes</h2>
       <p>Use init for automatic setup, or the installed tooling README's manual reference for custom paths and viewers. Every included dated release needs its matching folder, even when text only. Text and manual images need no metadata adapter.</p>
-      <p>The <a href="https://github.com/Purely-IT/WebQuark/tree/main/examples/changelog-adoption">runnable browser example</a> lives in <code>examples/changelog-adoption/</code> and has a real generator, local server, source notes and a fictional manual SVG image. Run its <code>generate.ts</code> and <code>serve.ts</code> using Bun 1.4.2 or later, then open <code>http://127.0.0.1:4173/</code>. Generated artifacts stay under ignored <code>dist/</code>.</p>
-      <p>The <a href="sample-notes.md">fictional sample notes</a> and <a href="sample-feed.json">sample feed JSON</a> are static format references. The feed keeps <code>{ releases }</code>, Added/Changed/Fixed/Removed summaries and a visuals array. Generation hashes the JSON and image bytes and writes <code>feed-url.ts</code>; the runnable example connects the returned <code>feedUrl</code> to browser code.</p>
+      <p>The <q-link underline="always" href="https://github.com/Purely-IT/WebQuark/tree/main/examples/changelog-adoption">runnable browser example</q-link> lives in <code>examples/changelog-adoption/</code> and has a real generator, local server, source notes and a fictional manual SVG image. Run its <code>generate.ts</code> and <code>serve.ts</code> using Bun 1.4.2 or later, then open <code>http://127.0.0.1:4173/</code>. Generated artifacts stay under ignored <code>dist/</code>.</p>
+      <p>The <q-link underline="always" href="sample-notes.md">fictional sample notes</q-link> and <q-link underline="always" href="sample-feed.json">sample feed JSON</q-link> are static format references. The feed keeps <code>{ releases }</code>, Added/Changed/Fixed/Removed summaries and a visuals array. Generation hashes the JSON and image bytes and writes <code>feed-url.ts</code>; the runnable example connects the returned <code>feedUrl</code> to browser code.</p>
       <pre><code>wq-changelog version check --config ./changelog.config.ts
 wq-changelog notes --config ./changelog.config.ts --include-unreleased</code></pre>
       <p>The application serves the whole generated folder. The viewer fetches the feed, resolves image URLs relative to its URL, and safely renders notes as plain text with <code>textContent</code>. Browser code imports no runtime tooling. Optional <code>ReleaseFeed</code> TypeScript imports are type only. Version-only checks require no feed or capture setup. Production settings exclude Unreleased.</p>

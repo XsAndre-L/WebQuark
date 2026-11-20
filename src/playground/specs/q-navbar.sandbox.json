@@ -1,40 +1,389 @@
-﻿{
+{
   "name": "Navbar",
   "tag": "q-navbar",
   "props": {
-    "brand": { "type": "string", "default": "WebQuark", "desc": "Brand text" },
-    "brandHref": { "type": "string", "default": "/", "desc": "Brand link target" },
-    "value": { "type": "string", "default": "docs", "desc": "Active item value or href" },
-    "ariaLabel": { "type": "string", "default": "", "desc": "Accessible name for both responsive navigation regions" },
-    "edge": { "type": "select", "default": "top", "options": ["top", "right", "bottom", "left"], "desc": "Edge and orientation" },
-    "navAlign": { "type": "select", "default": "start", "options": ["start", "center", "end"], "desc": "Horizontal desktop navigation alignment" },
-    "navCenterWithin": { "type": "select", "default": "available", "options": ["available", "container"], "desc": "Centre between the sides or within the padded navbar" },
-    "mobileMode": { "type": "select", "default": "menu", "options": ["menu", "inline"], "desc": "Mobile item behavior" },
-    "sticky": { "type": "boolean", "default": false, "desc": "Pins the navbar to its edge" },
-    "compact": { "type": "boolean", "default": false, "desc": "Reduces navbar height" },
-    "transparent": { "type": "boolean", "default": false, "desc": "Removes the default background" },
-    "bordered": { "type": "boolean", "default": true, "desc": "Shows an inward-facing border" },
-    "items": { "type": "json", "default": "[{\"label\":\"Docs\",\"value\":\"docs\",\"href\":\"/docs\",\"icon\":\"book-open\"},{\"label\":\"Components\",\"value\":\"components\",\"href\":\"/components\",\"icon\":\"blocks\"},{\"label\":\"Blog\",\"value\":\"blog\",\"href\":\"/blog\",\"icon\":\"newspaper\"}]", "desc": "String labels or advanced navigation item objects, including add-on slots and placement" }
+    "brand": {
+      "type": "string",
+      "default": "WebQuark",
+      "desc": "Brand text"
+    },
+    "brandHref": {
+      "type": "string",
+      "default": "#home",
+      "desc": "Brand link target"
+    },
+    "value": {
+      "type": "string",
+      "default": "docs",
+      "desc": "Active item value or href"
+    },
+    "ariaLabel": {
+      "type": "string",
+      "default": "",
+      "desc": "Accessible name for both responsive navigation regions"
+    },
+    "edge": {
+      "type": "select",
+      "default": "top",
+      "options": [
+        "top",
+        "right",
+        "bottom",
+        "left"
+      ],
+      "desc": "Edge and orientation"
+    },
+    "navAlign": {
+      "type": "select",
+      "default": "start",
+      "options": [
+        "start",
+        "center",
+        "end"
+      ],
+      "desc": "Horizontal desktop navigation alignment"
+    },
+    "navCenterWithin": {
+      "type": "select",
+      "default": "available",
+      "options": [
+        "available",
+        "container"
+      ],
+      "desc": "Centre between the sides or within the padded navbar"
+    },
+    "mobileMode": {
+      "type": "select",
+      "default": "menu",
+      "options": [
+        "menu",
+        "inline"
+      ],
+      "desc": "Mobile item behavior"
+    },
+    "sticky": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Pins the navbar to its edge"
+    },
+    "compact": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Reduces navbar height"
+    },
+    "transparent": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Removes the default background"
+    },
+    "bordered": {
+      "type": "boolean",
+      "default": true,
+      "desc": "Shows an inward-facing border"
+    },
+    "items": {
+      "type": "array",
+      "default": [
+        {
+          "label": "Docs",
+          "value": "docs",
+          "href": "#docs",
+          "icon": "book-open"
+        },
+        {
+          "label": "Components",
+          "value": "components",
+          "href": "#components",
+          "icon": "blocks"
+        },
+        {
+          "label": "Blog",
+          "value": "blog",
+          "href": "#blog",
+          "icon": "newspaper"
+        }
+      ],
+      "desc": "String labels or advanced navigation item objects, including add-on slots and placement"
+    },
+    "logoSrc": {
+      "type": "string",
+      "desc": "Brand logo URL"
+    },
+    "logoAlt": {
+      "type": "string",
+      "desc": "Brand image alternative text",
+      "default": ""
+    },
+    "mobileLabel": {
+      "type": "string",
+      "desc": "Mobile menu button label",
+      "default": "Menu"
+    },
+    "activeValue": {
+      "type": "string",
+      "desc": "Deprecated fallback. Use value; omit the replacement to try this alias."
+    }
   },
   "slots": {
-    "actions": { "type": "html", "default": "<q-button size=\"sm\" variant=\"primary\">Sign in</q-button>", "desc": "Desktop action slot" },
-    "mobile-actions": { "type": "html", "default": "<q-button size=\"sm\" variant=\"primary\" expand>Sign in</q-button>", "desc": "Mobile action slot" },
-    "messages-addon": { "type": "html", "default": "<span style=\"display:inline-flex;min-width:18px;height:18px;padding:0 4px;align-items:center;justify-content:center;border-radius:999px;background:#ef4444;color:white;font-size:11px;font-weight:700\">3</span>", "desc": "Example per-item add-on slot" }
+    "actions": {
+      "type": "html",
+      "default": "<q-button size=\"sm\" variant=\"primary\">Sign in</q-button>",
+      "desc": "Desktop action slot"
+    },
+    "mobile-actions": {
+      "type": "html",
+      "default": "<q-button size=\"sm\" variant=\"primary\" expand>Sign in</q-button>",
+      "desc": "Mobile action slot"
+    },
+    "messages-addon": {
+      "type": "html",
+      "default": "<span style=\"display:inline-flex;min-width:18px;height:18px;padding:0 4px;align-items:center;justify-content:center;border-radius:999px;background:#ef4444;color:white;font-size:11px;font-weight:700\">3</span>",
+      "desc": "Example per-item add-on slot"
+    },
+    "brand": {
+      "type": "html",
+      "desc": "Custom brand content",
+      "default": ""
+    },
+    "nav": {
+      "type": "html",
+      "desc": "Custom desktop navigation",
+      "default": ""
+    },
+    "mobile-nav": {
+      "type": "html",
+      "desc": "Custom mobile navigation",
+      "default": ""
+    }
   },
   "variants": [
-    { "name": "Available-space centre / unequal sides", "props": { "brand": "A longer product name", "navAlign": "center", "navCenterWithin": "available", "items": "[\"Home\",\"Docs\"]" }, "slots": { "actions": "<button>Go</button>" } },
-    { "name": "Container centre / unequal sides", "props": { "brand": "A longer product name", "navAlign": "center", "navCenterWithin": "container", "items": "[\"Home\",\"Docs\"]" }, "slots": { "actions": "<button>Go</button>" } },
-    { "name": "Optical offset +12px", "props": { "navAlign": "center", "navCenterWithin": "container", "style": "--q-navbar-nav-offset-inline:12px", "items": "[\"Home\",\"Docs\"]" }, "slots": {} },
-    { "name": "RTL optical offset +12px (left)", "props": { "dir": "rtl", "navAlign": "center", "navCenterWithin": "container", "style": "--q-navbar-nav-offset-inline:12px", "items": "[\"Home\",\"Docs\"]" }, "slots": {} },
-    { "name": "Default Navbar", "props": { "brand": "WebQuark" } },
-    { "name": "Compact Sticky", "props": { "brand": "Docs", "compact": true, "sticky": true } },
-    { "name": "Transparent", "props": { "brand": "Landing", "transparent": true, "bordered": false } },
-    { "name": "Bottom Navigation", "props": { "brand": "", "edge": "bottom", "value": "home", "mobileMode": "inline", "items": "[{\"label\":\"Home\",\"value\":\"home\",\"icon\":\"house\",\"iconOnly\":true},{\"label\":\"Messages\",\"value\":\"messages\",\"icon\":\"message-circle\",\"iconOnly\":true,\"addonSlot\":\"messages-addon\",\"addonPlacement\":\"top-end\"},{\"label\":\"Tasks\",\"value\":\"tasks\",\"icon\":\"clipboard-list\",\"iconOnly\":true}]" } },
-    { "name": "Icon Only", "props": { "brand": "Mobile", "value": "home", "mobileMode": "inline", "items": "[{\"label\":\"Home\",\"value\":\"home\",\"icon\":\"house\",\"iconOnly\":true},{\"label\":\"Messages\",\"value\":\"messages\",\"icon\":\"message-circle\",\"iconOnly\":true},{\"label\":\"Tasks\",\"value\":\"tasks\",\"icon\":\"clipboard-list\",\"iconOnly\":true}]" } }
+    {
+      "name": "Available-space centre / unequal sides",
+      "props": {
+        "brand": "A longer product name",
+        "navAlign": "center",
+        "navCenterWithin": "available",
+        "items": [
+          "Home",
+          "Docs"
+        ]
+      },
+      "slots": {
+        "actions": "<q-button type=\"button\" size=\"sm\">Go</q-button>"
+      }
+    },
+    {
+      "name": "Container centre / unequal sides",
+      "props": {
+        "brand": "A longer product name",
+        "navAlign": "center",
+        "navCenterWithin": "container",
+        "items": [
+          "Home",
+          "Docs"
+        ]
+      },
+      "slots": {
+        "actions": "<q-button type=\"button\" size=\"sm\">Go</q-button>"
+      }
+    },
+    {
+      "name": "Optical offset +12px",
+      "props": {
+        "navAlign": "center",
+        "navCenterWithin": "container",
+        "style": "--q-navbar-nav-offset-inline:12px",
+        "items": [
+          "Home",
+          "Docs"
+        ]
+      },
+      "slots": {}
+    },
+    {
+      "name": "RTL optical offset +12px (left)",
+      "props": {
+        "dir": "rtl",
+        "navAlign": "center",
+        "navCenterWithin": "container",
+        "style": "--q-navbar-nav-offset-inline:12px",
+        "items": [
+          "Home",
+          "Docs"
+        ]
+      },
+      "slots": {}
+    },
+    {
+      "name": "Default Navbar",
+      "props": {
+        "brand": "WebQuark"
+      }
+    },
+    {
+      "name": "Compact Sticky",
+      "props": {
+        "brand": "Docs",
+        "compact": true,
+        "sticky": true
+      }
+    },
+    {
+      "name": "Transparent",
+      "props": {
+        "brand": "Landing",
+        "transparent": true,
+        "bordered": false
+      }
+    },
+    {
+      "name": "Bottom Navigation",
+      "props": {
+        "brand": "",
+        "edge": "bottom",
+        "value": "home",
+        "mobileMode": "inline",
+        "items": [
+          {
+            "label": "Home",
+            "value": "home",
+            "icon": "house",
+            "iconOnly": true
+          },
+          {
+            "label": "Messages",
+            "value": "messages",
+            "icon": "message-circle",
+            "iconOnly": true,
+            "addonSlot": "messages-addon",
+            "addonPlacement": "top-end"
+          },
+          {
+            "label": "Tasks",
+            "value": "tasks",
+            "icon": "clipboard-list",
+            "iconOnly": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "Icon Only",
+      "props": {
+        "brand": "Mobile",
+        "value": "home",
+        "mobileMode": "inline",
+        "items": [
+          {
+            "label": "Home",
+            "value": "home",
+            "icon": "house",
+            "iconOnly": true
+          },
+          {
+            "label": "Messages",
+            "value": "messages",
+            "icon": "message-circle",
+            "iconOnly": true
+          },
+          {
+            "label": "Tasks",
+            "value": "tasks",
+            "icon": "clipboard-list",
+            "iconOnly": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "Brand logo and disabled navigation",
+      "props": {
+        "brand": "Field notes",
+        "logoSrc": "assets/comparison-before.svg",
+        "logoAlt": "Field notes landscape",
+        "brandHref": "#home",
+        "items": [
+          {
+            "label": "Overview",
+            "value": "overview"
+          },
+          {
+            "label": "Upcoming",
+            "value": "upcoming",
+            "disabled": true
+          },
+          {
+            "label": "External reference",
+            "href": "https://example.com",
+            "target": "_blank"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Custom desktop and mobile navigation",
+      "props": {
+        "mobileLabel": "Browse pages"
+      },
+      "slots": {
+        "brand": "Field notes",
+        "nav": "<q-link href=\"#overview\">Overview</q-link>",
+        "mobile-nav": "<q-link href=\"#overview\">Overview</q-link>"
+      }
+    }
   ],
   "edgeCases": [
-    { "name": "Narrow parent / retained custom controls", "props": { "brand": "Product", "navAlign": "center", "navCenterWithin": "container", "style": "max-width:320px", "items": "[\"Home\",\"Products\",\"About\"]" }, "slots": { "nav": "<button>Help</button>", "actions": "<button>Sign in</button>" } },
-    { "name": "Narrow parent / wrapping row", "props": { "brand": "Product", "navAlign": "center", "mobileMode": "inline", "style": "max-width:320px", "items": "[\"Home\",\"Products\",\"About\"]" }, "slots": { "actions": "<button>Go</button>" } },
-    { "name": "Long Brand", "props": { "brand": "Very Long Product Name That Needs Ellipsis" } }
+    {
+      "name": "Narrow parent / retained custom controls",
+      "props": {
+        "brand": "Product",
+        "navAlign": "center",
+        "navCenterWithin": "container",
+        "style": "max-width:320px",
+        "items": [
+          "Home",
+          "Products",
+          "About"
+        ]
+      },
+      "slots": {
+        "nav": "<q-button type=\"button\" size=\"sm\" variant=\"ghost\">Help</q-button>",
+        "actions": "<q-button type=\"button\" size=\"sm\">Sign in</q-button>"
+      }
+    },
+    {
+      "name": "Narrow parent / wrapping row",
+      "props": {
+        "brand": "Product",
+        "navAlign": "center",
+        "mobileMode": "inline",
+        "style": "max-width:320px",
+        "items": [
+          "Home",
+          "Products",
+          "About"
+        ]
+      },
+      "slots": {
+        "actions": "<q-button type=\"button\" size=\"sm\">Go</q-button>"
+      }
+    },
+    {
+      "name": "Long Brand",
+      "props": {
+        "brand": "Very Long Product Name That Needs Ellipsis"
+      }
+    },
+    {
+      "name": "Legacy selection",
+      "props": {
+        "value": null,
+        "activeValue": "docs",
+        "items": [
+          "home",
+          "docs"
+        ]
+      }
+    }
   ]
 }

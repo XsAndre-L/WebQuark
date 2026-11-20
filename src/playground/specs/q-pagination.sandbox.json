@@ -1,0 +1,89 @@
+{
+  "tag": "q-pagination",
+  "name": "Pagination",
+  "description": "Controlled pages with a visible slice of sample records.",
+  "props": {
+    "page": {
+      "type": "number",
+      "desc": "Current one-based page",
+      "default": 1
+    },
+    "pageSize": {
+      "type": "number",
+      "desc": "Records per page",
+      "default": 5,
+      "min": 1
+    },
+    "totalItems": {
+      "type": "number",
+      "desc": "Available record count",
+      "default": 12,
+      "min": 0
+    },
+    "itemLabel": {
+      "type": "string",
+      "desc": "Noun used in the summary",
+      "default": "records"
+    },
+    "showSummary": {
+      "type": "boolean",
+      "desc": "Display visible item range",
+      "default": true
+    },
+    "disabled": {
+      "type": "boolean",
+      "desc": "Disable navigation",
+      "default": false
+    },
+    "ariaLabel": {
+      "type": "string",
+      "desc": "Navigation landmark label",
+      "default": "Pagination"
+    }
+  },
+  "slots": {},
+  "variants": [
+    {
+      "name": "First page",
+      "props": {
+        "page": 1
+      }
+    },
+    {
+      "name": "Middle page",
+      "props": {
+        "page": 2,
+        "pageSize": 5,
+        "totalItems": 12
+      }
+    },
+    {
+      "name": "Partial last page",
+      "props": {
+        "page": 3,
+        "pageSize": 5,
+        "totalItems": 12
+      }
+    },
+    {
+      "name": "Summary hidden",
+      "props": {
+        "showSummary": false
+      }
+    }
+  ],
+  "edgeCases": [
+    {
+      "name": "Empty collection",
+      "props": {
+        "totalItems": 0
+      }
+    },
+    {
+      "name": "Disabled pagination",
+      "props": {
+        "disabled": true
+      }
+    }
+  ]
+}

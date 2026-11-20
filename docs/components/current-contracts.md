@@ -244,10 +244,15 @@ Shared [foundation rules](../foundation.md) define inherited control sizes, layo
 
 ### `q-syntax-box`
 
-`q-syntax-box` displays highlighted code and optionally provides an editable, form-associated code field.
+`q-syntax-box` displays highlighted code or an editable, form-associated code field. It adds a tab selector when the box contains multiple views.
 
 - [Authored guide](./q-syntax-box.md) · [Generated API](../../src/browser/components/data-display/syntax-box/readme.md)
-- Status: Implemented; trusted code only; escaping and action-name limitations.
+
+### `q-syntax-view`
+
+`q-syntax-view` declares one view with its own content, header actions and optional editable form value.
+
+- [Composing views](./q-syntax-box.md#switch-between-views) · [Generated API](../../src/browser/components/data-display/syntax-view/readme.md)
 
 ### `q-tabs`
 

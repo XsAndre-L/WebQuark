@@ -79,11 +79,13 @@ Type: `Promise<void>`
 ### Used by
 
  - [q-syntax-box](../../data-display/syntax-box)
+ - [q-syntax-view](../../data-display/syntax-view)
 
 ### Graph
 ```mermaid
 graph TD;
   q-syntax-box --> q-scrollable
+  q-syntax-view --> q-scrollable
   style q-scrollable fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

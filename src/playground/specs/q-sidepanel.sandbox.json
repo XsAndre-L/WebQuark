@@ -1,19 +1,15 @@
 {
   "name": "Sidepanel",
   "tag": "q-sidepanel",
-  "stageHelper": {
-    "label": "Sidepanel Drawer",
-    "buttonId": "stageOpenPanelBtn",
-    "buttonLabel": "Open Drawer Panel"
-  },
   "props": {
     "variant": {
       "type": "select",
       "options": [
-        "drawer",
-        "nav"
+        "nav",
+        "panel",
+        "drawer"
       ],
-      "default": "drawer",
+      "default": "nav",
       "desc": "Behavior mode: drawer = slide-in overlay, nav = fixed navigation sidebar"
     },
     "side": {
@@ -39,7 +35,6 @@
     },
     "drawerSize": {
       "type": "string",
-      "default": "320px",
       "desc": "Panel dimension — width or height depending on side (drawer mode only)"
     },
     "ariaLabel": {
@@ -54,19 +49,105 @@
     },
     "defaultGroupsExpanded": {
       "type": "boolean",
-      "default": true,
       "desc": "Whether all parent groups start expanded (nav mode only)"
     },
     "open": {
       "type": "boolean",
-      "default": true,
+      "default": false,
       "desc": "Controls drawer open/close state (drawer mode only)"
+    },
+    "items": {
+      "type": "array",
+      "desc": "Array of strings or nested navigation objects",
+      "default": [
+        {
+          "label": "Overview",
+          "value": "overview",
+          "icon": "house"
+        },
+        {
+          "label": "Messages",
+          "value": "messages",
+          "icon": "mail",
+          "badgeCount": 3,
+          "badgeLabel": "3 unread messages"
+        }
+      ]
+    },
+    "value": {
+      "type": "string",
+      "desc": "Selected navigation item",
+      "default": "overview"
+    },
+    "collapsible": {
+      "type": "boolean",
+      "desc": "Enable collapse for nav or panel",
+      "default": false
+    },
+    "collapsed": {
+      "type": "boolean",
+      "desc": "Collapsed state",
+      "default": false
+    },
+    "collapseControl": {
+      "type": "select",
+      "desc": "Built-in control location",
+      "default": "none",
+      "options": [
+        "none",
+        "header",
+        "footer",
+        "edge"
+      ]
+    },
+    "collapseControlStyle": {
+      "type": "select",
+      "desc": "Control appearance",
+      "options": [
+        "icon-button",
+        "edge-tab"
+      ]
+    },
+    "collapseControlPosition": {
+      "type": "string",
+      "desc": "Offset from the start of the side",
+      "default": ""
+    },
+    "collapseMode": {
+      "type": "select",
+      "desc": "Collapsed size",
+      "default": "rail",
+      "options": [
+        "rail",
+        "hidden"
+      ]
+    },
+    "collapseLabel": {
+      "type": "string",
+      "desc": "Collapse control accessible label",
+      "default": "Toggle sidebar"
+    },
+    "panelSize": {
+      "type": "string",
+      "desc": "Deprecated fallback. Use drawerSize; omit the replacement to try this alias."
+    },
+    "expanded": {
+      "type": "boolean",
+      "desc": "Deprecated fallback. Use defaultGroupsExpanded; omit the replacement to try this alias."
+    },
+    "collapseControlAppearance": {
+      "type": "select",
+      "desc": "Deprecated fallback. Use collapseControlStyle; omit the replacement to try this alias.",
+      "options": [
+        "icon-button",
+        "edge-tab"
+      ]
     }
   },
   "slots": {
     "default": {
       "type": "html",
-      "default": "<div style=\"display: flex; flex-direction: column; gap: 16px;\">\n  <p style=\"margin:0;font-size:0.9rem;color:var(--q-fg-muted)\">Configure and customize dashboard system profile attributes.</p>\n  <q-input label=\"Profile Alias\" placeholder=\"e.g. My Workspace Profile\"></q-input>\n  <q-button id=\"closePanelBtn\" variant=\"primary\">Save Configuration</q-button>\n</div>",
+      "default": "<div style=\"display: flex; flex-direction: column; gap: 16px;\">\n  <p style=\"margin:0;font-size:0.9rem;color:var(--q-fg-muted)\">Configure and customize dashboard system profile attributes.</p>\n  <q-input label=\"Profile Alias\" placeholder=\"e.g. My Workspace Profile\"></q-input>\n  <q-button data-close-drawer variant=\"primary\">Save Configuration</q-button>\n</div>",
       "desc": "Inner drawer content block (drawer mode)"
     },
     "header": {
@@ -78,6 +159,21 @@
       "type": "html",
       "default": "",
       "desc": "Pinned bottom zone for settings or action buttons (nav mode only)"
+    },
+    "expand-icon": {
+      "type": "html",
+      "desc": "Icon shown when collapsed",
+      "default": ""
+    },
+    "collapse-icon": {
+      "type": "html",
+      "desc": "Icon shown when expanded",
+      "default": ""
+    },
+    "collapse-control-adornment": {
+      "type": "html",
+      "desc": "Optional badge on the control",
+      "default": ""
     }
   },
   "variants": [
@@ -125,6 +221,117 @@
         "side": "right",
         "drawerSize": "550px"
       }
+    },
+    {
+      "name": "Flat navigation",
+      "props": {
+        "variant": "nav",
+        "items": [
+          "Home",
+          "Reports"
+        ],
+        "value": "Home"
+      }
+    },
+    {
+      "name": "Grouped navigation",
+      "props": {
+        "variant": "nav",
+        "mode": "grouped",
+        "items": [
+          {
+            "label": "Workspace",
+            "value": "workspace",
+            "alwaysExpanded": true,
+            "children": [
+              {
+                "label": "Inbox",
+                "value": "inbox",
+                "icon": "mail",
+                "badgeCount": 125,
+                "badgeLabel": "125 unread messages"
+              },
+              {
+                "label": "Archive",
+                "value": "archive"
+              }
+            ]
+          },
+          {
+            "label": "Reports",
+            "value": "reports",
+            "children": [
+              {
+                "label": "Weekly",
+                "value": "weekly"
+              }
+            ]
+          }
+        ],
+        "accordion": true
+      }
+    },
+    {
+      "name": "Tree with edge tab",
+      "props": {
+        "variant": "nav",
+        "items": [
+          {
+            "label": "Workspace",
+            "value": "workspace",
+            "alwaysExpanded": true,
+            "children": [
+              {
+                "label": "Inbox",
+                "value": "inbox",
+                "icon": "mail",
+                "badgeCount": 125,
+                "badgeLabel": "125 unread messages"
+              },
+              {
+                "label": "Archive",
+                "value": "archive"
+              }
+            ]
+          },
+          {
+            "label": "Reports",
+            "value": "reports",
+            "children": [
+              {
+                "label": "Weekly",
+                "value": "weekly"
+              }
+            ]
+          }
+        ],
+        "mode": "tree",
+        "value": "inbox",
+        "collapsible": true,
+        "collapseControl": "edge",
+        "collapseControlStyle": "edge-tab",
+        "collapseControlPosition": "22%",
+        "collapseMode": "rail"
+      },
+      "slots": {
+        "expand-icon": "→",
+        "collapse-icon": "←",
+        "collapse-control-adornment": "3"
+      }
+    },
+    {
+      "name": "Externally controlled panel",
+      "props": {
+        "variant": "panel",
+        "collapsible": true,
+        "collapseControl": "none",
+        "collapseMode": "hidden"
+      },
+      "slots": {
+        "header": "Details",
+        "default": "Selected document information",
+        "footer": "Saved"
+      }
     }
   ],
   "edgeCases": [
@@ -146,6 +353,58 @@
       },
       "slots": {
         "default": "<div style=\"height:1200px;background:linear-gradient(to bottom, var(--q-color-primary) 0%, var(--q-color-success) 100%);padding:20px;border-radius:8px;color:var(--q-bg-base);font-weight:bold\">\n  Scrollable Panel Height Content\n</div>"
+      }
+    },
+    {
+      "name": "Legacy drawer size",
+      "props": {
+        "variant": "drawer",
+        "open": false,
+        "drawerSize": null,
+        "panelSize": "220px"
+      }
+    },
+    {
+      "name": "Legacy expansion and appearance",
+      "props": {
+        "variant": "nav",
+        "items": [
+          {
+            "label": "Workspace",
+            "value": "workspace",
+            "alwaysExpanded": true,
+            "children": [
+              {
+                "label": "Inbox",
+                "value": "inbox",
+                "icon": "mail",
+                "badgeCount": 125,
+                "badgeLabel": "125 unread messages"
+              },
+              {
+                "label": "Archive",
+                "value": "archive"
+              }
+            ]
+          },
+          {
+            "label": "Reports",
+            "value": "reports",
+            "children": [
+              {
+                "label": "Weekly",
+                "value": "weekly"
+              }
+            ]
+          }
+        ],
+        "mode": "tree",
+        "expanded": false,
+        "defaultGroupsExpanded": null,
+        "collapsible": true,
+        "collapseControl": "edge",
+        "collapseControlStyle": null,
+        "collapseControlAppearance": "edge-tab"
       }
     }
   ]

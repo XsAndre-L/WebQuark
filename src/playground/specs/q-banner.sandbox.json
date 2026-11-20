@@ -1,0 +1,66 @@
+{
+  "tag": "q-banner",
+  "name": "Banner",
+  "description": "Slot-projection scaffold. Consumers supply the media, message and actions. Final banner layout is deferred.",
+  "props": {
+    "height": {
+      "type": "select",
+      "desc": "Reserved banner height",
+      "default": "auto",
+      "options": [
+        "auto",
+        "full",
+        "half",
+        "narrow"
+      ]
+    },
+    "alignment": {
+      "type": "select",
+      "desc": "Reserved content alignment",
+      "default": "center",
+      "options": [
+        "start",
+        "center",
+        "end"
+      ]
+    }
+  },
+  "slots": {
+    "media": {
+      "type": "html",
+      "desc": "Media",
+      "default": "<img src=\"assets/comparison-before.svg\" alt=\"Landscape before restoration\" width=\"180\">"
+    },
+    "default": {
+      "type": "html",
+      "desc": "Message",
+      "default": "<h2>Field notes</h2><p>A guide to habitat restoration.</p>"
+    },
+    "actions": {
+      "type": "html",
+      "desc": "Actions",
+      "default": "<q-link href=\"#field-notes\">View field notes</q-link>"
+    }
+  },
+  "variants": [
+    {
+      "name": "Projected content",
+      "props": {
+        "height": "narrow",
+        "alignment": "start"
+      }
+    },
+    {
+      "name": "Text only",
+      "props": {
+        "height": "auto"
+      },
+      "slots": {
+        "media": "",
+        "default": "Field notes",
+        "actions": ""
+      }
+    }
+  ],
+  "edgeCases": []
+}

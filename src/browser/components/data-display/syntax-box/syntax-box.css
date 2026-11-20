@@ -20,44 +20,111 @@
 
 /* Panel Layout */
 .panel-container {
-  position: relative;
   border-radius: var(--q-radius-lg, 12px);
   background: var(--q-syntax-bg);
   border: 1px solid var(--q-syntax-border);
   overflow: hidden;
   height: 100%;
-  display: flex;
-  flex-direction: column;
   box-sizing: border-box;
 }
 
 .panel-header {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-area: 1 / 1 / 2 / 3;
+  grid-template-columns: subgrid;
   align-items: center;
-  gap: 16px;
-  padding: var(--q-syntax-header-padding, 4px 16px);
   background: var(--q-syntax-header-bg);
   border-bottom: 1px solid var(--q-syntax-border);
   font-size: var(--q-syntax-header-font-size);
   color: var(--q-syntax-comment);
   box-sizing: border-box;
-  flex-shrink: 0;
 }
 
-.panel-header > span {
-  flex-shrink: 1;
+.syntax-layout {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
   min-width: 0;
+}
+
+.view-panel,
+:host(.embedded-view) {
+  display: grid;
+  grid-area: 1 / 1 / 3 / 3;
+  grid-template-columns: subgrid;
+  grid-template-rows: subgrid;
+  min-width: 0;
+}
+
+.view-panel[data-inactive],
+.validation-anchor {
+  position: absolute;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  clip-path: inset(50%);
+  pointer-events: none;
+}
+
+/* Interactive native form validation can focus this anchor to reveal an inactive editor. */
+.view-panel[data-inactive] {
+  inset-inline: 0;
+  inset-block-start: 0;
+  visibility: hidden;
+}
+
+.validation-anchor {
+  width: 1px;
+  height: 1px;
+  visibility: visible;
+}
+
+.panel-header > span,
+.panel-header > q-tabs {
+  z-index: 1;
+  grid-column: 1;
+  min-width: 0;
+  margin: var(--q-syntax-header-padding, 4px 16px);
+  align-self: center;
+}
+
+.panel-header > q-tabs {
+  --q-tabs-border: 0;
+  --q-tabs-tab-max-width: 100%;
+  display: grid;
+  align-self: stretch;
+  margin-block: 0;
+}
+
+.panel-container > .panel-header > q-tabs {
+  /* Let the active underline paint over the header's one-pixel divider. */
+  margin-block-end: -1px;
 }
 
 .panel-actions {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-shrink: 0;
+  z-index: 1;
+  grid-area: 1 / 2 / 2 / 3;
+  justify-self: end;
+  align-self: center;
+  padding: var(--q-syntax-header-padding, 4px 16px);
+}
+
+.view-content {
+  grid-area: 2 / 1 / 3 / 3;
+  min-width: 0;
+}
+
+.plain-container .panel-header {
+  border: 0;
+  background: transparent;
+}
+
+.panel-header > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Plain Layout */
@@ -75,17 +142,35 @@
 }
 
 /* Code Typography and Style */
-.code-body {
-  margin: 0;
-  padding: var(--q-syntax-padding, 16px);
-  overflow-x: hidden;
-  overflow-y: auto;
+.code-body,
+.slotted-body,
+.editor-textarea {
+  padding: var(--q-syntax-padding, var(--q-padding-lg, 1rem));
   font-family: var(--q-syntax-font-mono);
   font-size: var(--q-syntax-code-font-size);
   line-height: 1.5;
+}
+
+.code-body,
+.slotted-body {
   color: var(--q-syntax-text);
+}
+
+.slotted-body {
+  overflow-wrap: anywhere;
+}
+
+.code-body {
+  margin: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
   white-space: pre-wrap;
   word-wrap: break-word;
+}
+
+:host([role='log']),
+:host(.q-syntax-log-content) {
+  --q-syntax-padding: var(--q-padding-md, .75rem) var(--q-padding-lg, 1rem);
 }
 
 /* For plain variant custom classes if needed */
@@ -134,11 +219,7 @@
   width: 100%;
   height: 100%;
   margin: 0;
-  padding: var(--q-syntax-padding, 16px);
   box-sizing: border-box;
-  font-family: var(--q-syntax-font-mono);
-  font-size: var(--q-syntax-code-font-size);
-  line-height: 1.5;
   white-space: pre-wrap;
   word-wrap: break-word;
   overflow-x: hidden;
@@ -157,27 +238,18 @@
   color: transparent;
 }
 
+.editor-textarea:focus-visible {
+  border-block-end: var(--q-focus-ring, 2px solid var(--q-color-primary, #60a5fa));
+}
+
 .editor-area .code-body {
   position: relative;
   width: 100%;
   height: 100%;
   margin: 0;
-  padding: var(--q-syntax-padding, 16px);
   box-sizing: border-box;
   overflow: hidden;
   pointer-events: none;
-}
-
-/* Panel focus and active state styling */
-.panel-container:focus-within {
-  outline: var(--q-focus-ring, 2px solid var(--q-color-primary, #60a5fa));
-  outline-offset: -1px;
-}
-
-/* Plain variant editor styles */
-:host([editable]) .plain-container:focus-within {
-  outline: var(--q-focus-ring, 2px solid var(--q-color-primary, #60a5fa));
-  border-radius: var(--q-radius-md, 8px);
 }
 
 /* Disabled State Visual Styling */
@@ -206,4 +278,3 @@
   white-space: nowrap;
   border: 0;
 }
-

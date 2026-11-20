@@ -42,6 +42,7 @@ export interface HandleDrawerOpenChangeOptions {
 
 export interface RenderNavItemsOptions {
   items: SidepanelItem[];
+  collapsedRail: boolean;
   expandedGroups: Set<string>;
   activeValue: string;
   onItemClick: (item: SidepanelItem) => void;

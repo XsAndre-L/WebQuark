@@ -9,6 +9,9 @@
       "es2022"
     ],
     "moduleResolution": "bundler",
+    "paths": {
+      "@webquark/browser/formatters/runtime": ["./src/tooling/formatter/runtime.d.mts"]
+    },
     "module": "esnext",
     "target": "es2022",
     "noUnusedLocals": true,

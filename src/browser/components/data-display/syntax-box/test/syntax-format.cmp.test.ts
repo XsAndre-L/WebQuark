@@ -4,8 +4,8 @@ import { page } from 'vitest/browser';
 import { defineCustomElements } from '../../../../../../packages/browser/components/dist/loader';
 // @ts-ignore - real guide previews use the production theme.
 import '../../../../../../packages/browser/components/dist/webquark/webquark.css';
-import { INVALID_JSON, JSON_EXPECTED, JSON_SOURCE, jsonTokens, UNSUPPORTED_SOURCE } from './format-fixtures';
-import { MAX_JSON_FORMAT_DEPTH } from '../internals/formatter';
+import { INVALID_JSON, JSON_EXPECTED, JSON_SOURCE, jsonTokens, NON_JSON_SOURCE } from './format-fixtures';
+import { MAX_JSON_FORMAT_DEPTH } from '../internals/formatters/json';
 import { normalizeDomNewlines } from './syntax-fixtures';
 
 defineCustomElements();
@@ -57,13 +57,13 @@ describe('built syntax-box explicit safe formatting', () => {
     expect(observed.map(event => [event.type, event.detail])).toEqual([['qInput', source], ['qChange', source]]);
     el.value = '{"valid":1}'; await exact(el, '{"valid":1}'); expect(el.shadowRoot!.querySelector('.format-feedback')).toBeNull();
   });
-  it.each(UNSUPPORTED_SOURCE)('makes %s Format visibly unavailable without altering comments/literals/events', async (language, source) => {
+  it.each(NON_JSON_SOURCE)('offers an explicit %s Format action', async (language, source) => {
     const { el } = await create({ language, code: source }); const observed = events(el); const button = await action(el);
-    expect(button.disabled).toBe(true); expect(button.shadowRoot!.querySelector('button')!.disabled).toBe(true);
-    expect(el.shadowRoot!.querySelector('.format-feedback')!.textContent).toBe('Formatting is available for JSON only.');
-    button.click(); await exact(el, source); expect(observed).toEqual([]);
-    el.language = 'json'; el.value = '{"next":1}'; await exact(el, '{"next":1}');
-    await vi.waitFor(() => expect(button.disabled).toBe(false)); expect(el.shadowRoot!.querySelector('.format-feedback')).toBeNull();
+    expect(button.disabled).toBe(false);
+    expect(el.shadowRoot!.querySelector('.format-feedback')).toBeNull();
+    button.click();
+    await vi.waitFor(() => expect(observed.map(event => event.type)).toEqual(['qInput', 'qChange']));
+    expect(el.code).not.toBe(source);
   });
   it('keeps over-depth JSON intact with bounded-format feedback', async () => {
     const source = '['.repeat(MAX_JSON_FORMAT_DEPTH + 1) + '-0' + ']'.repeat(MAX_JSON_FORMAT_DEPTH + 1);
@@ -82,19 +82,27 @@ describe('built syntax-box explicit safe formatting', () => {
     await exact(el, '{\n  "10": 9007199254740993,\n  "2": -0,\n  "same": 1,\n  "same": 2\n}');
     await page.elementLocator(el).screenshot({ path: 'docs/components/assets/q-syntax-box-format-json.png' });
   });
-  it('captures the runnable unsupported-format guide example', async () => {
+  it('formats a JavaScript template literal without losing its inner spaces', async () => {
     await page.viewport(800, 700); document.body.style.margin = '20px';
-    const { el } = await create({ code: 'const message = `keep  spaces; { braces }`;', language: 'javascript', heading: 'Literal JavaScript', height: '110px' });
-    el.style.width = '560px'; expect((await action(el)).disabled).toBe(true); await exact(el, 'const message = `keep  spaces; { braces }`;');
-    await page.elementLocator(el).screenshot({ path: 'docs/components/assets/q-syntax-box-format-unsupported.png' });
+    const { el } = await create({
+      code: 'const message=`keep  spaces; { braces }`',
+      language: 'javascript',
+      heading: 'Literal JavaScript',
+      ariaLabel: 'Literal JavaScript source',
+      height: '110px',
+    });
+    el.style.width = '560px';
+    (await action(el)).click();
+    await exact(el, 'const message = `keep  spaces; { braces }`;\n');
+    await page.elementLocator(el).screenshot({ path: 'docs/components/assets/q-syntax-box-format-javascript.png' });
   });
-  it('refreshes the submitted-code example with current unavailable JavaScript formatting', async () => {
+  it('submits the original JavaScript until Format is used', async () => {
     await page.viewport(800, 700); document.body.style.margin = '20px';
     const { el, form } = await create({ code: 'const ready = true;', language: 'javascript', height: '110px', name: 'template', required: true, ariaLabel: 'Template code' });
     form.style.width = '560px'; const submit = document.createElement('button'); submit.type = 'submit'; submit.textContent = 'Read form data';
     const output = document.createElement('output'); form.append(submit, output);
     form.addEventListener('submit', event => { event.preventDefault(); output.textContent = String(new FormData(form).get('template')); });
-    submit.click(); expect(output.textContent).toBe('const ready = true;'); expect((await action(el)).disabled).toBe(true);
+    submit.click(); expect(output.textContent).toBe('const ready = true;'); expect((await action(el)).disabled).toBe(false);
     await page.elementLocator(form).screenshot({ path: 'docs/components/assets/q-syntax-box-submit-code.png' });
   });
 });

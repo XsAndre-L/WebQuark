@@ -17,10 +17,21 @@
   "variants": [
     { "name": "Incoming", "props": { "variant": "incoming", "sender": "Assistant" } },
     { "name": "Outgoing", "props": { "variant": "outgoing", "sender": "You" }, "slots": { "default": "Curiosity, kindness, and room to change my mind.", "avatar": "" } },
-    { "name": "System", "props": { "variant": "system", "sender": "" }, "slots": { "default": "Matching is paused.", "avatar": "" } }
+    { "name": "System", "props": { "variant": "system", "sender": "" }, "slots": { "default": "Matching is paused.", "avatar": "" } },
+    {
+      "name": "Compact message with status and action",
+      "props": {
+        "compact": true,
+        "sender": "Maya"
+      },
+      "slots": {
+        "default": "Updated the meeting notes.",
+        "meta": "Delivered",
+        "actions": "<q-button size=\"sm\" variant=\"text\">Reply</q-button>"
+      }
+    }
   ],
   "edgeCases": [
     { "name": "Long Unbroken Content", "slots": { "default": "averylongunbrokenmessagethatmustwrapwithoutoverflowingtheconversationlayoutorviewport" } }
   ]
 }
-

@@ -5,7 +5,16 @@
     "width": {
       "type": "select",
       "default": "",
-      "options": ["", "xs", "sm", "md", "lg", "xl", "xxl", "full"],
+      "options": [
+        "",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl",
+        "xxl",
+        "full"
+      ],
       "desc": "Horizontal width independent of size; empty preserves existing layout"
     },
     "rows": {
@@ -77,6 +86,23 @@
     "reserveFeedback": {
       "type": "boolean",
       "desc": "Reserve one feedback line; omit to inherit"
+    },
+    "ariaLabel": {
+      "type": "string",
+      "desc": "Accessible name"
+    },
+    "name": {
+      "type": "string",
+      "desc": "Field name included in form data",
+      "default": "review"
+    },
+    "description": {
+      "type": "string",
+      "desc": "Supporting instructions"
+    },
+    "errorMessage": {
+      "type": "string",
+      "desc": "Deprecated fallback. Use error; omit the replacement to try this alias."
     }
   },
   "slots": {},
@@ -137,6 +163,17 @@
         "error": "Content exceeds character limit of 500 characters.",
         "value": "Initial text content value"
       }
+    },
+    {
+      "name": "Named field with hidden label",
+      "props": {
+        "name": "notes",
+        "label": "Notes",
+        "labelHidden": true,
+        "ariaLabel": "Review notes",
+        "description": "One change per line.",
+        "value": "Review navigation\nConfirm keyboard behavior"
+      }
     }
   ],
   "edgeCases": [
@@ -153,6 +190,13 @@
       "props": {
         "label": "",
         "placeholder": ""
+      }
+    },
+    {
+      "name": "Legacy validation feedback",
+      "props": {
+        "error": null,
+        "errorMessage": "Provide a review note."
       }
     }
   ]

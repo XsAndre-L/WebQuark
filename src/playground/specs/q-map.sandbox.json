@@ -4,55 +4,68 @@
   "props": {
     "provider": {
       "type": "select",
-      "options": ["tiles", "google"],
+      "options": [
+        "tiles",
+        "vector",
+        "google"
+      ],
       "default": "tiles",
       "desc": "Map imagery provider"
     },
     "tileUrl": {
       "type": "string",
-      "default": "",
+      "default": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
       "desc": "Leaflet tile URL template used by the tiles provider"
     },
     "rasterTileLoadingPolicy": {
       "type": "select",
-      "options": ["full-batch", "progressive"],
+      "options": [
+        "full-batch",
+        "progressive"
+      ],
       "default": "full-batch",
       "desc": "Full-batch or first-success progressive raster replacement"
     },
     "googleApiKey": {
       "type": "string",
       "default": "",
-      "desc": "Browser-restricted Maps JavaScript API key used by the Google provider"
+      "desc": "Browser-restricted Maps JavaScript API key used by the Google provider",
+      "sensitive": true
     },
     "googleMapType": {
       "type": "select",
-      "options": ["roadmap", "satellite", "terrain", "hybrid"],
+      "options": [
+        "roadmap",
+        "satellite",
+        "terrain",
+        "hybrid"
+      ],
       "default": "roadmap",
       "desc": "Google base-map style"
     },
     "attribution": {
       "type": "string",
-      "default": "",
+      "default": "© OpenStreetMap contributors",
       "desc": "Visible tile-provider attribution label"
     },
     "attributionUrl": {
       "type": "string",
-      "default": "",
+      "default": "https://www.openstreetmap.org/copyright",
       "desc": "Optional attribution link target"
     },
     "centerLatitude": {
       "type": "number",
-      "default": 0,
+      "default": -26.16,
       "desc": "Controlled viewport centre latitude"
     },
     "centerLongitude": {
       "type": "number",
-      "default": 0,
+      "default": 28.05,
       "desc": "Controlled viewport centre longitude"
     },
     "zoom": {
       "type": "number",
-      "default": 2,
+      "default": 11,
       "desc": "Controlled Leaflet zoom level"
     },
     "minZoom": {
@@ -66,9 +79,8 @@
       "desc": "Highest permitted zoom level"
     },
     "maxBounds": {
-      "type": "textarea",
-      "default": "",
-      "desc": "JSON geographic bounds that constrain user panning"
+      "type": "object",
+      "desc": "Bounds object with southLatitude, westLongitude, northLatitude and eastLongitude"
     },
     "maxBoundsViscosity": {
       "type": "number",
@@ -76,9 +88,31 @@
       "desc": "Boundary resistance from 0 (soft) to 1 (hard)"
     },
     "markers": {
-      "type": "textarea",
-      "default": "[]",
-      "desc": "JSON array of marker records; application code should prefer property assignment"
+      "type": "array",
+      "desc": "Array of typed marker definitions",
+      "default": [
+        {
+          "id": "rosebank",
+          "latitude": -26.1459,
+          "longitude": 28.0416,
+          "label": "Rosebank store, active",
+          "variant": "success"
+        },
+        {
+          "id": "sandton",
+          "latitude": -26.1076,
+          "longitude": 28.0567,
+          "label": "Sandton store, attention required",
+          "variant": "warning"
+        },
+        {
+          "id": "central",
+          "latitude": -26.2041,
+          "longitude": 28.0473,
+          "label": "Johannesburg central, inactive",
+          "variant": "muted"
+        }
+      ]
     },
     "clusterMarkers": {
       "type": "boolean",
@@ -97,18 +131,46 @@
     },
     "clusterMaxZoom": {
       "type": "number",
-      "default": 18,
       "desc": "Last zoom level where clusters may remain"
     },
     "selectedMarkerId": {
-      "type": "string",
-      "default": "",
-      "desc": "Stable ID of the marker shown as selected"
+      "type": "string-or-number",
+      "desc": "Marker ID as a JSON string or number"
     },
     "ariaLabel": {
       "type": "string",
       "default": "Interactive map",
       "desc": "Accessible map-region name"
+    },
+    "zoomControls": {
+      "type": "boolean",
+      "desc": "Show zoom controls",
+      "default": true
+    },
+    "scrollWheelZoom": {
+      "type": "boolean",
+      "desc": "Zoom when scrolling over the map",
+      "default": true
+    },
+    "tilePreloadBuffer": {
+      "type": "number",
+      "desc": "Extra raster tile rows and columns",
+      "default": 0,
+      "min": 0,
+      "max": 4
+    },
+    "vectorPadding": {
+      "type": "number",
+      "desc": "Relative vector viewport padding",
+      "default": 0.2,
+      "min": 0,
+      "max": 0.5,
+      "step": 0.1
+    },
+    "vectorStyleUrl": {
+      "type": "string",
+      "desc": "MapLibre style URL for the vector provider",
+      "default": ""
     }
   },
   "slots": {
@@ -133,7 +195,7 @@
         "centerLatitude": 0,
         "centerLongitude": 0,
         "zoom": 2,
-        "markers": "[]"
+        "markers": []
       }
     },
     {
@@ -145,10 +207,37 @@
         "centerLatitude": -26.16,
         "centerLongitude": 28.05,
         "zoom": 11,
-        "maxBounds": "{ \"southLatitude\": -26.65, \"westLongitude\": 27.54, \"northLatitude\": -25.75, \"eastLongitude\": 28.55 }",
+        "maxBounds": {
+          "southLatitude": -26.65,
+          "westLongitude": 27.54,
+          "northLatitude": -25.75,
+          "eastLongitude": 28.55
+        },
         "maxBoundsViscosity": 1,
         "ariaLabel": "Johannesburg store locations",
-        "markers": "[\n  { \"id\": \"rosebank\", \"latitude\": -26.1459, \"longitude\": 28.0416, \"label\": \"Rosebank store, active\", \"variant\": \"success\" },\n  { \"id\": \"sandton\", \"latitude\": -26.1076, \"longitude\": 28.0567, \"label\": \"Sandton store, attention required\", \"variant\": \"warning\" },\n  { \"id\": \"central\", \"latitude\": -26.2041, \"longitude\": 28.0473, \"label\": \"Johannesburg central, inactive\", \"variant\": \"muted\" }\n]"
+        "markers": [
+          {
+            "id": "rosebank",
+            "latitude": -26.1459,
+            "longitude": 28.0416,
+            "label": "Rosebank store, active",
+            "variant": "success"
+          },
+          {
+            "id": "sandton",
+            "latitude": -26.1076,
+            "longitude": 28.0567,
+            "label": "Sandton store, attention required",
+            "variant": "warning"
+          },
+          {
+            "id": "central",
+            "latitude": -26.2041,
+            "longitude": 28.0473,
+            "label": "Johannesburg central, inactive",
+            "variant": "muted"
+          }
+        ]
       }
     },
     {
@@ -161,7 +250,310 @@
         "centerLongitude": 28.05,
         "zoom": 12,
         "selectedMarkerId": "sandton",
-        "markers": "[\n  { \"id\": \"rosebank\", \"latitude\": -26.1459, \"longitude\": 28.0416, \"label\": \"Rosebank store\", \"variant\": \"default\" },\n  { \"id\": \"sandton\", \"latitude\": -26.1076, \"longitude\": 28.0567, \"label\": \"Sandton store\", \"variant\": \"danger\" }\n]"
+        "markers": [
+          {
+            "id": "rosebank",
+            "latitude": -26.1459,
+            "longitude": 28.0416,
+            "label": "Rosebank store",
+            "variant": "default"
+          },
+          {
+            "id": "sandton",
+            "latitude": -26.1076,
+            "longitude": 28.0567,
+            "label": "Sandton store",
+            "variant": "danger"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cluster groups, badges and callouts",
+      "props": {
+        "tileUrl": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "attribution": "© OpenStreetMap contributors",
+        "attributionUrl": "https://www.openstreetmap.org/copyright",
+        "centerLatitude": -26.16,
+        "centerLongitude": 28.05,
+        "zoom": 11,
+        "maxBounds": {
+          "southLatitude": -26.65,
+          "westLongitude": 27.54,
+          "northLatitude": -25.75,
+          "eastLongitude": 28.55
+        },
+        "maxBoundsViscosity": 1,
+        "ariaLabel": "Johannesburg store locations",
+        "markers": [
+          {
+            "id": 1,
+            "latitude": -26.145,
+            "longitude": 28.04,
+            "label": "Station",
+            "kind": "icon",
+            "icon": "map-pin",
+            "size": "large",
+            "ring": "dashed",
+            "pulse": true,
+            "iconSize": 18,
+            "iconOffsetX": 1,
+            "iconOffsetY": -1,
+            "clusterGroup": "stores",
+            "badge": {
+              "text": "2",
+              "ariaLabel": "2 updates"
+            },
+            "callout": {
+              "title": "Station",
+              "subtitle": "Store",
+              "meta": "Updated today",
+              "visibility": "selected",
+              "stats": [
+                {
+                  "label": "Orders",
+                  "value": 12,
+                  "layout": "wide"
+                }
+              ],
+              "status": {
+                "label": "Open",
+                "variant": "success"
+              }
+            }
+          },
+          {
+            "id": 2,
+            "latitude": -26.146,
+            "longitude": 28.041,
+            "label": "Depot",
+            "kind": "avatar",
+            "fallbackText": "D",
+            "ring": "solid",
+            "clusterGroup": "stores"
+          },
+          {
+            "id": "office",
+            "latitude": -26.147,
+            "longitude": 28.042,
+            "label": "Office",
+            "kind": "dot",
+            "clusterGroup": "offices"
+          },
+          {
+            "id": "photo",
+            "latitude": -26.15,
+            "longitude": 28.045,
+            "label": "Park",
+            "kind": "image",
+            "imageUrl": "assets/comparison-before.svg",
+            "imageSize": [
+              30,
+              24
+            ],
+            "imageAnchor": [
+              15,
+              24
+            ],
+            "clusterable": false,
+            "callout": {
+              "title": "Park",
+              "visibility": "always",
+              "placement": "bottom"
+            }
+          }
+        ],
+        "selectedMarkerId": 1,
+        "clusterMarkers": true
+      }
+    },
+    {
+      "name": "Vector style and marker visibility",
+      "props": {
+        "tileUrl": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "attribution": "MapLibre demo tiles",
+        "attributionUrl": "https://maplibre.org/",
+        "centerLatitude": -26.16,
+        "centerLongitude": 28.05,
+        "zoom": 11,
+        "maxBounds": {
+          "southLatitude": -26.65,
+          "westLongitude": 27.54,
+          "northLatitude": -25.75,
+          "eastLongitude": 28.55
+        },
+        "maxBoundsViscosity": 1,
+        "ariaLabel": "Johannesburg store locations",
+        "markers": [
+          {
+            "id": 1,
+            "latitude": -26.145,
+            "longitude": 28.04,
+            "label": "Station",
+            "kind": "icon",
+            "icon": "map-pin",
+            "size": "large",
+            "ring": "dashed",
+            "pulse": true,
+            "iconSize": 18,
+            "iconOffsetX": 1,
+            "iconOffsetY": -1,
+            "clusterGroup": "stores",
+            "badge": {
+              "text": "2",
+              "ariaLabel": "2 updates"
+            },
+            "callout": {
+              "title": "Station",
+              "subtitle": "Store",
+              "meta": "Updated today",
+              "visibility": "selected",
+              "stats": [
+                {
+                  "label": "Orders",
+                  "value": 12,
+                  "layout": "wide"
+                }
+              ],
+              "status": {
+                "label": "Open",
+                "variant": "success"
+              }
+            }
+          },
+          {
+            "id": 2,
+            "latitude": -26.146,
+            "longitude": 28.041,
+            "label": "Depot",
+            "kind": "avatar",
+            "fallbackText": "D",
+            "ring": "solid",
+            "clusterGroup": "stores"
+          },
+          {
+            "id": "office",
+            "latitude": -26.147,
+            "longitude": 28.042,
+            "label": "Office",
+            "kind": "dot",
+            "clusterGroup": "offices"
+          },
+          {
+            "id": "photo",
+            "latitude": -26.15,
+            "longitude": 28.045,
+            "label": "Park",
+            "kind": "image",
+            "imageUrl": "assets/comparison-before.svg",
+            "imageSize": [
+              30,
+              24
+            ],
+            "imageAnchor": [
+              15,
+              24
+            ],
+            "clusterable": false,
+            "callout": {
+              "title": "Park",
+              "visibility": "always",
+              "placement": "bottom"
+            }
+          }
+        ],
+        "selectedMarkerId": 1,
+        "clusterMarkers": true,
+        "provider": "vector",
+        "vectorStyleUrl": "https://demotiles.maplibre.org/style.json"
+      }
+    },
+    {
+      "name": "Google map with your key",
+      "props": {
+        "provider": "google",
+        "googleMapType": "terrain",
+        "markers": [
+          {
+            "id": 1,
+            "latitude": -26.145,
+            "longitude": 28.04,
+            "label": "Station",
+            "kind": "icon",
+            "icon": "map-pin",
+            "size": "large",
+            "ring": "dashed",
+            "pulse": true,
+            "iconSize": 18,
+            "iconOffsetX": 1,
+            "iconOffsetY": -1,
+            "clusterGroup": "stores",
+            "badge": {
+              "text": "2",
+              "ariaLabel": "2 updates"
+            },
+            "callout": {
+              "title": "Station",
+              "subtitle": "Store",
+              "meta": "Updated today",
+              "visibility": "selected",
+              "stats": [
+                {
+                  "label": "Orders",
+                  "value": 12,
+                  "layout": "wide"
+                }
+              ],
+              "status": {
+                "label": "Open",
+                "variant": "success"
+              }
+            }
+          },
+          {
+            "id": 2,
+            "latitude": -26.146,
+            "longitude": 28.041,
+            "label": "Depot",
+            "kind": "avatar",
+            "fallbackText": "D",
+            "ring": "solid",
+            "clusterGroup": "stores"
+          },
+          {
+            "id": "office",
+            "latitude": -26.147,
+            "longitude": 28.042,
+            "label": "Office",
+            "kind": "dot",
+            "clusterGroup": "offices"
+          },
+          {
+            "id": "photo",
+            "latitude": -26.15,
+            "longitude": 28.045,
+            "label": "Park",
+            "kind": "image",
+            "imageUrl": "assets/comparison-before.svg",
+            "imageSize": [
+              30,
+              24
+            ],
+            "imageAnchor": [
+              15,
+              24
+            ],
+            "clusterable": false,
+            "callout": {
+              "title": "Park",
+              "visibility": "always",
+              "placement": "bottom"
+            }
+          }
+        ],
+        "centerLatitude": -26.145,
+        "centerLongitude": 28.04,
+        "zoom": 12
       }
     }
   ],
@@ -171,7 +563,7 @@
       "props": {
         "provider": "tiles",
         "tileUrl": "",
-        "markers": "[]"
+        "markers": []
       }
     },
     {
@@ -179,7 +571,9 @@
       "props": {
         "provider": "google",
         "googleApiKey": "",
-        "markers": "[]"
+        "markers": [],
+        "tileUrl": "",
+        "vectorStyleUrl": ""
       }
     },
     {
@@ -189,14 +583,26 @@
         "attribution": "© OpenStreetMap contributors",
         "attributionUrl": "https://www.openstreetmap.org/copyright",
         "selectedMarkerId": "not-present",
-        "markers": "[\n  { \"id\": \"visible\", \"latitude\": 0, \"longitude\": 0, \"label\": \"Visible marker\" }\n]"
+        "markers": [
+          {
+            "id": "visible",
+            "latitude": 0,
+            "longitude": 0,
+            "label": "Visible marker"
+          }
+        ]
       }
     },
     {
       "name": "Invalid Bounds",
       "props": {
         "tileUrl": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-        "maxBounds": "{ \"southLatitude\": 10, \"westLongitude\": 20, \"northLatitude\": 5, \"eastLongitude\": 30 }"
+        "maxBounds": {
+          "southLatitude": 10,
+          "westLongitude": 20,
+          "northLatitude": 5,
+          "eastLongitude": 30
+        }
       }
     }
   ]

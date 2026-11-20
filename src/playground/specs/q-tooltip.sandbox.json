@@ -17,7 +17,6 @@
     "delay": {
       "type": "number",
       "min": 0,
-      "max": 2000,
       "default": 200,
       "desc": "The delay in milliseconds before the tooltip fades in"
     },
@@ -51,6 +50,16 @@
         "position": "bottom",
         "delay": 0
       }
+    },
+    {
+      "name": "Left, slotted content",
+      "props": {
+        "position": "left",
+        "content": null
+      },
+      "slots": {
+        "default": "Keyboard shortcuts"
+      }
     }
   ],
   "edgeCases": [
@@ -61,5 +70,12 @@
         "position": "top"
       }
     }
-  ]
+  ],
+  "slots": {
+    "default": {
+      "type": "html",
+      "desc": "Bubble content when the content prop is omitted",
+      "default": ""
+    }
+  }
 }

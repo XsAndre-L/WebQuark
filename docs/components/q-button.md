@@ -157,6 +157,8 @@ Pixel equivalents assume a 16px root font. Heights are minimums; content and ove
 
 `shape="default"` uses size-specific radii; `pill` uses 999px; `circle` uses a 120px square with 50% corners and 12px padding. `layout="inline"` places content in a row; `stacked` places it in a column. `expand` fills the available width, though the circle rule sets its own fixed width.
 
+An icon-only circle with `size="inherit"` (the default) sizes its built-in `icon` to 40% of the circle diameter. A 120px circle shows a 48px icon. Explicit `sm`, `md`, and `lg` sizes use their respective control icon sizes. A slotted icon uses its own size.
+
 ### Custom styling
 
 Use the [CSS variables](#css-variables) or [Shadow Parts](#shadow-parts) for supported customization. This matching markup and CSS can be used together:
@@ -250,15 +252,15 @@ Defaults below show the local fallback chains; references to shared tokens depen
 | `--q-btn-icon-padding-lg` | `9px` | Padding. |
 | `--q-btn-icon-padding-md` | `6px` | Padding. |
 | `--q-btn-icon-padding-sm` | `4px` | Padding. |
-| `--q-btn-padding` | `var(--_q-btn-padding, 0 var(--_q-control-padding))` | Padding. |
-| `--q-btn-padding-lg` | `0 var(--_q-control-padding)` | Padding. |
-| `--q-btn-padding-md` | `0 var(--_q-control-padding)` | Padding. |
-| `--q-btn-padding-sm` | `0 var(--_q-control-padding)` | Padding. |
+| `--q-btn-padding` | Size-specific or shared control padding | Noncircular button padding. Inline and stacked text buttons keep the same vertical inset as their labels wrap. |
+| `--q-btn-padding-lg` | Shared large control spacing | Padding for an explicit large size. |
+| `--q-btn-padding-md` | Shared medium control spacing | Padding for an explicit medium size. |
+| `--q-btn-padding-sm` | Shared small control spacing | Padding for an explicit small size. |
 | `--q-btn-radius` | `var(--_q-control-radius)` | Border-radius. |
 | `--q-btn-radius-lg` | `var(--q-btn-radius, var(--_q-control-radius))` | Border-radius. |
 | `--q-btn-radius-md` | `var(--q-btn-radius, var(--_q-control-radius))` | Border-radius. |
 | `--q-btn-radius-sm` | `var(--q-btn-radius, var(--_q-control-radius))` | Border-radius. |
-| `--q-btn-stacked-gap` | `8px` | Gap. |
+| `--q-btn-stacked-gap` | The button's default vertical padding | Space between the icon and label in stacked layouts. Set this to override the gap independently. |
 | `--q-btn-transition` | `all 150ms cubic-bezier(0.4, 0, 0.2, 1)` | Transition. |
 | `--q-context-control-font` | `var(--q-control-font-md, 0.875rem)` | Context control font. Inherited context; explicit component size/state may override it. |
 | `--q-context-control-height` | `var(--q-control-height-md, 2.25rem)` | Context control height. Inherited context; explicit component size/state may override it. |

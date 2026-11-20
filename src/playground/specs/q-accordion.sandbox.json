@@ -1,0 +1,38 @@
+{
+  "tag": "q-accordion",
+  "name": "Accordion",
+  "description": "API scaffold. The component projects its children. Native details elements supply the disclosure interaction in this example.",
+  "props": {
+    "mode": {
+      "type": "select",
+      "desc": "Reserved disclosure coordination mode",
+      "default": "single",
+      "options": [
+        "single",
+        "multiple"
+      ]
+    }
+  },
+  "slots": {
+    "default": {
+      "type": "html",
+      "desc": "Consumer-owned disclosure content",
+      "default": "<details><summary>Shipping</summary>Ships in two days.</details><details><summary>Returns</summary>Returns are accepted within 30 days.</details>"
+    }
+  },
+  "variants": [
+    {
+      "name": "Single mode",
+      "props": {
+        "mode": "single"
+      }
+    },
+    {
+      "name": "Multiple mode with independent native disclosures",
+      "props": {
+        "mode": "multiple"
+      }
+    }
+  ],
+  "edgeCases": []
+}

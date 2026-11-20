@@ -13,7 +13,7 @@ Owns audit findings F01–F02 and the icon URL portion of F30; recommendation ID
 ## Implementation locations
 
 - [SVG sanitizer](../../../src/browser/components/media/icon/internals/sanitize-svg.ts), [definition registry](../../../src/browser/components/media/icon/internals/registry.ts), [URL handling](../../../src/browser/components/media/icon/internals/url.ts), and [icon renderer](../../../src/browser/components/media/icon/icon.tsx).
-- [Syntax escaping/highlighting](../../../src/browser/components/data-display/syntax-box/internals/syntax.ts), [formatter](../../../src/browser/components/data-display/syntax-box/internals/formatter.ts), [value synchronization](../../../src/browser/components/data-display/syntax-box/internals/value-sync.ts), and [syntax box](../../../src/browser/components/data-display/syntax-box/syntax-box.tsx).
+- [Syntax escaping/highlighting](../../../src/browser/components/data-display/syntax-box/internals/syntax.ts), [formatter](../../../src/browser/components/data-display/syntax-box/internals/formatters/formatter.ts), [value synchronization](../../../src/browser/components/data-display/syntax-box/internals/value-sync.ts), and [syntax box](../../../src/browser/components/data-display/syntax-box/syntax-box.tsx).
 - Extend existing icon registry, icon, syntax-box, and formatter tests; add focused sanitizer/highlighting helper tests and browser regressions where DOM behavior is essential.
 
 ## Contract decisions

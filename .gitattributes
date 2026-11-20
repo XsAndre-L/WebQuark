@@ -1,0 +1,3 @@
+# Preserve exact upstream bytes for formatter integrity checks on every platform.
+src/tooling/formatter/prettier/** -text
+src/tooling/formatter/versions/prettier/** -text

@@ -1,6 +1,6 @@
 # q-syntax-box
 
-Code and value are literal source, mirrored without automatic formatting. Unedited initialization, controlled updates, blur, copy and reset retain the exact supplied text. Native textarea edits use LF line endings. Explicit Format supports strict JSON only, preserving raw numeric/string tokens, duplicate members and order while changing structural whitespace to two-space/LF layout. HTML/JavaScript/CSS formatting is visibly unavailable. Invalid/commented/over-limit JSON remains unchanged with feedback; nonempty explicit JSON attempts retain qInput then qChange timing. Limits: 1,048,576 input/2,097,152 output UTF-16 units and 128 nested containers.
+Code and value are literal source. Click Format to load the selected language's bundled formatter. Strict JSON uses a synchronous token-preserving formatter with two-space indentation. Initialization, controlled updates and form resets preserve the supplied text. A pending formatter discards its result if the editor receives a newer value.
 
 Editable mode creates an empty textarea when both aliases are absent. Required empty editors are invalid; read-only missing code retains the default slot.
 
@@ -15,24 +15,24 @@ See the [authored guide](../../../../../docs/components/q-syntax-box.md) for lit
 
 ## Overview
 
-Displays and optionally edits syntax-highlighted code, with form association in editable mode.
+Displays syntax-highlighted content and automatically adds tabs for multiple views.
 
 ## Properties
 
-| Property    | Attribute    | Description                                                                         | Type                                        | Default     |
-| ----------- | ------------ | ----------------------------------------------------------------------------------- | ------------------------------------------- | ----------- |
-| `ariaLabel` | `aria-label` | Accessible name for the editor; falls back to `heading`, then the language.         | `string`                                    | `null`      |
-| `code`      | `code`       | Mirrored with `value`; prefer `code` for domain usage.                              | `string`                                    | `undefined` |
-| `copyable`  | `copyable`   |                                                                                     | `boolean`                                   | `false`     |
-| `disabled`  | `disabled`   | Disables editing and panel actions.                                                 | `boolean`                                   | `false`     |
-| `editable`  | `editable`   |                                                                                     | `boolean`                                   | `false`     |
-| `heading`   | `heading`    | Shown only in the panel variant.                                                    | `string`                                    | `undefined` |
-| `height`    | `height`     | Explicit content height. Panel mode defaults to 110px; plain mode defaults to auto. | `string`                                    | `undefined` |
-| `language`  | `language`   |                                                                                     | `"css" \| "html" \| "javascript" \| "json"` | `'html'`    |
-| `name`      | `name`       | Form field name used when the component is editable.                                | `string`                                    | `undefined` |
-| `required`  | `required`   | Marks the editable textarea as required for form validation.                        | `boolean`                                   | `false`     |
-| `value`     | `value`      | Form-value alias mirrored with `code` for compatibility.                            | `string`                                    | `undefined` |
-| `variant`   | `variant`    |                                                                                     | `"panel" \| "plain"`                        | `'panel'`   |
+| Property    | Attribute    | Description                                                                              | Type                                                                                                                                                                                                                                                                      | Default     |
+| ----------- | ------------ | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| `ariaLabel` | `aria-label` | Accessible name for the editor; falls back to `heading`, then the language.              | `string`                                                                                                                                                                                                                                                                  | `null`      |
+| `code`      | `code`       | Mirrored with `value`; prefer `code` for domain usage.                                   | `string`                                                                                                                                                                                                                                                                  | `undefined` |
+| `copyable`  | `copyable`   |                                                                                          | `boolean`                                                                                                                                                                                                                                                                 | `false`     |
+| `disabled`  | `disabled`   | Disables editing and panel actions.                                                      | `boolean`                                                                                                                                                                                                                                                                 | `false`     |
+| `editable`  | `editable`   |                                                                                          | `boolean`                                                                                                                                                                                                                                                                 | `false`     |
+| `heading`   | `heading`    | Title in panel mode and tab label for a composed view.                                   | `string`                                                                                                                                                                                                                                                                  | `undefined` |
+| `height`    | `height`     | Explicit content height. Panel mode defaults to 110px; plain mode defaults to auto.      | `string`                                                                                                                                                                                                                                                                  | `undefined` |
+| `language`  | `language`   | Selects the formatter. HTML, JavaScript, CSS, and JSON also receive syntax highlighting. | `"angular" \| "css" \| "flow" \| "graphql" \| "handlebars" \| "html" \| "javascript" \| "json" \| "json-stringify" \| "json5" \| "jsonc" \| "jsx" \| "less" \| "lwc" \| "markdown" \| "mdx" \| "mjml" \| "postcss" \| "scss" \| "tsx" \| "typescript" \| "vue" \| "yaml"` | `'html'`    |
+| `name`      | `name`       | Form field name used when the component is editable.                                     | `string`                                                                                                                                                                                                                                                                  | `undefined` |
+| `required`  | `required`   | Marks the editable textarea as required for form validation.                             | `boolean`                                                                                                                                                                                                                                                                 | `false`     |
+| `value`     | `value`      | Form-value alias mirrored with `code` for compatibility.                                 | `string`                                                                                                                                                                                                                                                                  | `undefined` |
+| `variant`   | `variant`    |                                                                                          | `"panel" \| "plain"`                                                                                                                                                                                                                                                      | `'panel'`   |
 
 
 ## Events
@@ -57,7 +57,7 @@ Type: `Promise<boolean>`
 
 ### `reportValidity() => Promise<boolean>`
 
-Reports editable constraint violations and returns whether the control is valid.
+Reports editable constraint violations and reveals the editor in its owning box.
 
 #### Returns
 
@@ -78,28 +78,32 @@ Type: `Promise<void>`
 
 ## Slots
 
-| Slot        | Description                                                      |
-| ----------- | ---------------------------------------------------------------- |
-|             | Read-only fallback content rendered when `code` is not provided. |
-| `"actions"` | Additional actions rendered in the panel header.                 |
+| Slot        | Description                                                  |
+| ----------- | ------------------------------------------------------------ |
+|             | Read-only fallback content or direct q-syntax-view children. |
+| `"actions"` | Additional actions for the box's own view.                   |
+| `"heading"` | Custom title content in the single-view panel header.        |
 
 
 ## Dependencies
 
 ### Depends on
 
-- [q-scrollable](../../layout/scrollable)
+- [q-tabs](../../layout/tabs)
 - [q-button](../../actions/button)
 - [q-icon](../../media/icon)
 - [q-tooltip](../../overlays/tooltip)
+- [q-scrollable](../../layout/scrollable)
 
 ### Graph
 ```mermaid
 graph TD;
-  q-syntax-box --> q-scrollable
+  q-syntax-box --> q-tabs
   q-syntax-box --> q-button
   q-syntax-box --> q-icon
   q-syntax-box --> q-tooltip
+  q-syntax-box --> q-scrollable
+  q-tabs --> q-icon
   q-button --> q-icon
   style q-syntax-box fill:#f9f,stroke:#333,stroke-width:4px
 ```

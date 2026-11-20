@@ -47,16 +47,8 @@
       "desc": "Turns the button element into a standard anchor link tag"
     },
     "target": {
-      "type": "select",
-      "options": [
-        "",
-        "_blank",
-        "_self",
-        "_parent",
-        "_top"
-      ],
-      "default": "",
-      "desc": "Target link viewport target context (when href is set)"
+      "type": "string",
+      "desc": "Browsing context name or _self, _blank, _parent, _top."
     },
     "disabled": {
       "type": "boolean",
@@ -67,11 +59,96 @@
       "type": "boolean",
       "default": false,
       "desc": "Swaps label with spinner icon while blocking events"
+    },
+    "download": {
+      "type": "string",
+      "desc": "Enables native download behavior when the component operates as a link."
+    },
+    "form": {
+      "type": "string",
+      "desc": "Explicit native form ID in this tree; unresolved IDs do not fall back."
+    },
+    "formAction": {
+      "type": "string",
+      "desc": "Overrides the owning form's action for this submission."
+    },
+    "formEnctype": {
+      "type": "select",
+      "desc": "Overrides the owning form's encoding for this submission.",
+      "options": [
+        "application/x-www-form-urlencoded",
+        "multipart/form-data",
+        "text/plain"
+      ]
+    },
+    "formMethod": {
+      "type": "select",
+      "desc": "Overrides the owning form's method for this submission.",
+      "options": [
+        "dialog",
+        "get",
+        "post"
+      ]
+    },
+    "formNoValidate": {
+      "type": "boolean",
+      "default": false,
+      "desc": "Skips validation for this submitter while retaining cancellation and collection."
+    },
+    "formTarget": {
+      "type": "string",
+      "desc": "Overrides the owning form's browsing context for this submission."
+    },
+    "iconOnly": {
+      "type": "boolean",
+      "desc": "Auto-detected from slotted icon content when omitted."
+    },
+    "layout": {
+      "type": "select",
+      "default": "inline",
+      "desc": "Arrange the icon and label horizontally or in a stack.",
+      "options": [
+        "inline",
+        "stacked"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "desc": "Successful submission name when this button is the submitter."
+    },
+    "rel": {
+      "type": "string",
+      "desc": "Defaults to `noopener noreferrer` when `target=\"_blank\"`."
+    },
+    "shape": {
+      "type": "select",
+      "default": "default",
+      "desc": "The `circle` shape uses a fixed-size circular presentation.",
+      "options": [
+        "circle",
+        "default",
+        "pill"
+      ]
+    },
+    "type": {
+      "type": "select",
+      "default": "button",
+      "desc": "Applied to the native `<button>` when `href` is unset.",
+      "options": [
+        "button",
+        "reset",
+        "submit"
+      ]
+    },
+    "value": {
+      "type": "string",
+      "default": "",
+      "desc": "Successful submission value when this button is the submitter."
     }
   },
   "slots": {
     "default": {
-      "type": "text",
+      "type": "html",
       "default": "Click Me",
       "desc": "Default Slot label content text"
     },
@@ -174,6 +251,27 @@
       "slots": {
         "default": "Expanded Block Button"
       }
+    },
+    {
+      "name": "Stacked label and icon",
+      "props": {
+        "layout": "stacked",
+        "icon": "copy"
+      },
+      "slots": {
+        "default": "Copy"
+      }
+    },
+    {
+      "name": "Download a local illustration",
+      "props": {
+        "href": "assets/comparison-before.svg",
+        "download": "workspace.svg",
+        "variant": "text"
+      },
+      "slots": {
+        "default": "Download workspace"
+      }
     }
   ],
   "edgeCases": [
@@ -187,12 +285,12 @@
       }
     },
     {
-      "name": "HTML Injection Safe Verification",
+      "name": "Formatted label",
       "props": {
-        "variant": "primary"
+        "variant": "secondary"
       },
       "slots": {
-        "default": "<b>Formatted HTML</b> <script>console.log(\"XSS block test\")</script>"
+        "default": "<strong>Save</strong> draft"
       }
     },
     {
@@ -200,7 +298,9 @@
       "props": {
         "variant": "primary",
         "icon": "flame",
-        "ariaLabel": "Ignite"
+        "ariaLabel": "Ignite",
+        "shape": "circle",
+        "iconOnly": true
       },
       "slots": {
         "default": ""

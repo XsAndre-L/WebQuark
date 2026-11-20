@@ -44,13 +44,24 @@
       "props": {
         "gap": "xl"
       }
+    },
+    {
+      "name": "Centered unequal widths",
+      "props": {
+        "gap": "md",
+        "align": "center"
+      },
+      "slots": {
+        "default": "<q-chip>Draft</q-chip><q-chip>Ready for review</q-chip>"
+      }
     }
   ],
   "edgeCases": [
     {
       "name": "Long content",
-      "slots": {},
-      "slot": "<q-card>Long content that can wrap as the available width decreases.</q-card><q-card>Another item</q-card>"
+      "slots": {
+        "default": "<q-card>Long content that can wrap as the available width decreases.</q-card><q-card>Another item</q-card>"
+      }
     }
   ]
 }

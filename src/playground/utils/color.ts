@@ -1,26 +1,12 @@
-/**
- * Utility functions for color parsing and conversion in the WebQuark Playground.
- */
-
-/**
- * Converts an rgb() or rgba() color string to a standard hex string (#RRGGBB).
- * If the value is already a hex string, it is returned directly.
- */
-export function convertToHex(rgbVal: string): string {
-  if (!rgbVal) return '#000000';
-  rgbVal = rgbVal.trim();
-  if (rgbVal.startsWith('#')) {
-    return rgbVal;
-  }
-  const match = rgbVal.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*[\d.]+)?\)$/i);
-  if (match) {
-    const r = parseInt(match[1], 10);
-    const g = parseInt(match[2], 10);
-    const b = parseInt(match[3], 10);
-    return '#' + [r, g, b].map(x => {
-      const hex = x.toString(16);
-      return hex.length === 1 ? '0' + hex : hex;
-    }).join('');
-  }
-  return rgbVal;
+/** Native color inputs represent opaque RGB. Keep other CSS values in the text editor. */
+export function convertToHex(value: string): string | null {
+  const color = value.trim();
+  if (/^#[a-f0-9]{6}$/i.test(color)) return color;
+  if (/^#[a-f0-9]{3}$/i.test(color)) return '#' + [...color.slice(1)].map(channel => channel + channel).join('');
+  const rgb = color.match(/^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i);
+  if (!rgb) return null;
+  const channels = rgb.slice(1).map(Number);
+  return channels.every(channel => channel <= 255)
+    ? '#' + channels.map(channel => channel.toString(16).padStart(2, '0')).join('')
+    : null;
 }

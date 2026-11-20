@@ -12,14 +12,9 @@
       "desc": "Switches between the horizontal bar and circular ring"
     },
     "size": {
-      "type": "select",
-      "options": [
-        "sm",
-        "md",
-        "lg"
-      ],
-      "default": "md",
-      "desc": "Controls the bar height or circular dimensions"
+      "type": "string",
+      "desc": "Size token sm, md, lg, or a positive pixel size",
+      "default": "md"
     },
     "tone": {
       "type": "select",
@@ -40,15 +35,21 @@
     },
     "value": {
       "type": "number",
-      "min": 0,
-      "max": 100,
       "default": 35,
-      "desc": "Progress percentage from 0 to 100"
+      "desc": "Completion percentage. Values outside 0–100 are clamped."
     },
     "indeterminate": {
       "type": "boolean",
       "default": false,
       "desc": "Shows progress without a known completion percentage"
+    },
+    "ariaLabel": {
+      "type": "string",
+      "desc": "Accessible name"
+    },
+    "ariaValueText": {
+      "type": "string",
+      "desc": "Spoken value, e.g. 2 of 5 files"
     }
   },
   "slots": {},
@@ -89,6 +90,31 @@
       "props": {
         "variant": "circular",
         "indeterminate": true
+      }
+    },
+    {
+      "name": "Custom circular diameter",
+      "props": {
+        "variant": "circular",
+        "size": 96,
+        "value": 40,
+        "ariaLabel": "Uploads",
+        "ariaValueText": "2 of 5 files"
+      }
+    },
+    {
+      "name": "Custom linear height",
+      "props": {
+        "size": 10,
+        "value": 80,
+        "label": "Transfer"
+      }
+    },
+    {
+      "name": "Initial value",
+      "props": {
+        "value": 0,
+        "label": "Queued"
       }
     }
   ],

@@ -55,11 +55,20 @@
     "reserveFeedback": {
       "type": "boolean",
       "desc": "Reserve one feedback line; omit to inherit"
+    },
+    "description": {
+      "type": "string",
+      "desc": "Supporting instructions"
+    },
+    "name": {
+      "type": "string",
+      "desc": "Field name included in form data",
+      "default": "consent"
     }
   },
   "slots": {
     "default": {
-      "type": "text",
+      "type": "html",
       "default": "",
       "desc": "Optional replacement for the text label"
     },
@@ -169,6 +178,17 @@
         "checked": false,
         "label": "Invalid Field"
       }
+    },
+    {
+      "name": "Named checkbox",
+      "props": {
+        "name": "consent",
+        "type": "checkbox",
+        "label": "Accept terms",
+        "description": "Review the agreement before submitting.",
+        "required": true,
+        "checked": false
+      }
     }
   ],
   "edgeCases": [
@@ -199,7 +219,7 @@
         "checked": true
       },
       "slots": {
-        "default": "I agree to the <a href=\"#\" style=\"color:var(--q-color-primary);text-decoration:underline\">Terms & Conditions</a>"
+        "default": "I agree to the <q-link href=\"#\" underline=\"always\">Terms & Conditions</q-link>"
       }
     }
   ]

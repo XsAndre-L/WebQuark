@@ -96,6 +96,7 @@ Synchronous registered icon renderer with optional backwards-compatible URL load
  - [q-radio-group](../../inputs/radio-group)
  - [q-sidepanel](../../layout/sidepanel)
  - [q-syntax-box](../../data-display/syntax-box)
+ - [q-syntax-view](../../data-display/syntax-view)
  - [q-tabs](../../layout/tabs)
 
 ### Graph
@@ -108,6 +109,7 @@ graph TD;
   q-radio-group --> q-icon
   q-sidepanel --> q-icon
   q-syntax-box --> q-icon
+  q-syntax-view --> q-icon
   q-tabs --> q-icon
   style q-icon fill:#f9f,stroke:#333,stroke-width:4px
 ```

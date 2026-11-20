@@ -62,6 +62,8 @@ const COLLAPSE_ICON_DEFINITIONS: Readonly<Record<string, QIconDefinition>> = {
  * @part surface - Stable inner content surface for persistent panels.
  * @part header - Header region.
  * @part body - Body or navigation region.
+ * @part group-label - Text of a navigation item with children.
+ * @part item-label - Text of a navigation item without children.
  * @part item-badge - Navigation item's optional count badge.
  * @part footer - Footer region.
  * @part collapse-control - Built-in collapse button.
@@ -514,6 +516,7 @@ export class QSidepanel {
             <div class="nav-surface">
               {renderNavItems({
                 items: this.normalizedItems,
+                collapsedRail: isCollapsed && this.collapseMode === 'rail',
                 expandedGroups: this.expandedGroups,
                 activeValue: this.value,
                 onItemClick: this.handleNavItemClick,

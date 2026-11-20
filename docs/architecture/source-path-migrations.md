@@ -14,7 +14,7 @@ and line numbers are historical, not instructions for the current checkout.
 | `scripts/angular-drift.unit.test.ts` | [Angular drift tests](../../packages/browser/angular/scripts/angular-drift.unit.test.ts) |
 | `scripts/icon-imports.unit.test.ts` | [Browser dependency tests](../../packages/browser/components/test/icon-imports.unit.test.ts) |
 | `src/utils/syntax.ts`, `src/browser/utils/syntax.ts`, and their unit tests | [Syntax-box internals](../../src/browser/components/data-display/syntax-box/internals/) |
-| `src/utils/formatter.ts`, `src/browser/utils/formatter.ts`, and their unit tests | [Syntax-box internals](../../src/browser/components/data-display/syntax-box/internals/) |
+| `src/utils/formatter.ts`, `src/browser/utils/formatter.ts`, and their unit tests | [Syntax Box formatters](../../src/browser/components/data-display/syntax-box/internals/formatters/) |
 | `src/browser/components/actions/button/button.utils.unit.test.ts` | [Button utility tests](../../src/browser/components/actions/button/test/button.utils.unit.test.ts) |
 | `src/playground/views/tooling/adoption/` | [Standalone changelog example](../../examples/changelog-adoption/) |
 | `src/playground/playground.bundled.js` | `.stencil/dist/playground/playground.js` (generated) |

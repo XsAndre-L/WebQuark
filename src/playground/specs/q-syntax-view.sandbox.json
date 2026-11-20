@@ -1,0 +1,45 @@
+{
+  "name": "Syntax View",
+  "tag": "q-syntax-view",
+  "description": "A code or content view. Add views directly inside a Syntax Box to create tabs.",
+  "props": {
+    "heading": { "type": "string", "default": "Source", "desc": "Title of the view and its tab label" },
+    "viewKey": { "type": "string", "default": "source", "desc": "Identifier for this view within its Syntax Box" },
+    "code": { "type": "string", "default": "<q-button>Save</q-button>", "desc": "Source displayed or edited in this view" },
+    "value": { "type": "string", "desc": "Form value synchronized with code" },
+    "language": {
+      "type": "select", "default": "html",
+      "options": ["html", "javascript", "css", "json", "typescript", "jsx", "tsx", "flow", "json5", "jsonc", "json-stringify", "postcss", "less", "scss", "angular", "vue", "lwc", "mjml", "handlebars", "graphql", "markdown", "mdx", "yaml"],
+      "desc": "Language used to format the editor content"
+    },
+    "variant": { "type": "select", "default": "panel", "options": ["panel", "plain"], "desc": "Appearance when the view is used on its own" },
+    "height": { "type": "string", "desc": "Height of the content area" },
+    "copyable": { "type": "boolean", "default": true, "desc": "Show a Copy action for the view" },
+    "editable": { "type": "boolean", "default": false, "desc": "Allow editing the source" },
+    "name": { "type": "string", "default": "source", "desc": "Name used when submitting this editor in a form" },
+    "required": { "type": "boolean", "default": false, "desc": "Require a value when editing" },
+    "disabled": { "type": "boolean", "default": false, "desc": "Disable editing and built-in actions" },
+    "ariaLabel": { "type": "string", "desc": "Accessible name of the editor" }
+  },
+  "slots": {
+    "default": { "type": "html", "desc": "Read-only content when source code is absent" },
+    "actions": { "type": "html", "desc": "Additional toolbar controls for this view" }
+  },
+  "variants": [
+    {
+      "name": "Editable JSON",
+      "props": { "heading": "Settings", "editable": true, "language": "json", "code": "{\"theme\":\"dark\"}" }
+    },
+    {
+      "name": "Slotted content",
+      "props": { "heading": "Events", "code": null, "copyable": false },
+      "slots": { "default": "<q-stack gap=\"xs\" role=\"log\"><span>Saved draft</span><span>Published draft</span></q-stack>" }
+    }
+  ],
+  "edgeCases": [
+    {
+      "name": "Required empty editor",
+      "props": { "heading": "Draft", "editable": true, "code": "", "required": true }
+    }
+  ]
+}

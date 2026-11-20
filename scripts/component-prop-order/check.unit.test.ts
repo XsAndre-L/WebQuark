@@ -91,9 +91,9 @@ describe('group classification and source ordering', () => {
   @Prop() disabled = false;
 
   @Prop({ attribute: 'aria-label' }) ariaLabel: string | null = null;`), fixtureConfig({
-      'content-data-identity': ['label', 'value'],
-      'appearance-layout': ['variant'],
-      'state-status': ['disabled'],
+      'content-data': ['label', 'value'],
+      'style-layout': ['variant'],
+      state: ['disabled'],
       accessibility: ['ariaLabel'],
     }));
 
@@ -104,8 +104,8 @@ describe('group classification and source ordering', () => {
   it('reports source-order and blank-line policy violations as exit 1', () => {
     const result = checkFixture(componentSource(`  @Prop() disabled = false;
   @Prop() label?: string;`), fixtureConfig({
-      'content-data-identity': ['label'],
-      'state-status': ['disabled'],
+      'content-data': ['label'],
+      state: ['disabled'],
     }));
 
     expect(result.exitCode).toBe(1);
@@ -122,9 +122,9 @@ describe('group classification and source ordering', () => {
 
   it('reports stale and duplicate mappings as configuration exit 2', () => {
     const stale = checkFixture(componentSource('  @Prop() label?: string;'), fixtureConfig({
-      'content-data-identity': ['label', 'ghost'],
+      'content-data': ['label', 'ghost'],
     }));
-    const duplicateConfig = fixtureConfig({ 'content-data-identity': ['label'] });
+    const duplicateConfig = fixtureConfig({ 'content-data': ['label'] });
     duplicateConfig.classifications = [
       ...duplicateConfig.classifications,
       { group: 'accessibility', props: ['label'] },
@@ -143,8 +143,8 @@ describe('group classification and source ordering', () => {
   @Prop() size = 'md';
 
   @Prop() label?: string;`, { tag: 'q-icon' }), fixtureConfig({
-      'content-data-identity': ['name', 'label'],
-      'appearance-layout': ['size'],
+      'content-data': ['name', 'label'],
+      'style-layout': ['size'],
     }, {
       overrides: [{ scope: 'q-icon', prop: 'label', group: 'accessibility' }],
     }));
@@ -159,9 +159,9 @@ describe('group classification and source ordering', () => {
 
 describe('relationship clusters', () => {
   const searchConfig = fixtureConfig({
-    'content-data-identity': ['searchPlaceholder'],
-    'features-behavior': ['showSearch'],
-    'state-status': ['searchValue', 'disabled'],
+    'content-data': ['searchPlaceholder'],
+    behavior: ['showSearch'],
+    state: ['searchValue', 'disabled'],
   }, {
     clusters: [{
       id: 'search',
@@ -179,8 +179,8 @@ describe('relationship clusters', () => {
 
     expect(result.exitCode).toBe(0);
     expect(result.explanations.find((entry) => entry.prop === 'searchValue')).toMatchObject({
-      baseGroup: 'state-status',
-      effectiveGroup: 'features-behavior',
+      baseGroup: 'state',
+      effectiveGroup: 'behavior',
       cluster: 'search',
     });
   });
@@ -192,9 +192,9 @@ describe('relationship clusters', () => {
 
   @Prop() disabled = false;`), searchConfig);
     const noncontiguousConfig = fixtureConfig({
-      'content-data-identity': ['searchPlaceholder'],
-      'features-behavior': ['showSearch', 'copyable'],
-      'state-status': ['searchValue'],
+      'content-data': ['searchPlaceholder'],
+      behavior: ['showSearch', 'copyable'],
+      state: ['searchValue'],
     }, { clusters: searchConfig.clusters });
     const noncontiguous = checkFixture(componentSource(`  @Prop() showSearch = false;
   @Prop() copyable = false;
@@ -207,9 +207,9 @@ describe('relationship clusters', () => {
 
   it('validates the present ordered subset of a cluster', () => {
     const config = fixtureConfig({
-      'content-data-identity': ['searchPlaceholder'],
-      'features-behavior': ['showSearch'],
-      'state-status': ['searchValue'],
+      'content-data': ['searchPlaceholder'],
+      behavior: ['showSearch'],
+      state: ['searchValue'],
     }, {
       clusters: [{
         id: 'partial-search',
@@ -231,7 +231,7 @@ describe('relationship clusters', () => {
   it('accepts a relationship split across a mixin and local source block', () => {
     const mixinFile = 'src/browser/components/actions/action.props.ts';
     const config = fixtureConfig({
-      'platform-external-integration': ['href', 'target', 'rel'],
+      'html-integrations': ['href', 'target', 'rel'],
     }, {
       mixinFactories: [{ name: 'withActionProps', file: mixinFile }],
       clusters: [
@@ -259,7 +259,7 @@ import { withActionProps } from '../actions/action.props';`,
   });
 
   it('rejects malformed and overlapping clusters as configuration failures', () => {
-    const config = fixtureConfig({ 'features-behavior': ['showSearch', 'copyable'] }, {
+    const config = fixtureConfig({ behavior: ['showSearch', 'copyable'] }, {
       clusters: [
         { id: 'one', scope: 'q-demo', props: ['showSearch'] },
         { id: 'two', scope: 'q-demo', props: ['showSearch', 'copyable'] },
@@ -277,8 +277,8 @@ import { withActionProps } from '../actions/action.props';`,
 describe('named sections, parsing, and ignored declarations', () => {
   it('resets group ordering within named mode sections and enforces their boundaries', () => {
     const config = fixtureConfig({
-      'content-data-identity': ['label'],
-      'appearance-layout': ['variant'],
+      'content-data': ['label'],
+      'style-layout': ['variant'],
     }, {
       namedSections: [{
         scope: 'q-mode',
@@ -300,8 +300,8 @@ describe('named sections, parsing, and ignored declarations', () => {
 
   it('rejects missing, reordered, and incorrectly spaced named sections', () => {
     const config = fixtureConfig({
-      'content-data-identity': ['label'],
-      'appearance-layout': ['variant'],
+      'content-data': ['label'],
+      'style-layout': ['variant'],
     }, {
       namedSections: [{
         scope: 'q-mode',
@@ -349,7 +349,7 @@ export class Helper { @P() ignored = true; }`;
   interface QGenerated { value: string; }
 }`;
     const result = checkFixture(source, fixtureConfig({
-      'content-data-identity': ['label'],
+      'content-data': ['label'],
     }), [
       { filePath: 'src/browser/components/test/helper.tsx', text: helper },
       { filePath: 'src/browser/components.d.ts', text: generated },
@@ -368,7 +368,7 @@ export class Helper { @P() ignored = true; }`;
   it('reports syntax errors as operational exit 2', () => {
     const result = checkFixture(
       "import { Component, Prop } from '@stencil/core'; @Component({ tag: 'q-demo' }) class Demo { @Prop() value = ; }",
-      fixtureConfig({ 'content-data-identity': ['value'] }),
+      fixtureConfig({ 'content-data': ['value'] }),
     );
 
     expect(result.exitCode).toBe(2);
@@ -388,8 +388,8 @@ export const withTwo = (Base: any) => {
   return Two;
 };`;
   const config = fixtureConfig({
-    'content-data-identity': ['label'],
-    'state-status': ['disabled'],
+    'content-data': ['label'],
+    state: ['disabled'],
   }, {
     mixinFactories: [
       { name: 'withOne', file: mixinFile },
@@ -420,7 +420,7 @@ import { withOne } from '../actions/action.props';`,
     const localResult = checkFixture(localSource, config, [{ filePath: mixinFile, text: mixinSource }]);
 
     const duplicateMixinSource = mixinSource.replace('@P() disabled = false;', '@P() label?: string;');
-    const duplicateConfig = fixtureConfig({ 'content-data-identity': ['label'] }, {
+    const duplicateConfig = fixtureConfig({ 'content-data': ['label'] }, {
       mixinFactories: config.mixinFactories,
     });
     const inheritedSource = componentSource('', {
@@ -440,7 +440,7 @@ import { withOne, withTwo } from '../actions/action.props';`,
 });
 
 describe('semantic fingerprints', () => {
-  const config = fixtureConfig({ 'content-data-identity': ['label', 'value'] });
+  const config = fixtureConfig({ 'content-data': ['label', 'value'] });
 
   it('is order-insensitive while retaining exact declaration semantics', () => {
     const before = checkFixture(componentSource(`  /** Label docs. */
@@ -472,7 +472,7 @@ describe('semantic fingerprints', () => {
 
   it('refuses to write a fingerprint inside src', () => {
     const result = checkFixture(componentSource('  @Prop() label?: string;'), fixtureConfig({
-      'content-data-identity': ['label'],
+      'content-data': ['label'],
     }));
     const forbidden = resolve(process.cwd(), 'src/component-prop-fingerprint.json');
 
@@ -523,7 +523,7 @@ describe('CLI contract and read-only behavior', () => {
     const sourcePath = join(root, 'src/browser/components/test/demo.tsx');
     mkdirSync(join(root, 'src/browser/components/test'), { recursive: true });
     writeFileSync(sourcePath, componentSource('  @Prop() label?: string;'), 'utf8');
-    const config = fixtureConfig({ 'content-data-identity': ['label'] });
+    const config = fixtureConfig({ 'content-data': ['label'] });
     const before = snapshotSourceFiles(root);
     const fingerprint = join(root, 'fingerprint.json');
     const silentIo = {

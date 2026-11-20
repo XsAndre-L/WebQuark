@@ -1,4 +1,5 @@
 .properties-panel {
+  --property-divider-spacing: 12px;
   width: 340px;
   --q-sidepanel-panel-width: 340px;
   --q-sidepanel-panel-padding: 0;
@@ -27,14 +28,63 @@
   box-sizing: border-box;
 }
 
+.properties-section-title,
+.property-section-heading,
+.property-category-heading {
+  color: var(--q-fg-base);
+}
+
 .properties-section-title {
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--q-fg-muted);
+  margin: 0;
+}
+
+.properties-section-header,
+.properties-section > .properties-section-title {
   border-bottom: var(--q-border);
   padding-bottom: 8px;
-  margin: 0 0 12px 0;
+  margin-bottom: 12px;
+}
+
+.properties-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.playground-reset-action:not([hidden]) {
+  display: inline-flex;
+}
+
+.slot-editor-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.property-category + .property-category,
+.property-section + .property-section {
+  border-block-start: 1px dashed color-mix(in srgb, var(--q-border-color) 45%, transparent);
+  padding-block-start: var(--property-divider-spacing);
+}
+
+.property-section-heading {
+  margin: 0 0 .5rem;
+  font-size: .875rem;
+}
+
+.property-category-heading {
+  margin: 0;
+  font-size: .8rem;
+  font-weight: 600;
+}
+
+.property-category-rows {
+  padding-inline-start: .625rem;
 }
 
 .property-row {
@@ -43,17 +93,40 @@
   justify-content: space-between;
   padding: 8px 0;
   gap: 12px;
-  border-bottom: 1px dashed color-mix(in srgb, var(--q-border-color) 45%, transparent);
+}
+
+.property-category-rows > property-row:last-child {
+  padding-block-end: var(--property-divider-spacing);
 }
 
 .property-row.vertical {
   flex-direction: column;
   align-items: flex-start;
+  padding-block-start: 9.6px;
 }
 
-.property-meta {
-  flex: 1;
-  min-width: 0;
+.property-row.vertical:first-child {
+  padding-block-start: 10px;
+}
+
+property-row.property-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 12px;
+  overflow-wrap: anywhere;
+}
+
+property-row > .property-error {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.property-label[tabindex] {
+  justify-self: start;
+  cursor: help;
+  --q-tooltip-max-width: min(18rem, 90vw);
+  --q-tooltip-white-space: normal;
+  --q-tooltip-overflow-wrap: anywhere;
 }
 
 .property-control-container {
@@ -61,6 +134,7 @@
   display: flex;
   justify-content: flex-end;
   min-width: 0;
+  flex-wrap: wrap;
 }
 
 .property-label {
@@ -69,11 +143,8 @@
   color: var(--q-fg-base);
 }
 
-.property-label-sub {
-  font-size: 0.7rem;
+property-row > .property-label {
   color: var(--q-fg-muted);
-  display: block;
-  margin-top: 2px;
 }
 
 .properties-panel-header {
@@ -85,34 +156,7 @@
   position: fixed;
   bottom: 24px;
   right: 24px;
-  background: linear-gradient(135deg, var(--q-color-primary) 0%, var(--q-color-primary-hover) 100%);
-  color: var(--q-bg-base);
-  border: none;
-  border-radius: 50px;
-  padding: 12px 20px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  cursor: pointer;
-  box-shadow: var(--q-glow-interactive);
-  align-items: center;
-  gap: 8px;
   z-index: 998;
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s;
-}
-
-.properties-toggle-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--q-shadow-medium), var(--q-glow-interactive);
-}
-
-.properties-toggle-btn:active {
-  transform: translateY(0);
-}
-
-.properties-toggle-icon {
-  font-size: 1rem;
 }
 
 /* Custom WebQuark Component Properties Layout */
@@ -124,12 +168,16 @@
 }
 
 .property-row.vertical q-input,
+.property-row.vertical q-textarea {
+  margin-top: 6px;
+}
+
+.property-row.vertical q-input,
 .property-row.vertical q-textarea,
 .property-row.vertical q-syntax-box {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  margin-top: 6px;
   display: block;
 }
 
@@ -187,20 +235,6 @@
     white-space: nowrap;
   }
 
-  .properties-close-btn {
-    background: transparent;
-    border: none;
-    color: var(--q-fg-base);
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 4px 8px;
-    line-height: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
   .properties-toggle-btn {
     display: flex;
   }
@@ -210,3 +244,6 @@
   color: var(--q-fg-muted);
   font-size: 0.85rem;
 }
+
+.property-error:not(:empty) { flex-basis: 100%; color: var(--q-color-danger); font-size: .85rem; }
+.property-error:empty { display: none; }

@@ -4,7 +4,7 @@
 
 **Component tag:** `<q-step-diagram>`
 
-**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Indicators → Step Diagram**.
+**Working preview:** Run `bun start` from the repository root, open the [existing playground](http://localhost:3333), then select **Indicators → Step Diagram**. [Configure an individual step](./q-step-diagram-item.md).
 
 **On this page**
 

@@ -5,9 +5,18 @@
     "name": { "type": "string", "default": "Maya Dlamini", "desc": "Identity name and initials source" },
     "src": { "type": "string", "default": "", "desc": "Optional image source" },
     "initials": { "type": "string", "default": "", "desc": "Explicit fallback initials" },
-    "alt": { "type": "string", "default": "", "desc": "Explicit accessible image text" },
-    "size": { "type": "select", "options": ["sm", "md", "lg"], "default": "md", "desc": "Avatar size" },
-    "shape": { "type": "select", "options": ["circle", "rounded", "square"], "default": "circle", "desc": "Avatar shape" }
+    "alt": { "type": "string", "desc": "Omit to use the name, or enter empty text for a decorative image." },
+    "size": { "type": "string", "default": "md", "desc": "sm, md, lg, pixel number or CSS size" },
+    "shape": { "type": "select", "options": ["circle", "rounded", "square"], "default": "circle", "desc": "Avatar shape" },
+    "loading": {
+      "type": "select",
+      "default": "lazy",
+      "desc": "Native image loading policy.",
+      "options": [
+        "eager",
+        "lazy"
+      ]
+    }
   },
   "slots": {
     "fallback": { "type": "html", "default": "", "desc": "Custom visual fallback" }
@@ -15,10 +24,34 @@
   "variants": [
     { "name": "Initials", "props": { "name": "Maya Dlamini", "size": "md" } },
     { "name": "Large Rounded", "props": { "name": "Theo Jacobs", "size": "lg", "shape": "rounded" } },
-    { "name": "Custom Fallback", "props": { "name": "Assistant" }, "slots": { "fallback": "✦" } }
+    { "name": "Custom Fallback", "props": { "name": "Assistant" }, "slots": { "fallback": "✦" } },
+    {
+      "name": "Local image",
+      "props": {
+        "src": "assets/comparison-before.svg",
+        "alt": "Illustrated workspace",
+        "loading": "eager"
+      }
+    },
+    {
+      "name": "Explicit initials",
+      "props": {
+        "name": "Maya Dlamini",
+        "initials": "MD"
+      }
+    }
   ],
   "edgeCases": [
-    { "name": "Missing Identity", "props": { "name": "", "src": "" } }
+    { "name": "Missing Identity", "props": { "name": "", "src": "" } },
+    {
+      "name": "Failed image with custom fallback",
+      "props": {
+        "src": "assets/unavailable-avatar.svg",
+        "name": "Theo Jacobs"
+      },
+      "slots": {
+        "fallback": "TJ"
+      }
+    }
   ]
 }
-

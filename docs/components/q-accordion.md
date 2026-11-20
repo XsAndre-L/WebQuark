@@ -4,7 +4,7 @@
 
 **Component tag:** `<q-accordion>`
 
-**Working preview:** There is no permanent q-accordion preset. Run `bun start`, open the [existing playground](http://localhost:3333), and use its browser console to insert the example markup into the page after registration. The examples below were executed as temporary fixtures in that runtime.
+**Working preview:** Run `bun start` at the repository root, open the [playground](http://localhost:3333) and select **Data display → Accordion**.
 
 **On this page**
 

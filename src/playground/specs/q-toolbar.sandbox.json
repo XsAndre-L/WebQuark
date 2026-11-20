@@ -48,6 +48,26 @@
         "lg"
       ],
       "desc": "Control size; inherit follows the nearest form or toolbar"
+    },
+    "gap": {
+      "type": "select",
+      "desc": "Distance between controls",
+      "default": "sm",
+      "options": [
+        "none",
+        "xs",
+        "sm",
+        "md",
+        "lg",
+        "xl",
+        "2xl",
+        "3xl"
+      ]
+    },
+    "wrap": {
+      "type": "boolean",
+      "desc": "Allow controls to wrap",
+      "default": true
     }
   },
   "slots": {
@@ -95,6 +115,41 @@
       "props": {
         "edge": "left",
         "bordered": true
+      }
+    },
+    {
+      "name": "Wrap in a narrow toolbar",
+      "props": {
+        "style": "display:block;max-width:220px",
+        "gap": "lg",
+        "size": "sm",
+        "wrap": true
+      },
+      "slots": {
+        "start": "<q-button>Back</q-button>",
+        "default": "<q-button>Inspect changes</q-button>",
+        "end": "<q-button>Save draft</q-button>"
+      }
+    },
+    {
+      "name": "Single row in a narrow toolbar",
+      "props": {
+        "style": "display:block;max-width:220px",
+        "gap": "lg",
+        "size": "sm",
+        "wrap": false
+      },
+      "slots": {
+        "start": "<q-button>Back</q-button>",
+        "default": "<q-button>Inspect changes</q-button>",
+        "end": "<q-button>Save draft</q-button>"
+      }
+    },
+    {
+      "name": "Sticky toolbar in scrolling content",
+      "props": {
+        "sticky": true,
+        "edge": "top"
       }
     }
   ],

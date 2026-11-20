@@ -15,17 +15,17 @@
     "glass": {
       "type": "boolean",
       "default": false,
-      "desc": "Swaps solid backgrounds with highly visible translucent blurs"
+      "desc": "Translucent surface without backdrop blur."
     },
     "interactive": {
       "type": "boolean",
       "default": false,
-      "desc": "Enables tab focus, Enter/Space click bindings, and transforms"
+      "desc": "Enable button semantics and Enter/Space activation."
     },
     "lift": {
       "type": "boolean",
       "default": false,
-      "desc": "Combines with interactive to translate card upward on hover/focus"
+      "desc": "Raise the card on hover or focus."
     },
     "surface": {
       "type": "select",
@@ -56,6 +56,34 @@
     "dividers": {
       "type": "boolean",
       "default": false
+    },
+    "footerPadding": {
+      "type": "select",
+      "desc": "Override the footer padding independently.",
+      "options": [
+        "2xl",
+        "3xl",
+        "lg",
+        "md",
+        "none",
+        "sm",
+        "xl",
+        "xs"
+      ]
+    },
+    "headerPadding": {
+      "type": "select",
+      "desc": "Override the header padding independently.",
+      "options": [
+        "2xl",
+        "3xl",
+        "lg",
+        "md",
+        "none",
+        "sm",
+        "xl",
+        "xs"
+      ]
     }
   },
   "slots": {
@@ -85,7 +113,7 @@
       }
     },
     {
-      "name": "Medium Elevation (Default)",
+      "name": "Medium elevation",
       "props": {
         "elevation": "medium"
       },
@@ -109,7 +137,8 @@
         "interactive": true
       },
       "slots": {
-        "default": "Hover over this card or focus and press space/enter."
+        "default": "Hover over this card or focus and press space/enter.",
+        "footer": ""
       }
     },
     {
@@ -119,7 +148,7 @@
         "glass": true
       },
       "slots": {
-        "default": "Glass frosted translucent visual style."
+        "default": "Translucent card surface."
       }
     },
     {
@@ -141,7 +170,17 @@
         "lift": true
       },
       "slots": {
-        "default": "High shadow glass interactive card deck item."
+        "default": "High shadow glass interactive card deck item.",
+        "footer": ""
+      }
+    },
+    {
+      "name": "Independent section padding",
+      "props": {
+        "padding": "lg",
+        "headerPadding": "xs",
+        "footerPadding": "sm",
+        "dividers": true
       }
     }
   ],
@@ -162,7 +201,8 @@
       },
       "slots": {
         "default": "",
-        "header": "Card header only, no body text"
+        "header": "Card header only, no body text",
+        "footer": ""
       }
     },
     {
@@ -171,7 +211,8 @@
         "elevation": "medium"
       },
       "slots": {
-        "default": "This card is initialized with a body but lacks any content in the header slot, verifying automatic element collapse."
+        "default": "This card is initialized with a body but lacks any content in the header slot, verifying automatic element collapse.",
+        "header": ""
       }
     }
   ]

@@ -1,58 +1,57 @@
 import { h } from '../../dom-factory';
 import { SlotSpec, updateKnobValue } from '../../state';
+import { createResetAction } from './reset-action';
 
 export class SlotRow extends HTMLElement {
-  public slotName!: string;
-  public slotConfig!: SlotSpec;
-  public activeComponentTag!: string;
+  slotName!: string;
+  slotConfig!: SlotSpec;
+  activeComponentTag!: string;
+  private control!: HTMLElement & { value?: string };
 
-  connectedCallback() {
-    if (!this.slotName || !this.slotConfig) return;
-    this.className = 'property-row vertical';
-    this.innerHTML = '';
+  connectedCallback(): void {
+    const { slotName, slotConfig } = this;
+    const name = slotName === 'default' ? 'Default content' : `Slot "${slotName}"`;
+    const description = (slotConfig.desc ?? slotConfig.description)?.trim();
+    const commit = (value: string) => updateKnobValue('slot', slotName, value, this.activeComponentTag);
+    const input = (event: CustomEvent<string>) => commit(event.detail);
 
-    const labelText = this.slotName === 'default' ? 'default (Inner content)' : `slot="${this.slotName}"`;
+    const resetLabel = slotName === 'default' ? 'Reset default content' : `Reset ${slotName} slot`;
+    const resetAction = createResetAction(resetLabel, () => {
+      const value = slotConfig.default ?? '';
+      this.control.value = value;
+      commit(value);
+    });
 
-    this.appendChild(
-      <div class="property-meta">
-        <span class="property-label">{labelText}</span>
-        <span class="property-label-sub">{this.slotConfig.description || ''}</span>
-      </div>
+    const hasToolbar = slotConfig.type === 'html';
+    const label = (
+      <span class="property-label" data-theme={hasToolbar ? 'dark' : undefined} tabIndex={description ? 0 : undefined}>
+        {name}
+        {description && <q-tooltip content={description} position="top" />}
+      </span>
     );
 
-    let inputControl: HTMLElement;
-    if (this.activeComponentTag === 'q-data-table' && this.slotName === 'footer') {
-      inputControl = (
-        <q-syntax-box
-          editable={true}
-          language="html"
-          height="110px"
-          data-slot={this.slotName}
-          value={this.slotConfig.currentValue}
-          onQInput={(e: CustomEvent) => updateKnobValue('slot', this.slotName, e.detail)}
-        />
-      );
-    } else if (this.slotConfig.description && (this.slotConfig.description.includes('textarea') || this.slotConfig.description.includes('html'))) {
-      inputControl = (
-        <q-textarea
-          rows={4}
-          data-slot={this.slotName}
-          value={this.slotConfig.currentValue}
-          onQInput={(e: CustomEvent) => updateKnobValue('slot', this.slotName, e.detail)}
-        />
-      );
+    this.control = hasToolbar
+      ? <q-syntax-box editable language="html" heading={name} height="110px" onQInput={input} />
+      : slotConfig.type === 'textarea'
+        ? <q-textarea rows={4} aria-label={name} width="full" onQInput={input} />
+        : <q-input aria-label={name} width="full" onQInput={input} />;
+    this.control.dataset.slot = slotName;
+
+    this.className = 'property-row vertical';
+    if (hasToolbar) {
+      label.slot = 'heading';
+      resetAction.slot = 'actions';
+      this.control.append(label, resetAction);
+      this.replaceChildren(this.control);
     } else {
-      inputControl = (
-        <q-input
-          type="text"
-          data-slot={this.slotName}
-          value={this.slotConfig.currentValue}
-          onQInput={(e: CustomEvent) => updateKnobValue('slot', this.slotName, e.detail)}
-        />
-      );
+      this.replaceChildren(<div class="slot-editor-heading">{label}{resetAction}</div>, this.control);
     }
 
-    this.appendChild(inputControl);
+    this.sync(slotConfig.currentValue);
+  }
+
+  sync(value?: string): void {
+    if (!this.control.matches(':focus-within') && this.control.value !== (value ?? '')) this.control.value = value ?? '';
   }
 }
 

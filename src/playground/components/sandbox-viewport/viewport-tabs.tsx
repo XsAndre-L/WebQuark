@@ -1,58 +1,49 @@
 import { h } from '../../dom-factory';
 import { activeComponent, activeTab, effect } from '../../state';
 
+export const viewportTabs = [
+  { value: 'sandbox', label: 'Sandbox', tabId: 'tab-sandbox', panelId: 'content-sandbox' },
+  { value: 'variants', label: 'Variants', tabId: 'tab-variants', panelId: 'content-variants' },
+  { value: 'edgecases', label: 'Edge Cases', tabId: 'tab-edgecases', panelId: 'content-edgecases' },
+];
+
 export class ViewportTabs extends HTMLElement {
   private cleanupEffect?: () => void;
 
-  connectedCallback() {
-    this.innerHTML = '';
-    
-    this.appendChild(
-      <div class="tabs-bar" id="tabsBar">
-        <div class="tab-buttons">
-          <button class="tab-btn" data-tab="sandbox">Sandbox</button>
-          <button class="tab-btn" data-tab="variants">Variants</button>
-          <button class="tab-btn" data-tab="edgecases">Edge Cases</button>
-        </div>
-        <div class="active-component-badge" id="activeCompBadge">q-button</div>
-      </div>
-    );
-
-    const tabsBar = this.querySelector('#tabsBar') as HTMLElement;
-    const activeCompBadge = this.querySelector('#activeCompBadge') as HTMLElement;
-    const tabBtns = this.querySelectorAll('.tab-btn');
-
-    tabBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const nextTab = (btn as HTMLElement).dataset.tab;
-        if (nextTab) {
-          activeTab.set(nextTab);
-        }
-      });
-    });
+  connectedCallback(): void {
+    const selector = Object.assign(
+      <q-tabs aria-label="Example views" onQChange={(event: CustomEvent<string>) => activeTab.set(event.detail)} />,
+      { items: viewportTabs },
+    ) as HTMLQTabsElement;
+    const badge = <div class="active-component-badge" />;
+    const bar = <div class="tabs-bar">{selector}{badge}</div>;
+    this.replaceChildren(bar);
+    void this.linkPanels(selector);
 
     this.cleanupEffect = effect(() => {
       const active = activeComponent();
       const tab = activeTab();
-
-      if (activeCompBadge) {
-        activeCompBadge.innerText = active === 'global-styling' ? 'Global Styling' : active;
-      }
-
-      if (tabsBar) {
-        tabsBar.style.display = active === 'global-styling' ? 'none' : '';
-      }
-
-      tabBtns.forEach(btn => {
-        btn.classList.toggle('active', (btn as HTMLElement).dataset.tab === tab);
-      });
+      bar.style.display = active === 'global-styling' ? 'none' : '';
+      badge.textContent = active;
+      selector.value = tab;
     });
   }
 
-  disconnectedCallback() {
-    if (this.cleanupEffect) {
-      this.cleanupEffect();
+  private async linkPanels(selector: HTMLQTabsElement): Promise<void> {
+    if (!('ariaControlsElements' in Element.prototype)) return;
+    await customElements.whenDefined('q-tabs');
+    await selector.componentOnReady();
+    if (!selector.isConnected) return;
+
+    for (const { tabId, panelId } of viewportTabs) {
+      const tab = selector.shadowRoot?.getElementById(tabId);
+      const panel = document.getElementById(panelId);
+      if (tab && panel) tab.ariaControlsElements = [panel];
     }
+  }
+
+  disconnectedCallback(): void {
+    this.cleanupEffect?.();
   }
 }
 

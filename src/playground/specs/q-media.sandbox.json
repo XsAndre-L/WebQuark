@@ -1,0 +1,85 @@
+{
+  "tag": "q-media",
+  "name": "Media",
+  "description": "Slot-projection scaffold. The consumer renders media and decides when to insert fallback content. Both slots are projected when populated.",
+  "props": {
+    "src": {
+      "type": "string",
+      "desc": "Reserved media source",
+      "default": ""
+    },
+    "kind": {
+      "type": "select",
+      "desc": "Reserved media kind",
+      "default": "image",
+      "options": [
+        "image",
+        "video",
+        "file"
+      ]
+    },
+    "loading": {
+      "type": "select",
+      "desc": "Reserved loading preference",
+      "default": "lazy",
+      "options": [
+        "lazy",
+        "eager"
+      ]
+    },
+    "alt": {
+      "type": "string",
+      "desc": "Reserved alternative text",
+      "default": ""
+    }
+  },
+  "slots": {
+    "default": {
+      "type": "html",
+      "desc": "Consumer-rendered media",
+      "default": "<img src=\"assets/comparison-before.svg\" alt=\"Landscape before restoration\" width=\"180\">"
+    },
+    "fallback": {
+      "type": "html",
+      "desc": "Consumer-provided placeholder",
+      "default": ""
+    }
+  },
+  "variants": [
+    {
+      "name": "Native image",
+      "props": {
+        "src": "assets/comparison-before.svg",
+        "alt": "Landscape illustration"
+      }
+    },
+    {
+      "name": "Native video",
+      "props": {
+        "kind": "video"
+      },
+      "slots": {
+        "default": "<video src=\"assets/reel-motion.webm\" controls width=\"180\" aria-label=\"Moving test pattern\"></video>"
+      }
+    },
+    {
+      "name": "File download",
+      "props": {
+        "kind": "file"
+      },
+      "slots": {
+        "default": "<q-link download=\"landscape.svg\" href=\"assets/comparison-before.svg\">Download landscape</q-link>"
+      }
+    }
+  ],
+  "edgeCases": [
+    {
+      "name": "Consumer-selected fallback",
+      "props": {},
+      "slots": {
+        "default": "",
+        "fallback": "Preview unavailable"
+      }
+    }
+  ]
+}
