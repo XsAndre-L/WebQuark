@@ -4,6 +4,7 @@ import {
   assertLockstepPackages,
   assertPackageContract,
   capture,
+  hasFlag,
   npmCommand,
   packages,
   readPackage,
@@ -115,8 +116,10 @@ if (!angularPackage) {
 }
 run(['bun', 'run', 'verify:compatibility'], angularPackage.directory);
 
-console.log('\nRunning the Vitest suite...');
-run(['bunx', 'vitest', 'run']);
+if (!hasFlag('--reuse-dev-tests')) {
+  console.log('\nRunning the Vitest suite...');
+  run(['bunx', 'vitest', 'run']);
+}
 
 console.log('\nChecking package manifests and npm tarballs...');
 if (!readPackage(repositoryRoot).private) throw new Error('The repository orchestration manifest must be private.');

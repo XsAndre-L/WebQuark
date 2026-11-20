@@ -53,7 +53,7 @@ The release logic lives under `.github/scripts/publishing/`:
 - The private root `packages:build` script builds browser, tooling, core, React, and Angular without running tests. The root is never packed or published.
 - The root `pr:verify` package script remains available for local checks: it checks prop policy before building packages and running tooling and unit tests.
 - `prepare-release.ts` validates `.github/release.json`, calculates `-dev.N`, and aligns all five package versions and exact internal dependency versions. Core depends on browser and tooling; wrappers depend on and peer browser; tooling has no WebQuark dependency.
-- `verify-packages.ts` checks prop policy, builds all five packages, verifies packed Angular 21/22 consumers, runs every Vitest project, and validates manifests and npm tarballs. It is the publish workflow's final gate.
+- `verify-packages.ts` checks prop policy, builds all five packages, verifies packed Angular 21/22 consumers, runs every Vitest project by default, and validates manifests and npm tarballs. It is the publish workflow's final gate.
 - `publish-packages.ts` packs first, publishes browser/tooling before core and browser before React/Angular, prevents overwriting different npm contents, resumes matching partial publications, and applies the requested npm dist-tag.
 
 The root `publish-all` script requires an explicit `--tag dev|latest`. GitHub Actions uses npm trusted publishing. Local publishing requires an explicit `NODE_AUTH_TOKEN`.
@@ -79,7 +79,9 @@ Dev and production publishing can be enabled independently. A disabled branch re
 
 ## Release gates
 
-A publish run installs dependencies with the frozen lockfile, audits the locked graph at the moderate threshold, prepares the lockstep version, installs Playwright Chromium, Firefox, and WebKit, then executes the full release verifier. Prop policy, all five package builds, every Vitest project (tooling, unit, carousel-browsers, and browser), Angular 21/22 compatibility installs, manifest validation, and npm pack dry-runs must all pass before npm publishing begins.
+Every release installs and audits the locked dependencies, prepares the package versions, checks prop order, builds all five packages, checks the packed Angular 21/22 consumers, and validates the manifests and tarball contents.
+
+Dev releases also install the Playwright browsers and run every Vitest project. On `main`, the workflow looks for a successful dev deployment of the exact commit and checks that its verification step passed. When it finds one, it reuses those test results and skips the browser installation and Vitest run. A different commit, a skipped verification step, or an unavailable GitHub lookup triggers the full suite.
 
 The workflow pins its GitHub Actions and Bun versions for reproducible runs. Dev and production publishing remain independently controlled by repository variables and protected environments.
 
