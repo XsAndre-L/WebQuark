@@ -38,6 +38,8 @@ export class QCarousel {
   @Prop({ reflect: true }) snapAlignment: QCarouselSnapAlignment = 'start';
   /** `auto` preserves each slotted item's natural width. */
   @Prop({ reflect: true }) itemWidth: string = 'auto';
+  /** Overlay keeps playback separate from the indicators/extra-controls panel. */
+  @Prop({ reflect: true }) rotationPlacement: 'controls' | 'overlay' = 'controls';
 
   /** Omitted controls are enabled for navigable slideshows and disabled for strips. */
   @Prop({ reflect: true }) showArrows?: boolean;
@@ -57,13 +59,10 @@ export class QCarousel {
   @Prop() autoplayInterval: number = 5000;
   /** Temporarily suspends requested playback without changing the button action. */
   @Prop() autoplaySuspended: boolean = false;
-
   /** Finish-videos delegates each active visit's timing to setSlidePlayback(). */
   @Prop() slideTiming: QCarouselSlideTiming = 'fixedInterval';
   /** Holds advancement for loading without pausing the active media. */
   @Prop() autoplayAdvanceSuspended: boolean = false;
-  /** Overlay keeps playback separate from the indicators/extra-controls panel. */
-  @Prop({ reflect: true }) rotationPlacement: 'controls' | 'overlay' = 'controls';
 
   /** Accessible name forwarded to the slide viewport. */
   @Prop({ attribute: 'aria-label' }) ariaLabel: string = 'Carousel content';
