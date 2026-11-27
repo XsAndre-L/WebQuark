@@ -6,6 +6,15 @@ import type { Artifact, BinEntry, BinOperation } from './launcher-schema';
 import { activeArtifact, same, snapshot, validName } from './artifact-snapshot';
 import type { State } from '../transactions/state-schema';
 
+export class LauncherMismatchError extends Error {
+  readonly code = 'WQ_LAUNCHER_MISMATCH';
+
+  constructor(readonly file: string) {
+    super('The installed launcher differs from the saved local-setup copy.');
+    this.name = 'LauncherMismatchError';
+  }
+}
+
 /** Validates that all launcher paths reside inside node_modules/.bin and contain valid artifacts. */
 export function validateBins(root: string, bins: BinEntry[] = []): void {
   const seen = new Set<string>();
@@ -31,9 +40,8 @@ export function validateBins(root: string, bins: BinEntry[] = []): void {
 /** Asserts that current launchers on disk have not drifted from expected active state. */
 export function assertBins(state: State): void {
   for (const entry of state.bins ?? []) {
-    if (!same(snapshot(entry.file), activeArtifact(entry))) {
-      throw new Error(`Launcher changed by another install: ${entry.file}. Refusing to overwrite it.`);
-    }
+    if (!same(snapshot(entry.file), activeArtifact(entry)))
+      throw new LauncherMismatchError(entry.file);
   }
 }
 
