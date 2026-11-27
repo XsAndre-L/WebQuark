@@ -21,24 +21,24 @@ jobs:
       pages: read
     steps:
       - name: Check out WebQuark
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
 
       - name: Set up Node
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        uses: actions/setup-node@v7.1.0
         with:
           node-version: 24.21.0
           package-manager-cache: false
 
       - name: Set up Bun
-        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        uses: oven-sh/setup-bun@v2.2.0
         with:
           bun-version: 1.4.2
 
       - name: Configure Pages
         id: pages
-        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
+        uses: actions/configure-pages@v6.0.0
 
       - run: bun install --frozen-lockfile
       - run: bun run browser:build
@@ -49,7 +49,7 @@ jobs:
         run: bun run check:playground-pages
 
       - name: Upload verified site
-        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
+        uses: actions/upload-pages-artifact@v5.0.0
         with:
           path: .stencil/dist/playground
 
@@ -66,4 +66,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
+        uses: actions/deploy-pages@v5.0.1

@@ -222,10 +222,17 @@ describe('wq-switch launchers', () => {
     expect(readFileSync(file, 'utf8')).toBe('foreign executable');
     unlinkSync(file); await stageBins(app, next); activate(app, next);
     unlinkSync(file); put(file, 'changed executable');
-    expect(() => restore(app)).toThrow('Launcher changed by another install');
+    expect(() => restore(app)).toThrow('The installed launcher differs from the saved local-setup copy.');
     expect(readFileSync(file, 'utf8')).toBe('changed executable');
     expect(readState(app)?.generation).toBe(next.generation);
     const output = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const failure = vi.spyOn(console, 'error').mockImplementation(() => {});
+    check(app);
+    expect(output).not.toHaveBeenCalled();
+    expect(failure.mock.calls.flat().join('\n')).toContain('The installed launcher differs from the saved local-setup copy.');
+    expect(failure.mock.calls.flat().join('\n')).toContain('Automatic recovery for this mismatch is unavailable.');
+    expect(failure.mock.calls.flat().join('\n')).not.toContain('wq-switch build');
+
     status(app);
     expect(output.mock.calls.flat().join('\n')).toContain('Mode: BROKEN');
     expect(process.exitCode).toBe(1);
@@ -615,6 +622,9 @@ describe('local preflight diagnostics', () => {
     const before = readFileSync(projectPaths(app).state, 'utf8');
     const log = vi.spyOn(console, 'log').mockImplementation(() => {});
     check(app);
+    expect(log.mock.calls.flat().join('\n')).toContain('WebQuark check passed');
+    expect(log.mock.calls.flat().join('\n')).not.toContain('Mode:');
+    status(app);
     const output = log.mock.calls.flat().join('\n');
     expect(output).toContain('Mode: LOCAL');
     expect(output).toContain('Preferred release: 1.0.0');
@@ -633,7 +643,11 @@ describe('local preflight diagnostics', () => {
     unlinkSync(wrapper.slot);
     pkg(wrapper.slot, '@webquark/angular');
     const log = vi.spyOn(console, 'log').mockImplementation(() => {});
+    const failure = vi.spyOn(console, 'error').mockImplementation(() => {});
     check(app);
+    expect(log).not.toHaveBeenCalled();
+    expect(failure.mock.calls.flat().join('\n')).toContain('Installed packages differ from the saved local setup.');
+    status(app);
     expect(log.mock.calls.flat().join('\n')).toContain('Mode: MIXED');
     expect(process.exitCode).toBe(1);
     expect(linkTarget(state.entries[0].slot)).toBe(state.entries[0].target);
